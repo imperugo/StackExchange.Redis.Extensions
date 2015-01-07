@@ -1,5 +1,5 @@
 # StackExchange.Redis.Extensions
-StackExchange.Redis.Extensions is a library that extend [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) allowing you a set of functionality needed by common applications.
+StackExchange.Redis.Extensions is a library that extends [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) allowing you a set of functionality needed by common applications.
 
 ## What can it be used for?
 Caching of course. Instead of use directly [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) could be easier use ``ÌCacheClient```
@@ -30,7 +30,7 @@ var cacheClient = new StackExchangeRedisCacheClient();
 
 ```
 
-To specify the connection string is enough to add it into AppSetting in your config files (use **RedisConnectionString** as key) or specify your ``ConnectionMultiplexer``` instance into the constructor.
+To specify the connection string it's enough to add it into AppSetting in your config files (use **RedisConnectionString** as key) or specify your ``ConnectionMultiplexer``` instance into the constructor.
 
 
 ## Serialization
@@ -74,13 +74,13 @@ var cachedUsers = myCacheClient.GetAll<User>(new {"key1","key2","key3"});
 
 ## Can I search keys into Redis?
 Yes that's possible using a specific pattern.
-If you want to search all keys that starts with ```myCacheKey```:
+If you want to search all keys that start with ```myCacheKey```:
 
 ```csharp
 var keys = myCacheClient.SearchKeys("myCacheKey*");
 ```
 
-If you want to search all keys that contains with ```myCacheKey```:
+If you want to search all keys that contain with ```myCacheKey```:
 
 ```csharp
 var keys = myCacheClient.SearchKeys("*myCacheKey*");
