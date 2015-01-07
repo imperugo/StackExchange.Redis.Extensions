@@ -1,0 +1,18 @@
+﻿// //////////////////////////////////////////////////////////////////////////////////////////////////
+//  File:			TestClass.cs
+//  Website:		http://gaia.is.it/
+//  Created:		2015/01/07
+//  Last edit:	2015/01/07
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+
+using System;
+
+namespace StackExchange.Redis.Extensions.Tests.Helpers
+{
+	[Serializable]
+	public class TestClass<T>
+	{
+		public string Key { get; set; }
+		public T Value { get; set; }
+	}
+}
