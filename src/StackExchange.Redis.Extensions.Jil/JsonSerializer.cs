@@ -1,37 +1,24 @@
 ﻿using System;
 using Jil;
+using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.Jil
 {
 	public class JsonSerializer : ISerializer
 	{
-		public byte[] Serialize(object item)
+		public string Serialize(object item)
 		{
-			return GetBytes(JSON.Serialize(item));
+			return JSON.Serialize(item);
 		}
 
-		public object Deserialize(byte[] bytes)
+		public object Deserialize(string serializedObject)
 		{
-			return JSON.Deserialize<object>(GetString(bytes));
+			return JSON.Deserialize(serializedObject, typeof (object));
 		}
 
-		public T Deserialize<T>(byte[] bytes) where T : class
+		public T Deserialize<T>(string serializedObject) where T : class
 		{
-			return JSON.Deserialize<T>(GetString(bytes));
-		}
-
-		private byte[] GetBytes(string str)
-		{
-			var bytes = new byte[str.Length*sizeof (char)];
-			Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-			return bytes;
-		}
-
-		private string GetString(byte[] bytes)
-		{
-			var chars = new char[bytes.Length/sizeof (char)];
-			Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
-			return new string(chars);
+			return JSON.Deserialize<T>(serializedObject);
 		}
 	}
 }

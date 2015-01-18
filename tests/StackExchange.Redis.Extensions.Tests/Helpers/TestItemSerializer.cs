@@ -1,41 +1,23 @@
-﻿using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using Newtonsoft.Json;
+using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.Tests.Helpers
 {
 	public class TestItemSerializer : ISerializer
 	{
-		public byte[] Serialize(object item)
+		public string Serialize(object item)
 		{
-			var formatter = new BinaryFormatter();
-
-			byte[] itemBytes;
-
-			using (var ms = new MemoryStream())
-			{
-				formatter.Serialize(ms, item);
-				itemBytes = ms.ToArray();
-			}
-
-			return itemBytes;
+			return JsonConvert.SerializeObject(item);
 		}
 
-		public object Deserialize(byte[] bytes)
+		public object Deserialize(string serializedObject)
 		{
-			var formatter = new BinaryFormatter();
-
-			object item;
-			using (var ms = new MemoryStream(bytes))
-			{
-				item = formatter.Deserialize(ms);
-			}
-
-			return item;
+			return JsonConvert.DeserializeObject(serializedObject, typeof(object));
 		}
 
-		public T Deserialize<T>(byte[] bytes) where T : class
+		public T Deserialize<T>(string serializedObject) where T : class
 		{
-			return Deserialize(bytes) as T;
+			return JsonConvert.DeserializeObject<T>(serializedObject);
 		}
 	}
 }

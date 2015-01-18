@@ -9,7 +9,8 @@ For example:
 - **Add an object to Redis**;
 - **Remove an object from Redis**;
 - **Search Keys into Redis**;
-- **Multiple Get**;
+- **Retrieve multiple object with a single roundtrop**;
+- **Store multiple object with a single roundtrop**;
 - **Async methods**;
 - **Much more**;
 
@@ -65,11 +66,18 @@ Easy:
 var cachedUser = myCacheClient.Get<User>("my cache key");
 ```
 
-## How can I retrieve multiple object with one roudtrip?
+## How can I retrieve multiple object with single roundtrip?
 That's a cool feature that is implemented into ICacheClient implementation:
 
 ```csharp
 var cachedUsers = myCacheClient.GetAll<User>(new {"key1","key2","key3"});
+```
+
+## How can I add multiple object with single roundtrip?
+That's a cool feature that is implemented into ICacheClient implementation:
+
+```csharp
+IList<Tuple<string, string>> values = new List<Tuple<string, string>>();values.Add(new Tuple<string, string>("key1","value1"));values.Add(new Tuple<string, string>("key2","value2"));values.Add(new Tuple<string, string>("key3","value3"));bool added = sut.AddAll(values);
 ```
 
 ## Can I search keys into Redis?

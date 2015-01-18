@@ -7,8 +7,8 @@
     <ProjectGuid>{73B53B53-ECAB-47C5-945F-3F6FB0940A53}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StackExchange.Redis.Extensions</RootNamespace>
-    <AssemblyName>StackExchange.Redis.Extensions</AssemblyName>
+    <RootNamespace>StackExchange.Redis.Extensions.Core</RootNamespace>
+    <AssemblyName>StackExchange.Redis.Extensions.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -43,7 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BinarySerializer.cs" />
     <Compile Include="StackExchangeRedisCacheClient.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="ICacheClient.cs" />

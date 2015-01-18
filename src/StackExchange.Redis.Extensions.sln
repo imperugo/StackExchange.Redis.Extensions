@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions", "StackExchange.Redis.Extensions\StackExchange.Redis.Extensions.csproj", "{73B53B53-ECAB-47C5-945F-3F6FB0940A53}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.Newtonsoft", "StackExchange.Redis.Extensions.Newtonsoft\StackExchange.Redis.Extensions.Newtonsoft.csproj", "{D4B13B0B-165B-4513-9DC1-B8A25979BD65}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.Jil", "StackExchange.Redis.Extensions.Jil\StackExchange.Redis.Extensions.Jil.csproj", "{CB7B4AD8-86EA-4F8A-98F0-C419A972CB75}"
@@ -20,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{EE9099
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.Core", "StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj", "{73B53B53-ECAB-47C5-945F-3F6FB0940A53}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,16 +32,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Release|Any CPU.Build.0 = Release|Any CPU
-		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Release|ARM.ActiveCfg = Release|Any CPU
-		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Release|x64.ActiveCfg = Release|Any CPU
-		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Release|x86.ActiveCfg = Release|Any CPU
 		{D4B13B0B-165B-4513-9DC1-B8A25979BD65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D4B13B0B-165B-4513-9DC1-B8A25979BD65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4B13B0B-165B-4513-9DC1-B8A25979BD65}.Debug|ARM.ActiveCfg = Debug|Any CPU
@@ -72,14 +62,24 @@ Global
 		{10C3D1DD-1CFD-4A90-8E4C-C77EFF9C64C0}.Release|ARM.ActiveCfg = Release|Any CPU
 		{10C3D1DD-1CFD-4A90-8E4C-C77EFF9C64C0}.Release|x64.ActiveCfg = Release|Any CPU
 		{10C3D1DD-1CFD-4A90-8E4C-C77EFF9C64C0}.Release|x86.ActiveCfg = Release|Any CPU
+		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Release|ARM.ActiveCfg = Release|Any CPU
+		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Release|x64.ActiveCfg = Release|Any CPU
+		{73B53B53-ECAB-47C5-945F-3F6FB0940A53}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{73B53B53-ECAB-47C5-945F-3F6FB0940A53} = {FBF88E4E-4CA8-473A-AF3F-9709CCB979DB}
 		{D4B13B0B-165B-4513-9DC1-B8A25979BD65} = {FBF88E4E-4CA8-473A-AF3F-9709CCB979DB}
 		{CB7B4AD8-86EA-4F8A-98F0-C419A972CB75} = {FBF88E4E-4CA8-473A-AF3F-9709CCB979DB}
 		{10C3D1DD-1CFD-4A90-8E4C-C77EFF9C64C0} = {4F6FEC1A-4512-48D6-B3BC-8AD8025B7EF7}
+		{73B53B53-ECAB-47C5-945F-3F6FB0940A53} = {FBF88E4E-4CA8-473A-AF3F-9709CCB979DB}
 	EndGlobalSection
 EndGlobal

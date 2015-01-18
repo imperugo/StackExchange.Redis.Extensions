@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using FizzWare.NBuilder;
+using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Tests.Extensions;
 using StackExchange.Redis.Extensions.Tests.Helpers;
 using Xunit;
@@ -16,7 +18,11 @@ namespace StackExchange.Redis.Extensions.Tests
 
 		public StackExchangeRedisCacheClientTest()
 		{
-			var connectionString = string.Format("{0}:{1},ssl=true,password={2}", "localhost", 6380, "mypsw");
+			//Hostname = "bmwremarketingqadev.redis.cache.windows.net";
+			//Password = "hGRkEYhVGv2TMfA2aVoHdjn6y+7qslGFnV4vbuoJvJM=";
+			//Port = 6380;
+
+			var connectionString = string.Format("{0}:{1},ssl=true,password={2}", "localhost", 6380, "password");
 			var connectionMultiplexer = ConnectionMultiplexer.Connect(connectionString);
 			db = connectionMultiplexer.GetDatabase();
 			serializer = new TestItemSerializer();
@@ -57,6 +63,27 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.NotNull(obj);
 			Assert.Equal(testobject.Key, obj.Key);
 			Assert.Equal(testobject.Value, obj.Value);
+		}
+
+		[Fact]
+		public void Add_Multiple_Object_With_A_Single_Roundtrip_To_Redis_Must_Store_Data_Correctly_Into_Database()
+		{
+			IList<Tuple<string, string>> values = new List<Tuple<string, string>>();
+			values.Add(new Tuple<string, string>("key1","value1"));
+			values.Add(new Tuple<string, string>("key2","value2"));
+			values.Add(new Tuple<string, string>("key3","value3"));
+
+			bool added = sut.AddAll(values);
+
+			Assert.True(added);
+
+			Assert.True(db.KeyExists("key1"));
+			Assert.True(db.KeyExists("key2"));
+			Assert.True(db.KeyExists("key3"));
+			
+			Assert.Equal(serializer.Deserialize(db.StringGet("key1")),"value1");
+			Assert.Equal(serializer.Deserialize(db.StringGet("key2")),"value2");
+			Assert.Equal(serializer.Deserialize(db.StringGet("key3")),"value3");
 		}
 
 		[Fact]

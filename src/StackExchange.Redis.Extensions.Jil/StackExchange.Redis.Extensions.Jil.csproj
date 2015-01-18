@@ -53,9 +53,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\StackExchange.Redis.Extensions\StackExchange.Redis.Extensions.csproj">
-      <Project>{73B53B53-ECAB-47C5-945F-3F6FB0940A53}</Project>
-      <Name>StackExchange.Redis.Extensions</Name>
+    <ProjectReference Include="..\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj">
+      <Project>{73b53b53-ecab-47c5-945f-3f6fb0940a53}</Project>
+      <Name>StackExchange.Redis.Extensions.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

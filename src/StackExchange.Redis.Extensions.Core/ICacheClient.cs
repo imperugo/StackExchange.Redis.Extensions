@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace StackExchange.Redis.Extensions
+namespace StackExchange.Redis.Extensions.Core
 {
 	public interface ICacheClient : IDisposable
 	{
@@ -203,7 +203,6 @@ namespace StackExchange.Redis.Extensions
 		/// </returns>
 		Task<bool> ReplaceAsync<T>(string key, T value, TimeSpan expiresIn) where T : class;
 
-
 		/// <summary>
 		/// Get the objects with the specified keys from Redis database with one roundtrip
 		/// </summary>
@@ -216,7 +215,7 @@ namespace StackExchange.Redis.Extensions
 		IDictionary<string, T> GetAll<T>(IEnumerable<string> keys) where T : class;
 
 		/// <summary>
-		/// Get the objects with the specified keys from Redis database with one roundtrip
+		/// Get the objects with the specified keys from Redis database with a single roundtrip
 		/// </summary>
 		/// <typeparam name="T">The type of the expected object</typeparam>
 		/// <param name="keys">The keys.</param>
@@ -226,6 +225,19 @@ namespace StackExchange.Redis.Extensions
 		/// </returns>
 		Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys) where T : class;
 
+		/// <summary>
+		/// Add the objects with the specified keys to Redis database with a single roundtrip
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="items">The items.</param>
+		bool AddAll<T>(IList<Tuple<string, T>> items) where T : class;
+
+		/// <summary>
+		/// Add the objects with the specified keys to Redis database with a single roundtrip
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="items">The items.</param>
+		Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items) where T : class;
 
 		/// <summary>
 		/// Searches the keys from Redis database

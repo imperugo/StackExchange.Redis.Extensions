@@ -47,13 +47,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\StackExchange.Redis.Extensions\StackExchange.Redis.Extensions.csproj">
-      <Project>{73b53b53-ecab-47c5-945f-3f6fb0940a53}</Project>
-      <Name>StackExchange.Redis.Extensions</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj">
+      <Project>{73b53b53-ecab-47c5-945f-3f6fb0940a53}</Project>
+      <Name>StackExchange.Redis.Extensions.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

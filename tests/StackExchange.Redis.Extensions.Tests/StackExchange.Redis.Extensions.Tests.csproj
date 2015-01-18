@@ -35,6 +35,10 @@
     <Reference Include="FizzWare.NBuilder">
       <HintPath>..\..\src\packages\NBuilder.3.0.1.1\lib\FizzWare.NBuilder.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\src\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="StackExchange.Redis">
       <HintPath>..\..\src\packages\StackExchange.Redis.1.0.371\lib\net45\StackExchange.Redis.dll</HintPath>
     </Reference>
@@ -66,9 +70,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\StackExchange.Redis.Extensions\StackExchange.Redis.Extensions.csproj">
-      <Project>{73b53b53-ecab-47c5-945f-3f6fb0940a53}</Project>
-      <Name>StackExchange.Redis.Extensions</Name>
+    <ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj">
+      <Project>{73B53B53-ECAB-47C5-945F-3F6FB0940A53}</Project>
+      <Name>StackExchange.Redis.Extensions.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

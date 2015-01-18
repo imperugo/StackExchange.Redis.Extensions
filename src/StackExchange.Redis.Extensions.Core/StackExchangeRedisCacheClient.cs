@@ -5,8 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StackExchange.Redis.Extensions
+namespace StackExchange.Redis.Extensions.Core
 {
+	/// <summary>
+	/// The implementation of <see cref="ICacheClient"/>
+	/// </summary>
 	public class StackExchangeRedisCacheClient : ICacheClient
 	{
 		private readonly ConnectionMultiplexer connectionMultiplexer;
@@ -27,7 +30,7 @@ namespace StackExchange.Redis.Extensions
 
 			if (serializer == null)
 			{
-				serializer = new BinarySerializer();
+				throw new ArgumentNullException("serializer");
 			}
 
 			this.serializer = serializer;
@@ -373,9 +376,9 @@ namespace StackExchange.Redis.Extensions
 		{
 			var keysList = keys.ToList();
 			var redisKeys = new RedisKey[keysList.Count];
-			var sb = CreateLuaScriptForMget(redisKeys, keysList);
+			var sb = CreateLuaScriptForMget(redisKeys,keysList);
 
-			var redisResults = (RedisResult[]) db.ScriptEvaluate(sb, redisKeys);
+			RedisResult[] redisResults = (RedisResult[]) db.ScriptEvaluate(sb, redisKeys);
 
 			var result = new Dictionary<string, T>();
 
@@ -385,7 +388,7 @@ namespace StackExchange.Redis.Extensions
 
 				if (!redisResults[i].IsNull)
 				{
-					obj = (T) serializer.Deserialize((byte[]) redisResults[i]);
+					obj = (T) serializer.Deserialize((string)redisResults[i]);
 				}
 				result.Add(keysList[i], obj);
 			}
@@ -405,8 +408,8 @@ namespace StackExchange.Redis.Extensions
 		public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys) where T : class
 		{
 			var keysList = keys.ToList();
-			var redisKeys = new RedisKey[keysList.Count];
-			var sb = CreateLuaScriptForMget(redisKeys, keysList);
+			RedisKey[] redisKeys = new RedisKey[keysList.Count];
+			var sb = CreateLuaScriptForMget(redisKeys,keysList);
 
 			var redisResults = (RedisResult[]) await db.ScriptEvaluateAsync(sb, redisKeys);
 
@@ -418,12 +421,45 @@ namespace StackExchange.Redis.Extensions
 
 				if (!redisResults[i].IsNull)
 				{
-					obj = (T) serializer.Deserialize((byte[]) redisResults[i]);
+					obj = (T) serializer.Deserialize((string) redisResults[i]);
 				}
 				result.Add(keysList[i], obj);
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Adds all.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="items">The items.</param>
+		public bool AddAll<T>(IList<Tuple<string, T>> items) where T : class
+		{
+			RedisKey[] redisKeys = new RedisKey[items.Count];
+			RedisValue[] redisValues = new RedisValue[items.Count];
+			var sb = CreateLuaScriptForMset(redisKeys, redisValues, items);
+
+			var redisResults = db.ScriptEvaluate(sb, redisKeys, redisValues);
+
+			return redisResults.ToString() == "OK";
+		}
+
+		/// <summary>
+		/// Adds all asynchronous.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="items">The items.</param>
+		/// <returns></returns>
+		public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items) where T : class
+		{
+			RedisKey[] redisKeys = new RedisKey[items.Count];
+			RedisValue[] redisValues = new RedisValue[items.Count];
+			var sb = CreateLuaScriptForMset(redisKeys, redisValues, items);
+
+			var redisResults = await db.ScriptEvaluateAsync(sb, redisKeys, redisValues);
+
+			return redisResults.ToString() == "OK";
 		}
 
 		/// <summary>
@@ -477,10 +513,31 @@ namespace StackExchange.Redis.Extensions
 			return Task.Run(() => SearchKeys(pattern));
 		}
 
+		private string CreateLuaScriptForMset<T>(RedisKey[] redisKeys,RedisValue[] redisValues,  IList<Tuple<string, T>> objects)
+		{
+			var sb = new StringBuilder("return redis.call('mset',");
+
+			for (var i = 0; i < objects.Count; i++)
+			{
+				redisKeys[i] = objects[i].Item1;
+				redisValues[i] = this.serializer.Serialize(objects[i].Item2);
+
+				sb.AppendFormat("KEYS[{0}],ARGV[{0}]", i + 1);
+
+				if (i < objects.Count - 1)
+				{
+					sb.Append(",");
+				}
+			}
+
+			sb.Append(")");
+
+			return sb.ToString();
+		}
+
 		private string CreateLuaScriptForMget(RedisKey[] redisKeys, List<string> keysList)
 		{
 			var sb = new StringBuilder("return redis.call('mget',");
-
 
 			for (var i = 0; i < keysList.Count; i++)
 			{
