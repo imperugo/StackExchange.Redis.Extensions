@@ -1,4 +1,6 @@
 # StackExchange.Redis.Extensions
+
+
 StackExchange.Redis.Extensions is a library that extends [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) allowing you a set of functionality needed by common applications.
 
 ## What can it be used for?
@@ -13,6 +15,28 @@ For example:
 - **Store multiple object with a single roundtrop**;
 - **Async methods**;
 - **Much more**;
+
+##How to install it
+StackExchange.Redis.Extensions is composed by two libraries, the Core and the Serializer implementation.
+Because there are several good serializer and we don't want add another dependency in your project you can choose your favorite or create a new one.
+
+##Install Core [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Core.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Core/)
+
+```
+PM> Install-Package StackExchange.Redis.Extensions.Core
+```
+
+## Install Json.NET implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Newtonsoft.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Newtonsoft/)
+
+```
+PM> Install-Package StackExchange.Redis.Extensions.Newtonsoft
+```
+
+#Install Jil implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Jil.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Jil/)
+
+```
+PM> Install-Package StackExchange.Redis.Extensions.Jil
+```
 
 ## How to configure it
 You can use it registering the instance with your favorite Container. Here an example using Castle:
@@ -100,8 +124,9 @@ If you want to search all keys that end with ```myCacheKey```:
 var keys = myCacheClient.SearchKeys("*myCacheKey");
 ```
 
-## Can I use a Redis method directly from ICacheClient?
-```ICacheClient``` exposes a readonly property named Database that is the implementation of IDatabase by [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis)
+## Can I use a Redis method directly from ICacheClient without add another dependency to my class?
+
+Of course you can. ```ICacheClient``` exposes a readonly property named Database that is the implementation of IDatabase by [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis)
 
 ```csharp
 myCacheClient.Database.SetAdd("mykey","another key");
