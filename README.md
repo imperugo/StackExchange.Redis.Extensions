@@ -11,8 +11,8 @@ For example:
 - **Add an object to Redis**;
 - **Remove an object from Redis**;
 - **Search Keys into Redis**;
-- **Retrieve multiple object with a single roundtrop**;
-- **Store multiple object with a single roundtrop**;
+- **Retrieve multiple object with a single roundtrip**;
+- **Store multiple object with a single roundtrip**;
 - **Async methods**;
 - **Much more**;
 
