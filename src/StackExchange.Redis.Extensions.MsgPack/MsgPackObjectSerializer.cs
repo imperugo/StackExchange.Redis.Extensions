@@ -1,49 +1,35 @@
 ﻿using System;
 using System.IO;
 using MsgPack.Serialization;
-using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.MsgPack
 {
-    public class MsgPackObjectSerializer : ISerializer
+    public class MsgPackObjectSerializer : IMsgPackSerializer
     {
-        public T DeserializeFromByteArray<T>(byte[] raw)
+        public MsgPackObjectSerializer(Action<SerializerRepository> customSerializerRegistrar = null)
         {
-            using (var stream = new MemoryStream(raw))
+            if (customSerializerRegistrar != null)
             {
-                MessagePackSerializer<T> packer = MessagePackSerializer.Get<T>();
-                T unpack = packer.Unpack(stream);
-                return unpack;
+                customSerializerRegistrar(SerializationContext.Default.Serializers);
+            }
+        }
+        public byte[] Serialize<T>(object item)
+        {
+            var serializer = MessagePackSerializer.Get<T>();
+
+            using (var byteStream = new MemoryStream())
+            {
+                serializer.Pack(byteStream, item);
+                return byteStream.ToArray();
             }
         }
 
-        public string Serialize(object item)
+        public T Deserialize<T>(byte[] bytes)
         {
-            throw new NotImplementedException();
-        }
-
-        public object Deserialize(string serializedObject)
-        {
-            throw new NotImplementedException();
-        }
-
-        public T Deserialize<T>(string content) where T : class
-        {
-            throw new NotImplementedException();
-        }
-
-        public string Serialize<T>(T objectTree)
-        {
-            throw new NotImplementedException();
-        }
-
-        public byte[] SerializeToByteArray<T>(T objectTree)
-        {
-            using (var stream = new MemoryStream())
+            var serializer = MessagePackSerializer.Get<T>();
+            using (var byteStream = new MemoryStream(bytes as byte[]))
             {
-                MessagePackSerializer<T> packer = MessagePackSerializer.Get<T>();
-                packer.Pack(stream, objectTree);
-                return stream.ToArray();
+                return serializer.Unpack(byteStream);
             }
         }
     }

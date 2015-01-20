@@ -7,7 +7,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
 {
     public class InterfaceSerializer<T> : MessagePackSerializer<T>
     {
-        private readonly Dictionary<string, IMessagePackSerializer> _serializers;
+        private readonly Dictionary<string, IMessagePackSerializer> serializers;
 
         public InterfaceSerializer()
             : this(SerializationContext.Default)
@@ -17,7 +17,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
         public InterfaceSerializer(SerializationContext context)
             : base(context)
         {
-            _serializers = new Dictionary<string, IMessagePackSerializer>();
+            serializers = new Dictionary<string, IMessagePackSerializer>();
 
             // Get all types that implement T interface
             var implementingTypes = System.Reflection.Assembly
@@ -30,7 +30,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
             {
                 var key = type.Name;
                 var value = MessagePackSerializer.Get(type, context);
-                _serializers.Add(key, value);
+                serializers.Add(key, value);
             }
         }
 
@@ -40,7 +40,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
             string typeName = objectTree.GetType().Name;
 
             // Find matching serializer
-            if (!_serializers.TryGetValue(typeName, out serializer))
+            if (!serializers.TryGetValue(typeName, out serializer))
             {
                 throw SerializationExceptions.NewTypeCannotSerialize(typeof(T));
             }
@@ -62,7 +62,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
             }
 
             // Find matching serializer
-            if (!_serializers.TryGetValue(typeName, out serializer))
+            if (!serializers.TryGetValue(typeName, out serializer))
             {
                 throw SerializationExceptions.NewTypeCannotDeserialize(typeof(T));
             }
