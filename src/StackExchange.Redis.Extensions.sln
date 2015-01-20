@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{3570B09C-4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serializers", "Serializers", "{1FBB92DE-CD94-4757-8FFD-2AC8790020B1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.MsgPack", "StackExchange.Redis.Extensions.MsgPack\StackExchange.Redis.Extensions.MsgPack.csproj", "{D3CE4F97-FDCD-4514-93AA-DE50BC379567}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,16 @@ Global
 		{58F38142-2BB0-444B-851E-8EE489D0A384}.Release|ARM.ActiveCfg = Release|Any CPU
 		{58F38142-2BB0-444B-851E-8EE489D0A384}.Release|x64.ActiveCfg = Release|Any CPU
 		{58F38142-2BB0-444B-851E-8EE489D0A384}.Release|x86.ActiveCfg = Release|Any CPU
+		{D3CE4F97-FDCD-4514-93AA-DE50BC379567}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3CE4F97-FDCD-4514-93AA-DE50BC379567}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3CE4F97-FDCD-4514-93AA-DE50BC379567}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{D3CE4F97-FDCD-4514-93AA-DE50BC379567}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D3CE4F97-FDCD-4514-93AA-DE50BC379567}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D3CE4F97-FDCD-4514-93AA-DE50BC379567}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3CE4F97-FDCD-4514-93AA-DE50BC379567}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3CE4F97-FDCD-4514-93AA-DE50BC379567}.Release|ARM.ActiveCfg = Release|Any CPU
+		{D3CE4F97-FDCD-4514-93AA-DE50BC379567}.Release|x64.ActiveCfg = Release|Any CPU
+		{D3CE4F97-FDCD-4514-93AA-DE50BC379567}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,5 +112,6 @@ Global
 		{58F38142-2BB0-444B-851E-8EE489D0A384} = {3570B09C-49D1-43F4-B1DA-862C1D2E90CF}
 		{3570B09C-49D1-43F4-B1DA-862C1D2E90CF} = {FBF88E4E-4CA8-473A-AF3F-9709CCB979DB}
 		{1FBB92DE-CD94-4757-8FFD-2AC8790020B1} = {FBF88E4E-4CA8-473A-AF3F-9709CCB979DB}
+		{D3CE4F97-FDCD-4514-93AA-DE50BC379567} = {1FBB92DE-CD94-4757-8FFD-2AC8790020B1}
 	EndGlobalSection
 EndGlobal
