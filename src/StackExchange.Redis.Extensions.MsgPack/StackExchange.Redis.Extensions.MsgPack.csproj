@@ -42,7 +42,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IMsgPackSerializer.cs" />
     <Compile Include="InterfaceSerializer.cs" />
     <Compile Include="MsgPackObjectSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

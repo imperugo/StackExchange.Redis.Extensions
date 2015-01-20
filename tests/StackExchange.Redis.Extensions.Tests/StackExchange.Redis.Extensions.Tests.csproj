@@ -35,15 +35,25 @@
     <Reference Include="FizzWare.NBuilder">
       <HintPath>..\..\src\packages\NBuilder.3.0.1.1\lib\FizzWare.NBuilder.dll</HintPath>
     </Reference>
+    <Reference Include="Jil">
+      <HintPath>..\..\src\packages\Jil.2.7.0\lib\net45\Jil.dll</HintPath>
+    </Reference>
+    <Reference Include="MsgPack">
+      <HintPath>..\..\src\packages\MsgPack.Cli.0.5.8\lib\net45\MsgPack.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\src\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Sigil">
+      <HintPath>..\..\src\packages\Sigil.4.3.1\lib\net45\Sigil.dll</HintPath>
     </Reference>
     <Reference Include="StackExchange.Redis">
       <HintPath>..\..\src\packages\StackExchange.Redis.1.0.371\lib\net45\StackExchange.Redis.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -62,9 +72,11 @@
   <ItemGroup>
     <Compile Include="Extensions\RedisDatabaseExtensions.cs" />
     <Compile Include="Helpers\TestClass.cs" />
-    <Compile Include="Helpers\TestItemSerializer.cs" />
+    <Compile Include="JilSerializerTest.cs" />
+    <Compile Include="JsonNetSerializeTest.cs" />
+    <Compile Include="MessagePackSerializerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StackExchangeRedisCacheClientTest.cs" />
+    <Compile Include="CacheClientTestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -73,6 +85,18 @@
     <ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj">
       <Project>{73B53B53-ECAB-47C5-945F-3F6FB0940A53}</Project>
       <Name>StackExchange.Redis.Extensions.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.Jil\StackExchange.Redis.Extensions.Jil.csproj">
+      <Project>{cb7b4ad8-86ea-4f8a-98f0-c419a972cb75}</Project>
+      <Name>StackExchange.Redis.Extensions.Jil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.MsgPack\StackExchange.Redis.Extensions.MsgPack.csproj">
+      <Project>{D3CE4F97-FDCD-4514-93AA-DE50BC379567}</Project>
+      <Name>StackExchange.Redis.Extensions.MsgPack</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.Newtonsoft\StackExchange.Redis.Extensions.Newtonsoft.csproj">
+      <Project>{d4b13b0b-165b-4513-9dc1-b8a25979bd65}</Project>
+      <Name>StackExchange.Redis.Extensions.Newtonsoft</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
