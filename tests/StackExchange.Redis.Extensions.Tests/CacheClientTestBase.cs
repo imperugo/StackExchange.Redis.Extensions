@@ -86,9 +86,9 @@ namespace StackExchange.Redis.Extensions.Tests
             Assert.True(db.KeyExists("key2"));
             Assert.True(db.KeyExists("key3"));
 
-            Assert.Equal(Serializer.Deserialize(db.StringGet("key1")), "value1");
-            Assert.Equal(Serializer.Deserialize(db.StringGet("key2")), "value2");
-            Assert.Equal(Serializer.Deserialize(db.StringGet("key3")), "value3");
+            Assert.Equal(Serializer.Deserialize<string>(db.StringGet("key1")), "value1");
+            Assert.Equal(Serializer.Deserialize<string>(db.StringGet("key2")), "value2");
+            Assert.Equal(Serializer.Deserialize<string>(db.StringGet("key3")), "value3");
         }
 
         [Fact]
