@@ -465,15 +465,16 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <summary>
 		/// Searches the keys from Redis database
 		/// </summary>
+		/// <remarks>
+		/// Consider this as a command that should only be used in production environments with extreme care. It may ruin performance when it is executed against large databases
+		/// </remarks>
 		/// <param name="pattern">The pattern.</param>
-		/// <returns>
-		/// A list of cache keys retrieved from Redis database
-		/// </returns>
 		/// <example>
-		/// if you want to return all keys that start with "myCacheKey" uses "myCacheKey*"
-		/// if you want to return all keys that contain with "myCacheKey" uses "*myCacheKey*"
-		/// if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
+		///		if you want to return all keys that start with "myCacheKey" uses "myCacheKey*"
+		///		if you want to return all keys that contain with "myCacheKey" uses "*myCacheKey*"
+		///		if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
 		/// </example>
+		/// <returns>A list of cache keys retrieved from Redis database</returns>
 		public IEnumerable<string> SearchKeys(string pattern)
 		{
 			var keys = new HashSet<RedisKey>();
@@ -499,18 +500,39 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <summary>
 		/// Searches the keys from Redis database
 		/// </summary>
+		/// <remarks>
+		/// Consider this as a command that should only be used in production environments with extreme care. It may ruin performance when it is executed against large databases
+		/// </remarks>
 		/// <param name="pattern">The pattern.</param>
-		/// <returns>
-		/// A list of cache keys retrieved from Redis database
-		/// </returns>
 		/// <example>
-		/// if you want to return all keys that start with "myCacheKey" uses "myCacheKey*"
-		/// if you want to return all keys that contain with "myCacheKey" uses "*myCacheKey*"
-		/// if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
+		///		if you want to return all keys that start with "myCacheKey" uses "myCacheKey*"
+		///		if you want to return all keys that contain with "myCacheKey" uses "*myCacheKey*"
+		///		if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
 		/// </example>
+		/// <returns>A list of cache keys retrieved from Redis database</returns>
 		public Task<IEnumerable<string>> SearchKeysAsync(string pattern)
 		{
 			return Task.Run(() => SearchKeys(pattern));
+		}
+
+		public void FlushDb()
+		{
+			var endPoints = db.Multiplexer.GetEndPoints();
+
+			foreach (var endpoint in endPoints)
+			{
+				db.Multiplexer.GetServer(endpoint).FlushDatabase();
+			}
+		}
+
+		public async Task FlushDbAsync()
+		{
+			var endPoints = db.Multiplexer.GetEndPoints();
+
+			foreach (var endpoint in endPoints)
+			{
+				await db.Multiplexer.GetServer(endpoint).FlushDatabaseAsync();
+			}
 		}
 
 		private string CreateLuaScriptForMset<T>(RedisKey[] redisKeys,RedisValue[] redisValues,  IList<Tuple<string, T>> objects)

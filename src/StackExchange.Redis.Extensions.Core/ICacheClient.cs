@@ -242,6 +242,9 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <summary>
 		/// Searches the keys from Redis database
 		/// </summary>
+		/// <remarks>
+		/// Consider this as a command that should only be used in production environments with extreme care. It may ruin performance when it is executed against large databases
+		/// </remarks>
 		/// <param name="pattern">The pattern.</param>
 		/// <example>
 		///		if you want to return all keys that start with "myCacheKey" uses "myCacheKey*"
@@ -254,6 +257,9 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <summary>
 		/// Searches the keys from Redis database
 		/// </summary>
+		/// <remarks>
+		/// Consider this as a command that should only be used in production environments with extreme care. It may ruin performance when it is executed against large databases
+		/// </remarks>
 		/// <param name="pattern">The pattern.</param>
 		/// <example>
 		///		if you want to return all keys that start with "myCacheKey" uses "myCacheKey*"
@@ -262,5 +268,16 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </example>
 		/// <returns>A list of cache keys retrieved from Redis database</returns>
 		Task<IEnumerable<string>> SearchKeysAsync(string pattern);
+
+		/// <summary>
+		/// Flushes the database.
+		/// </summary>
+		void FlushDb();
+
+		/// <summary>
+		/// Flushes the database asynchronous.
+		/// </summary>
+		/// <returns></returns>
+		Task FlushDbAsync();
 	}
 }
