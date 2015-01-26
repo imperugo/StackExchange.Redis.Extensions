@@ -7,7 +7,7 @@
 		/// </summary>
 		/// <param name="item">The item.</param>
 		/// <returns></returns>
-		string Serialize(object item);
+		byte[] Serialize(object item);
 
 		/// <summary>
 		/// Deserializes the specified bytes.
@@ -16,7 +16,7 @@
 		/// <returns>
 		/// The instance of the specified Item
 		/// </returns>
-		object Deserialize(string serializedObject);
+		object Deserialize(byte[] serializedObject);
 
 		/// <summary>
 		/// Deserializes the specified bytes.
@@ -26,6 +26,6 @@
 		/// <returns>
 		/// The instance of the specified Item
 		/// </returns>
-		T Deserialize<T>(string serializedObject) where T : class;
+		T Deserialize<T>(byte[] serializedObject) where T : class;
 	}
 }

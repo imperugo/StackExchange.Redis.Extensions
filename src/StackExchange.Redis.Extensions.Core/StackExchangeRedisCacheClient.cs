@@ -388,7 +388,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 				if (!redisResults[i].IsNull)
 				{
-					obj = (T) serializer.Deserialize((string)redisResults[i]);
+					obj = (T) serializer.Deserialize((byte[])redisResults[i]);
 				}
 				result.Add(keysList[i], obj);
 			}
@@ -421,7 +421,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 				if (!redisResults[i].IsNull)
 				{
-					obj = (T) serializer.Deserialize((string) redisResults[i]);
+					obj = (T) serializer.Deserialize((byte[]) redisResults[i]);
 				}
 				result.Add(keysList[i], obj);
 			}
