@@ -18,11 +18,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 		public StackExchangeRedisCacheClientTest()
 		{
-			//Hostname = "bmwremarketingqadev.redis.cache.windows.net";
-			//Password = "hGRkEYhVGv2TMfA2aVoHdjn6y+7qslGFnV4vbuoJvJM=";
-			//Port = 6380;
-
-			var connectionString = string.Format("{0}:{1},ssl=true,password={2}", "localhost", 6380, "password");
+			var connectionString = string.Format("{0}:{1},ssl=true,password={2},allowAdmin=true", "localhost", 6380, "password");
 			var connectionMultiplexer = ConnectionMultiplexer.Connect(connectionString);
 			db = connectionMultiplexer.GetDatabase();
 			serializer = new TestItemSerializer();
