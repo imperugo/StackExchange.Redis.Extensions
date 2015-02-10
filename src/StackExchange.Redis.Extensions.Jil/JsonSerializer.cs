@@ -1,5 +1,4 @@
-﻿using System;
-using Jil;
+﻿using Jil;
 using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.Jil

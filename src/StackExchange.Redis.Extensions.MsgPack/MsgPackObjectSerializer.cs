@@ -23,6 +23,10 @@ namespace StackExchange.Redis.Extensions.MsgPack
 
         public T Deserialize<T>(string serializedObject) where T : class
         {
+            if (typeof(T) == typeof(string))
+            {
+                return serializedObject as T;
+            }
             var serializer = MessagePackSerializer.Get<T>();
 
             using (var byteStream = new MemoryStream(_encoding.GetBytes(serializedObject)))
@@ -33,6 +37,11 @@ namespace StackExchange.Redis.Extensions.MsgPack
 
         public string Serialize(object item)
         {
+            if (item is string)
+            {
+                return item.ToString();
+            }
+
             var serializer = MessagePackSerializer.Get(item.GetType());
 
             using (var byteStream = new MemoryStream())
