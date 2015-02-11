@@ -7,6 +7,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
 {
     public class MsgPackObjectSerializer : ISerializer
     {
+
         private readonly System.Text.Encoding _encoding;
         public MsgPackObjectSerializer(Action<SerializerRepository> customSerializerRegistrar = null, System.Text.Encoding encoding = null)
         {
@@ -21,7 +22,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
             }
         }
 
-        public T Deserialize<T>(string serializedObject) where T : class
+        public T Deserialize<T>(byte[] serializedObject) where T : class
         {
             if (typeof(T) == typeof(string))
             {
@@ -29,17 +30,17 @@ namespace StackExchange.Redis.Extensions.MsgPack
             }
             var serializer = MessagePackSerializer.Get<T>();
 
-            using (var byteStream = new MemoryStream(_encoding.GetBytes(serializedObject)))
+            using (var byteStream = new MemoryStream(serializedObject))
             {
                 return serializer.Unpack(byteStream);
             }
         }
 
-        public string Serialize(object item)
+        public byte[] Serialize(object item)
         {
             if (item is string)
             {
-                return item.ToString();
+                return _encoding.GetBytes(item.ToString());
             }
 
             var serializer = MessagePackSerializer.Get(item.GetType());
@@ -48,11 +49,11 @@ namespace StackExchange.Redis.Extensions.MsgPack
             {
                 serializer.Pack(byteStream, item);
 
-                return _encoding.GetString(byteStream.ToArray());
+                return byteStream.ToArray();
             }
         }
 
-        public object Deserialize(string serializedObject)
+        public object Deserialize(byte[] serializedObject)
         {
             return Deserialize<object>(serializedObject);
         }

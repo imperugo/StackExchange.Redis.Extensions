@@ -13,11 +13,6 @@ namespace StackExchange.Redis.Extensions.Tests
         public JilSerializerTest()
             : base(new JsonSerializer())
 		{
-			var connectionString = string.Format("{0}:{1},ssl=true,password={2},allowAdmin=true", "localhost", 6380, "password");
-			var connectionMultiplexer = ConnectionMultiplexer.Connect(connectionString);
-			db = connectionMultiplexer.GetDatabase();
-			serializer = new TestItemSerializer();
-			sut = new StackExchangeRedisCacheClient(connectionMultiplexer, serializer);
 		}
 
 		[Fact]
