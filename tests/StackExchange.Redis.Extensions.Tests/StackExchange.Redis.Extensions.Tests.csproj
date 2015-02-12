@@ -39,17 +39,17 @@
       <HintPath>..\..\packages\NBuilder.3.0.1.1\lib\FizzWare.NBuilder.dll</HintPath>
     </Reference>
     <Reference Include="Jil">
-      <HintPath>..\..\src\packages\Jil.2.7.0\lib\net45\Jil.dll</HintPath>
+      <HintPath>..\..\packages\Jil.2.7.2\lib\net45\Jil.dll</HintPath>
     </Reference>
     <Reference Include="MsgPack">
-      <HintPath>..\..\src\packages\MsgPack.Cli.0.5.8\lib\net45\MsgPack.dll</HintPath>
+      <HintPath>..\..\packages\MsgPack.Cli.0.5.10\lib\net45\MsgPack.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Sigil">
-      <HintPath>..\..\src\packages\Sigil.4.3.1\lib\net45\Sigil.dll</HintPath>
+      <HintPath>..\..\packages\Sigil.4.4.0\lib\net45\Sigil.dll</HintPath>
     </Reference>
     <Reference Include="StackExchange.Redis">
       <HintPath>..\..\packages\StackExchange.Redis.1.0.394\lib\net45\StackExchange.Redis.dll</HintPath>

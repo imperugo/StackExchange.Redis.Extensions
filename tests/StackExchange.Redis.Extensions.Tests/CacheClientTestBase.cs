@@ -14,7 +14,7 @@ namespace StackExchange.Redis.Extensions.Tests
         public CacheClientTestBase(ISerializer serializer)
         {
             //var connectionString = string.Format("{0}:{1},ssl=true,password={2},allowAdmin=true", "localhost", 6380, "password");
-            var connectionString = string.Format("{0}:{1}", "192.168.59.103", 6379);
+            var connectionString = string.Format("{0}:{1},allowAdmin=true", "192.168.59.103", 6379);
             var connectionMultiplexer = ConnectionMultiplexer.Connect(connectionString);
             Db = connectionMultiplexer.GetDatabase();
             Serializer = serializer;

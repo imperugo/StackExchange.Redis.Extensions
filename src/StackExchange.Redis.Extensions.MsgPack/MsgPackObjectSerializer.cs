@@ -26,7 +26,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
         {
             if (typeof(T) == typeof(string))
             {
-                return serializedObject as T;
+                return _encoding.GetString(serializedObject) as T;
             }
             var serializer = MessagePackSerializer.Get<T>();
 
