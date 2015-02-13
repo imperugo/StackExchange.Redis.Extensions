@@ -4,14 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D3CE4F97-FDCD-4514-93AA-DE50BC379567}</ProjectGuid>
+    <ProjectGuid>{58F38142-2BB0-444B-851E-8EE489D0A384}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StackExchange.Redis.Extensions.MsgPack</RootNamespace>
-    <AssemblyName>StackExchange.Redis.Extensions.MsgPack</AssemblyName>
+    <RootNamespace>StackExchange.Redis.StrongName.Extensions.Core</RootNamespace>
+    <AssemblyName>StackExchange.Redis.StrongName.Extensions.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -30,12 +30,15 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\StackExchange.Redis.StrongName.Extensions.Core.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MsgPack">
-      <HintPath>..\..\packages\MsgPack.Cli.0.5.10\lib\net45\MsgPack.dll</HintPath>
+    <Reference Include="StackExchange.Redis.StrongName, Version=1.0.316.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\StackExchange.Redis.StrongName.1.0.394\lib\net45\StackExchange.Redis.StrongName.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -44,15 +47,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InterfaceSerializer.cs" />
-    <Compile Include="MsgPackObjectSerializer.cs" />
+    <Compile Include="..\StackExchange.Redis.Extensions.Core\Extensions\LinqExtensions.cs">
+      <Link>Extensions\LinqExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\StackExchange.Redis.Extensions.Core\ICacheClient.cs">
+      <Link>ICacheClient.cs</Link>
+    </Compile>
+    <Compile Include="..\StackExchange.Redis.Extensions.Core\ISerializer.cs">
+      <Link>ISerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\StackExchange.Redis.Extensions.Core\StackExchangeRedisCacheClient.cs">
+      <Link>StackExchangeRedisCacheClient.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj">
-      <Project>{73B53B53-ECAB-47C5-945F-3F6FB0940A53}</Project>
-      <Name>StackExchange.Redis.Extensions.Core</Name>
-    </ProjectReference>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

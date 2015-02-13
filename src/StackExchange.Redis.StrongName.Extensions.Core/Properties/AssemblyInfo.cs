@@ -1,17 +1,18 @@
 ﻿using System.Reflection;
-using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("StackExchange.Redis.Extensions.Newtonsoft")]
+[assembly: AssemblyTitle("StackExchange.Redis.StrongName.Extensions.Core")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Ugo Lattanzi")]
-[assembly: AssemblyProduct("StackExchange.Redis.Extensions.Newtonsoft")]
-[assembly: AssemblyCopyright("Copyright © Ugo Lattanzi 2015")]
-[assembly: NeutralResourcesLanguage("en")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("StackExchange.Redis.StrongName.Extensions.Core")]
+[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("55f322f4-c685-4ad4-a097-515f6e8cf3ab")]
+[assembly: Guid("c5421816-186a-4e03-bd99-3996633c02c4")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -31,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

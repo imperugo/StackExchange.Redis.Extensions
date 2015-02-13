@@ -15,10 +15,6 @@ namespace StackExchange.Redis.Extensions.Core
 		private readonly ConnectionMultiplexer connectionMultiplexer;
 		private readonly IDatabase db;
 		private readonly ISerializer serializer;
-<<<<<<< HEAD
-		private static readonly Encoding encoding = Encoding.UTF8;
-=======
->>>>>>> Revert "Added MessagePack Serialization support"
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StackExchangeRedisCacheClient"/> class.
@@ -65,20 +61,6 @@ namespace StackExchange.Redis.Extensions.Core
 		}
 
 		/// <summary>
-<<<<<<< HEAD
-		/// Gets the serializer.
-		/// </summary>
-		/// <value>
-		/// The serializer.
-		/// </value>
-		public ISerializer Serializer
-		{
-			get { return this.serializer; }
-		}
-
-		/// <summary>
-=======
->>>>>>> Revert "Added MessagePack Serialization support"
 		/// Verify that the specified cache key exists
 		/// </summary>
 		/// <param name="key">The cache key.</param>
@@ -162,11 +144,7 @@ namespace StackExchange.Redis.Extensions.Core
 				return default(T);
 			}
 
-<<<<<<< HEAD
-			return serializer.Deserialize<T>(valueBytes);
-=======
 			return (T) serializer.Deserialize(valueBytes);
->>>>>>> Revert "Added MessagePack Serialization support"
 		}
 
 		/// <summary>
@@ -186,11 +164,7 @@ namespace StackExchange.Redis.Extensions.Core
 				return default(T);
 			}
 
-<<<<<<< HEAD
-			return await serializer.DeserializeAsync<T>(valueBytes);
-=======
 			return (T) serializer.Deserialize(valueBytes);
->>>>>>> Revert "Added MessagePack Serialization support"
 		}
 
 		/// <summary>
@@ -218,19 +192,11 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-<<<<<<< HEAD
-		public async Task<bool> AddAsync<T>(string key, T value) where T : class
-		{
-			var entryBytes = await serializer.SerializeAsync(value);
-
-			return await db.StringSetAsync(key, entryBytes);
-=======
 		public Task<bool> AddAsync<T>(string key, T value) where T : class
 		{
 			var entryBytes = serializer.Serialize(value);
 
 			return db.StringSetAsync(key, entryBytes);
->>>>>>> Revert "Added MessagePack Serialization support"
 		}
 
 		/// <summary>
@@ -291,21 +257,12 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-<<<<<<< HEAD
-		public async Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt) where T : class
-		{
-			var entryBytes = await serializer.SerializeAsync(value);
-			var expiration = expiresAt.Subtract(DateTimeOffset.Now);
-
-			return await db.StringSetAsync(key, entryBytes, expiration);
-=======
 		public Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt) where T : class
 		{
 			var entryBytes = serializer.Serialize(value);
 			var expiration = expiresAt.Subtract(DateTimeOffset.Now);
 
 			return db.StringSetAsync(key, entryBytes, expiration);
->>>>>>> Revert "Added MessagePack Serialization support"
 		}
 
 		/// <summary>
@@ -367,19 +324,11 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-<<<<<<< HEAD
-		public async Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn) where T : class
-		{
-			var entryBytes = await serializer.SerializeAsync(value);
-
-			return await db.StringSetAsync(key, entryBytes, expiresIn);
-=======
 		public Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn) where T : class
 		{
 			var entryBytes = serializer.Serialize(value);
 
 			return db.StringSetAsync(key, entryBytes, expiresIn);
->>>>>>> Revert "Added MessagePack Serialization support"
 		}
 
 		/// <summary>
@@ -427,15 +376,9 @@ namespace StackExchange.Redis.Extensions.Core
 		{
 			var keysList = keys.ToList();
 			var redisKeys = new RedisKey[keysList.Count];
-<<<<<<< HEAD
-			var sb = CreateLuaScriptForMget(redisKeys, keysList);
-
-			RedisResult[] redisResults = (RedisResult[])db.ScriptEvaluate(sb, redisKeys);
-=======
 			var sb = CreateLuaScriptForMget(redisKeys,keysList);
 
 			RedisResult[] redisResults = (RedisResult[]) db.ScriptEvaluate(sb, redisKeys);
->>>>>>> Revert "Added MessagePack Serialization support"
 
 			var result = new Dictionary<string, T>();
 
@@ -445,12 +388,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 				if (!redisResults[i].IsNull)
 				{
-<<<<<<< HEAD
-					//TODO: (byte[])redisResults[i]
-					obj = serializer.Deserialize<T>(encoding.GetBytes(redisResults[i].ToString()));
-=======
 					obj = (T) serializer.Deserialize((byte[])redisResults[i]);
->>>>>>> Revert "Added MessagePack Serialization support"
 				}
 				result.Add(keysList[i], obj);
 			}
@@ -471,15 +409,9 @@ namespace StackExchange.Redis.Extensions.Core
 		{
 			var keysList = keys.ToList();
 			RedisKey[] redisKeys = new RedisKey[keysList.Count];
-<<<<<<< HEAD
-			var sb = CreateLuaScriptForMget(redisKeys, keysList);
-
-			var redisResults = (RedisResult[])await db.ScriptEvaluateAsync(sb, redisKeys);
-=======
 			var sb = CreateLuaScriptForMget(redisKeys,keysList);
 
 			var redisResults = (RedisResult[]) await db.ScriptEvaluateAsync(sb, redisKeys);
->>>>>>> Revert "Added MessagePack Serialization support"
 
 			var result = new Dictionary<string, T>();
 
@@ -489,11 +421,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 				if (!redisResults[i].IsNull)
 				{
-<<<<<<< HEAD
-					obj = await serializer.DeserializeAsync<T>((byte[])redisResults[i]);
-=======
 					obj = (T) serializer.Deserialize((byte[]) redisResults[i]);
->>>>>>> Revert "Added MessagePack Serialization support"
 				}
 				result.Add(keysList[i], obj);
 			}
@@ -566,11 +494,7 @@ namespace StackExchange.Redis.Extensions.Core
 				}
 			}
 
-<<<<<<< HEAD
-			return keys.Select(x => (string)x);
-=======
 			return keys.Select(x => (string) x);
->>>>>>> Revert "Added MessagePack Serialization support"
 		}
 
 		/// <summary>
@@ -588,11 +512,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>A list of cache keys retrieved from Redis database</returns>
 		public Task<IEnumerable<string>> SearchKeysAsync(string pattern)
 		{
-<<<<<<< HEAD
-			return Task.Factory.StartNew(() => SearchKeys(pattern));
-=======
 			return Task.Run(() => SearchKeys(pattern));
->>>>>>> Revert "Added MessagePack Serialization support"
 		}
 
 		public void FlushDb()
@@ -615,11 +535,7 @@ namespace StackExchange.Redis.Extensions.Core
 			}
 		}
 
-<<<<<<< HEAD
-		private string CreateLuaScriptForMset<T>(RedisKey[] redisKeys, RedisValue[] redisValues, IList<Tuple<string, T>> objects)
-=======
 		private string CreateLuaScriptForMset<T>(RedisKey[] redisKeys,RedisValue[] redisValues,  IList<Tuple<string, T>> objects)
->>>>>>> Revert "Added MessagePack Serialization support"
 		{
 			var sb = new StringBuilder("return redis.call('mset',");
 

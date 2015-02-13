@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StackExchange.Redis.Extensions.Core;
 
@@ -23,32 +22,16 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 			return encoding.GetBytes(jsonString);
 		}
 
-		public async Task<byte[]> SerializeAsync(object item)
-		{
-			var jsonString = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(item));
-			return encoding.GetBytes(jsonString);
-		}
-
 		public object Deserialize(byte[] serializedObject)
 		{
 			var jsonString = encoding.GetString(serializedObject);
 			return JsonConvert.DeserializeObject(jsonString, typeof(object));
 		}
 
-		public Task<object> DeserializeAsync(byte[] serializedObject)
-		{
-			return Task.Factory.StartNew(() => Deserialize(serializedObject));
-		}
-
 		public T Deserialize<T>(byte[] serializedObject) where T : class
 		{
 			var jsonString = encoding.GetString(serializedObject);
 			return JsonConvert.DeserializeObject<T>(jsonString);
-		}
-
-		public Task<T> DeserializeAsync<T>(byte[] serializedObject) where T : class
-		{
-			return Task.Factory.StartNew(() => Deserialize<T>(serializedObject));
 		}
 	}
 }
