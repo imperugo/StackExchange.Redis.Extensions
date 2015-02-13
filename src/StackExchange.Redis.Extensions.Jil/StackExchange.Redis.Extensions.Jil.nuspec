@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 	<metadata>
@@ -35,4 +36,40 @@
 			<dependency id="Jil" version="2.7.0" />
 		</dependencies>
 	</metadata>
+=======
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+	<metadata>
+		<id>StackExchange.Redis.Extensions.Jil</id>
+		<title>StackExchange.Redis.Extensions.Jil</title>
+		<version>$version$</version>
+		<authors>$author$</authors>
+		<owners>$author$</owners>
+		<licenseUrl>https://github.com/imperugo/StackExchange.Redis.Extensions/blob/master/LICENSE</licenseUrl>
+		<projectUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>
+			StackExchange.Redis.Extensions is a library that extends StackExchange.Redis allowing you a set of functionality needed by common applications.
+
+			This implementation is based on Jil
+
+		</description>
+		<summary />
+		<releaseNotes>
+			- Add an object to Redis;
+			- Remove an object from Redis;
+			- Search Keys into Redis;
+			- Retrieve multiple object with a single roundtrop;
+			- Store multiple object with a single roundtrop;
+			Async methods;
+		</releaseNotes>
+		<copyright>Ugo Lattanzi</copyright>
+		<language>en-US</language>
+		<tags>Async Redis NoSQL Client Distributed Cache PubSub Messaging</tags>
+		<dependencies>
+			<dependency id="StackExchange.Redis.Extensions.Core" version="1.0.0" />
+			<dependency id="Jil" version="2.7.0" />
+		</dependencies>
+	</metadata>
+>>>>>>> Revert "Added MessagePack Serialization support"
 </package>
