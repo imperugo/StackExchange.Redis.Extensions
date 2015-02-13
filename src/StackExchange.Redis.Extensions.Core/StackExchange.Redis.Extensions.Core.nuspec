@@ -16,6 +16,7 @@
 
 			- StackExchange.Redis.Extensions.Newtonsoft
 			- StackExchange.Redis.Extensions.Jil
+			- StackExchange.Redis.Extensions.MsgPack
 		</description>
 		<summary>
 			StackExchange.Redis.Extensions is a library that extends StackExchange.Redis
@@ -27,8 +28,8 @@
 			- Changed Flush method;
 			- Remove an object from Redis;
 			- Search Keys into Redis;
-			- Retrieve multiple object with a single roundtrop;
-			- Store multiple object with a single roundtrop;
+			- Retrieve multiple object with a single roundtrip;
+			- Store multiple object with a single roundtrip;
 			Async methods;
 		</releaseNotes>
 		<copyright>Ugo Lattanzi</copyright>

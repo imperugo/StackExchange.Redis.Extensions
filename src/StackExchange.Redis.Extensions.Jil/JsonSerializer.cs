@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Threading.Tasks;
 using Jil;
 using StackExchange.Redis.Extensions.Core;
 
@@ -22,16 +23,31 @@ namespace StackExchange.Redis.Extensions.Jil
 			return encoding.GetBytes(jsonString);
 		}
 
+		public Task<byte[]> SerializeAsync(object item)
+		{
+			return Task.Factory.StartNew(() => Serialize(item));
+		}
+
 		public object Deserialize(byte[] serializedObject)
 		{
 			var jsonString = encoding.GetString(serializedObject);
 			return JSON.Deserialize(jsonString, typeof (object));
 		}
 
+		public Task<object> DeserializeAsync(byte[] serializedObject)
+		{
+			return Task.Factory.StartNew(() => Deserialize(serializedObject));
+		}
+
 		public T Deserialize<T>(byte[] serializedObject) where T : class
 		{
 			var jsonString = encoding.GetString(serializedObject);
 			return JSON.Deserialize<T>(jsonString);
+		}
+
+		public Task<T> DeserializeAsync<T>(byte[] serializedObject) where T : class
+		{
+			return Task.Factory.StartNew(() => Deserialize<T>(serializedObject));
 		}
 	}
 }

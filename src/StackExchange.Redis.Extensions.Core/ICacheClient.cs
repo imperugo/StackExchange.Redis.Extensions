@@ -11,6 +11,8 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </summary>
 		IDatabase Database { get; }
 
+		ISerializer Serializer { get; }
+
 		/// <summary>
 		/// Verify that the specified cache key exists
 		/// </summary>

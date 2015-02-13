@@ -15,6 +15,7 @@ namespace StackExchange.Redis.Extensions.Core
 		private readonly ConnectionMultiplexer connectionMultiplexer;
 		private readonly IDatabase db;
 		private readonly ISerializer serializer;
+		private static readonly Encoding encoding = Encoding.UTF8;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StackExchangeRedisCacheClient"/> class.
@@ -58,6 +59,17 @@ namespace StackExchange.Redis.Extensions.Core
 		public IDatabase Database
 		{
 			get { return db; }
+		}
+
+		/// <summary>
+		/// Gets the serializer.
+		/// </summary>
+		/// <value>
+		/// The serializer.
+		/// </value>
+		public ISerializer Serializer
+		{
+			get { return this.serializer; }
 		}
 
 		/// <summary>
@@ -144,7 +156,7 @@ namespace StackExchange.Redis.Extensions.Core
 				return default(T);
 			}
 
-			return (T) serializer.Deserialize(valueBytes);
+			return serializer.Deserialize<T>(valueBytes);
 		}
 
 		/// <summary>
@@ -164,7 +176,7 @@ namespace StackExchange.Redis.Extensions.Core
 				return default(T);
 			}
 
-			return (T) serializer.Deserialize(valueBytes);
+			return await serializer.DeserializeAsync<T>(valueBytes);
 		}
 
 		/// <summary>
@@ -192,11 +204,11 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public Task<bool> AddAsync<T>(string key, T value) where T : class
+		public async Task<bool> AddAsync<T>(string key, T value) where T : class
 		{
-			var entryBytes = serializer.Serialize(value);
+			var entryBytes = await serializer.SerializeAsync(value);
 
-			return db.StringSetAsync(key, entryBytes);
+			return await db.StringSetAsync(key, entryBytes);
 		}
 
 		/// <summary>
@@ -257,12 +269,12 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt) where T : class
+		public async Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt) where T : class
 		{
-			var entryBytes = serializer.Serialize(value);
+			var entryBytes = await serializer.SerializeAsync(value);
 			var expiration = expiresAt.Subtract(DateTimeOffset.Now);
 
-			return db.StringSetAsync(key, entryBytes, expiration);
+			return await db.StringSetAsync(key, entryBytes, expiration);
 		}
 
 		/// <summary>
@@ -324,11 +336,11 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn) where T : class
+		public async Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn) where T : class
 		{
-			var entryBytes = serializer.Serialize(value);
+			var entryBytes = await serializer.SerializeAsync(value);
 
-			return db.StringSetAsync(key, entryBytes, expiresIn);
+			return await db.StringSetAsync(key, entryBytes, expiresIn);
 		}
 
 		/// <summary>
@@ -376,9 +388,9 @@ namespace StackExchange.Redis.Extensions.Core
 		{
 			var keysList = keys.ToList();
 			var redisKeys = new RedisKey[keysList.Count];
-			var sb = CreateLuaScriptForMget(redisKeys,keysList);
+			var sb = CreateLuaScriptForMget(redisKeys, keysList);
 
-			RedisResult[] redisResults = (RedisResult[]) db.ScriptEvaluate(sb, redisKeys);
+			RedisResult[] redisResults = (RedisResult[])db.ScriptEvaluate(sb, redisKeys);
 
 			var result = new Dictionary<string, T>();
 
@@ -388,7 +400,8 @@ namespace StackExchange.Redis.Extensions.Core
 
 				if (!redisResults[i].IsNull)
 				{
-					obj = (T) serializer.Deserialize((byte[])redisResults[i]);
+					//TODO: (byte[])redisResults[i]
+					obj = serializer.Deserialize<T>(encoding.GetBytes(redisResults[i].ToString()));
 				}
 				result.Add(keysList[i], obj);
 			}
@@ -409,9 +422,9 @@ namespace StackExchange.Redis.Extensions.Core
 		{
 			var keysList = keys.ToList();
 			RedisKey[] redisKeys = new RedisKey[keysList.Count];
-			var sb = CreateLuaScriptForMget(redisKeys,keysList);
+			var sb = CreateLuaScriptForMget(redisKeys, keysList);
 
-			var redisResults = (RedisResult[]) await db.ScriptEvaluateAsync(sb, redisKeys);
+			var redisResults = (RedisResult[])await db.ScriptEvaluateAsync(sb, redisKeys);
 
 			var result = new Dictionary<string, T>();
 
@@ -421,7 +434,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 				if (!redisResults[i].IsNull)
 				{
-					obj = (T) serializer.Deserialize((byte[]) redisResults[i]);
+					obj = await serializer.DeserializeAsync<T>((byte[])redisResults[i]);
 				}
 				result.Add(keysList[i], obj);
 			}
@@ -494,7 +507,7 @@ namespace StackExchange.Redis.Extensions.Core
 				}
 			}
 
-			return keys.Select(x => (string) x);
+			return keys.Select(x => (string)x);
 		}
 
 		/// <summary>
@@ -512,7 +525,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>A list of cache keys retrieved from Redis database</returns>
 		public Task<IEnumerable<string>> SearchKeysAsync(string pattern)
 		{
-			return Task.Run(() => SearchKeys(pattern));
+			return Task.Factory.StartNew(() => SearchKeys(pattern));
 		}
 
 		public void FlushDb()
@@ -535,7 +548,7 @@ namespace StackExchange.Redis.Extensions.Core
 			}
 		}
 
-		private string CreateLuaScriptForMset<T>(RedisKey[] redisKeys,RedisValue[] redisValues,  IList<Tuple<string, T>> objects)
+		private string CreateLuaScriptForMset<T>(RedisKey[] redisKeys, RedisValue[] redisValues, IList<Tuple<string, T>> objects)
 		{
 			var sb = new StringBuilder("return redis.call('mset',");
 

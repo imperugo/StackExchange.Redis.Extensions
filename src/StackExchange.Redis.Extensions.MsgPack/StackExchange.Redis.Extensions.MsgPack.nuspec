@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 	<metadata>
-		<id>StackExchange.Redis.Extensions.Jil</id>
-		<title>StackExchange.Redis.Extensions.Jil</title>
+		<id>StackExchange.Redis.Extensions.MsgPack</id>
+		<title>StackExchange.Redis.Extensions.MsgPack</title>
 		<version>$version$</version>
 		<authors>$author$</authors>
 		<owners>$author$</owners>
@@ -12,7 +12,7 @@
 		<description>
 			StackExchange.Redis.Extensions is a library that extends StackExchange.Redis allowing you a set of functionality needed by common applications.
 
-			This implementation is based on Jil
+			This implementation is based on Message Pack CLI
 
 		</description>
 		<summary />
@@ -32,7 +32,7 @@
 		<tags>Async Redis NoSQL Client Distributed Cache PubSub Messaging</tags>
 		<dependencies>
 			<dependency id="StackExchange.Redis.Extensions.Core" version="1.1.4" />
-			<dependency id="Jil" version="2.7.0" />
+			<dependency id="MsgPack.Cli" version="0.5.8" />
 		</dependencies>
 	</metadata>
 </package>

@@ -18,17 +18,20 @@
 		<summary />
 		<releaseNotes>
 			- Add an object to Redis;
+			- Change ISerializer interface (more info here https://github.com/imperugo/StackExchange.Redis.Extensions/issues/2)
+			- Update StackExchange.Redis to latest version;
+			- Changed Flush method;
 			- Remove an object from Redis;
 			- Search Keys into Redis;
-			- Retrieve multiple object with a single roundtrop;
-			- Store multiple object with a single roundtrop;
+			- Retrieve multiple object with a single roundtrip;
+			- Store multiple object with a single roundtrip;
 			Async methods;
 		</releaseNotes>
 		<copyright>Ugo Lattanzi</copyright>
 		<language>en-US</language>
 		<tags>Async Redis NoSQL Client Distributed Cache PubSub Messaging</tags>
 		<dependencies>
-			<dependency id="StackExchange.Redis.Extensions.Core" version="1.0.0" />
+			<dependency id="StackExchange.Redis.Extensions.Core" version="1.1.4" />
 			<dependency id="Newtonsoft.Json" version="6.0.8" />
 		</dependencies>
 	</metadata>
