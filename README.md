@@ -14,6 +14,7 @@ For example:
 - **Retrieve multiple object with a single roundtrip**;
 - **Store multiple object with a single roundtrip**;
 - **Async methods**;
+- **Retrieve Redis Server status**;
 - **Much more**;
 
 ##How to install it
@@ -70,6 +71,7 @@ To offer the opportunity to store a class into Redis, that class must be seriali
 - [**BinarySerialization**](http://msdn.microsoft.com/en-us/library/72hyey7b%28v=vs.110%29.aspx) (Requires ```SerializableAttribute``` on top of the class to store into Redis)
 - [**NewtonSoft**](https://github.com/JamesNK/Newtonsoft.Json) (Uses JSon.Net to serialize a class without ```SerializableAttribute```)
 - [**Jil**](https://github.com/kevin-montrose/Jil) (Use super fast json serializer)
+- [**MessagePack CLI**](https://github.com/msgpack/msgpack-cli) (serialization/deserialization for CLI)
 
 
 ## How can I store an object into Redis?
@@ -97,7 +99,7 @@ var cachedUser = myCacheClient.Get<User>("my cache key");
 ```
 
 ## How can I retrieve multiple object with single roundtrip?
-That's a cool feature that is implemented into ICacheClient implementation:
+That's a cool feature that is implemented into ```ICacheClient``` implementation:
 
 ```csharp
 var cachedUsers = myCacheClient.GetAll<User>(new {"key1","key2","key3"});
@@ -132,14 +134,14 @@ var keys = myCacheClient.SearchKeys("*myCacheKey");
 
 ## Can I use a Redis method directly from ICacheClient without add another dependency to my class?
 
-Of course you can. ```ICacheClient``` exposes a readonly property named Database that is the implementation of IDatabase by [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis)
+Of course you can. ```ICacheClient``` exposes a readonly property named ```Database``` that is the implementation of IDatabase by [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis)
 
 ```csharp
 myCacheClient.Database.SetAdd("mykey","another key");
 ```
 
 ## How can I get server information?
-ICacheClient has a method ```GetInfo``` and ```GetInfoAsync``` for that:
+```ICacheClient``` has a method ```GetInfo``` and ```GetInfoAsync``` for that:
 
 ```csharp
 var info = myCacheClient.GetInfo();
