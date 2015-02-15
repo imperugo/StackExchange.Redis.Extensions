@@ -39,7 +39,7 @@ PM> Install-Package StackExchange.Redis.Extensions.Newtonsoft
 PM> Install-Package StackExchange.Redis.Extensions.Jil
 ```
 
-#Install Message Pack CLI implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.MsgPack.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.MsgPack/)
+##Install Message Pack CLI implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.MsgPack.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.MsgPack/)
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.MsgPack
