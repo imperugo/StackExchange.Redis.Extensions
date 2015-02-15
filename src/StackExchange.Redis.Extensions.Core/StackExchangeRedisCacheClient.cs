@@ -548,6 +548,20 @@ namespace StackExchange.Redis.Extensions.Core
 			}
 		}
 
+		public Dictionary<string, string> GetInfo()
+		{
+			var info = db.ScriptEvaluate("return redis.call('INFO')").ToString();
+
+			return ParseInfo(info);
+		}
+
+		public async Task<Dictionary<string, string>> GetInfoAsync()
+		{
+			var info = (await db.ScriptEvaluateAsync("return redis.call('INFO')")).ToString();
+
+			return ParseInfo(info);
+		}
+
 		private string CreateLuaScriptForMset<T>(RedisKey[] redisKeys, RedisValue[] redisValues, IList<Tuple<string, T>> objects)
 		{
 			var sb = new StringBuilder("return redis.call('mset',");
@@ -588,6 +602,33 @@ namespace StackExchange.Redis.Extensions.Core
 			sb.Append(")");
 
 			return sb.ToString();
+		}
+
+		private Dictionary<string, string> ParseInfo(string info)
+		{
+			string[] lines = info.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+			var data = new Dictionary<string, string>();
+			for (int i = 0; i < lines.Length; i++)
+			{
+				string line = lines[i];
+
+				if (string.IsNullOrEmpty(line) || line[0] == '#')
+				{
+					// 2.6+ can have empty lines, and comment lines
+					continue;
+				}
+
+				int idx = line.IndexOf(':');
+				if (idx > 0) // double check this line looks about right
+				{
+					var key = line.Substring(0, idx);
+					var infoValue = line.Substring(idx + 1).Trim();
+
+					data.Add(key, infoValue);
+				}
+			}
+
+			return data;
 		}
 	}
 }

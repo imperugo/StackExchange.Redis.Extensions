@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\RedisInfo.cs" />
     <Compile Include="StackExchangeRedisCacheClient.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="ICacheClient.cs" />

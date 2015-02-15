@@ -30,6 +30,7 @@
 			- Search Keys into Redis;
 			- Retrieve multiple object with a single roundtrip;
 			- Store multiple object with a single roundtrip;
+			- Get Redis Server information;
 			Async methods;
 		</releaseNotes>
 		<copyright>Ugo Lattanzi</copyright>

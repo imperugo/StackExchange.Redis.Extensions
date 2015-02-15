@@ -38,6 +38,12 @@ PM> Install-Package StackExchange.Redis.Extensions.Newtonsoft
 PM> Install-Package StackExchange.Redis.Extensions.Jil
 ```
 
+#Install Message Pack CLI implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.MsgPack.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.MsgPack/)
+
+```
+PM> Install-Package StackExchange.Redis.Extensions.MsgPack
+```
+
 ## How to configure it
 You can use it registering the instance with your favorite Container. Here an example using Castle:
 
@@ -131,3 +137,13 @@ Of course you can. ```ICacheClient``` exposes a readonly property named Database
 ```csharp
 myCacheClient.Database.SetAdd("mykey","another key");
 ```
+
+## How can I get server information?
+ICacheClient has a method ```GetInfo``` and ```GetInfoAsync``` for that:
+
+```csharp
+var info = myCacheClient.GetInfo();
+```
+
+For more info about the values returned, take a look [here](http://redis.io/commands/INFO)
+

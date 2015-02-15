@@ -25,6 +25,16 @@ namespace StackExchange.Redis.Extensions.Tests
 			Sut = new StackExchangeRedisCacheClient(connectionMultiplexer, Serializer);
 		}
 
+		[Fact]
+		public void Info_Should_Return_Valid_Informatino()
+		{
+			var response = Sut.GetInfo();
+
+			Assert.NotNull(response);
+			Assert.True(response.Any());
+			Assert.Equal(response["os"], "Windows");
+			Assert.Equal(response["tcp_port"], "6379");
+		}
 
 		[Fact]
 		public void Add_Item_To_Redis_Database()

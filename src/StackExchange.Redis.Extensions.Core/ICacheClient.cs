@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace StackExchange.Redis.Extensions.Core
@@ -281,5 +282,17 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </summary>
 		/// <returns></returns>
 		Task FlushDbAsync();
+
+		/// <summary>
+		/// Gets the information about redis.
+		/// More info <see cref="http://redis.io/commands/INFO"/>
+		/// </summary>
+		Dictionary<string, string> GetInfo();
+
+		/// <summary>
+		/// Gets the information about redis.
+		/// More info <see cref="http://redis.io/commands/INFO"/>
+		/// </summary>
+		Task<Dictionary<string, string>> GetInfoAsync();
 	}
 }
