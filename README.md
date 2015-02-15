@@ -33,7 +33,7 @@ PM> Install-Package StackExchange.Redis.Extensions.Core
 PM> Install-Package StackExchange.Redis.Extensions.Newtonsoft
 ```
 
-#Install Jil implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Jil.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Jil/)
+##Install Jil implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Jil.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Jil/)
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Jil
