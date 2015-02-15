@@ -4,6 +4,7 @@ using System.Linq;
 using FizzWare.NBuilder;
 using System.Collections.Generic;
 using StackExchange.Redis.Extensions.Core;
+using StackExchange.Redis.Extensions.Core.Extensions;
 using StackExchange.Redis.Extensions.Tests.Extensions;
 using StackExchange.Redis.Extensions.Tests.Helpers;
 
@@ -171,6 +172,44 @@ namespace StackExchange.Redis.Extensions.Tests
 			values.ForEach(x => Db.StringSet(x.Key, x.Value));
 
 			Assert.False(Sut.Exists("this key doesn not exist into redi"));
+		}
+
+		[Fact]
+		public void SetAdd_With_An_Existing_Key_Should_Return_Valid_Data()
+		{
+			var values = Builder<TestClass<string>>
+						.CreateListOfSize(5)
+						.All()
+						.Build();
+
+			values.ForEach(x =>
+			{
+				Db.StringSet(x.Key, Serializer.Serialize(x.Value));
+				Sut.SetAdd("MySet", x.Key);
+			});
+
+			var keys = Db.SetMembers("MySet");
+
+			Assert.Equal(keys.Length, values.Count);
+		}
+
+		[Fact]
+		public void SetMember_With_Valid_Data_Should_Return_Correct_Keys()
+		{
+			var values = Builder<TestClass<string>>
+						.CreateListOfSize(5)
+						.All()
+						.Build();
+
+			values.ForEach(x =>
+			{
+				Db.StringSet(x.Key, Serializer.Serialize(x.Value));
+				Db.SetAdd("MySet", x.Key);
+			});
+
+			var keys = Sut.SetMember("MySet");
+
+			Assert.Equal(keys.Length, values.Count);
 		}
 
 		public void Dispose()

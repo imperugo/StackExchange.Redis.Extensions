@@ -12,6 +12,9 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </summary>
 		IDatabase Database { get; }
 
+		/// <summary>
+		/// Return the instance of <see cref="ISerializer"/>
+		/// </summary>
 		ISerializer Serializer { get; }
 
 		/// <summary>
@@ -241,6 +244,32 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <typeparam name="T">The type of the expected object</typeparam>
 		/// <param name="items">The items.</param>
 		Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items) where T : class;
+
+		/// <summary>
+		/// Run SADD command <see cref="http://redis.io/commands/sadd"/>
+		/// </summary>
+		/// <param name="memberName">Name of the member.</param>
+		/// <param name="key">The key.</param>
+		bool SetAdd(string memberName, string key);
+
+		/// <summary>
+		/// Run SADD command <see cref="http://redis.io/commands/sadd"/>
+		/// </summary>
+		/// <param name="memberName">Name of the member.</param>
+		/// <param name="key">The key.</param>
+		Task<bool> SetAddAsync(string memberName, string key);
+
+		/// <summary>
+		/// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS"/>
+		/// </summary>
+		/// <param name="memberName">Name of the member.</param>
+		string[] SetMember(string memberName);
+
+		/// <summary>
+		/// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS"/>
+		/// </summary>
+		/// <param name="memberName">Name of the member.</param>
+		Task<string[]> SetMemberAsync(string memberName);
 
 		/// <summary>
 		/// Searches the keys from Redis database

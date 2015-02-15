@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StackExchange.Redis.Extensions.Core.Extensions;
 
 namespace StackExchange.Redis.Extensions.Core
 {
@@ -222,7 +223,6 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </returns>
 		public bool Replace<T>(string key, T value) where T : class
 		{
-			Remove(key);
 			return Add(key, value);
 		}
 
@@ -235,10 +235,9 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public async Task<bool> ReplaceAsync<T>(string key, T value) where T : class
+		public Task<bool> ReplaceAsync<T>(string key, T value) where T : class
 		{
-			await RemoveAsync(key);
-			return await AddAsync(key, value);
+			return  AddAsync(key, value);
 		}
 
 		/// <summary>
@@ -289,7 +288,6 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </returns>
 		public bool Replace<T>(string key, T value, DateTimeOffset expiresAt) where T : class
 		{
-			Remove(key);
 			return Add(key, value, expiresAt);
 		}
 
@@ -303,10 +301,9 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public async Task<bool> ReplaceAsync<T>(string key, T value, DateTimeOffset expiresAt) where T : class
+		public Task<bool> ReplaceAsync<T>(string key, T value, DateTimeOffset expiresAt) where T : class
 		{
-			await RemoveAsync(key);
-			return await AddAsync(key, value, expiresAt);
+			return AddAsync(key, value, expiresAt);
 		}
 
 		/// <summary>
@@ -355,7 +352,6 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </returns>
 		public bool Replace<T>(string key, T value, TimeSpan expiresIn) where T : class
 		{
-			Remove(key);
 			return Add(key, value, expiresIn);
 		}
 
@@ -369,10 +365,9 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public async Task<bool> ReplaceAsync<T>(string key, T value, TimeSpan expiresIn) where T : class
+		public Task<bool> ReplaceAsync<T>(string key, T value, TimeSpan expiresIn) where T : class
 		{
-			await RemoveAsync(key);
-			return await AddAsync(key, value, expiresIn);
+			return AddAsync(key, value, expiresIn);
 		}
 
 		/// <summary>
@@ -473,6 +468,49 @@ namespace StackExchange.Redis.Extensions.Core
 			var redisResults = await db.ScriptEvaluateAsync(sb, redisKeys, redisValues);
 
 			return redisResults.ToString() == "OK";
+		}
+
+		/// <summary>
+		/// Run SADD command <see cref="http://redis.io/commands/sadd" />
+		/// </summary>
+		/// <param name="memberName">Name of the member.</param>
+		/// <param name="key">The key.</param>
+		/// <returns></returns>
+		public bool SetAdd(string memberName, string key)
+		{
+			return db.SetAdd(memberName, key);
+		}
+
+		/// <summary>
+		/// Run SADD command <see cref="http://redis.io/commands/sadd" />
+		/// </summary>
+		/// <param name="memberName">Name of the member.</param>
+		/// <param name="key">The key.</param>
+		/// <returns></returns>
+		public Task<bool> SetAddAsync(string memberName, string key)
+		{
+			return db.SetAddAsync(memberName, key);
+		}
+
+		/// <summary>
+		/// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS" />
+		/// </summary>
+		/// <param name="memberName">Name of the member.</param>
+		/// <returns></returns>
+		/// <exception cref="System.NotImplementedException"></exception>
+		public string[] SetMember(string memberName)
+		{
+			return db.SetMembers(memberName).Select(x => x.ToString()).ToArray();
+		}
+
+		/// <summary>
+		/// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS" />
+		/// </summary>
+		/// <param name="memberName">Name of the member.</param>
+		/// <returns></returns>
+		public async Task<string[]> SetMemberAsync(string memberName)
+		{
+			return (await db.SetMembersAsync(memberName)).Select(x => x.ToString()).ToArray();
 		}
 
 		/// <summary>
