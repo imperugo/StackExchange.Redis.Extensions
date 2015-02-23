@@ -19,11 +19,11 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
             get
             {
                 bool result = false;
-                var o = this["allowAdmin"];
+                var config = this["allowAdmin"];
 
-                if (o != null)
+                if (config != null)
                 {
-                    var value = o.ToString();
+                    var value = config.ToString();
 
                     if (!string.IsNullOrEmpty(value))
                     {
@@ -44,10 +44,10 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
             get
             {
                 bool result = false;
-                var o = this["ssl"];
-                if (o != null)
+                var config = this["ssl"];
+                if (config != null)
                 {
-                    var value = o.ToString();
+                    var value = config.ToString();
                     if (!string.IsNullOrWhiteSpace(value))
                     {
                         if (bool.TryParse(value, out result))
@@ -66,10 +66,10 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         {
             get
             {
-                var o = this["connectTimeout"];
-                if (o != null)
+                var config = this["connectTimeout"];
+                if (config != null)
                 {
-                    var value = o.ToString();
+                    var value = config.ToString();
                     if (!string.IsNullOrWhiteSpace(value))
                     {
                         int result;
@@ -81,6 +81,29 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
                 }
 
                 return 5000;
+            }
+        }
+
+        [ConfigurationProperty("db")]
+        public int Db
+        {
+            get
+            {
+                var config = this["db"];
+                if (config != null)
+                {
+                    var value = config.ToString();
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        int result;
+                        if (int.TryParse(value, out result))
+                        {
+                            return result;
+                        }
+                    }
+                }
+
+                return 0;
             }
         }
 

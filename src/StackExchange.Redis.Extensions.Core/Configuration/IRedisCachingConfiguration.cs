@@ -6,5 +6,6 @@
         bool AllowAdmin { get; }
         bool Ssl { get; }
         int ConnectTimeout { get; }
+        int Db { get; }
     }
 }

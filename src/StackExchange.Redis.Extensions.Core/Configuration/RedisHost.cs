@@ -19,17 +19,22 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         {
             get
             {
-                var value = this["cachePort"].ToString();
-
-                if (!string.IsNullOrEmpty(value))
+                var config = this["cachePort"];
+                if (config != null)
                 {
-                    int result;
+                    var value = config.ToString();
 
-                    if (int.TryParse(value, out result))
+                    if (!string.IsNullOrEmpty(value))
                     {
-                        return result;
+                        int result;
+
+                        if (int.TryParse(value, out result))
+                        {
+                            return result;
+                        }
                     }
                 }
+
 
                 throw new Exception("Redis Cahe port must be number.");
             }
