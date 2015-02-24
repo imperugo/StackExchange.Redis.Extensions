@@ -5,7 +5,7 @@ namespace StackExchange.Redis.Extensions.Tests
     public class JilSerializerTest : CacheClientTestBase
 	{
         public JilSerializerTest()
-            : base(new JsonSerializer())
+            : base(new JilSerializer())
 		{
 		}
 	}

@@ -2,33 +2,33 @@
 
 namespace StackExchange.Redis.Extensions.Core.Configuration
 {
-    public class RedisHostCollection : ConfigurationElementCollection
-    {
-        public RedisHost this[int index]
-        {
-            get
-            {
-                return BaseGet(index) as RedisHost;
-            }
-            set
-            {
-                if (BaseGet(index) != null)
-                {
-                    BaseRemoveAt(index);
-                }
+	public class RedisHostCollection : ConfigurationElementCollection
+	{
+		public RedisHost this[int index]
+		{
+			get
+			{
+				return BaseGet(index) as RedisHost;
+			}
+			set
+			{
+				if (BaseGet(index) != null)
+				{
+					BaseRemoveAt(index);
+				}
 
-                BaseAdd(index, value);
-            }
-        }
+				BaseAdd(index, value);
+			}
+		}
 
-        protected override ConfigurationElement CreateNewElement()
-        {
-            return new RedisHost();
-        }
+		protected override ConfigurationElement CreateNewElement()
+		{
+			return new RedisHost();
+		}
 
-        protected override object GetElementKey(ConfigurationElement element)
-        {
-            return ((RedisHost)element).Host;
-        }
-    }
+		protected override object GetElementKey(ConfigurationElement element)
+		{
+			return ((RedisHost)element).Host;
+		}
+	}
 }

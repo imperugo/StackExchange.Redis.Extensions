@@ -1,11 +1,11 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
-using Jil;
+using Newtonsoft.Json;
 using StackExchange.Redis.Extensions.Core;
 
-namespace StackExchange.Redis.Extensions.Jil
+namespace StackExchange.Redis.Extensions.Newtonsoft
 {
-	public class JsonSerializer : ISerializer
+	public class NewtonsoftSerializer : ISerializer
 	{
 		// TODO: May make this configurable in the future.
 		/// <summary>
@@ -19,19 +19,20 @@ namespace StackExchange.Redis.Extensions.Jil
 
 		public byte[] Serialize(object item)
 		{
-			var jsonString = JSON.Serialize(item);
+			var jsonString = JsonConvert.SerializeObject(item);
 			return encoding.GetBytes(jsonString);
 		}
 
-		public Task<byte[]> SerializeAsync(object item)
+		public async Task<byte[]> SerializeAsync(object item)
 		{
-			return Task.Factory.StartNew(() => Serialize(item));
+			var jsonString = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(item));
+			return encoding.GetBytes(jsonString);
 		}
 
 		public object Deserialize(byte[] serializedObject)
 		{
 			var jsonString = encoding.GetString(serializedObject);
-			return JSON.Deserialize(jsonString, typeof (object));
+			return JsonConvert.DeserializeObject(jsonString, typeof(object));
 		}
 
 		public Task<object> DeserializeAsync(byte[] serializedObject)
@@ -42,7 +43,7 @@ namespace StackExchange.Redis.Extensions.Jil
 		public T Deserialize<T>(byte[] serializedObject) where T : class
 		{
 			var jsonString = encoding.GetString(serializedObject);
-			return JSON.Deserialize<T>(jsonString);
+			return JsonConvert.DeserializeObject<T>(jsonString);
 		}
 
 		public Task<T> DeserializeAsync<T>(byte[] serializedObject) where T : class

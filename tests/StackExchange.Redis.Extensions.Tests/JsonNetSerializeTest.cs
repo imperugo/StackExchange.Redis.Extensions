@@ -5,7 +5,7 @@ namespace StackExchange.Redis.Extensions.Tests
 	public class JsonNetSerializeTest : CacheClientTestBase
 	{
 		public JsonNetSerializeTest()
-			: base(new JsonSerializer())
+			: base(new NewtonsoftSerializer())
 		{
 
 		}
