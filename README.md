@@ -1,7 +1,7 @@
 # StackExchange.Redis.Extensions
 
-
 StackExchange.Redis.Extensions is a library that extends [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) allowing you a set of functionality needed by common applications.
+
 
 ## What can it be used for?
 Caching of course. Instead of use directly [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) could be easier use ``ÌCacheClient```
@@ -16,6 +16,8 @@ For example:
 - **Async methods**;
 - **Retrieve Redis Server status**;
 - **Much more**;
+
+[![Issue Stats](http://www.issuestats.com/github/imperugo/StackExchange.Redis.Extensions/badge/issue)](http://www.issuestats.com/github/imperugo/StackExchange.Redis.Extensions)
 
 ##How to install it
 StackExchange.Redis.Extensions is composed by two libraries, the Core and the Serializer implementation.
@@ -149,3 +151,13 @@ var info = myCacheClient.GetInfo();
 
 For more info about the values returned, take a look [here](http://redis.io/commands/INFO)
 
+## Contributing
+**Getting started with Git and GitHub**
+
+ * [Setting up Git for Windows and connecting to GitHub](http://help.github.com/win-set-up-git/)
+ * [Forking a GitHub repository](http://help.github.com/fork-a-repo/)
+ * [The simple guide to GIT guide](http://rogerdudler.github.com/git-guide/)
+ * [Open an issue](https://github.com/imperugo/StackExchange.Redis.Extensions/issues) if you encounter a bug or have a suggestion for improvements/features
+
+
+Once you're familiar with Git and GitHub, clone the repository and start contributing.
