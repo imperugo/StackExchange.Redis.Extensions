@@ -33,10 +33,14 @@
 			- Get Redis Server information;
 			- Set Add;
 			- Set Member;
-			Async methods;
+			- Save;
+			- Async methods;
 		</releaseNotes>
 		<copyright>Ugo Lattanzi</copyright>
 		<language>en-US</language>
 		<tags>Async Redis NoSQL Client Distributed Cache PubSub Messaging</tags>
+		<dependencies>
+			<dependency id="StackExchange.Redis" version="1.0.414" />
+		</dependencies>
 	</metadata>
 </package>

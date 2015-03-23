@@ -34,10 +34,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Jil">
-      <HintPath>..\..\..\packages\Jil.2.7.0\lib\net45\Jil.dll</HintPath>
+      <HintPath>..\..\packages\Jil.2.9.0\lib\net45\Jil.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Sigil">
-      <HintPath>..\..\..\packages\Sigil.4.3.1\lib\net45\Sigil.dll</HintPath>
+    <Reference Include="Sigil, Version=4.4.0.0, Culture=neutral, PublicKeyToken=2d06c3494341c8ab, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Sigil.4.4.0\lib\net45\Sigil.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -55,6 +57,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="StackExchange.Redis.Extensions.Jil.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj">

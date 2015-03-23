@@ -20,10 +20,12 @@ namespace StackExchange.Redis.Extensions.Core
 		private static readonly Encoding encoding = Encoding.UTF8;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StackExchangeRedisCacheClient"/> class.
+		/// Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
 		/// </summary>
 		/// <param name="serializer">The serializer.</param>
+		/// <param name="database">The database.</param>
 		/// <exception cref="System.ArgumentNullException">serializer</exception>
+		/// <exception cref="System.Configuration.ConfigurationErrorsException">Unable to locate <redisCacheClient> section into your configuration file. Take a look https://github.com/imperugo/StackExchange.Redis.Extensions</exception>
 		public StackExchangeRedisCacheClient(ISerializer serializer)
 		{
 			if (serializer == null)
@@ -50,16 +52,18 @@ namespace StackExchange.Redis.Extensions.Core
 			}
 
 			this.connectionMultiplexer = ConnectionMultiplexer.Connect(options);
-			db = connectionMultiplexer.GetDatabase();
+			db = connectionMultiplexer.GetDatabase(configuration.Database);
 			this.serializer = serializer;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StackExchangeRedisCacheClient"/> class.
+		/// Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
 		/// </summary>
 		/// <param name="serializer">The serializer.</param>
 		/// <param name="connectionString">The connection string.</param>
-		public StackExchangeRedisCacheClient(ISerializer serializer, string connectionString)
+		/// <param name="database">The database.</param>
+		/// <exception cref="System.ArgumentNullException">serializer</exception>
+		public StackExchangeRedisCacheClient(ISerializer serializer, string connectionString, int database = 0)
 		{
 			if (serializer == null)
 			{
@@ -68,15 +72,21 @@ namespace StackExchange.Redis.Extensions.Core
 
 			this.serializer = serializer;
 			this.connectionMultiplexer = ConnectionMultiplexer.Connect(connectionString);
-			db = connectionMultiplexer.GetDatabase();
+			db = connectionMultiplexer.GetDatabase(database);
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StackExchangeRedisCacheClient"/> class.
+		/// Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
 		/// </summary>
 		/// <param name="connectionMultiplexer">The connection multiplexer.</param>
 		/// <param name="serializer">The serializer.</param>
-		public StackExchangeRedisCacheClient(ConnectionMultiplexer connectionMultiplexer, ISerializer serializer)
+		/// <param name="database">The database.</param>
+		/// <exception cref="System.ArgumentNullException">
+		/// connectionMultiplexer
+		/// or
+		/// serializer
+		/// </exception>
+		public StackExchangeRedisCacheClient(ConnectionMultiplexer connectionMultiplexer, ISerializer serializer, int database = 0)
 		{
 			if (connectionMultiplexer == null)
 			{
@@ -91,7 +101,7 @@ namespace StackExchange.Redis.Extensions.Core
 			this.serializer = serializer;
 			this.connectionMultiplexer = connectionMultiplexer;
 
-			db = connectionMultiplexer.GetDatabase();
+			db = connectionMultiplexer.GetDatabase(database);
 		}
 
 		/// <summary>
