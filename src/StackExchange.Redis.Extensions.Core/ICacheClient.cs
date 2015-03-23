@@ -312,7 +312,17 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns></returns>
 		Task FlushDbAsync();
 
-		/// <summary>
+        /// <summary>
+        /// Save the DB in background.
+        /// </summary>
+	    void Save(SaveType saveType);
+
+        /// <summary>
+        /// Save the DB in background asynchronous.
+        /// </summary>
+        void SaveAsync(SaveType saveType);
+            
+        /// <summary>
 		/// Gets the information about redis.
 		/// More info <see cref="http://redis.io/commands/INFO"/>
 		/// </summary>
