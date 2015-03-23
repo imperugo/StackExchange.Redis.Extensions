@@ -50,7 +50,24 @@ PM> Install-Package StackExchange.Redis.Extensions.MsgPack
 ## How to configure it
 You can use it registering the instance with your favorite Container. Here an example using Castle:
 
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<configSections>
+		<section name="redisCacheClient"
+			   type="StackExchange.Redis.Extensions.Core.Configuration.RedisCachingSectionHandler, StackExchange.Redis.Extensions.Core" />
+	</configSections>
+
+	<redisCacheClient allowAdmin="true" ssl="false" connectTimeout="5000" database="0">
+		<hosts>
+			<add host="127.0.0.1" cachePort="6379"/>
+		</hosts>
+	</redisCacheClient>
+</configuration>
+```
+
 ```csharp
+container.Register(Component.For<ISerializer>()				.ImplementedBy<NewtonsoftSerializer>()				.LifestyleSingleton());
 
 container.Register(Component.For<ICacheClient>()				.ImplementedBy<StackExchangeRedisCacheClient>()				.LifestyleSingleton());
 
@@ -59,8 +76,8 @@ container.Register(Component.For<ICacheClient>()				.ImplementedBy<StackExchang
 of you can create your own instance
 
 ```csharp
-
-var cacheClient = new StackExchangeRedisCacheClient();
+var serializer = new NewtonsoftSerializer();
+var cacheClient = new StackExchangeRedisCacheClient(serializer);
 
 ```
 
