@@ -23,8 +23,9 @@ namespace StackExchange.Redis.Extensions.Core
 		/// Initializes a new instance of the <see cref="StackExchangeRedisCacheClient"/> class.
 		/// </summary>
 		/// <param name="serializer">The serializer.</param>
+		/// <param name="database">The redis db.</param>
 		/// <exception cref="System.ArgumentNullException">serializer</exception>
-		public StackExchangeRedisCacheClient(ISerializer serializer)
+		public StackExchangeRedisCacheClient(ISerializer serializer, int database = 0))
 		{
 			if (serializer == null)
 			{
@@ -50,7 +51,7 @@ namespace StackExchange.Redis.Extensions.Core
 			}
 
 			this.connectionMultiplexer = ConnectionMultiplexer.Connect(options);
-			db = connectionMultiplexer.GetDatabase();
+			db = connectionMultiplexer.GetDatabase(database);
 			this.serializer = serializer;
 		}
 
@@ -59,7 +60,8 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </summary>
 		/// <param name="serializer">The serializer.</param>
 		/// <param name="connectionString">The connection string.</param>
-		public StackExchangeRedisCacheClient(ISerializer serializer, string connectionString)
+		/// <param name="database">The redis db.</param>
+		public StackExchangeRedisCacheClient(ISerializer serializer, string connectionString, int database = 0)
 		{
 			if (serializer == null)
 			{
@@ -68,7 +70,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 			this.serializer = serializer;
 			this.connectionMultiplexer = ConnectionMultiplexer.Connect(connectionString);
-			db = connectionMultiplexer.GetDatabase();
+			db = connectionMultiplexer.GetDatabase(database);
 		}
 
 		/// <summary>
@@ -76,7 +78,8 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </summary>
 		/// <param name="connectionMultiplexer">The connection multiplexer.</param>
 		/// <param name="serializer">The serializer.</param>
-		public StackExchangeRedisCacheClient(ConnectionMultiplexer connectionMultiplexer, ISerializer serializer)
+		/// <param name="database">The redis db.</param>
+		public StackExchangeRedisCacheClient(ConnectionMultiplexer connectionMultiplexer, ISerializer serializer, int database = 0)
 		{
 			if (connectionMultiplexer == null)
 			{
@@ -91,7 +94,7 @@ namespace StackExchange.Redis.Extensions.Core
 			this.serializer = serializer;
 			this.connectionMultiplexer = connectionMultiplexer;
 
-			db = connectionMultiplexer.GetDatabase();
+			db = connectionMultiplexer.GetDatabase(database);
 		}
 
 		/// <summary>
