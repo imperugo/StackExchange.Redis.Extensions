@@ -25,7 +25,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="serializer">The serializer.</param>
 		/// <param name="database">The redis db.</param>
 		/// <exception cref="System.ArgumentNullException">serializer</exception>
-		public StackExchangeRedisCacheClient(ISerializer serializer, int database = 0))
+		public StackExchangeRedisCacheClient(ISerializer serializer, int database = 0)
 		{
 			if (serializer == null)
 			{
