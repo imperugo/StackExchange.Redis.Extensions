@@ -634,7 +634,27 @@ namespace StackExchange.Redis.Extensions.Core
 			}
 		}
 
-		public Dictionary<string, string> GetInfo()
+        public void Save(SaveType saveType)
+	    {
+			var endPoints = db.Multiplexer.GetEndPoints();
+
+			foreach (var endpoint in endPoints)
+			{
+                db.Multiplexer.GetServer(endpoint).Save(saveType);
+			}
+	    }
+
+        public async void SaveAsync(SaveType saveType)
+	    {
+			var endPoints = db.Multiplexer.GetEndPoints();
+
+			foreach (var endpoint in endPoints)
+			{
+                await db.Multiplexer.GetServer(endpoint).SaveAsync(saveType);
+			}
+	    }
+
+	    public Dictionary<string, string> GetInfo()
 		{
 			var info = db.ScriptEvaluate("return redis.call('INFO')").ToString();
 
