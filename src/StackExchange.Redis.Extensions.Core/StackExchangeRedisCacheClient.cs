@@ -20,20 +20,21 @@ namespace StackExchange.Redis.Extensions.Core
 		private static readonly Encoding encoding = Encoding.UTF8;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
+		/// Initializes a new instance of the <see cref="StackExchangeRedisCacheClient"/> class.
 		/// </summary>
 		/// <param name="serializer">The serializer.</param>
-		/// <param name="database">The database.</param>
-		/// <exception cref="System.ArgumentNullException">serializer</exception>
-		/// <exception cref="System.Configuration.ConfigurationErrorsException">Unable to locate <redisCacheClient> section into your configuration file. Take a look https://github.com/imperugo/StackExchange.Redis.Extensions</exception>
-		public StackExchangeRedisCacheClient(ISerializer serializer)
+		/// <param name="configuration">The configuration.</param>
+		public StackExchangeRedisCacheClient(ISerializer serializer, IRedisCachingConfiguration configuration = null)
 		{
 			if (serializer == null)
 			{
 				throw new ArgumentNullException("serializer");
 			}
 
-			IRedisCachingConfiguration configuration = RedisCachingSectionHandler.GetConfig();
+			if (configuration == null)
+			{
+				configuration = RedisCachingSectionHandler.GetConfig();
+			}
 
 			if (configuration == null)
 			{
@@ -295,7 +296,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </returns>
 		public Task<bool> ReplaceAsync<T>(string key, T value) where T : class
 		{
-			return  AddAsync(key, value);
+			return AddAsync(key, value);
 		}
 
 		/// <summary>
@@ -641,6 +642,26 @@ namespace StackExchange.Redis.Extensions.Core
 			foreach (var endpoint in endPoints)
 			{
 				await db.Multiplexer.GetServer(endpoint).FlushDatabaseAsync();
+			}
+		}
+
+		public void Save(SaveType saveType)
+		{
+			var endPoints = db.Multiplexer.GetEndPoints();
+
+			foreach (var endpoint in endPoints)
+			{
+				db.Multiplexer.GetServer(endpoint).Save(saveType);
+			}
+		}
+
+		public async void SaveAsync(SaveType saveType)
+		{
+			var endPoints = db.Multiplexer.GetEndPoints();
+
+			foreach (var endpoint in endPoints)
+			{
+				await db.Multiplexer.GetServer(endpoint).SaveAsync(saveType);
 			}
 		}
 
