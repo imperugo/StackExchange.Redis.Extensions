@@ -623,7 +623,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 			foreach (var endpoint in endPoints)
 			{
-				db.Multiplexer.GetServer(endpoint).FlushDatabase();
+				db.Multiplexer.GetServer(endpoint).FlushDatabase(db.Database);
 			}
 		}
 
@@ -633,7 +633,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 			foreach (var endpoint in endPoints)
 			{
-				await db.Multiplexer.GetServer(endpoint).FlushDatabaseAsync();
+                await db.Multiplexer.GetServer(endpoint).FlushDatabaseAsync(db.Database);
 			}
 		}
 
