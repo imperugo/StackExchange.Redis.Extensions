@@ -83,6 +83,7 @@
     <Compile Include="MessagePackSerializerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CacheClientTestBase.cs" />
+    <Compile Include="ProtobufSerializeTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj">
@@ -100,6 +101,10 @@
     <ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.Newtonsoft\StackExchange.Redis.Extensions.Newtonsoft.csproj">
       <Project>{d4b13b0b-165b-4513-9dc1-b8a25979bd65}</Project>
       <Name>StackExchange.Redis.Extensions.Newtonsoft</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.Protobuf\StackExchange.Redis.Extensions.Protobuf.csproj">
+      <Project>{0A07E6BB-BA9C-4448-BFEA-3E490A3EE60F}</Project>
+      <Name>StackExchange.Redis.Extensions.Protobuf</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
