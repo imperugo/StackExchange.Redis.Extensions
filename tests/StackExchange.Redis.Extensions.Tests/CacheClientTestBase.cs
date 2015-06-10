@@ -62,7 +62,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.True(Db.KeyExists("my Key"));
 			Assert.NotNull(obj);
 			Assert.Equal(testobject.Key, obj.Key);
-			Assert.Equal(testobject.Value, obj.Value);
+			Assert.Equal(testobject.Value.ToUniversalTime(), obj.Value.ToUniversalTime());
 		}
 
 		[Fact]
