@@ -6,17 +6,23 @@
 // //////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace StackExchange.Redis.Extensions.Tests.Helpers
 {
 	[Serializable]
+    [DataContract]
 	public class TestClass<T>
 	{
+        [DataMember(Order = 1)]
 		public string Key { get; set; }
+
+        [DataMember(Order = 2)]
 		public T Value { get; set; }
 	}
 
-	[Serializable]
+    [Serializable]
+    [DataContract]
 	public class ComplexClassForTest<T,TK>
 	{
 		public ComplexClassForTest()
@@ -29,7 +35,10 @@ namespace StackExchange.Redis.Extensions.Tests.Helpers
 			Item2 = item2;
 		}
 
-		public T Item1 { get; set; }
+        [DataMember(Order = 1)]
+        public T Item1 { get; set; }
+
+        [DataMember(Order = 2)]
 		public TK Item2 { get; set; }
 	}
 }
