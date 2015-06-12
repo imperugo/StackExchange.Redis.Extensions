@@ -47,6 +47,13 @@ PM> Install-Package StackExchange.Redis.Extensions.Jil
 PM> Install-Package StackExchange.Redis.Extensions.MsgPack
 ```
 
+##Install Protocol Buffers implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Protobuf.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Protobuf/)
+
+```
+PM> Install-Package StackExchange.Redis.Extensions.Protobuf 
+```
+
+
 ## How to configure it
 You can use it registering the instance with your favorite Container. Here an example using Castle:
 

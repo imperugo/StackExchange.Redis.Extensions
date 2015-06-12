@@ -40,7 +40,7 @@
 		<language>en-US</language>
 		<tags>Async Redis NoSQL Client Distributed Cache PubSub Messaging</tags>
 		<dependencies>
-			<dependency id="StackExchange.Redis" version="1.0.414" />
+			<dependency id="StackExchange.Redis" version="1.0.450" />
 		</dependencies>
 	</metadata>
 </package>
