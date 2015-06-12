@@ -41,5 +41,11 @@
 		/// The database id, the default value is 0
 		/// </value>
 		int Database { get; }
-	}
+
+
+        /// <summary>
+        /// The password or access key
+        /// </summary>
+        string Password { get; }
+    }
 }

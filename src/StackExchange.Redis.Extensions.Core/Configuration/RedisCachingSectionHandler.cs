@@ -137,6 +137,18 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 			}
 		}
 
+        /// <summary>
+        /// The password or access key
+        /// </summary>
+        [ConfigurationProperty("password", IsRequired = false)]
+        public string Password
+        {
+            get
+            {
+                return this["password"] as string;
+            }
+        }
+
 		/// <summary>
 		/// Gets the configuration.
 		/// </summary>
