@@ -65,7 +65,7 @@ You can use it registering the instance with your favorite Container. Here an ex
 			   type="StackExchange.Redis.Extensions.Core.Configuration.RedisCachingSectionHandler, StackExchange.Redis.Extensions.Core" />
 	</configSections>
 
-	<redisCacheClient allowAdmin="true" ssl="false" connectTimeout="5000" database="0">
+	<redisCacheClient allowAdmin="true" ssl="false" connectTimeout="5000" database="0" password="my password">
 		<hosts>
 			<add host="127.0.0.1" cachePort="6379"/>
 		</hosts>
