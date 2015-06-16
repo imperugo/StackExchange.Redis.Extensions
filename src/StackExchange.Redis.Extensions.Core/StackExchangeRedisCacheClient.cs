@@ -41,15 +41,16 @@ namespace StackExchange.Redis.Extensions.Core
 				throw new ConfigurationErrorsException("Unable to locate <redisCacheClient> section into your configuration file. Take a look https://github.com/imperugo/StackExchange.Redis.Extensions");
 			}
 
-			ConfigurationOptions options = new ConfigurationOptions
+			var options = new ConfigurationOptions
 			{
 				Ssl = configuration.Ssl,
-				AllowAdmin = configuration.AllowAdmin
+				AllowAdmin = configuration.AllowAdmin,
+                Password = configuration.Password
 			};
 
 			foreach (RedisHost redisHost in configuration.RedisHosts)
 			{
-				options.EndPoints.Add(redisHost.Host, redisHost.CachePort);
+			    options.EndPoints.Add(redisHost.Host, redisHost.CachePort);
 			}
 
 			this.connectionMultiplexer = ConnectionMultiplexer.Connect(options);
