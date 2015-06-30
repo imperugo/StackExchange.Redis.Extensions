@@ -211,6 +211,23 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.Equal(keys.Length, values.Count);
 		}
 
+		[Fact]
+		public void Add150ItemsTest()
+		{
+			var values = Builder<TestClass<string>>
+						.CreateListOfSize(150)
+						.All()
+						.Build();
+
+			var tupleValues = values.Select(x => new Tuple<string, TestClass<string>>(x.Key, x)).ToList();
+			var result = Sut.AddAll(tupleValues);
+			var cached = Sut.GetAll<TestClass<string>>(values.Select(x => x.Key));
+
+			Assert.True(result);
+			Assert.NotNull(cached);
+			Assert.Equal(150, cached.Count);
+		}
+
 		public void Dispose()
 		{
 			Db.FlushDatabase();
