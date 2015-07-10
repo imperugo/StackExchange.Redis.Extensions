@@ -333,5 +333,25 @@ namespace StackExchange.Redis.Extensions.Core
 		/// More info <see cref="http://redis.io/commands/INFO"/>
 		/// </summary>
 		Task<Dictionary<string, string>> GetInfoAsync();
+
+        /// <summary>
+        /// Publishes a message to a channel.
+        /// </summary>
+	    long Publish<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None);
+
+	    /// <summary>
+	    /// Publishes a message to a channel.
+	    /// </summary>
+	    Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None);
+
+	    /// <summary>
+	    /// Registers a callback handler to process messages published to a channel.
+	    /// </summary>
+	    void Subscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None) where T : class;
+
+	    /// <summary>
+	    /// Registers a callback handler to process messages published to a channel.
+	    /// </summary>
+	    Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None) where T : class;
 	}
 }
