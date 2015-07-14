@@ -680,6 +680,36 @@ namespace StackExchange.Redis.Extensions.Core
 			return ParseInfo(info);
 		}
 
+        public long Publish<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
+	    {
+            var sub = connectionMultiplexer.GetSubscriber();
+            return sub.Publish(channel, serializer.Serialize(message), flags);
+	    }
+
+        public async Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
+	    {
+            var sub = connectionMultiplexer.GetSubscriber();
+            return await sub.PublishAsync(channel, await serializer.SerializeAsync(message), flags);
+	    }
+
+        public void Subscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None) where T : class
+        {
+            if(handler == null)
+                throw new ArgumentNullException("handler");
+
+            var sub = connectionMultiplexer.GetSubscriber();
+            sub.Subscribe(channel, (redisChannel, value) => handler(serializer.Deserialize<T>(value)), flags);
+        }
+
+        public async Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None) where T : class
+        {
+            if (handler == null)
+                throw new ArgumentNullException("handler");
+
+            var sub = connectionMultiplexer.GetSubscriber();
+            await sub.SubscribeAsync(channel, async (redisChannel, value) => await handler(serializer.Deserialize<T>(value)), flags);
+        }
+
 		private string CreateLuaScriptForMset<T>(RedisKey[] redisKeys, RedisValue[] redisValues, IList<Tuple<string, T>> objects)
 		{
 			var sb = new StringBuilder("return redis.call('mset',");

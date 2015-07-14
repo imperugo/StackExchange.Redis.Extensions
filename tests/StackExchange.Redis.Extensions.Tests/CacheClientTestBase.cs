@@ -1,13 +1,15 @@
-﻿using Xunit;
-using System;
-using System.Linq;
+﻿using System.Security.Authentication.ExtendedProtection;
+using System.Threading;
+using System.Threading.Tasks;
 using FizzWare.NBuilder;
-using System.Collections.Generic;
 using StackExchange.Redis.Extensions.Core;
-using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Extensions;
 using StackExchange.Redis.Extensions.Tests.Extensions;
 using StackExchange.Redis.Extensions.Tests.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Xunit;
 
 namespace StackExchange.Redis.Extensions.Tests
 {
@@ -227,6 +229,37 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.NotNull(cached);
 			Assert.Equal(150, cached.Count);
 		}
+
+	    [Fact]
+	    public async Task Pub_Sub()
+	    {
+	        var message = Enumerable.Range(0, 10).ToArray();
+	        const string channel = "unit_test";
+	        var subscriberNotified = false;
+            IEnumerable<int> subscriberValue = null;
+
+	        var action = new Action<IEnumerable<int>>(value =>
+            {
+                subscriberNotified = true;
+                subscriberValue = value;
+	        });
+
+	        Sut.Subscribe(channel, action);
+
+	        var result = Sut.Publish("unit_test", message);
+
+	        await Task.Run(() =>
+            {
+	            while (!subscriberNotified)
+	            {
+	                Thread.Sleep(100);
+	            }
+            });
+
+            Assert.Equal(1, result);
+            Assert.True(subscriberNotified);
+            Assert.Equal(message, subscriberValue);
+	    }
 
 		public void Dispose()
 		{
