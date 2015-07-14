@@ -28,6 +28,7 @@
 			- Get Redis Server information;
 			- Set Add;
 			- Set Member;
+			- Pub/Sub events;
 			- Save;
 			- Async methods;
 		</releaseNotes>
@@ -35,7 +36,7 @@
 		<language>en-US</language>
 		<tags>Async Redis NoSQL Client Distributed Cache PubSub Messaging</tags>
 		<dependencies>
-			<dependency id="StackExchange.Redis.Extensions.Core" version="1.1.11" />
+			<dependency id="StackExchange.Redis.Extensions.Core" version="1.1.12" />
 			<dependency id="Jil" version="2.10.0" />
 		</dependencies>
 	</metadata>

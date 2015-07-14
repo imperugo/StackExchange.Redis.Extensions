@@ -230,36 +230,36 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.Equal(150, cached.Count);
 		}
 
-	    [Fact]
-	    public async Task Pub_Sub()
-	    {
-	        var message = Enumerable.Range(0, 10).ToArray();
-	        const string channel = "unit_test";
-	        var subscriberNotified = false;
-            IEnumerable<int> subscriberValue = null;
+		[Fact]
+		public async Task Pub_Sub()
+		{
+			var message = Enumerable.Range(0, 10).ToArray();
+			const string channel = "unit_test";
+			var subscriberNotified = false;
+			IEnumerable<int> subscriberValue = null;
 
-	        var action = new Action<IEnumerable<int>>(value =>
-            {
-                subscriberNotified = true;
-                subscriberValue = value;
-	        });
+			var action = new Action<IEnumerable<int>>(value =>
+			{
+				subscriberNotified = true;
+				subscriberValue = value;
+			});
 
-	        Sut.Subscribe(channel, action);
+			Sut.Subscribe(channel, action);
 
-	        var result = Sut.Publish("unit_test", message);
+			var result = Sut.Publish("unit_test", message);
 
-	        await Task.Run(() =>
-            {
-	            while (!subscriberNotified)
-	            {
-	                Thread.Sleep(100);
-	            }
-            });
+			await Task.Run(() =>
+			{
+				while (!subscriberNotified)
+				{
+					Thread.Sleep(100);
+				}
+			});
 
-            Assert.Equal(1, result);
-            Assert.True(subscriberNotified);
-            Assert.Equal(message, subscriberValue);
-	    }
+			Assert.Equal(1, result);
+			Assert.True(subscriberNotified);
+			Assert.Equal(message, subscriberValue);
+		}
 
 		public void Dispose()
 		{

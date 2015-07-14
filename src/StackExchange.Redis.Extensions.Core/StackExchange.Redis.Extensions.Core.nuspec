@@ -17,6 +17,7 @@
 			- StackExchange.Redis.Extensions.Newtonsoft
 			- StackExchange.Redis.Extensions.Jil
 			- StackExchange.Redis.Extensions.MsgPack
+			- StackExchange.Redis.Extensions.Protobuf
 		</description>
 		<summary>
 			StackExchange.Redis.Extensions is a library that extends StackExchange.Redis
@@ -33,6 +34,7 @@
 			- Get Redis Server information;
 			- Set Add;
 			- Set Member;
+			- Pub/Sub events;
 			- Save;
 			- Async methods;
 		</releaseNotes>
@@ -40,7 +42,7 @@
 		<language>en-US</language>
 		<tags>Async Redis NoSQL Client Distributed Cache PubSub Messaging</tags>
 		<dependencies>
-			<dependency id="StackExchange.Redis" version="1.0.450" />
+			<dependency id="StackExchange.Redis" version="1.0.481" />
 		</dependencies>
 	</metadata>
 </package>
