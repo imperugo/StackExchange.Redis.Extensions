@@ -1,4 +1,6 @@
-﻿using System.Security.Authentication.ExtendedProtection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
@@ -6,9 +8,6 @@ using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Core.Extensions;
 using StackExchange.Redis.Extensions.Tests.Extensions;
 using StackExchange.Redis.Extensions.Tests.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace StackExchange.Redis.Extensions.Tests
