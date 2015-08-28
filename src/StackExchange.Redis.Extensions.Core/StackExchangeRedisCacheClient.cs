@@ -441,27 +441,16 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </returns>
 		public IDictionary<string, T> GetAll<T>(IEnumerable<string> keys) where T : class
 		{
-			var keysList = keys.ToList();
-			var redisKeys = new RedisKey[keysList.Count];
-			var sb = CreateLuaScriptForMget(redisKeys, keysList);
-
-			RedisResult[] redisResults = (RedisResult[])db.ScriptEvaluate(sb, redisKeys);
-
-			var result = new Dictionary<string, T>();
-
-			for (var i = 0; i < redisResults.Count(); i++)
-			{
-				var obj = default(T);
-
-				if (!redisResults[i].IsNull)
-				{
-					//TODO: (byte[])redisResults[i]
-					obj = serializer.Deserialize<T>(encoding.GetBytes(redisResults[i].ToString()));
-				}
-				result.Add(keysList[i], obj);
-			}
-
-			return result;
+		    var redisKeys = keys.Select(x => (RedisKey) x).ToArray();
+		    var result = db.StringGet(redisKeys);
+		    return redisKeys.ToDictionary(key => (string) key, key =>
+		    {
+		        {
+		            var index = Array.IndexOf(redisKeys, key);
+		            var value = result[index];
+		            return value == RedisValue.Null ? null : serializer.Deserialize<T>(result[index]);
+		        }
+		    });
 		}
 
 		/// <summary>
