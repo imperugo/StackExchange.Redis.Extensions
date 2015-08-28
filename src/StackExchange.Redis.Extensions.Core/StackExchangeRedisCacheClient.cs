@@ -45,12 +45,12 @@ namespace StackExchange.Redis.Extensions.Core
 			{
 				Ssl = configuration.Ssl,
 				AllowAdmin = configuration.AllowAdmin,
-                Password = configuration.Password
+				Password = configuration.Password
 			};
 
 			foreach (RedisHost redisHost in configuration.RedisHosts)
 			{
-			    options.EndPoints.Add(redisHost.Host, redisHost.CachePort);
+				options.EndPoints.Add(redisHost.Host, redisHost.CachePort);
 			}
 
 			this.connectionMultiplexer = ConnectionMultiplexer.Connect(options);
@@ -441,16 +441,16 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </returns>
 		public IDictionary<string, T> GetAll<T>(IEnumerable<string> keys) where T : class
 		{
-		    var redisKeys = keys.Select(x => (RedisKey) x).ToArray();
-		    var result = db.StringGet(redisKeys);
-		    return redisKeys.ToDictionary(key => (string) key, key =>
-		    {
-		        {
-		            var index = Array.IndexOf(redisKeys, key);
-		            var value = result[index];
-		            return value == RedisValue.Null ? null : serializer.Deserialize<T>(result[index]);
-		        }
-		    });
+			var redisKeys = keys.Select(x => (RedisKey)x).ToArray();
+			var result = db.StringGet(redisKeys);
+			return redisKeys.ToDictionary(key => (string)key, key =>
+		   {
+			   {
+				   var index = Array.IndexOf(redisKeys, key);
+				   var value = result[index];
+				   return value == RedisValue.Null ? null : serializer.Deserialize<T>(result[index]);
+			   }
+		   });
 		}
 
 		/// <summary>
@@ -464,26 +464,16 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </returns>
 		public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys) where T : class
 		{
-			var keysList = keys.ToList();
-			RedisKey[] redisKeys = new RedisKey[keysList.Count];
-			var sb = CreateLuaScriptForMget(redisKeys, keysList);
-
-			var redisResults = (RedisResult[])await db.ScriptEvaluateAsync(sb, redisKeys);
-
-			var result = new Dictionary<string, T>();
-
-			for (var i = 0; i < redisResults.Count(); i++)
+			var redisKeys = keys.Select(x => (RedisKey)x).ToArray();
+			var result = await db.StringGetAsync(redisKeys);
+			return redisKeys.ToDictionary(key => (string)key, key =>
 			{
-				var obj = default(T);
-
-				if (!redisResults[i].IsNull)
 				{
-					obj = await serializer.DeserializeAsync<T>((byte[])redisResults[i]);
+					var index = Array.IndexOf(redisKeys, key);
+					var value = result[index];
+					return value == RedisValue.Null ? null : serializer.Deserialize<T>(result[index]);
 				}
-				result.Add(keysList[i], obj);
-			}
-
-			return result;
+			});
 		}
 
 		/// <summary>
@@ -493,13 +483,9 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="items">The items.</param>
 		public bool AddAll<T>(IList<Tuple<string, T>> items) where T : class
 		{
-			RedisKey[] redisKeys = new RedisKey[items.Count];
-			RedisValue[] redisValues = new RedisValue[items.Count];
-			var sb = CreateLuaScriptForMset(redisKeys, redisValues, items);
+			Dictionary<RedisKey,RedisValue> values = items.ToDictionary<Tuple<string, T>, RedisKey, RedisValue>(item => item.Item1, item => this.Serializer.Serialize(item.Item2));
 
-			var redisResults = db.ScriptEvaluate(sb, redisKeys, redisValues);
-
-			return redisResults.ToString() == "OK";
+			return db.StringSet(values.ToArray());
 		}
 
 		/// <summary>
@@ -510,13 +496,9 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns></returns>
 		public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items) where T : class
 		{
-			RedisKey[] redisKeys = new RedisKey[items.Count];
-			RedisValue[] redisValues = new RedisValue[items.Count];
-			var sb = CreateLuaScriptForMset(redisKeys, redisValues, items);
+			Dictionary<RedisKey, RedisValue> values = items.ToDictionary<Tuple<string, T>, RedisKey, RedisValue>(item => item.Item1, item => this.Serializer.Serialize(item.Item2));
 
-			var redisResults = await db.ScriptEvaluateAsync(sb, redisKeys, redisValues);
-
-			return redisResults.ToString() == "OK";
+			return await db.StringSetAsync(values.ToArray());
 		}
 
 		/// <summary>
@@ -583,7 +565,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 			foreach (var endpoint in endPoints)
 			{
-				var dbKeys = db.Multiplexer.GetServer(endpoint).Keys(pattern: pattern);
+				var dbKeys = db.Multiplexer.GetServer(endpoint).Keys(database: db.Database, pattern: pattern);
 
 				foreach (var dbKey in dbKeys)
 				{
@@ -631,7 +613,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 			foreach (var endpoint in endPoints)
 			{
-                await db.Multiplexer.GetServer(endpoint).FlushDatabaseAsync(db.Database);
+				await db.Multiplexer.GetServer(endpoint).FlushDatabaseAsync(db.Database);
 			}
 		}
 
@@ -669,76 +651,34 @@ namespace StackExchange.Redis.Extensions.Core
 			return ParseInfo(info);
 		}
 
-        public long Publish<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
-	    {
-            var sub = connectionMultiplexer.GetSubscriber();
-            return sub.Publish(channel, serializer.Serialize(message), flags);
-	    }
-
-        public async Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
-	    {
-            var sub = connectionMultiplexer.GetSubscriber();
-            return await sub.PublishAsync(channel, await serializer.SerializeAsync(message), flags);
-	    }
-
-        public void Subscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None) where T : class
-        {
-            if(handler == null)
-                throw new ArgumentNullException("handler");
-
-            var sub = connectionMultiplexer.GetSubscriber();
-            sub.Subscribe(channel, (redisChannel, value) => handler(serializer.Deserialize<T>(value)), flags);
-        }
-
-        public async Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None) where T : class
-        {
-            if (handler == null)
-                throw new ArgumentNullException("handler");
-
-            var sub = connectionMultiplexer.GetSubscriber();
-            await sub.SubscribeAsync(channel, async (redisChannel, value) => await handler(serializer.Deserialize<T>(value)), flags);
-        }
-
-		private string CreateLuaScriptForMset<T>(RedisKey[] redisKeys, RedisValue[] redisValues, IList<Tuple<string, T>> objects)
+		public long Publish<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
 		{
-			var sb = new StringBuilder("return redis.call('mset',");
-
-			for (var i = 0; i < objects.Count; i++)
-			{
-				redisKeys[i] = objects[i].Item1;
-				redisValues[i] = this.serializer.Serialize(objects[i].Item2);
-
-				sb.AppendFormat("KEYS[{0}],ARGV[{0}]", i + 1);
-
-				if (i < objects.Count - 1)
-				{
-					sb.Append(",");
-				}
-			}
-
-			sb.Append(")");
-
-			return sb.ToString();
+			var sub = connectionMultiplexer.GetSubscriber();
+			return sub.Publish(channel, serializer.Serialize(message), flags);
 		}
 
-		private string CreateLuaScriptForMget(RedisKey[] redisKeys, List<string> keysList)
+		public async Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
 		{
-			var sb = new StringBuilder("return redis.call('mget',");
+			var sub = connectionMultiplexer.GetSubscriber();
+			return await sub.PublishAsync(channel, await serializer.SerializeAsync(message), flags);
+		}
 
-			for (var i = 0; i < keysList.Count; i++)
-			{
-				redisKeys[i] = keysList[i];
-				sb.AppendFormat("KEYS[{0}]", i + 1);
+		public void Subscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None) where T : class
+		{
+			if (handler == null)
+				throw new ArgumentNullException("handler");
 
-				if (i < keysList.Count - 1)
-				{
-					sb.Append(",");
-				}
-			}
+			var sub = connectionMultiplexer.GetSubscriber();
+			sub.Subscribe(channel, (redisChannel, value) => handler(serializer.Deserialize<T>(value)), flags);
+		}
 
-			sb.Append(")");
+		public async Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None) where T : class
+		{
+			if (handler == null)
+				throw new ArgumentNullException("handler");
 
-			return sb.ToString();
+			var sub = connectionMultiplexer.GetSubscriber();
+			await sub.SubscribeAsync(channel, async (redisChannel, value) => await handler(serializer.Deserialize<T>(value)), flags);
 		}
 
 		private Dictionary<string, string> ParseInfo(string info)

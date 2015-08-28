@@ -213,10 +213,11 @@ namespace StackExchange.Redis.Extensions.Tests
 		}
 
 		[Fact]
-		public void Add150ItemsTest()
+		public void Massive_Add_Should_Not_Throw_Exception_And_Work_Correctly()
 		{
+			const int size = 3000;
 			var values = Builder<TestClass<string>>
-						.CreateListOfSize(150)
+						.CreateListOfSize(size)
 						.All()
 						.Build();
 
@@ -226,7 +227,14 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			Assert.True(result);
 			Assert.NotNull(cached);
-			Assert.Equal(150, cached.Count);
+			Assert.Equal(size, cached.Count);
+
+			for (int i = 0; i < values.Count; i++)
+			{
+				TestClass<string> value = values[i];
+				Assert.Equal(value.Key,cached[value.Key].Key);
+				Assert.Equal(value.Value,cached[value.Key].Value);
+			}
 		}
 
 		[Fact]
