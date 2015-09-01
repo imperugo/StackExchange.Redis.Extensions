@@ -536,12 +536,12 @@ namespace StackExchange.Redis.Extensions.Core
 	    {
             if (string.IsNullOrEmpty(key))
             {
-                throw new ArgumentException(nameof(key));
+                throw new ArgumentException("key cannot be empty.", nameof(key));
             }
 
             if (item == null)
             {
-                throw new ArgumentNullException(nameof(item));
+                throw new ArgumentNullException(nameof(item), "item cannot be null.");
             }
 
             var serializedObject = serializer.Serialize(item);
@@ -560,12 +560,12 @@ namespace StackExchange.Redis.Extensions.Core
 	    {
             if (string.IsNullOrEmpty(key))
             {
-                throw new ArgumentException(nameof(key));
+                throw new ArgumentException("key cannot be empty.", nameof(key));
             }
 
             if (item == null)
             {
-                throw new ArgumentNullException(nameof(item));
+                throw new ArgumentNullException(nameof(item), "item cannot be null.");
             }
 
             var serializedObject = await serializer.SerializeAsync(item);
@@ -735,12 +735,12 @@ namespace StackExchange.Redis.Extensions.Core
 	    {
             if (string.IsNullOrEmpty(key))
             {
-                throw new ArgumentException(nameof(key));
+                throw new ArgumentException("key cannot be empty.", nameof(key));
             }
 
             if (item == null)
             {
-                throw new ArgumentNullException(nameof(item));
+                throw new ArgumentNullException(nameof(item), "item cannot be null.");
             }
 
             var serializedItem = serializer.Serialize(item);
@@ -752,12 +752,12 @@ namespace StackExchange.Redis.Extensions.Core
 	    {
 	        if (string.IsNullOrEmpty(key))
 	        {
-	            throw new ArgumentException(nameof(key));
+	            throw new ArgumentException("key cannot be empty.", nameof(key));
 	        }
 
 	        if (item == null)
 	        {
-	            throw new ArgumentNullException(nameof(item));
+	            throw new ArgumentNullException(nameof(item), "item cannot be null.");
 	        }
 
 	        var serializedItem = await serializer.SerializeAsync(item);
@@ -769,7 +769,7 @@ namespace StackExchange.Redis.Extensions.Core
 	    {
 	        if (string.IsNullOrEmpty(key))
 	        {
-                throw new ArgumentException(nameof(key));
+                throw new ArgumentException("key cannot be empty.", nameof(key));
             }
 
 	        var item = db.ListRightPop(key);
@@ -781,7 +781,7 @@ namespace StackExchange.Redis.Extensions.Core
 	    {
             if (string.IsNullOrEmpty(key))
             {
-                throw new ArgumentException(nameof(key));
+                throw new ArgumentException("key cannot be empty.", nameof(key));
             }
 
             var item = await db.ListRightPopAsync(key);
