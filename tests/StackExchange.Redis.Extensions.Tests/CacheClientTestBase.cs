@@ -268,6 +268,47 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.Equal(message, subscriberValue);
 		}
 
+
+        [Fact]
+		public void SetAddGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+		{
+			var values = Builder < TestClass < string >>
+                       .CreateListOfSize(5)
+                       .All()
+                       .Build();
+
+			values.ForEach(x =>
+			{
+				Db.StringSet(x.Key, Serializer.Serialize(x.Value));
+				Sut.SetAdd<TestClass<string>>("MySet", new List<TestClass<string>> {x
+   });
+			});
+
+			var keys = Db.SetMembers("MySet");
+
+			Assert.Equal(keys.Length, values.Count);
+		}
+
+		[Fact]
+		public void SetAddAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+		{
+			var values = Builder < TestClass < string >>
+                       .CreateListOfSize(5)
+                       .All()
+                       .Build();
+
+			values.ForEach(x =>
+			{
+				Db.StringSet(x.Key, Serializer.Serialize(x.Value));
+                var result = Sut.SetAddAsync("MySet", new List<TestClass<string>> { x }).Result;
+			});
+
+			var keys = Db.SetMembers("MySet");
+
+			Assert.Equal(keys.Length, values.Count);
+		}
+
+
 		public void Dispose()
 		{
 			Db.FlushDatabase();
