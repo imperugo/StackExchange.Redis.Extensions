@@ -264,16 +264,16 @@ namespace StackExchange.Redis.Extensions.Core
         /// <summary>
 		/// Run SADD command <see cref="http://redis.io/commands/sadd"/>
 		/// </summary>
-		/// <param name="collection">Name of the member.</param>
+		/// <param name="item">Name of the member.</param>
 		/// <param name="key">The key.</param>
-        bool SetAdd<T>(string key, ICollection<T> collection) where T : class;
+        bool SetAdd<T>(string key, T item) where T : class;
 
         /// <summary>
 		/// Run SADD command <see cref="http://redis.io/commands/sadd"/>
 		/// </summary>
-		/// <param name="collection">Name of the member.</param>
+		/// <param name="item">Name of the member.</param>
 		/// <param name="key">The key.</param>
-        Task<bool> SetAddAsync<T>(string key, ICollection<T> collection) where T : class;
+        Task<bool> SetAddAsync<T>(string key, T item) where T : class;
 
         /// <summary>
         /// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS"/>
@@ -369,5 +369,13 @@ namespace StackExchange.Redis.Extensions.Core
 	    /// Registers a callback handler to process messages published to a channel.
 	    /// </summary>
 	    Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None) where T : class;
+
+	    long ListAddToLeft<T>(string key, T item) where T : class;
+
+	    Task<long> ListAddToLeftAsync<T>(string key, T item) where T : class;
+
+	    T ListGetFromRight<T>(string key) where T : class;
+
+	    Task<T> ListGetFromRightAsync<T>(string key) where T : class;
 	}
 }
