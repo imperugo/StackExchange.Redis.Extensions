@@ -501,29 +501,79 @@ namespace StackExchange.Redis.Extensions.Core
 			return await db.StringSetAsync(values.ToArray());
 		}
 
-		/// <summary>
-		/// Run SADD command <see cref="http://redis.io/commands/sadd" />
-		/// </summary>
-		/// <param name="memberName">Name of the member.</param>
-		/// <param name="key">The key.</param>
-		/// <returns></returns>
-		public bool SetAdd(string memberName, string key)
+        /// <summary>
+        /// Run SADD command <see cref="http://redis.io/commands/sadd" />
+        /// </summary>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        [Obsolete("Parameters are a little misleading. Digging further reveals the parameters should be swapped. Use SetAdd<T> instead.")]
+        public bool SetAdd(string memberName, string key)
 		{
 			return db.SetAdd(memberName, key);
 		}
 
-		/// <summary>
-		/// Run SADD command <see cref="http://redis.io/commands/sadd" />
-		/// </summary>
-		/// <param name="memberName">Name of the member.</param>
-		/// <param name="key">The key.</param>
-		/// <returns></returns>
-		public Task<bool> SetAddAsync(string memberName, string key)
+        /// <summary>
+        /// Run SADD command <see cref="http://redis.io/commands/sadd" />
+        /// </summary>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        [Obsolete("Parameters are a little misleading. Digging further reveals the parameters should be swapped. Use SetAddAsync<T> instead.")]
+        public Task<bool> SetAddAsync(string memberName, string key)
 		{
 			return db.SetAddAsync(memberName, key);
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Run SADD command <see cref="http://redis.io/commands/sadd" />
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+	    public bool SetAdd<T>(string key, T item) where T : class
+	    {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException(nameof(key));
+            }
+
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var serializedObject = serializer.Serialize(item);
+
+            return db.SetAdd(key, serializedObject);
+        }
+
+        /// <summary>
+        /// Run SADD command <see cref="http://redis.io/commands/sadd" />
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+	    public async Task<bool> SetAddAsync<T>(string key, T item) where T : class
+	    {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException(nameof(key));
+            }
+
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var serializedObject = await serializer.SerializeAsync(item);
+
+            return await db.SetAddAsync(key, serializedObject);
+        }
+
+	    /// <summary>
 		/// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS" />
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
@@ -681,7 +731,65 @@ namespace StackExchange.Redis.Extensions.Core
 			await sub.SubscribeAsync(channel, async (redisChannel, value) => await handler(serializer.Deserialize<T>(value)), flags);
 		}
 
-		private Dictionary<string, string> ParseInfo(string info)
+	    public long ListAddToLeft<T>(string key, T item) where T : class
+	    {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException(nameof(key));
+            }
+
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var serializedItem = serializer.Serialize(item);
+
+	        return db.ListLeftPush(key, serializedItem);
+	    }
+
+	    public async Task<long> ListAddToLeftAsync<T>(string key, T item) where T : class
+	    {
+	        if (string.IsNullOrEmpty(key))
+	        {
+	            throw new ArgumentException(nameof(key));
+	        }
+
+	        if (item == null)
+	        {
+	            throw new ArgumentNullException(nameof(item));
+	        }
+
+	        var serializedItem = await serializer.SerializeAsync(item);
+
+	        return await db.ListLeftPushAsync(key, serializedItem);
+	    }
+
+	    public T ListGetFromRight<T>(string key) where T : class
+	    {
+	        if (string.IsNullOrEmpty(key))
+	        {
+                throw new ArgumentException(nameof(key));
+            }
+
+	        var item = db.ListRightPop(key);
+
+	        return serializer.Deserialize<T>(item);
+	    }
+
+	    public async Task<T> ListGetFromRightAsync<T>(string key) where T : class
+	    {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException(nameof(key));
+            }
+
+            var item = await db.ListRightPopAsync(key);
+
+            return await serializer.DeserializeAsync<T>(item);
+        }
+
+	    private Dictionary<string, string> ParseInfo(string info)
 		{
 			string[] lines = info.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 			var data = new Dictionary<string, string>();

@@ -82,14 +82,14 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>True if the object has been added. Otherwise false</returns>
 		bool Add<T>(string key, T value) where T : class;
 
-		/// <summary>
-		/// Adds the specified instance to the Redis database.
-		/// </summary>
-		/// <typeparam name="T">The type of the class to add to Redis</typeparam>
-		/// <param name="key">The cache key.</param>
-		/// <param name="value">The instance of T.</param>
-		/// <returns>True if the object has been added. Otherwise false</returns>
-		Task<bool> AddAsync<T>(string key, T value) where T : class;
+        /// <summary>
+        /// Adds the specified instance to the Redis database.
+        /// </summary>
+        /// <typeparam name="T">The type of the class to add to Redis</typeparam>
+        /// <param name="key">The cache key.</param>
+        /// <param name="value">The instance of T.</param>
+        /// <returns>True if the object has been added. Otherwise false</returns>
+        Task<bool> AddAsync<T>(string key, T value) where T : class;
 
 		/// <summary>
 		/// Replaces the object with specified key into Redis database.
@@ -245,25 +245,41 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="items">The items.</param>
 		Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items) where T : class;
 
-		/// <summary>
+        /// <summary>
+        /// Run SADD command <see cref="http://redis.io/commands/sadd"/>
+        /// </summary>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="key">The key.</param>
+        [Obsolete("Parameters are a little misleading. Digging further reveals the parameters should be swapped. Use SetAdd<T> instead.")]
+        bool SetAdd(string memberName, string key);
+
+        /// <summary>
+        /// Run SADD command <see cref="http://redis.io/commands/sadd"/>
+        /// </summary>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="key">The key.</param>
+        [Obsolete("Parameters are a little misleading. Digging further reveals the parameters should be swapped. Use SetAddAsync<T> instead.")]
+        Task<bool> SetAddAsync(string memberName, string key);
+
+        /// <summary>
 		/// Run SADD command <see cref="http://redis.io/commands/sadd"/>
 		/// </summary>
-		/// <param name="memberName">Name of the member.</param>
+		/// <param name="item">Name of the member.</param>
 		/// <param name="key">The key.</param>
-		bool SetAdd(string memberName, string key);
+        bool SetAdd<T>(string key, T item) where T : class;
 
-		/// <summary>
+        /// <summary>
 		/// Run SADD command <see cref="http://redis.io/commands/sadd"/>
 		/// </summary>
-		/// <param name="memberName">Name of the member.</param>
+		/// <param name="item">Name of the member.</param>
 		/// <param name="key">The key.</param>
-		Task<bool> SetAddAsync(string memberName, string key);
+        Task<bool> SetAddAsync<T>(string key, T item) where T : class;
 
-		/// <summary>
-		/// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS"/>
-		/// </summary>
-		/// <param name="memberName">Name of the member.</param>
-		string[] SetMember(string memberName);
+        /// <summary>
+        /// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS"/>
+        /// </summary>
+        /// <param name="memberName">Name of the member.</param>
+        string[] SetMember(string memberName);
 
 		/// <summary>
 		/// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS"/>
@@ -353,5 +369,13 @@ namespace StackExchange.Redis.Extensions.Core
 	    /// Registers a callback handler to process messages published to a channel.
 	    /// </summary>
 	    Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None) where T : class;
+
+	    long ListAddToLeft<T>(string key, T item) where T : class;
+
+	    Task<long> ListAddToLeftAsync<T>(string key, T item) where T : class;
+
+	    T ListGetFromRight<T>(string key) where T : class;
+
+	    Task<T> ListGetFromRightAsync<T>(string key) where T : class;
 	}
 }
