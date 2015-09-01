@@ -501,29 +501,69 @@ namespace StackExchange.Redis.Extensions.Core
 			return await db.StringSetAsync(values.ToArray());
 		}
 
-		/// <summary>
-		/// Run SADD command <see cref="http://redis.io/commands/sadd" />
-		/// </summary>
-		/// <param name="memberName">Name of the member.</param>
-		/// <param name="key">The key.</param>
-		/// <returns></returns>
-		public bool SetAdd(string memberName, string key)
+        /// <summary>
+        /// Run SADD command <see cref="http://redis.io/commands/sadd" />
+        /// </summary>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        [Obsolete("Parameters are a little misleading. Digging further reveals the parameters should be swapped. Use SetAdd<T> instead.")]
+        public bool SetAdd(string memberName, string key)
 		{
 			return db.SetAdd(memberName, key);
 		}
 
-		/// <summary>
-		/// Run SADD command <see cref="http://redis.io/commands/sadd" />
-		/// </summary>
-		/// <param name="memberName">Name of the member.</param>
-		/// <param name="key">The key.</param>
-		/// <returns></returns>
-		public Task<bool> SetAddAsync(string memberName, string key)
+        /// <summary>
+        /// Run SADD command <see cref="http://redis.io/commands/sadd" />
+        /// </summary>
+        /// <param name="memberName">Name of the member.</param>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        [Obsolete("Parameters are a little misleading. Digging further reveals the parameters should be swapped. Use SetAddAsync<T> instead.")]
+        public Task<bool> SetAddAsync(string memberName, string key)
 		{
 			return db.SetAddAsync(memberName, key);
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Run SADD command <see cref="http://redis.io/commands/sadd" />
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+	    public bool SetAdd<T>(string key, ICollection<T> collection) where T : class
+	    {
+            if (collection == null || string.IsNullOrEmpty(key))
+            {
+                return false;
+            }
+
+            var serializedObject = serializer.Serialize(collection);
+
+            return db.SetAdd(key, serializedObject);
+        }
+
+        /// <summary>
+        /// Run SADD command <see cref="http://redis.io/commands/sadd" />
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+	    public async Task<bool> SetAddAsync<T>(string key, ICollection<T> collection) where T : class
+	    {
+            if (collection == null || string.IsNullOrEmpty(key))
+            {
+                return false;
+            }
+
+            var serializedObject = await serializer.SerializeAsync(collection);
+
+            return await db.SetAddAsync(key, serializedObject);
+        }
+
+	    /// <summary>
 		/// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS" />
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
