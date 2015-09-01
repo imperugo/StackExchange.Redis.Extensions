@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Extensions;
@@ -17,9 +16,8 @@ namespace StackExchange.Redis.Extensions.Core
 		private readonly ConnectionMultiplexer connectionMultiplexer;
 		private readonly IDatabase db;
 		private readonly ISerializer serializer;
-		private static readonly Encoding encoding = Encoding.UTF8;
 
-		/// <summary>
+	    /// <summary>
 		/// Initializes a new instance of the <see cref="StackExchangeRedisCacheClient"/> class.
 		/// </summary>
 		/// <param name="serializer">The serializer.</param>
@@ -681,7 +679,37 @@ namespace StackExchange.Redis.Extensions.Core
 			await sub.SubscribeAsync(channel, async (redisChannel, value) => await handler(serializer.Deserialize<T>(value)), flags);
 		}
 
-		private Dictionary<string, string> ParseInfo(string info)
+        public void Unsubscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None) where T : class
+        {
+            if (handler == null)
+                throw new ArgumentNullException("handler");
+
+            var sub = connectionMultiplexer.GetSubscriber();
+            sub.Unsubscribe(channel, (redisChannel, value) => handler(serializer.Deserialize<T>(value)), flags);
+        }
+
+	    public async Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None) where T : class
+        {
+            if (handler == null)
+                throw new ArgumentNullException("handler");
+
+            var sub = connectionMultiplexer.GetSubscriber();
+            await sub.UnsubscribeAsync(channel, (redisChannel, value) => handler(serializer.Deserialize<T>(value)), flags);
+        }
+
+        public void UnsubscribeAll(CommandFlags flags = CommandFlags.None)
+        {
+            var sub = connectionMultiplexer.GetSubscriber();
+            sub.UnsubscribeAll(flags);
+        }
+
+        public async Task UnsubscribeAllAsync(CommandFlags flags = CommandFlags.None)
+        {
+            var sub = connectionMultiplexer.GetSubscriber();
+            await sub.UnsubscribeAllAsync(flags);
+        }
+
+        private static Dictionary<string, string> ParseInfo(string info)
 		{
 			string[] lines = info.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 			var data = new Dictionary<string, string>();
