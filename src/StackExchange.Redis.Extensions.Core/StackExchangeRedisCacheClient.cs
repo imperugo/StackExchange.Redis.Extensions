@@ -530,16 +530,21 @@ namespace StackExchange.Redis.Extensions.Core
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
-        /// <param name="collection"></param>
+        /// <param name="item"></param>
         /// <returns></returns>
-	    public bool SetAdd<T>(string key, ICollection<T> collection) where T : class
+	    public bool SetAdd<T>(string key, T item) where T : class
 	    {
-            if (collection == null || string.IsNullOrEmpty(key))
+            if (string.IsNullOrEmpty(key))
             {
-                return false;
+                throw new ArgumentException(nameof(key));
             }
 
-            var serializedObject = serializer.Serialize(collection);
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var serializedObject = serializer.Serialize(item);
 
             return db.SetAdd(key, serializedObject);
         }
@@ -549,16 +554,21 @@ namespace StackExchange.Redis.Extensions.Core
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
-        /// <param name="collection"></param>
+        /// <param name="item"></param>
         /// <returns></returns>
-	    public async Task<bool> SetAddAsync<T>(string key, ICollection<T> collection) where T : class
+	    public async Task<bool> SetAddAsync<T>(string key, T item) where T : class
 	    {
-            if (collection == null || string.IsNullOrEmpty(key))
+            if (string.IsNullOrEmpty(key))
             {
-                return false;
+                throw new ArgumentException(nameof(key));
             }
 
-            var serializedObject = await serializer.SerializeAsync(collection);
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var serializedObject = await serializer.SerializeAsync(item);
 
             return await db.SetAddAsync(key, serializedObject);
         }
@@ -721,7 +731,65 @@ namespace StackExchange.Redis.Extensions.Core
 			await sub.SubscribeAsync(channel, async (redisChannel, value) => await handler(serializer.Deserialize<T>(value)), flags);
 		}
 
-		private Dictionary<string, string> ParseInfo(string info)
+	    public long ListAddToLeft<T>(string key, T item) where T : class
+	    {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException(nameof(key));
+            }
+
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var serializedItem = serializer.Serialize(item);
+
+	        return db.ListLeftPush(key, serializedItem);
+	    }
+
+	    public async Task<long> ListAddToLeftAsync<T>(string key, T item) where T : class
+	    {
+	        if (string.IsNullOrEmpty(key))
+	        {
+	            throw new ArgumentException(nameof(key));
+	        }
+
+	        if (item == null)
+	        {
+	            throw new ArgumentNullException(nameof(item));
+	        }
+
+	        var serializedItem = await serializer.SerializeAsync(item);
+
+	        return await db.ListLeftPushAsync(key, serializedItem);
+	    }
+
+	    public T ListGetFromRight<T>(string key) where T : class
+	    {
+	        if (string.IsNullOrEmpty(key))
+	        {
+                throw new ArgumentException(nameof(key));
+            }
+
+	        var item = db.ListRightPop(key);
+
+	        return serializer.Deserialize<T>(item);
+	    }
+
+	    public async Task<T> ListGetFromRightAsync<T>(string key) where T : class
+	    {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException(nameof(key));
+            }
+
+            var item = await db.ListRightPopAsync(key);
+
+            return await serializer.DeserializeAsync<T>(item);
+        }
+
+	    private Dictionary<string, string> ParseInfo(string info)
 		{
 			string[] lines = info.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 			var data = new Dictionary<string, string>();
