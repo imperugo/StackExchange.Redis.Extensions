@@ -268,7 +268,192 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.Equal(message, subscriberValue);
 		}
 
-		public void Dispose()
+	    [Fact]
+	    public void SetAddGenericShouldThrowExceptionWhenKeyIsEmpty()
+	    {
+	        Assert.Throws<ArgumentException>(() => Sut.SetAdd<string>(string.Empty, string.Empty));
+	    }
+
+	    [Fact]
+	    public void SetAddGenericShouldThrowExceptionWhenItemIsNull()
+	    {
+	        Assert.Throws<ArgumentNullException>(() => Sut.SetAdd<string>("MySet", null));
+	    }
+
+        [Fact]
+		public void SetAddGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+		{
+			var values = Builder<TestClass<string>>
+                       .CreateListOfSize(5)
+                       .All()
+                       .Build();
+
+			values.ForEach(x =>
+			{
+				Db.StringSet(x.Key, Serializer.Serialize(x.Value));
+				Sut.SetAdd<TestClass<string>>("MySet", x);
+			});
+
+			var keys = Db.SetMembers("MySet");
+
+			Assert.Equal(keys.Length, values.Count);
+		}
+        
+        [Fact]
+        public void SetAddAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
+        {
+            var exceptions = Sut.SetAddAsync<string>(string.Empty, string.Empty).Exception;
+            Assert.IsType<ArgumentException>(exceptions.Flatten().GetBaseException());
+        }
+
+        [Fact]
+        public void SetAddAsyncGenericShouldThrowExceptionWhenItemIsNull()
+        {
+            var exceptions = Sut.SetAddAsync<string>("MySet", null).Exception;
+            Assert.IsType<ArgumentNullException>(exceptions.Flatten().GetBaseException());
+        }
+
+        [Fact]
+		public void SetAddAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+		{
+			var values = Builder<TestClass<string>>
+                       .CreateListOfSize(5)
+                       .All()
+                       .Build();
+
+			values.ForEach(x =>
+			{
+				Db.StringSet(x.Key, Serializer.Serialize(x.Value));
+                var result = Sut.SetAddAsync("MySet", x).Result;
+			});
+
+			var keys = Db.SetMembers("MySet");
+
+			Assert.Equal(keys.Length, values.Count);
+		}
+
+	    [Fact]
+	    public void ListAddToLeftGenericShouldThrowExceptionWhenKeyIsEmpty()
+	    {
+	        Assert.Throws<ArgumentException>(() => Sut.ListAddToLeft(string.Empty, string.Empty));
+	    }
+
+	    [Fact]
+	    public void ListAddToLeftGenericShouldThrowExceptionWhenItemIsNull()
+	    {
+	        Assert.Throws<ArgumentNullException>(() => Sut.ListAddToLeft<string>("MyList", null));
+	    }
+
+	    [Fact]
+	    public void ListAddToLeftGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+	    {
+            var values = Builder<TestClass<string>>
+                       .CreateListOfSize(5)
+                       .All()
+                       .Build();
+
+	        var key = "MyList";
+
+            values.ForEach(x =>
+            {
+                Sut.ListAddToLeft(key, Serializer.Serialize(x));
+            });
+
+	        var keys = Db.ListRange(key);
+
+	        Assert.Equal(keys.Length, values.Count);
+	    }
+
+        [Fact]
+        public void ListAddToLeftAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
+        {
+            var exceptions = Sut.ListAddToLeftAsync(string.Empty, string.Empty).Exception;
+            Assert.IsType<ArgumentException>(exceptions.Flatten().GetBaseException());
+        }
+
+        [Fact]
+        public void ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemIsNull()
+        {
+            var exceptions = Sut.ListAddToLeftAsync<string>("MyList", null).Exception;
+            Assert.IsType<ArgumentNullException>(exceptions.Flatten().GetBaseException());
+        }
+
+        [Fact]
+	    public void ListAddToLeftAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+	    {
+            var values = Builder<TestClass<string>>
+                       .CreateListOfSize(5)
+                       .All()
+                       .Build();
+
+	        var key = "MyListAsync";
+
+            values.ForEach(x =>
+            {
+                var result = Sut.ListAddToLeftAsync(key, Serializer.Serialize(x)).Result;
+            });
+
+	        var keys = Db.ListRange(key);
+
+	        Assert.Equal(keys.Length, values.Count);
+	    }
+
+	    [Fact]
+	    public void ListGetFromRightGenericShouldThrowExceptionWhenKeyIsEmpty()
+	    {
+	        Assert.Throws<ArgumentException>(() => Sut.ListGetFromRight<string>(string.Empty));
+	    }
+
+        [Fact]
+        public void ListGetFromRightGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+        {
+            var values = Builder<TestClass<string>>
+                       .CreateListOfSize(1)
+                       .All()
+                       .Build();
+
+            var key = "MyList";
+
+            values.ForEach(x =>
+            {
+                Db.ListLeftPush(key, Serializer.Serialize(x));
+            });
+
+            var item = Sut.ListGetFromRight<TestClass<string>>(key);
+
+            Assert.Equal(item.Key, values[0].Key);
+            Assert.Equal(item.Value, values[0].Value);
+        }
+
+        [Fact]
+        public void ListGetFromRightAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
+        {
+            var exceptions = Sut.ListGetFromRightAsync<string>(string.Empty).Exception;
+            Assert.IsType<ArgumentException>(exceptions.Flatten().GetBaseException());
+        }
+
+        [Fact]
+        public void ListGetFromRightAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+        {
+            var values = Builder<TestClass<string>>
+                       .CreateListOfSize(1)
+                       .All()
+                       .Build();
+
+            var key = "MyList";
+
+            values.ForEach(x =>
+            {
+                Db.ListLeftPush(key, Serializer.Serialize(x));
+            });
+
+            var item = Sut.ListGetFromRightAsync<TestClass<string>>(key).Result;
+
+            Assert.Equal(item.Key, values[0].Key);
+            Assert.Equal(item.Value, values[0].Value);
+        }
+
+        public void Dispose()
 		{
 			Db.FlushDatabase();
 			Db.Multiplexer.Dispose();
