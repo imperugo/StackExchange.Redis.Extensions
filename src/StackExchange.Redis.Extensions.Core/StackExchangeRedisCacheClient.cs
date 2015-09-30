@@ -206,7 +206,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// Null if not present, otherwise the instance of T.
 		/// </returns>
-		public T Get<T>(string key) where T : class
+		public T Get<T>(string key)
 		{
 			var valueBytes = db.StringGet(key);
 
@@ -226,7 +226,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// Null if not present, otherwise the instance of T.
 		/// </returns>
-		public async Task<T> GetAsync<T>(string key) where T : class
+		public async Task<T> GetAsync<T>(string key)
 		{
 			var valueBytes = await db.StringGetAsync(key);
 
@@ -247,7 +247,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public bool Add<T>(string key, T value) where T : class
+		public bool Add<T>(string key, T value)
 		{
 			var entryBytes = serializer.Serialize(value);
 
@@ -263,7 +263,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public async Task<bool> AddAsync<T>(string key, T value) where T : class
+		public async Task<bool> AddAsync<T>(string key, T value)
 		{
 			var entryBytes = await serializer.SerializeAsync(value);
 
@@ -279,7 +279,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public bool Replace<T>(string key, T value) where T : class
+		public bool Replace<T>(string key, T value)
 		{
 			return Add(key, value);
 		}
@@ -293,7 +293,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public Task<bool> ReplaceAsync<T>(string key, T value) where T : class
+		public Task<bool> ReplaceAsync<T>(string key, T value)
 		{
 			return AddAsync(key, value);
 		}
@@ -308,7 +308,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public bool Add<T>(string key, T value, DateTimeOffset expiresAt) where T : class
+		public bool Add<T>(string key, T value, DateTimeOffset expiresAt)
 		{
 			var entryBytes = serializer.Serialize(value);
 			var expiration = expiresAt.Subtract(DateTimeOffset.Now);
@@ -326,7 +326,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public async Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt) where T : class
+		public async Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt)
 		{
 			var entryBytes = await serializer.SerializeAsync(value);
 			var expiration = expiresAt.Subtract(DateTimeOffset.Now);
@@ -344,7 +344,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public bool Replace<T>(string key, T value, DateTimeOffset expiresAt) where T : class
+		public bool Replace<T>(string key, T value, DateTimeOffset expiresAt)
 		{
 			return Add(key, value, expiresAt);
 		}
@@ -359,7 +359,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public Task<bool> ReplaceAsync<T>(string key, T value, DateTimeOffset expiresAt) where T : class
+		public Task<bool> ReplaceAsync<T>(string key, T value, DateTimeOffset expiresAt)
 		{
 			return AddAsync(key, value, expiresAt);
 		}
@@ -374,7 +374,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public bool Add<T>(string key, T value, TimeSpan expiresIn) where T : class
+		public bool Add<T>(string key, T value, TimeSpan expiresIn)
 		{
 			var entryBytes = serializer.Serialize(value);
 
@@ -391,7 +391,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public async Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn) where T : class
+		public async Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn)
 		{
 			var entryBytes = await serializer.SerializeAsync(value);
 
@@ -408,7 +408,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public bool Replace<T>(string key, T value, TimeSpan expiresIn) where T : class
+		public bool Replace<T>(string key, T value, TimeSpan expiresIn)
 		{
 			return Add(key, value, expiresIn);
 		}
@@ -423,7 +423,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		public Task<bool> ReplaceAsync<T>(string key, T value, TimeSpan expiresIn) where T : class
+		public Task<bool> ReplaceAsync<T>(string key, T value, TimeSpan expiresIn)
 		{
 			return AddAsync(key, value, expiresIn);
 		}
@@ -437,7 +437,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// Empty list if there are no results, otherwise the instance of T.
 		/// If a cache key is not present on Redis the specified object into the returned Dictionary will be null
 		/// </returns>
-		public IDictionary<string, T> GetAll<T>(IEnumerable<string> keys) where T : class
+		public IDictionary<string, T> GetAll<T>(IEnumerable<string> keys)
 		{
 			var redisKeys = keys.Select(x => (RedisKey)x).ToArray();
 			var result = db.StringGet(redisKeys);
@@ -446,7 +446,7 @@ namespace StackExchange.Redis.Extensions.Core
 			   {
 				   var index = Array.IndexOf(redisKeys, key);
 				   var value = result[index];
-				   return value == RedisValue.Null ? null : serializer.Deserialize<T>(result[index]);
+				   return value == RedisValue.Null ? default(T) : serializer.Deserialize<T>(result[index]);
 			   }
 		   });
 		}
@@ -460,7 +460,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// Empty list if there are no results, otherwise the instance of T.
 		/// If a cache key is not present on Redis the specified object into the returned Dictionary will be null
 		/// </returns>
-		public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys) where T : class
+		public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys)
 		{
 			var redisKeys = keys.Select(x => (RedisKey)x).ToArray();
 			var result = await db.StringGetAsync(redisKeys);
@@ -469,7 +469,7 @@ namespace StackExchange.Redis.Extensions.Core
 				{
 					var index = Array.IndexOf(redisKeys, key);
 					var value = result[index];
-					return value == RedisValue.Null ? null : serializer.Deserialize<T>(result[index]);
+					return value == RedisValue.Null ? default(T) : serializer.Deserialize<T>(result[index]);
 				}
 			});
 		}
@@ -479,7 +479,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="items">The items.</param>
-		public bool AddAll<T>(IList<Tuple<string, T>> items) where T : class
+		public bool AddAll<T>(IList<Tuple<string, T>> items)
 		{
 			Dictionary<RedisKey,RedisValue> values = items.ToDictionary<Tuple<string, T>, RedisKey, RedisValue>(item => item.Item1, item => this.Serializer.Serialize(item.Item2));
 
@@ -492,7 +492,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <typeparam name="T"></typeparam>
 		/// <param name="items">The items.</param>
 		/// <returns></returns>
-		public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items) where T : class
+		public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items)
 		{
 			Dictionary<RedisKey, RedisValue> values = items.ToDictionary<Tuple<string, T>, RedisKey, RedisValue>(item => item.Item1, item => this.Serializer.Serialize(item.Item2));
 
@@ -661,37 +661,37 @@ namespace StackExchange.Redis.Extensions.Core
 			return await sub.PublishAsync(channel, await serializer.SerializeAsync(message), flags);
 		}
 
-		public void Subscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None) where T : class
+		public void Subscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None)
 		{
 			if (handler == null)
-				throw new ArgumentNullException("handler");
+				throw new ArgumentNullException(nameof(handler));
 
 			var sub = connectionMultiplexer.GetSubscriber();
 			sub.Subscribe(channel, (redisChannel, value) => handler(serializer.Deserialize<T>(value)), flags);
 		}
 
-		public async Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None) where T : class
+		public async Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
 		{
 			if (handler == null)
-				throw new ArgumentNullException("handler");
+				throw new ArgumentNullException(nameof(handler));
 
 			var sub = connectionMultiplexer.GetSubscriber();
 			await sub.SubscribeAsync(channel, async (redisChannel, value) => await handler(serializer.Deserialize<T>(value)), flags);
 		}
 
-        public void Unsubscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None) where T : class
+        public void Unsubscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None)
         {
             if (handler == null)
-                throw new ArgumentNullException("handler");
+                throw new ArgumentNullException(nameof(handler));
 
             var sub = connectionMultiplexer.GetSubscriber();
             sub.Unsubscribe(channel, (redisChannel, value) => handler(serializer.Deserialize<T>(value)), flags);
         }
 
-	    public async Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None) where T : class
+	    public async Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
         {
             if (handler == null)
-                throw new ArgumentNullException("handler");
+                throw new ArgumentNullException(nameof(handler));
 
             var sub = connectionMultiplexer.GetSubscriber();
             await sub.UnsubscribeAsync(channel, (redisChannel, value) => handler(serializer.Deserialize<T>(value)), flags);

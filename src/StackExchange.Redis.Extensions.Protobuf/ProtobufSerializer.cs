@@ -31,7 +31,7 @@ namespace StackExchange.Redis.Extensions.Protobuf
             return Task.Factory.StartNew(() => Deserialize(serializedObject));
         }
 
-        public T Deserialize<T>(byte[] serializedObject) where T : class
+        public T Deserialize<T>(byte[] serializedObject)
         {
             using (var ms = new MemoryStream(serializedObject))
             {
@@ -39,7 +39,7 @@ namespace StackExchange.Redis.Extensions.Protobuf
             }
         }
 
-        public Task<T> DeserializeAsync<T>(byte[] serializedObject) where T : class
+        public Task<T> DeserializeAsync<T>(byte[] serializedObject)
         {
             return Task.Factory.StartNew(() => Deserialize<T>(serializedObject));
         }

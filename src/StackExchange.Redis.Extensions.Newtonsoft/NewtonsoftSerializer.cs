@@ -19,20 +19,22 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 
 		public byte[] Serialize(object item)
 		{
-			var jsonString = JsonConvert.SerializeObject(item);
+			var co = new CachedObject<object>(item);
+			var jsonString = JsonConvert.SerializeObject(co);
 			return encoding.GetBytes(jsonString);
 		}
 
 		public async Task<byte[]> SerializeAsync(object item)
 		{
-			var jsonString = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(item));
+			var co = new CachedObject<object>(item);
+			var jsonString = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(co));
 			return encoding.GetBytes(jsonString);
 		}
 
 		public object Deserialize(byte[] serializedObject)
 		{
 			var jsonString = encoding.GetString(serializedObject);
-			return JsonConvert.DeserializeObject(jsonString, typeof(object));
+			return ((CachedObject<object>)JsonConvert.DeserializeObject(jsonString, typeof(CachedObject<object>))).CachedValue;
 		}
 
 		public Task<object> DeserializeAsync(byte[] serializedObject)
@@ -40,13 +42,13 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 			return Task.Factory.StartNew(() => Deserialize(serializedObject));
 		}
 
-		public T Deserialize<T>(byte[] serializedObject) where T : class
+		public T Deserialize<T>(byte[] serializedObject)
 		{
 			var jsonString = encoding.GetString(serializedObject);
-			return JsonConvert.DeserializeObject<T>(jsonString);
+			return JsonConvert.DeserializeObject<CachedObject<T>>(jsonString).CachedValue;
 		}
 
-		public Task<T> DeserializeAsync<T>(byte[] serializedObject) where T : class
+		public Task<T> DeserializeAsync<T>(byte[] serializedObject)
 		{
 			return Task.Factory.StartNew(() => Deserialize<T>(serializedObject));
 		}

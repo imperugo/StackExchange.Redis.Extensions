@@ -28,11 +28,11 @@ namespace StackExchange.Redis.Extensions.MsgPack
 			return Task.Factory.StartNew(() => Deserialize(serializedObject));
 		}
 
-		public T Deserialize<T>(byte[] serializedObject) where T : class
+		public T Deserialize<T>(byte[] serializedObject)
 		{
 			if (typeof(T) == typeof(string))
 			{
-				return encoding.GetString(serializedObject) as T;
+				return (T)Convert.ChangeType(encoding.GetString(serializedObject), typeof(T));
 			}
 			var serializer = MessagePackSerializer.Get<T>();
 
@@ -42,7 +42,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
 			}
 		}
 
-		public Task<T> DeserializeAsync<T>(byte[] serializedObject) where T : class
+		public Task<T> DeserializeAsync<T>(byte[] serializedObject)
 		{
 			return Task.Factory.StartNew(() => Deserialize<T>(serializedObject));
 		}

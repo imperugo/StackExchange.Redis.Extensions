@@ -63,7 +63,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <typeparam name="T">The type of the expected object</typeparam>
 		/// <param name="key">The cache key.</param>
 		/// <returns>Null if not present, otherwise the instance of T.</returns>
-		T Get<T>(string key) where T : class;
+		T Get<T>(string key);
 
 		/// <summary>
 		/// Get the object with the specified key from Redis database
@@ -71,7 +71,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <typeparam name="T">The type of the expected object</typeparam>
 		/// <param name="key">The cache key.</param>
 		/// <returns>Null if not present, otherwise the instance of T.</returns>
-		Task<T> GetAsync<T>(string key) where T : class;
+		Task<T> GetAsync<T>(string key);
 
 		/// <summary>
 		/// Adds the specified instance to the Redis database.
@@ -80,7 +80,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="key">The cache key.</param>
 		/// <param name="value">The instance of T.</param>
 		/// <returns>True if the object has been added. Otherwise false</returns>
-		bool Add<T>(string key, T value) where T : class;
+		bool Add<T>(string key, T value);
 
 		/// <summary>
 		/// Adds the specified instance to the Redis database.
@@ -89,7 +89,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="key">The cache key.</param>
 		/// <param name="value">The instance of T.</param>
 		/// <returns>True if the object has been added. Otherwise false</returns>
-		Task<bool> AddAsync<T>(string key, T value) where T : class;
+		Task<bool> AddAsync<T>(string key, T value);
 
 		/// <summary>
 		/// Replaces the object with specified key into Redis database.
@@ -100,7 +100,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		bool Replace<T>(string key, T value) where T : class;
+		bool Replace<T>(string key, T value);
 
 		/// <summary>
 		/// Replaces the object with specified key into Redis database.
@@ -111,7 +111,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		Task<bool> ReplaceAsync<T>(string key, T value) where T : class;
+		Task<bool> ReplaceAsync<T>(string key, T value);
 
 		/// <summary>
 		/// Adds the specified instance to the Redis database.
@@ -123,7 +123,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		bool Add<T>(string key, T value, DateTimeOffset expiresAt) where T : class;
+		bool Add<T>(string key, T value, DateTimeOffset expiresAt);
 
 		/// <summary>
 		/// Adds the specified instance to the Redis database.
@@ -135,7 +135,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt) where T : class;
+		Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt);
 
 		/// <summary>
 		/// Replaces the object with specified key into Redis database.
@@ -147,7 +147,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		bool Replace<T>(string key, T value, DateTimeOffset expiresAt) where T : class;
+		bool Replace<T>(string key, T value, DateTimeOffset expiresAt);
 
 		/// <summary>
 		/// Replaces the object with specified key into Redis database.
@@ -159,7 +159,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		Task<bool> ReplaceAsync<T>(string key, T value, DateTimeOffset expiresAt) where T : class;
+		Task<bool> ReplaceAsync<T>(string key, T value, DateTimeOffset expiresAt);
 
 		/// <summary>
 		/// Adds the specified instance to the Redis database.
@@ -171,7 +171,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		bool Add<T>(string key, T value, TimeSpan expiresIn) where T : class;
+		bool Add<T>(string key, T value, TimeSpan expiresIn);
 
 		/// <summary>
 		/// Adds the specified instance to the Redis database.
@@ -183,7 +183,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn) where T : class;
+		Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn);
 
 		/// <summary>
 		/// Replaces the object with specified key into Redis database.
@@ -195,7 +195,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		bool Replace<T>(string key, T value, TimeSpan expiresIn) where T : class;
+		bool Replace<T>(string key, T value, TimeSpan expiresIn);
 
 		/// <summary>
 		/// Replaces the object with specified key into Redis database.
@@ -207,7 +207,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// True if the object has been added. Otherwise false
 		/// </returns>
-		Task<bool> ReplaceAsync<T>(string key, T value, TimeSpan expiresIn) where T : class;
+		Task<bool> ReplaceAsync<T>(string key, T value, TimeSpan expiresIn);
 
 		/// <summary>
 		/// Get the objects with the specified keys from Redis database with one roundtrip
@@ -218,7 +218,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// Empty list if there are no results, otherwise the instance of T.
 		/// If a cache key is not present on Redis the specified object into the returned Dictionary will be null
 		/// </returns>
-		IDictionary<string, T> GetAll<T>(IEnumerable<string> keys) where T : class;
+		IDictionary<string, T> GetAll<T>(IEnumerable<string> keys);
 
 		/// <summary>
 		/// Get the objects with the specified keys from Redis database with a single roundtrip
@@ -229,21 +229,21 @@ namespace StackExchange.Redis.Extensions.Core
 		/// Empty list if there are no results, otherwise the instance of T.
 		/// If a cache key is not present on Redis the specified object into the returned Dictionary will be null
 		/// </returns>
-		Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys) where T : class;
+		Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys);
 
 		/// <summary>
 		/// Add the objects with the specified keys to Redis database with a single roundtrip
 		/// </summary>
 		/// <typeparam name="T">The type of the expected object</typeparam>
 		/// <param name="items">The items.</param>
-		bool AddAll<T>(IList<Tuple<string, T>> items) where T : class;
+		bool AddAll<T>(IList<Tuple<string, T>> items);
 
 		/// <summary>
 		/// Add the objects with the specified keys to Redis database with a single roundtrip
 		/// </summary>
 		/// <typeparam name="T">The type of the expected object</typeparam>
 		/// <param name="items">The items.</param>
-		Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items) where T : class;
+		Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items);
 
 		/// <summary>
 		/// Run SADD command <see cref="http://redis.io/commands/sadd"/>
@@ -347,22 +347,22 @@ namespace StackExchange.Redis.Extensions.Core
 	    /// <summary>
 	    /// Registers a callback handler to process messages published to a channel.
 	    /// </summary>
-	    void Subscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None) where T : class;
+	    void Subscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None);
 
-	    /// <summary>
-	    /// Registers a callback handler to process messages published to a channel.
-	    /// </summary>
-	    Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None) where T : class;
+		/// <summary>
+		/// Registers a callback handler to process messages published to a channel.
+		/// </summary>
+		Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None);
 
-        /// <summary>
-        /// Unregisters a callback handler to process messages published to a channel.
-        /// </summary>
-        void Unsubscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None) where T : class;
+		/// <summary>
+		/// Unregisters a callback handler to process messages published to a channel.
+		/// </summary>
+		void Unsubscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None);
 
-        /// <summary>
-        /// Unregisters a callback handler to process messages published to a channel.
-        /// </summary>
-        Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None) where T : class;
+		/// <summary>
+		/// Unregisters a callback handler to process messages published to a channel.
+		/// </summary>
+		Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None);
 
         /// <summary>
         /// Unregisters all callback handlers on a channel.

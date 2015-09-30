@@ -39,13 +39,13 @@ namespace StackExchange.Redis.Extensions.Jil
 			return Task.Factory.StartNew(() => Deserialize(serializedObject));
 		}
 
-		public T Deserialize<T>(byte[] serializedObject) where T : class
+		public T Deserialize<T>(byte[] serializedObject)
 		{
 			var jsonString = encoding.GetString(serializedObject);
 			return JSON.Deserialize<T>(jsonString);
 		}
 
-		public Task<T> DeserializeAsync<T>(byte[] serializedObject) where T : class
+		public Task<T> DeserializeAsync<T>(byte[] serializedObject)
 		{
 			return Task.Factory.StartNew(() => Deserialize<T>(serializedObject));
 		}
