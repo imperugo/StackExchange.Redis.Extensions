@@ -353,5 +353,25 @@ namespace StackExchange.Redis.Extensions.Core
 	    /// Registers a callback handler to process messages published to a channel.
 	    /// </summary>
 	    Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None) where T : class;
+
+        /// <summary>
+        /// Unregisters a callback handler to process messages published to a channel.
+        /// </summary>
+        void Unsubscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None) where T : class;
+
+        /// <summary>
+        /// Unregisters a callback handler to process messages published to a channel.
+        /// </summary>
+        Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None) where T : class;
+
+        /// <summary>
+        /// Unregisters all callback handlers on a channel.
+        /// </summary>
+        void UnsubscribeAll(CommandFlags flags = CommandFlags.None);
+
+        /// <summary>
+        /// Unregisters all callback handlers on a channel.
+        /// </summary>
+        Task UnsubscribeAllAsync(CommandFlags flags = CommandFlags.None);
 	}
 }
