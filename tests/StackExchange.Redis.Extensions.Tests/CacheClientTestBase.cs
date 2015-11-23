@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -247,6 +248,27 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.True(added);
 			Assert.True(Db.KeyExists("my Key"));
 			Assert.Equal(dbValue,d);
+		}
+
+		[Fact]
+		public void Adding_Collection_To_Redis_Should_Work_Correctly()
+		{
+			Collection<TestClass<string>> items = new Collection<TestClass<string>>();
+            items.Add(new TestClass<string>() {Key = "key1",Value = "key1"});
+            items.Add(new TestClass<string>() {Key = "key2",Value = "key2"});
+            items.Add(new TestClass<string>() {Key = "key3",Value = "key3"});
+			
+			bool added = Sut.Add("my Key", items);
+			var dbValue = Sut.Get<Collection<TestClass<string>>>("my Key");
+
+			Assert.True(added);
+			Assert.True(Db.KeyExists("my Key"));
+			Assert.Equal(dbValue.Count, items.Count);
+			for (int i = 0; i < items.Count; i++)
+			{
+				Assert.Equal(dbValue[i].Value, items[i].Value);
+				Assert.Equal(dbValue[i].Key, items[i].Key);
+			}
 		}
 
 		[Fact]
