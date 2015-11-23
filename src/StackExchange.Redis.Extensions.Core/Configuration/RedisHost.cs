@@ -15,7 +15,13 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		/// The host.
 		/// </value>
 		[ConfigurationProperty("host", IsRequired = true)]
-		public string Host => this["host"] as string;
+		public string Host
+		{
+			get
+			{
+				return this["host"] as string;
+			}
+		}
 
 		/// <summary>
 		/// Gets the port.
@@ -29,15 +35,18 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 			get
 			{
 				var config = this["cachePort"];
-				var value = config?.ToString();
-
-				if (!string.IsNullOrEmpty(value))
+				if (config != null)
 				{
-					int result;
+					var value = config.ToString();
 
-					if (int.TryParse(value, out result))
+					if (!string.IsNullOrEmpty(value))
 					{
-						return result;
+						int result;
+
+						if (int.TryParse(value, out result))
+						{
+							return result;
+						}
 					}
 				}
 
