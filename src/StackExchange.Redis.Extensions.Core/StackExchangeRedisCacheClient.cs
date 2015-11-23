@@ -500,7 +500,7 @@ namespace StackExchange.Redis.Extensions.Core
 		}
 
 		/// <summary>
-		/// Run SADD command <see cref="http://redis.io/commands/sadd" />
+		/// Run SADD command see http://redis.io/commands/sadd
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		/// <param name="key">The key.</param>
@@ -511,7 +511,7 @@ namespace StackExchange.Redis.Extensions.Core
 		}
 
 		/// <summary>
-		/// Run SADD command <see cref="http://redis.io/commands/sadd" />
+		/// Run SADD command see http://redis.io/commands/sadd
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		/// <param name="key">The key.</param>
@@ -522,7 +522,7 @@ namespace StackExchange.Redis.Extensions.Core
 		}
 
 		/// <summary>
-		/// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS" />
+		/// Run SMEMBERS command see http://redis.io/commands/SMEMBERS
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		/// <returns></returns>
@@ -533,7 +533,7 @@ namespace StackExchange.Redis.Extensions.Core
 		}
 
 		/// <summary>
-		/// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS" />
+		/// Run SMEMBERS command see http://redis.io/commands/SMEMBERS
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		/// <returns></returns>
@@ -595,6 +595,9 @@ namespace StackExchange.Redis.Extensions.Core
 			return Task.Factory.StartNew(() => SearchKeys(pattern));
 		}
 
+		/// <summary>
+		/// Flushes the database.
+		/// </summary>
 		public void FlushDb()
 		{
 			var endPoints = db.Multiplexer.GetEndPoints();
@@ -605,6 +608,10 @@ namespace StackExchange.Redis.Extensions.Core
 			}
 		}
 
+		/// <summary>
+		/// Flushes the database asynchronous.
+		/// </summary>
+		/// <returns></returns>
 		public async Task FlushDbAsync()
 		{
 			var endPoints = db.Multiplexer.GetEndPoints();
@@ -615,6 +622,10 @@ namespace StackExchange.Redis.Extensions.Core
 			}
 		}
 
+		/// <summary>
+		/// Save the DB in background.
+		/// </summary>
+		/// <param name="saveType"></param>
 		public void Save(SaveType saveType)
 		{
 			var endPoints = db.Multiplexer.GetEndPoints();
@@ -625,6 +636,10 @@ namespace StackExchange.Redis.Extensions.Core
 			}
 		}
 
+		/// <summary>
+		/// Save the DB in background asynchronous.
+		/// </summary>
+		/// <param name="saveType"></param>
 		public async void SaveAsync(SaveType saveType)
 		{
 			var endPoints = db.Multiplexer.GetEndPoints();
@@ -635,6 +650,11 @@ namespace StackExchange.Redis.Extensions.Core
 			}
 		}
 
+		/// <summary>
+		/// Gets the information about redis.
+		/// More info see http://redis.io/commands/INFO
+		/// </summary>
+		/// <returns></returns>
 		public Dictionary<string, string> GetInfo()
 		{
 			var info = db.ScriptEvaluate("return redis.call('INFO')").ToString();
@@ -642,6 +662,11 @@ namespace StackExchange.Redis.Extensions.Core
 			return ParseInfo(info);
 		}
 
+		/// <summary>
+		/// Gets the information about redis.
+		/// More info see http://redis.io/commands/INFO
+		/// </summary>
+		/// <returns></returns>
 		public async Task<Dictionary<string, string>> GetInfoAsync()
 		{
 			var info = (await db.ScriptEvaluateAsync("return redis.call('INFO')")).ToString();
@@ -649,18 +674,42 @@ namespace StackExchange.Redis.Extensions.Core
 			return ParseInfo(info);
 		}
 
+		/// <summary>
+		/// Publishes a message to a channel.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="channel"></param>
+		/// <param name="message"></param>
+		/// <param name="flags"></param>
+		/// <returns></returns>
 		public long Publish<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
 		{
 			var sub = connectionMultiplexer.GetSubscriber();
 			return sub.Publish(channel, serializer.Serialize(message), flags);
 		}
 
+		/// <summary>
+		/// Publishes a message to a channel.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="channel"></param>
+		/// <param name="message"></param>
+		/// <param name="flags"></param>
+		/// <returns></returns>
 		public async Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
 		{
 			var sub = connectionMultiplexer.GetSubscriber();
 			return await sub.PublishAsync(channel, await serializer.SerializeAsync(message), flags);
 		}
 
+		/// <summary>
+		/// Registers a callback handler to process messages published to a channel.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="channel"></param>
+		/// <param name="handler"></param>
+		/// <param name="flags"></param>
+		/// <exception cref="System.ArgumentNullException"></exception>
 		public void Subscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None)
 		{
 			if (handler == null)
@@ -670,6 +719,15 @@ namespace StackExchange.Redis.Extensions.Core
 			sub.Subscribe(channel, (redisChannel, value) => handler(serializer.Deserialize<T>(value)), flags);
 		}
 
+		/// <summary>
+		/// Registers a callback handler to process messages published to a channel.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="channel"></param>
+		/// <param name="handler"></param>
+		/// <param name="flags"></param>
+		/// <returns></returns>
+		/// <exception cref="System.ArgumentNullException"></exception>
 		public async Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
 		{
 			if (handler == null)
@@ -679,7 +737,15 @@ namespace StackExchange.Redis.Extensions.Core
 			await sub.SubscribeAsync(channel, async (redisChannel, value) => await handler(serializer.Deserialize<T>(value)), flags);
 		}
 
-        public void Unsubscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None)
+		/// <summary>
+		/// Unregisters a callback handler to process messages published to a channel.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="channel"></param>
+		/// <param name="handler"></param>
+		/// <param name="flags"></param>
+		/// <exception cref="System.ArgumentNullException"></exception>
+		public void Unsubscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None)
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
@@ -688,7 +754,16 @@ namespace StackExchange.Redis.Extensions.Core
             sub.Unsubscribe(channel, (redisChannel, value) => handler(serializer.Deserialize<T>(value)), flags);
         }
 
-	    public async Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
+		/// <summary>
+		/// Unregisters a callback handler to process messages published to a channel.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="channel"></param>
+		/// <param name="handler"></param>
+		/// <param name="flags"></param>
+		/// <returns></returns>
+		/// <exception cref="System.ArgumentNullException"></exception>
+		public async Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
@@ -697,13 +772,22 @@ namespace StackExchange.Redis.Extensions.Core
             await sub.UnsubscribeAsync(channel, (redisChannel, value) => handler(serializer.Deserialize<T>(value)), flags);
         }
 
-        public void UnsubscribeAll(CommandFlags flags = CommandFlags.None)
+		/// <summary>
+		/// Unregisters all callback handlers on a channel.
+		/// </summary>
+		/// <param name="flags"></param>
+		public void UnsubscribeAll(CommandFlags flags = CommandFlags.None)
         {
             var sub = connectionMultiplexer.GetSubscriber();
             sub.UnsubscribeAll(flags);
         }
 
-        public async Task UnsubscribeAllAsync(CommandFlags flags = CommandFlags.None)
+		/// <summary>
+		/// Unregisters all callback handlers on a channel.
+		/// </summary>
+		/// <param name="flags"></param>
+		/// <returns></returns>
+		public async Task UnsubscribeAllAsync(CommandFlags flags = CommandFlags.None)
         {
             var sub = connectionMultiplexer.GetSubscriber();
             await sub.UnsubscribeAllAsync(flags);

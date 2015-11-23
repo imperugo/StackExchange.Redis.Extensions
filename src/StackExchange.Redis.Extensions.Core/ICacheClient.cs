@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace StackExchange.Redis.Extensions.Core
 {
+	/// <summary>
+	/// Contrac for ICache implementation
+	/// </summary>
 	public interface ICacheClient : IDisposable
 	{
 		/// <summary>
@@ -246,27 +249,27 @@ namespace StackExchange.Redis.Extensions.Core
 		Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items);
 
 		/// <summary>
-		/// Run SADD command <see cref="http://redis.io/commands/sadd"/>
+		/// Run SADD command see http://redis.io/commands/sadd
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		/// <param name="key">The key.</param>
 		bool SetAdd(string memberName, string key);
 
 		/// <summary>
-		/// Run SADD command <see cref="http://redis.io/commands/sadd"/>
+		/// Run SADD command see http://redis.io/commands/sadd
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		/// <param name="key">The key.</param>
 		Task<bool> SetAddAsync(string memberName, string key);
 
 		/// <summary>
-		/// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS"/>
+		/// Run SMEMBERS command see http://redis.io/commands/SMEMBERS
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		string[] SetMember(string memberName);
 
 		/// <summary>
-		/// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS"/>
+		/// Run SMEMBERS command see http://redis.io/commands/SMEMBERS
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		Task<string[]> SetMemberAsync(string memberName);
@@ -324,13 +327,13 @@ namespace StackExchange.Redis.Extensions.Core
             
         /// <summary>
 		/// Gets the information about redis.
-		/// More info <see cref="http://redis.io/commands/INFO"/>
+		/// More info see http://redis.io/commands/INFO
 		/// </summary>
 		Dictionary<string, string> GetInfo();
 
 		/// <summary>
 		/// Gets the information about redis.
-		/// More info <see cref="http://redis.io/commands/INFO"/>
+		/// More info see http://redis.io/commands/INFO
 		/// </summary>
 		Task<Dictionary<string, string>> GetInfoAsync();
 

@@ -5,6 +5,9 @@ using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.Newtonsoft
 {
+	/// <summary>
+	/// JSon.Net implementation of <see cref="ISerializer"/>
+	/// </summary>
 	public class NewtonsoftSerializer : ISerializer
 	{
 		// TODO: May make this configurable in the future.
@@ -17,6 +20,11 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 		/// </remarks>
 		private static readonly Encoding encoding = Encoding.UTF8;
 
+		/// <summary>
+		/// Serializes the specified item.
+		/// </summary>
+		/// <param name="item">The item.</param>
+		/// <returns></returns>
 		public byte[] Serialize(object item)
 		{
 			var co = new CachedObject<object>(item);
@@ -24,6 +32,11 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 			return encoding.GetBytes(jsonString);
 		}
 
+		/// <summary>
+		/// Serializes the asynchronous.
+		/// </summary>
+		/// <param name="item">The item.</param>
+		/// <returns></returns>
 		public async Task<byte[]> SerializeAsync(object item)
 		{
 			var co = new CachedObject<object>(item);
@@ -31,23 +44,45 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 			return encoding.GetBytes(jsonString);
 		}
 
+		/// <summary>
+		/// Deserializes the specified serialized object.
+		/// </summary>
+		/// <param name="serializedObject">The serialized object.</param>
+		/// <returns></returns>
 		public object Deserialize(byte[] serializedObject)
 		{
 			var jsonString = encoding.GetString(serializedObject);
 			return ((CachedObject<object>)JsonConvert.DeserializeObject(jsonString, typeof(CachedObject<object>))).CachedValue;
 		}
 
+		/// <summary>
+		/// Deserializes the asynchronous.
+		/// </summary>
+		/// <param name="serializedObject">The serialized object.</param>
+		/// <returns></returns>
 		public Task<object> DeserializeAsync(byte[] serializedObject)
 		{
 			return Task.Factory.StartNew(() => Deserialize(serializedObject));
 		}
 
+		/// <summary>
+		/// Deserializes the specified serialized object.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="serializedObject">The serialized object.</param>
+		/// <returns></returns>
 		public T Deserialize<T>(byte[] serializedObject)
 		{
 			var jsonString = encoding.GetString(serializedObject);
 			return JsonConvert.DeserializeObject<CachedObject<T>>(jsonString).CachedValue;
 		}
 
+		/// <summary>
+		/// Deserializes the asynchronous.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="serializedObject">The serialized object.</param>
+		/// <returns></returns>
 		public Task<T> DeserializeAsync<T>(byte[] serializedObject)
 		{
 			return Task.Factory.StartNew(() => Deserialize<T>(serializedObject));

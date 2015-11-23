@@ -2,6 +2,9 @@
 
 namespace StackExchange.Redis.Extensions.Core
 {
+	/// <summary>
+	/// Contract for Serializer implementation
+	/// </summary>
 	public interface ISerializer
 	{
 		/// <summary>
