@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 14.00
-# Visual Studio 2013
+# Visual Studio 2015
 VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 14.0.22823.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.Jil", "src\StackExchange.Redis.Extensions.Jil\StackExchange.Redis.Extensions.Jil.csproj", "{CB7B4AD8-86EA-4F8A-98F0-C419A972CB75}"
