@@ -9,8 +9,8 @@ install:
     nuget install redis-64 -excludeversion
 
     C:\projects\stackexchange-redis-extensions\redis-64\redis-server.exe --service-install
-	
-	C:\projects\stackexchange-redis-extensions\redis-64\redis-server.exe --service-start	
+
+    C:\projects\stackexchange-redis-extensions\redis-64\redis-server.exe --service-start
 before_build:
 - cmd: nuget restore
 build:
