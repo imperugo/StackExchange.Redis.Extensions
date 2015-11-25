@@ -253,6 +253,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		/// <param name="key">The key.</param>
+        [Obsolete("Parameters are a little misleading. Digging further reveals the parameters should be swapped. Use SetAdd<T> instead.")]
 		bool SetAdd(string memberName, string key);
 
 		/// <summary>
@@ -260,10 +261,25 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		/// <param name="key">The key.</param>
+        [Obsolete("Parameters are a little misleading. Digging further reveals the parameters should be swapped. Use SetAddAsync<T> instead.")]
 		Task<bool> SetAddAsync(string memberName, string key);
 
 		/// <summary>
-		/// Run SMEMBERS command see http://redis.io/commands/SMEMBERS
+		/// Run SADD command <see cref="http://redis.io/commands/sadd"/>
+		/// </summary>
+		/// <param name="item">Name of the member.</param>
+		/// <param name="key">The key.</param>
+        bool SetAdd<T>(string key, T item) where T : class;
+
+        /// <summary>
+		/// Run SADD command <see cref="http://redis.io/commands/sadd"/>
+		/// </summary>
+		/// <param name="item">Name of the member.</param>
+		/// <param name="key">The key.</param>
+        Task<bool> SetAddAsync<T>(string key, T item) where T : class;
+
+        /// <summary>
+        /// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS"/>
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		string[] SetMember(string memberName);
@@ -352,9 +368,9 @@ namespace StackExchange.Redis.Extensions.Core
 	    /// </summary>
 	    void Subscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None);
 
-		/// <summary>
-		/// Registers a callback handler to process messages published to a channel.
-		/// </summary>
+	    /// <summary>
+	    /// Registers a callback handler to process messages published to a channel.
+	    /// </summary>
 		Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None);
 
 		/// <summary>
@@ -376,5 +392,50 @@ namespace StackExchange.Redis.Extensions.Core
         /// Unregisters all callback handlers on a channel.
         /// </summary>
         Task UnsubscribeAllAsync(CommandFlags flags = CommandFlags.None);
+
+		/// <summary>
+		/// Insert the specified value at the head of the list stored at key. If key does not exist, it is created as empty list before performing the push operations.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key">The key.</param>
+		/// <param name="item">The item.</param>
+		/// <returns>
+		/// the length of the list after the push operations.
+		/// </returns>
+		/// <remarks>
+		/// http://redis.io/commands/lpush
+		/// </remarks>
+		long ListAddToLeft<T>(string key, T item) where T : class;
+
+		/// <summary>
+		/// Lists the add to left asynchronous.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key">The key.</param>
+		/// <param name="item">The item.</param>
+		/// <returns></returns>
+		Task<long> ListAddToLeftAsync<T>(string key, T item) where T : class;
+
+		/// <summary>
+		/// Removes and returns the last element of the list stored at key.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key">The key.</param>
+		/// <returns></returns>
+		/// <remarks>
+		/// http://redis.io/commands/rpop
+		/// </remarks>
+		T ListGetFromRight<T>(string key) where T : class;
+
+		/// <summary>
+		/// Removes and returns the last element of the list stored at key.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key">The key.</param>
+		/// <returns></returns>
+		/// <remarks>
+		/// http://redis.io/commands/rpop
+		/// </remarks>
+		Task<T> ListGetFromRightAsync<T>(string key) where T : class;
 	}
 }

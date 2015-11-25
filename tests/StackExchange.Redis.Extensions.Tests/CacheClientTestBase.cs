@@ -16,8 +16,8 @@ namespace StackExchange.Redis.Extensions.Tests
 	[Collection("Redis")]
 	public abstract class CacheClientTestBase : IDisposable
 	{
-		protected readonly StackExchangeRedisCacheClient Sut;
 		protected readonly IDatabase Db;
+		protected readonly StackExchangeRedisCacheClient Sut;
 		protected ISerializer Serializer;
 
 		protected CacheClientTestBase(ISerializer serializer)
@@ -25,6 +25,14 @@ namespace StackExchange.Redis.Extensions.Tests
 			Serializer = serializer;
 			Sut = new StackExchangeRedisCacheClient(Serializer);
 			Db = Sut.Database;
+		}
+
+		public void Dispose()
+		{
+			Db.FlushDatabase();
+			Db.Multiplexer.GetSubscriber().UnsubscribeAll();
+			Db.Multiplexer.Dispose();
+			Sut.Dispose();
 		}
 
 		[Fact]
@@ -50,7 +58,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void Add_Complex_Item_To_Redis_Database()
 		{
-			TestClass<DateTime> testobject = new TestClass<DateTime>();
+			var testobject = new TestClass<DateTime>();
 
 			var added = Sut.Add("my Key", testobject);
 
@@ -75,7 +83,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			values.Add(new Tuple<string, string>("key2", "value2"));
 			values.Add(new Tuple<string, string>("key3", "value3"));
 
-			bool added = Sut.AddAll(values);
+			var added = Sut.AddAll(values);
 
 			Assert.True(added);
 
@@ -92,12 +100,12 @@ namespace StackExchange.Redis.Extensions.Tests
 		public void Get_All_Should_Return_All_Database_Keys()
 		{
 			var values = Builder<TestClass<string>>
-						.CreateListOfSize(5)
-						.All()
-						.Build();
+				.CreateListOfSize(5)
+				.All()
+				.Build();
 			values.ForEach(x => Db.StringSet(x.Key, Serializer.Serialize(x.Value)));
 
-			IDictionary<string, string> result = Sut.GetAll<string>(new[] { values[0].Key, values[1].Key, values[2].Key, "notexistingkey" });
+			var result = Sut.GetAll<string>(new[] {values[0].Key, values[1].Key, values[2].Key, "notexistingkey"});
 
 			Assert.True(result.Count() == 4);
 			Assert.Equal(result[values[0].Key], values[0].Value);
@@ -110,9 +118,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		public void Get_With_Complex_Item_Should_Return_Correct_Value()
 		{
 			var value = Builder<ComplexClassForTest<string, string>>
-					.CreateListOfSize(1)
-					.All()
-					.Build().First();
+				.CreateListOfSize(1)
+				.All()
+				.Build().First();
 
 			Db.StringSet(value.Item1, Serializer.Serialize(value));
 
@@ -127,9 +135,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		public void Remove_All_Should_Remove_All_Specified_Keys()
 		{
 			var values = Builder<TestClass<string>>
-						.CreateListOfSize(5)
-						.All()
-						.Build();
+				.CreateListOfSize(5)
+				.All()
+				.Build();
 			values.ForEach(x => Db.StringSet(x.Key, x.Value));
 
 			Sut.RemoveAll(values.Select(x => x.Key));
@@ -144,8 +152,8 @@ namespace StackExchange.Redis.Extensions.Tests
 		public void Search_With_Valid_Start_With_Pattern_Should_Return_Correct_Keys()
 		{
 			var values = Builder<TestClass<string>>
-						.CreateListOfSize(20)
-						.Build();
+				.CreateListOfSize(20)
+				.Build();
 			values.ForEach(x => Db.StringSet(x.Key, x.Value));
 
 			var key = Sut.SearchKeys("Key1*").ToList();
@@ -157,8 +165,8 @@ namespace StackExchange.Redis.Extensions.Tests
 		public void Exist_With_Valid_Object_Should_Return_The_Correct_Instance()
 		{
 			var values = Builder<TestClass<string>>
-					.CreateListOfSize(2)
-					.Build();
+				.CreateListOfSize(2)
+				.Build();
 			values.ForEach(x => Db.StringSet(x.Key, x.Value));
 
 			Assert.True(Sut.Exists(values[0].Key));
@@ -168,8 +176,8 @@ namespace StackExchange.Redis.Extensions.Tests
 		public void Exist_With_Not_Valid_Object_Should_Return_The_Correct_Instance()
 		{
 			var values = Builder<TestClass<string>>
-					.CreateListOfSize(2)
-					.Build();
+				.CreateListOfSize(2)
+				.Build();
 			values.ForEach(x => Db.StringSet(x.Key, x.Value));
 
 			Assert.False(Sut.Exists("this key doesn not exist into redi"));
@@ -179,9 +187,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		public void SetAdd_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
 			var values = Builder<TestClass<string>>
-						.CreateListOfSize(5)
-						.All()
-						.Build();
+				.CreateListOfSize(5)
+				.All()
+				.Build();
 
 			values.ForEach(x =>
 			{
@@ -198,9 +206,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		public void SetMember_With_Valid_Data_Should_Return_Correct_Keys()
 		{
 			var values = Builder<TestClass<string>>
-						.CreateListOfSize(5)
-						.All()
-						.Build();
+				.CreateListOfSize(5)
+				.All()
+				.Build();
 
 			values.ForEach(x =>
 			{
@@ -218,9 +226,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			const int size = 3000;
 			var values = Builder<TestClass<string>>
-						.CreateListOfSize(size)
-						.All()
-						.Build();
+				.CreateListOfSize(size)
+				.All()
+				.Build();
 
 			var tupleValues = values.Select(x => new Tuple<string, TestClass<string>>(x.Key, x)).ToList();
 			var result = Sut.AddAll(tupleValues);
@@ -230,41 +238,41 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.NotNull(cached);
 			Assert.Equal(size, cached.Count);
 
-			for (int i = 0; i < values.Count; i++)
+			for (var i = 0; i < values.Count; i++)
 			{
-				TestClass<string> value = values[i];
-				Assert.Equal(value.Key,cached[value.Key].Key);
-				Assert.Equal(value.Value,cached[value.Key].Value);
+				var value = values[i];
+				Assert.Equal(value.Key, cached[value.Key].Key);
+				Assert.Equal(value.Value, cached[value.Key].Value);
 			}
 		}
 
 		[Fact]
 		public void Adding_Value_Type_Should_Return_Correct_Value()
 		{
-			int d = 1;
-			bool added = Sut.Add("my Key", d);
-			int dbValue = Sut.Get<int>("my Key");
+			var d = 1;
+			var added = Sut.Add("my Key", d);
+			var dbValue = Sut.Get<int>("my Key");
 
 			Assert.True(added);
 			Assert.True(Db.KeyExists("my Key"));
-			Assert.Equal(dbValue,d);
+			Assert.Equal(dbValue, d);
 		}
 
 		[Fact]
 		public void Adding_Collection_To_Redis_Should_Work_Correctly()
 		{
-			Collection<TestClass<string>> items = new Collection<TestClass<string>>();
-            items.Add(new TestClass<string>() {Key = "key1",Value = "key1"});
-            items.Add(new TestClass<string>() {Key = "key2",Value = "key2"});
-            items.Add(new TestClass<string>() {Key = "key3",Value = "key3"});
-			
-			bool added = Sut.Add("my Key", items);
+			var items = new Collection<TestClass<string>>();
+			items.Add(new TestClass<string> {Key = "key1", Value = "key1"});
+			items.Add(new TestClass<string> {Key = "key2", Value = "key2"});
+			items.Add(new TestClass<string> {Key = "key3", Value = "key3"});
+
+			var added = Sut.Add("my Key", items);
 			var dbValue = Sut.Get<Collection<TestClass<string>>>("my Key");
 
 			Assert.True(added);
 			Assert.True(Db.KeyExists("my Key"));
 			Assert.Equal(dbValue.Count, items.Count);
-			for (int i = 0; i < items.Count; i++)
+			for (var i = 0; i < items.Count; i++)
 			{
 				Assert.Equal(dbValue[i].Value, items[i].Value);
 				Assert.Equal(dbValue[i].Key, items[i].Key);
@@ -303,12 +311,177 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.Equal(message, subscriberValue);
 		}
 
-		public void Dispose()
+		[Fact]
+		public void SetAddGenericShouldThrowExceptionWhenKeyIsEmpty()
 		{
-			Db.FlushDatabase();
-			Db.Multiplexer.GetSubscriber().UnsubscribeAll();
-            Db.Multiplexer.Dispose();
-			Sut.Dispose();
+			Assert.Throws<ArgumentException>(() => Sut.SetAdd<string>(string.Empty, string.Empty));
+		}
+
+		[Fact]
+		public void SetAddGenericShouldThrowExceptionWhenItemIsNull()
+		{
+			Assert.Throws<ArgumentNullException>(() => Sut.SetAdd<string>("MySet", null));
+		}
+
+		[Fact]
+		public void SetAddGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+		{
+			var values = Builder<TestClass<string>>
+				.CreateListOfSize(5)
+				.All()
+				.Build();
+
+			values.ForEach(x =>
+			{
+				Db.StringSet(x.Key, Serializer.Serialize(x.Value));
+				Sut.SetAdd("MySet", x);
+			});
+
+			var keys = Db.SetMembers("MySet");
+
+			Assert.Equal(keys.Length, values.Count);
+		}
+
+		[Fact]
+		public void SetAddAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
+		{
+			var exceptions = Sut.SetAddAsync<string>(string.Empty, string.Empty).Exception;
+			Assert.IsType<ArgumentException>(exceptions.Flatten().GetBaseException());
+		}
+
+		[Fact]
+		public void SetAddAsyncGenericShouldThrowExceptionWhenItemIsNull()
+		{
+			var exceptions = Sut.SetAddAsync<string>("MySet", null).Exception;
+			Assert.IsType<ArgumentNullException>(exceptions.Flatten().GetBaseException());
+		}
+
+		[Fact]
+		public void SetAddAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+		{
+			var values = Builder<TestClass<string>>
+				.CreateListOfSize(5)
+				.All()
+				.Build();
+
+			values.ForEach(x =>
+			{
+				Db.StringSet(x.Key, Serializer.Serialize(x.Value));
+				var result = Sut.SetAddAsync("MySet", x).Result;
+			});
+
+			var keys = Db.SetMembers("MySet");
+
+			Assert.Equal(keys.Length, values.Count);
+		}
+
+		[Fact]
+		public void ListAddToLeftGenericShouldThrowExceptionWhenKeyIsEmpty()
+		{
+			Assert.Throws<ArgumentException>(() => Sut.ListAddToLeft(string.Empty, string.Empty));
+		}
+
+		[Fact]
+		public void ListAddToLeftGenericShouldThrowExceptionWhenItemIsNull()
+		{
+			Assert.Throws<ArgumentNullException>(() => Sut.ListAddToLeft<string>("MyList", null));
+		}
+
+		[Fact]
+		public void ListAddToLeftGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+		{
+			var values = Builder<TestClass<string>>
+				.CreateListOfSize(5)
+				.All()
+				.Build();
+
+			var key = "MyList";
+
+			values.ForEach(x => { Sut.ListAddToLeft(key, Serializer.Serialize(x)); });
+
+			var keys = Db.ListRange(key);
+
+			Assert.Equal(keys.Length, values.Count);
+		}
+
+		[Fact]
+		public void ListAddToLeftAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
+		{
+			var exceptions = Sut.ListAddToLeftAsync(string.Empty, string.Empty).Exception;
+			Assert.IsType<ArgumentException>(exceptions.Flatten().GetBaseException());
+		}
+
+		[Fact]
+		public void ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemIsNull()
+		{
+			var exceptions = Sut.ListAddToLeftAsync<string>("MyList", null).Exception;
+			Assert.IsType<ArgumentNullException>(exceptions.Flatten().GetBaseException());
+		}
+
+		[Fact]
+		public void ListAddToLeftAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+		{
+			var values = Builder<TestClass<string>>
+				.CreateListOfSize(5)
+				.All()
+				.Build();
+
+			var key = "MyListAsync";
+
+			values.ForEach(x => { var result = Sut.ListAddToLeftAsync(key, Serializer.Serialize(x)).Result; });
+
+			var keys = Db.ListRange(key);
+
+			Assert.Equal(keys.Length, values.Count);
+		}
+
+		[Fact]
+		public void ListGetFromRightGenericShouldThrowExceptionWhenKeyIsEmpty()
+		{
+			Assert.Throws<ArgumentException>(() => Sut.ListGetFromRight<string>(string.Empty));
+		}
+
+		[Fact]
+		public void ListGetFromRightGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+		{
+			var values = Builder<TestClass<string>>
+				.CreateListOfSize(1)
+				.All()
+				.Build();
+
+			var key = "MyList";
+
+			values.ForEach(x => { Db.ListLeftPush(key, Serializer.Serialize(x)); });
+
+			var item = Sut.ListGetFromRight<TestClass<string>>(key);
+
+			Assert.Equal(item.Key, values[0].Key);
+			Assert.Equal(item.Value, values[0].Value);
+		}
+
+		[Fact]
+		public void ListGetFromRightAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
+		{
+			var exceptions = Sut.ListGetFromRightAsync<string>(string.Empty).Exception;
+			Assert.IsType<ArgumentException>(exceptions.Flatten().GetBaseException());
+		}
+
+		[Fact]
+		public void ListGetFromRightAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+		{
+			var values = Builder<TestClass<string>>
+				.CreateListOfSize(1)
+				.All()
+				.Build();
+
+			var key = "MyList";
+
+			values.ForEach(x => { Db.ListLeftPush(key, Serializer.Serialize(x)); });
+
+			var item = Sut.ListGetFromRightAsync<TestClass<string>>(key).Result;
+
+			Assert.Equal(item.Key, values[0].Key);
+			Assert.Equal(item.Value, values[0].Value);
 		}
 	}
 }
