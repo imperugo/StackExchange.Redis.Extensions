@@ -265,21 +265,21 @@ namespace StackExchange.Redis.Extensions.Core
 		Task<bool> SetAddAsync(string memberName, string key);
 
 		/// <summary>
-		/// Run SADD command <see cref="http://redis.io/commands/sadd"/>
+		/// Run SADD command http://redis.io/commands/sadd
 		/// </summary>
 		/// <param name="item">Name of the member.</param>
 		/// <param name="key">The key.</param>
         bool SetAdd<T>(string key, T item) where T : class;
 
         /// <summary>
-		/// Run SADD command <see cref="http://redis.io/commands/sadd"/>
+		/// Run SADD command http://redis.io/commands/sadd
 		/// </summary>
 		/// <param name="item">Name of the member.</param>
 		/// <param name="key">The key.</param>
         Task<bool> SetAddAsync<T>(string key, T item) where T : class;
 
         /// <summary>
-        /// Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS"/>
+        /// Run SMEMBERS command http://redis.io/commands/SMEMBERS
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		string[] SetMember(string memberName);

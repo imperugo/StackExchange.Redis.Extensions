@@ -194,7 +194,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			values.ForEach(x =>
 			{
 				Db.StringSet(x.Key, Serializer.Serialize(x.Value));
-				Sut.SetAdd("MySet", x.Key);
+				Sut.SetAdd<string>("MySet", x.Key);
 			});
 
 			var keys = Db.SetMembers("MySet");

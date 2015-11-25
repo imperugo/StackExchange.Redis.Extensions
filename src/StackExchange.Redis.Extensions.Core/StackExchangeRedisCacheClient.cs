@@ -572,7 +572,7 @@ namespace StackExchange.Redis.Extensions.Core
 		}
 
 		/// <summary>
-		///     Run SMEMBERS command <see cref="http://redis.io/commands/SMEMBERS" />
+		///     Run SMEMBERS command http://redis.io/commands/SMEMBERS
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		/// <returns></returns>
