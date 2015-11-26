@@ -445,9 +445,8 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(1)
         /// </remarks>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="key"></param>
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="key">Key of the entry</param>
         /// <returns>
         ///     If key is deleted returns true.
         ///     If key does not exist, it is treated as an empty hash and this command returns false.
@@ -462,8 +461,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(N) where N is the number of fields to be removed.
         /// </remarks>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
+        /// <param name="hashKey">Key of the hash</param>
         /// <param name="keys"></param>
         /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
         long HashDelete(string hashKey, IEnumerable<string> keys);
@@ -476,8 +474,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(N) where N is the number of fields to be removed.
         /// </remarks>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
+        /// <param name="hashKey">Key of the hash</param>
         /// <param name="keys"></param>
         /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
         long HashDelete(string hashKey, params string[] keys);
@@ -501,10 +498,9 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(1)
         /// </remarks>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="key"></param>
+        /// <typeparam name="T">Type of the returned value</typeparam>
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="key">Key of the entry</param>
         /// <returns>the value associated with field, or nil when field is not present in the hash or key does not exist.</returns>
         T HashGet<T>(string hashKey, string key);
 
@@ -516,9 +512,8 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(N) where N is the number of fields being requested.
         /// </remarks>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
+        /// <typeparam name="T">Type of the returned value</typeparam>
+        /// <param name="hashKey">Key of the hash</param>
         /// <param name="keys"></param>
         /// <returns>list of values associated with the given fields, in the same order as they are requested.</returns>
         Dictionary<string, T> HashGet<T>(string hashKey, IEnumerable<string> keys);
@@ -529,9 +524,8 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(N) where N is the size of the hash.
         /// </remarks>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
+        /// <typeparam name="T">Type of the returned value</typeparam>
+        /// <param name="hashKey">Key of the hash</param>
         /// <returns>list of fields and their values stored in the hash, or an empty list when key does not exist.</returns>
         Dictionary<string, T> HashGetAll<T>(string hashKey);
 
@@ -543,9 +537,8 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(1)
         /// </remarks>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="key"></param>
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="key">Key of the entry</param>
         /// <param name="value">the value at field after the increment operation</param>
         long HashIncerementBy(string hashKey, string key, long value);
 
@@ -564,9 +557,8 @@ namespace StackExchange.Redis.Extensions.Core
         ///     </para>
         ///     
         /// </remarks>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="key"></param>
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="key">Key of the entry</param>
         /// <param name="value">the value at field after the increment operation</param>
         double HashIncerementBy(string hashKey, string key, double value);
 
@@ -576,8 +568,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(N) where N is the size of the hash.
         /// </remarks>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
+        /// <param name="hashKey">Key of the hash</param>
         /// <returns>list of fields in the hash, or an empty list when key does not exist.</returns>
         IEnumerable<string> HashKeys(string hashKey);
 
@@ -587,8 +578,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(1)
         /// </remarks>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
+        /// <param name="hashKey">Key of the hash</param>
         /// <returns>number of fields in the hash, or 0 when key does not exist.</returns>
         long HashLength(string hashKey);
 
@@ -596,8 +586,7 @@ namespace StackExchange.Redis.Extensions.Core
         ///     Sets field in the hash stored at key to value. If key does not exist, a new key holding a hash is created. If field already exists in the hash, it is overwritten.
         /// </summary>
         /// 
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client">The redis client used</param>
+        /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">The key of the hash in redis</param>
         /// <param name="key">The key of the field in the hash</param>
         /// <param name="nx">Behave like hsetnx - set only if not exists</param>
@@ -614,9 +603,8 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(N) where N is the number of fields being set.
         /// </remarks>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
+        /// <typeparam name="T">Type of the returned value</typeparam>
+        /// <param name="hashKey">Key of the hash</param>
         /// <param name="values"></param>
         void HashSet<T>(string hashKey, Dictionary<string, T> values);
 
@@ -626,10 +614,9 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(N) where N is the size of the hash.
         /// </remarks>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="key"></param>
+        /// <typeparam name="T">Type of the returned value</typeparam>
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="key">Key of the entry</param>
         /// <returns>list of values in the hash, or an empty list when key does not exist.</returns>
         IEnumerable<T> HashValues<T>(string hashKey, string key);
 
@@ -640,10 +627,9 @@ namespace StackExchange.Redis.Extensions.Core
         ///     Time complexity: O(1) for every call. O(N) for a complete iteration, including enough command calls for the cursor to return back to 0. 
         ///     N is the number of elements inside the collection.
         /// </remarks>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="pattern"></param>
+        /// <typeparam name="T">Type of the returned value</typeparam>
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="pattern">GLOB search pattern</param>
         /// <returns></returns>
         IDictionary<string, T> HashScan<T>(string hashKey, string pattern);
 
@@ -654,9 +640,9 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(1)
         /// </remarks>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="key"></param>
+
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="key">Key of the entry</param>
         /// <returns>
         ///     If key is deleted returns true.
         ///     If key does not exist, it is treated as an empty hash and this command returns false.
@@ -671,9 +657,8 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(N) where N is the number of fields to be removed.
         /// </remarks>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="keys"></param>
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="keys">Keys to retrieve from the hash</param>
         /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
         Task<long> HashDeleteAsync(string hashKey, IEnumerable<string> keys);
 
@@ -685,10 +670,9 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(N) where N is the number of fields to be removed.
         /// </remarks>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="keys"></param>
-        /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="keys">Keys to retrieve from the hash</param>
+        /// <returns>The number of fields that were removed from the hash, not including specified but non existing fields.</returns>
         Task<long> HashDeleteAsync(string hashKey, params string[] keys);
 
         /// <summary>
@@ -698,7 +682,6 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(1)
         /// </remarks>
-        /// <param name="client">The redis client used</param>
         /// <param name="hashKey">The key of the hash in redis</param>
         /// <param name="key">The key of the field in the hash</param>
         /// <returns>Returns if field is an existing field in the hash stored at key.</returns>
@@ -710,10 +693,9 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(1)
         /// </remarks>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="key"></param>
+        /// <typeparam name="T">Type of the returned value</typeparam>
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="key">Key of the entry</param>
         /// <returns>the value associated with field, or nil when field is not present in the hash or key does not exist.</returns>
         Task<T> HashGetAsync<T>(string hashKey, string key);
 
@@ -725,36 +707,35 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(N) where N is the number of fields being requested.
         /// </remarks>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="keys"></param>
+        /// <typeparam name="T">Type of the returned value</typeparam>
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="keys">Keys to retrieve from the hash</param>
         /// <returns>list of values associated with the given fields, in the same order as they are requested.</returns>
         Task<Dictionary<string, T>> HashGetAsync<T>(string hashKey, IEnumerable<string> keys);
 
         /// <summary>
-        ///     Returns all fields and values of the hash stored at key. In the returned value, every field name is followed by its value, so the length of the reply is twice the size of the hash.
+        ///     Returns all fields and values of the hash stored at key. In the returned value, 
+        ///     every field name is followed by its value, so the length of the reply is twice the size of the hash.
         /// </summary>
         /// <remarks>
         ///     Time complexity: O(N) where N is the size of the hash.
         /// </remarks>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
+        /// <typeparam name="T">Type of the returned value</typeparam>
+        /// <param name="hashKey">Key of the hash</param>
         /// <returns>list of fields and their values stored in the hash, or an empty list when key does not exist.</returns>
         Task<Dictionary<string, T>> HashGetAllAsync<T>(string hashKey);
 
         /// <summary>
-        ///     Increments the number stored at field in the hash stored at key by increment. If key does not exist, a new key holding a hash is created. 
+        ///     Increments the number stored at field in the hash stored at key by increment. 
+        ///     If key does not exist, a new key holding a hash is created. 
         ///     If field does not exist the value is set to 0 before the operation is performed.
         ///     The range of values supported by HINCRBY is limited to 64 bit signed integers.
         /// </summary>
         /// <remarks>
         ///     Time complexity: O(1)
         /// </remarks>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="key"></param>
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="key">Key of the entry</param>
         /// <param name="value">the value at field after the increment operation</param>
         Task<long> HashIncerementByAsync(string hashKey, string key, long value);
 
@@ -773,10 +754,10 @@ namespace StackExchange.Redis.Extensions.Core
         ///     </para>
         ///     
         /// </remarks>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="key"></param>
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="key">Key of the entry</param>
         /// <param name="value">the value at field after the increment operation</param>
+        /// <returns>the value at field after the increment operation.</returns>
         Task<double> HashIncerementByAsync(string hashKey, string key, double value);
 
         /// <summary>
@@ -785,8 +766,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(N) where N is the size of the hash.
         /// </remarks>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
+        /// <param name="hashKey">Key of the hash</param>
         /// <returns>list of fields in the hash, or an empty list when key does not exist.</returns>
         Task<IEnumerable<string>> HashKeysAsync(string hashKey);
 
@@ -796,8 +776,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(1)
         /// </remarks>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
+        /// <param name="hashKey">Key of the hash</param>
         /// <returns>number of fields in the hash, or 0 when key does not exist.</returns>
         Task<long> HashLengthAsync(string hashKey);
 
@@ -805,8 +784,7 @@ namespace StackExchange.Redis.Extensions.Core
         ///     Sets field in the hash stored at key to value. If key does not exist, a new key holding a hash is created. If field already exists in the hash, it is overwritten.
         /// </summary>
         /// 
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client">The redis client used</param>
+        /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">The key of the hash in redis</param>
         /// <param name="key">The key of the field in the hash</param>
         /// <param name="nx">Behave like hsetnx - set only if not exists</param>
@@ -818,14 +796,15 @@ namespace StackExchange.Redis.Extensions.Core
         Task<bool> HashSetAsync<T>(string hashKey, string key, T value, bool nx = false);
 
         /// <summary>
-        ///     Sets the specified fields to their respective values in the hash stored at key. This command overwrites any existing fields in the hash. If key does not exist, a new key holding a hash is created.
+        ///     Sets the specified fields to their respective values in the hash stored at key. 
+        ///     This command overwrites any existing fields in the hash. 
+        ///     If key does not exist, a new key holding a hash is created.
         /// </summary>
         /// <remarks>
         ///     Time complexity: O(N) where N is the number of fields being set.
         /// </remarks>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
+        /// <typeparam name="T">Type of the returned value</typeparam>
+        /// <param name="hashKey">Key of the hash</param>
         /// <param name="values"></param>
         Task HashSetAsync<T>(string hashKey, Dictionary<string, T> values);
 
@@ -835,10 +814,9 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(N) where N is the size of the hash.
         /// </remarks>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="key"></param>
+        /// <typeparam name="T">Type of the returned value</typeparam>
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="key">Key of the entry</param>
         /// <returns>list of values in the hash, or an empty list when key does not exist.</returns>
         Task<IEnumerable<T>> HashValuesAsync<T>(string hashKey, string key);
 
@@ -849,11 +827,10 @@ namespace StackExchange.Redis.Extensions.Core
         ///     Time complexity: O(1) for every call. O(N) for a complete iteration, including enough command calls for the cursor to return back to 0. 
         ///     N is the number of elements inside the collection.
         /// </remarks>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="client"></param>
-        /// <param name="hashKey"></param>
-        /// <param name="pattern"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">Type of the returned value</typeparam>
+        /// <param name="hashKey">Key of the hash</param>
+        /// <param name="pattern">GLOB search pattern</param>
+        /// <returns></returns> 
         Task<IDictionary<string, T>> HashScanAsync<T>(string hashKey, string pattern);
     }
 }
