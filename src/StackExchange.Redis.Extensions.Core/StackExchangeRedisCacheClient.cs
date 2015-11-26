@@ -984,6 +984,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>
         ///     If key is deleted returns true.
         ///     If key does not exist, it is treated as an empty hash and this command returns false.
@@ -1003,6 +1004,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="keys"></param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
         public long HashDelete(string hashKey, IEnumerable<string> keys, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1019,6 +1021,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="client">The redis client used</param>
         /// <param name="hashKey">The key of the hash in redis</param>
         /// <param name="key">The key of the field in the hash</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>Returns if field is an existing field in the hash stored at key.</returns>
         public bool HashExists(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1034,6 +1037,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>the value associated with field, or nil when field is not present in the hash or key does not exist.</returns>
         public T HashGet<T>(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1052,6 +1056,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="keys"></param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>list of values associated with the given fields, in the same order as they are requested.</returns>
         public Dictionary<string, T> HashGet<T>(string hashKey, IEnumerable<string> keys, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1067,6 +1072,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>list of fields and their values stored in the hash, or an empty list when key does not exist.</returns>
         public Dictionary<string, T> HashGetAll<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1123,6 +1129,7 @@ namespace StackExchange.Redis.Extensions.Core
         ///     Time complexity: O(N) where N is the size of the hash.
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>list of fields in the hash, or an empty list when key does not exist.</returns>
         public IEnumerable<string> HashKeys(string hashKey, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1136,6 +1143,7 @@ namespace StackExchange.Redis.Extensions.Core
         ///     Time complexity: O(1)
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>number of fields in the hash, or 0 when key does not exist.</returns>
         public long HashLength(string hashKey, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1151,6 +1159,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="key">The key of the field in the hash</param>
         /// <param name="nx">Behave like hsetnx - set only if not exists</param>
         /// <param name="value">The value to be inserted</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>
         ///     <c>true</c> if field is a new field in the hash and value was set.
         ///     <c>false</c> if field already exists in the hash and no operation was performed.
@@ -1184,6 +1193,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>list of values in the hash, or an empty list when key does not exist.</returns>
         public IEnumerable<T> HashValues<T>(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1200,6 +1210,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="pattern">GLOB search pattern</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns></returns>
         public Dictionary<string, T> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1218,6 +1229,7 @@ namespace StackExchange.Redis.Extensions.Core
 
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>
         ///     If key is deleted returns true.
         ///     If key does not exist, it is treated as an empty hash and this command returns false.
@@ -1237,6 +1249,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="keys">Keys to retrieve from the hash</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
         public async Task<long> HashDeleteAsync(string hashKey, IEnumerable<string> keys, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1252,6 +1265,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <param name="hashKey">The key of the hash in redis</param>
         /// <param name="key">The key of the field in the hash</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>Returns if field is an existing field in the hash stored at key.</returns>
         public async Task<bool> HashExistsAsync(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1268,6 +1282,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>the value associated with field, or nil when field is not present in the hash or key does not exist.</returns>
         public async Task<T> HashGetAsync<T>(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1286,6 +1301,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="keys">Keys to retrieve from the hash</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>list of values associated with the given fields, in the same order as they are requested.</returns>
         public async Task<Dictionary<string, T>> HashGetAsync<T>(string hashKey, IEnumerable<string> keys, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1309,6 +1325,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>list of fields and their values stored in the hash, or an empty list when key does not exist.</returns>
         public async Task<Dictionary<string, T>> HashGetAllAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1353,6 +1370,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
         /// <param name="value">the value at field after the increment operation</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>the value at field after the increment operation.</returns>
         public async Task<double> HashIncerementByAsync(string hashKey, string key, double value, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1366,6 +1384,7 @@ namespace StackExchange.Redis.Extensions.Core
         ///     Time complexity: O(N) where N is the size of the hash.
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>list of fields in the hash, or an empty list when key does not exist.</returns>
         public async Task<IEnumerable<string>> HashKeysAsync(string hashKey, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1379,6 +1398,7 @@ namespace StackExchange.Redis.Extensions.Core
         ///     Time complexity: O(1)
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>number of fields in the hash, or 0 when key does not exist.</returns>
         public async Task<long> HashLengthAsync(string hashKey, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1394,6 +1414,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="key">The key of the field in the hash</param>
         /// <param name="nx">Behave like hsetnx - set only if not exists</param>
         /// <param name="value">The value to be inserted</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>
         ///     <c>true</c> if field is a new field in the hash and value was set.
         ///     <c>false</c> if field already exists in the hash and no operation was performed.
@@ -1429,6 +1450,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns>list of values in the hash, or an empty list when key does not exist.</returns>
         public async Task<IEnumerable<T>> HashValuesAsync<T>(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
         {
@@ -1445,6 +1467,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="pattern">GLOB search pattern</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <returns></returns>
         public async Task<Dictionary<string, T>> HashScanAsync<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags commandFlags = CommandFlags.None)
         {
