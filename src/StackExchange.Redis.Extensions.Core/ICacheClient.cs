@@ -451,7 +451,7 @@ namespace StackExchange.Redis.Extensions.Core
         ///     If key is deleted returns true.
         ///     If key does not exist, it is treated as an empty hash and this command returns false.
         /// </returns>
-        bool HashDelete(string hashKey, string key);
+        bool HashDelete(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Removes the specified fields from the hash stored at key. 
@@ -464,20 +464,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="keys"></param>
         /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
-        long HashDelete(string hashKey, IEnumerable<string> keys);
-
-        /// <summary>
-        ///     Removes the specified fields from the hash stored at key. 
-        ///     Specified fields that do not exist within this hash are ignored. 
-        ///     If key does not exist, it is treated as an empty hash and this command returns 0.
-        /// </summary>
-        /// <remarks>
-        ///     Time complexity: O(N) where N is the number of fields to be removed.
-        /// </remarks>
-        /// <param name="hashKey">Key of the hash</param>
-        /// <param name="keys"></param>
-        /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
-        long HashDelete(string hashKey, params string[] keys);
+        long HashDelete(string hashKey, IEnumerable<string> keys, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Returns if field is an existing field in the hash stored at key.
@@ -490,7 +477,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">The key of the hash in redis</param>
         /// <param name="key">The key of the field in the hash</param>
         /// <returns>Returns if field is an existing field in the hash stored at key.</returns>
-        bool HashExists(string hashKey, string key);
+        bool HashExists(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Returns the value associated with field in the hash stored at key.
@@ -502,7 +489,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
         /// <returns>the value associated with field, or nil when field is not present in the hash or key does not exist.</returns>
-        T HashGet<T>(string hashKey, string key);
+        T HashGet<T>(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Returns the values associated with the specified fields in the hash stored at key.
@@ -516,7 +503,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="keys"></param>
         /// <returns>list of values associated with the given fields, in the same order as they are requested.</returns>
-        Dictionary<string, T> HashGet<T>(string hashKey, IEnumerable<string> keys);
+        Dictionary<string, T> HashGet<T>(string hashKey, IEnumerable<string> keys, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Returns all fields and values of the hash stored at key. In the returned value, every field name is followed by its value, so the length of the reply is twice the size of the hash.
@@ -527,7 +514,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <returns>list of fields and their values stored in the hash, or an empty list when key does not exist.</returns>
-        Dictionary<string, T> HashGetAll<T>(string hashKey);
+        Dictionary<string, T> HashGetAll<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Increments the number stored at field in the hash stored at key by increment. If key does not exist, a new key holding a hash is created. 
@@ -540,7 +527,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
         /// <param name="value">the value at field after the increment operation</param>
-        long HashIncerementBy(string hashKey, string key, long value);
+        long HashIncerementBy(string hashKey, string key, long value, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Increment the specified field of an hash stored at key, and representing a floating point number, by the specified increment. 
@@ -560,7 +547,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
         /// <param name="value">the value at field after the increment operation</param>
-        double HashIncerementBy(string hashKey, string key, double value);
+        double HashIncerementBy(string hashKey, string key, double value, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Returns all field names in the hash stored at key.
@@ -570,7 +557,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
         /// <returns>list of fields in the hash, or an empty list when key does not exist.</returns>
-        IEnumerable<string> HashKeys(string hashKey);
+        IEnumerable<string> HashKeys(string hashKey, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Returns the number of fields contained in the hash stored at key.
@@ -580,7 +567,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
         /// <returns>number of fields in the hash, or 0 when key does not exist.</returns>
-        long HashLength(string hashKey);
+        long HashLength(string hashKey, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Sets field in the hash stored at key to value. If key does not exist, a new key holding a hash is created. If field already exists in the hash, it is overwritten.
@@ -595,7 +582,7 @@ namespace StackExchange.Redis.Extensions.Core
         ///     <c>true</c> if field is a new field in the hash and value was set.
         ///     <c>false</c> if field already exists in the hash and no operation was performed.
         /// </returns>
-        bool HashSet<T>(string hashKey, string key, T value, bool nx = false);
+        bool HashSet<T>(string hashKey, string key, T value, bool nx = false, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Sets the specified fields to their respective values in the hash stored at key. This command overwrites any existing fields in the hash. If key does not exist, a new key holding a hash is created.
@@ -606,7 +593,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="values"></param>
-        void HashSet<T>(string hashKey, Dictionary<string, T> values);
+        void HashSet<T>(string hashKey, Dictionary<string, T> values, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Returns all values in the hash stored at key.
@@ -618,7 +605,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
         /// <returns>list of values in the hash, or an empty list when key does not exist.</returns>
-        IEnumerable<T> HashValues<T>(string hashKey, string key);
+        IEnumerable<T> HashValues<T>(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     iterates fields of Hash types and their associated values.
@@ -631,7 +618,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="pattern">GLOB search pattern</param>
         /// <returns></returns>
-        IDictionary<string, T> HashScan<T>(string hashKey, string pattern);
+        Dictionary<string, T> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Removes the specified fields from the hash stored at key. 
@@ -647,7 +634,7 @@ namespace StackExchange.Redis.Extensions.Core
         ///     If key is deleted returns true.
         ///     If key does not exist, it is treated as an empty hash and this command returns false.
         /// </returns>
-        Task<bool> HashDeleteAsync(string hashKey, string key);
+        Task<bool> HashDeleteAsync(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Removes the specified fields from the hash stored at key. 
@@ -660,20 +647,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="keys">Keys to retrieve from the hash</param>
         /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
-        Task<long> HashDeleteAsync(string hashKey, IEnumerable<string> keys);
-
-        /// <summary>
-        ///     Removes the specified fields from the hash stored at key. 
-        ///     Specified fields that do not exist within this hash are ignored. 
-        ///     If key does not exist, it is treated as an empty hash and this command returns 0.
-        /// </summary>
-        /// <remarks>
-        ///     Time complexity: O(N) where N is the number of fields to be removed.
-        /// </remarks>
-        /// <param name="hashKey">Key of the hash</param>
-        /// <param name="keys">Keys to retrieve from the hash</param>
-        /// <returns>The number of fields that were removed from the hash, not including specified but non existing fields.</returns>
-        Task<long> HashDeleteAsync(string hashKey, params string[] keys);
+        Task<long> HashDeleteAsync(string hashKey, IEnumerable<string> keys, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Returns if field is an existing field in the hash stored at key.
@@ -685,7 +659,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">The key of the hash in redis</param>
         /// <param name="key">The key of the field in the hash</param>
         /// <returns>Returns if field is an existing field in the hash stored at key.</returns>
-        Task<bool> HashExistsAsync(string hashKey, string key);
+        Task<bool> HashExistsAsync(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Returns the value associated with field in the hash stored at key.
@@ -697,7 +671,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
         /// <returns>the value associated with field, or nil when field is not present in the hash or key does not exist.</returns>
-        Task<T> HashGetAsync<T>(string hashKey, string key);
+        Task<T> HashGetAsync<T>(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Returns the values associated with the specified fields in the hash stored at key.
@@ -711,7 +685,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="keys">Keys to retrieve from the hash</param>
         /// <returns>list of values associated with the given fields, in the same order as they are requested.</returns>
-        Task<Dictionary<string, T>> HashGetAsync<T>(string hashKey, IEnumerable<string> keys);
+        Task<Dictionary<string, T>> HashGetAsync<T>(string hashKey, IEnumerable<string> keys, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Returns all fields and values of the hash stored at key. In the returned value, 
@@ -723,7 +697,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <returns>list of fields and their values stored in the hash, or an empty list when key does not exist.</returns>
-        Task<Dictionary<string, T>> HashGetAllAsync<T>(string hashKey);
+        Task<Dictionary<string, T>> HashGetAllAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Increments the number stored at field in the hash stored at key by increment. 
@@ -737,7 +711,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
         /// <param name="value">the value at field after the increment operation</param>
-        Task<long> HashIncerementByAsync(string hashKey, string key, long value);
+        Task<long> HashIncerementByAsync(string hashKey, string key, long value, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Increment the specified field of an hash stored at key, and representing a floating point number, by the specified increment. 
@@ -758,7 +732,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="key">Key of the entry</param>
         /// <param name="value">the value at field after the increment operation</param>
         /// <returns>the value at field after the increment operation.</returns>
-        Task<double> HashIncerementByAsync(string hashKey, string key, double value);
+        Task<double> HashIncerementByAsync(string hashKey, string key, double value, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Returns all field names in the hash stored at key.
@@ -768,7 +742,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
         /// <returns>list of fields in the hash, or an empty list when key does not exist.</returns>
-        Task<IEnumerable<string>> HashKeysAsync(string hashKey);
+        Task<IEnumerable<string>> HashKeysAsync(string hashKey, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Returns the number of fields contained in the hash stored at key.
@@ -778,7 +752,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
         /// <returns>number of fields in the hash, or 0 when key does not exist.</returns>
-        Task<long> HashLengthAsync(string hashKey);
+        Task<long> HashLengthAsync(string hashKey, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Sets field in the hash stored at key to value. If key does not exist, a new key holding a hash is created. If field already exists in the hash, it is overwritten.
@@ -793,7 +767,7 @@ namespace StackExchange.Redis.Extensions.Core
         ///     <c>true</c> if field is a new field in the hash and value was set.
         ///     <c>false</c> if field already exists in the hash and no operation was performed.
         /// </returns>
-        Task<bool> HashSetAsync<T>(string hashKey, string key, T value, bool nx = false);
+        Task<bool> HashSetAsync<T>(string hashKey, string key, T value, bool nx = false, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Sets the specified fields to their respective values in the hash stored at key. 
@@ -806,7 +780,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="values"></param>
-        Task HashSetAsync<T>(string hashKey, Dictionary<string, T> values);
+        Task HashSetAsync<T>(string hashKey, IDictionary<string, T> values, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Returns all values in the hash stored at key.
@@ -818,7 +792,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
         /// <returns>list of values in the hash, or an empty list when key does not exist.</returns>
-        Task<IEnumerable<T>> HashValuesAsync<T>(string hashKey, string key);
+        Task<IEnumerable<T>> HashValuesAsync<T>(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     iterates fields of Hash types and their associated values.
@@ -831,6 +805,6 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="pattern">GLOB search pattern</param>
         /// <returns></returns> 
-        Task<IDictionary<string, T>> HashScanAsync<T>(string hashKey, string pattern);
+        Task<Dictionary<string, T>> HashScanAsync<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags commandFlags = CommandFlags.None);
     }
 }
