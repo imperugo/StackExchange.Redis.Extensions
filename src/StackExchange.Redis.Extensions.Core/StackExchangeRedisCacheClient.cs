@@ -974,5 +974,538 @@ namespace StackExchange.Redis.Extensions.Core
 
 			return data;
 		}
-	}
+
+        /// <summary>
+        ///   Removes the specified fields from the hash stored at key. 
+        ///   Specified fields that do not exist within this hash are ignored. 
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(1)
+        /// </remarks>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="key"></param>
+        /// <returns>
+        ///   If key is deleted returns true.
+        ///   If key does not exist, it is treated as an empty hash and this command returns false.
+        /// </returns>
+        public bool HashDelete(string hashKey, string key)
+        {
+            return Database.HashDelete(hashKey, key);
+        }
+
+        /// <summary>
+        ///   Removes the specified fields from the hash stored at key. 
+        ///   Specified fields that do not exist within this hash are ignored. 
+        ///   If key does not exist, it is treated as an empty hash and this command returns 0.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(N) where N is the number of fields to be removed.
+        /// </remarks>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="keys"></param>
+        /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
+        public long HashDelete(string hashKey, IEnumerable<string> keys)
+        {
+            return Database.HashDelete(hashKey, keys.Select(x => (RedisValue)x).ToArray());
+        }
+
+        /// <summary>
+        ///   Removes the specified fields from the hash stored at key. 
+        ///   Specified fields that do not exist within this hash are ignored. 
+        ///   If key does not exist, it is treated as an empty hash and this command returns 0.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(N) where N is the number of fields to be removed.
+        /// </remarks>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="keys"></param>
+        /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
+        public long HashDelete(string hashKey, params string[] keys)
+        {
+            return Database.HashDelete(hashKey, keys.Select(x => (RedisValue)x).ToArray());
+        }
+
+        /// <summary>
+        ///   Returns if field is an existing field in the hash stored at key.
+        /// </summary>
+        /// 
+        /// <remarks>
+        ///   Time complexity: O(1)
+        /// </remarks>
+        /// <param name="client">The redis client used</param>
+        /// <param name="hashKey">The key of the hash in redis</param>
+        /// <param name="key">The key of the field in the hash</param>
+        /// <returns>Returns if field is an existing field in the hash stored at key.</returns>
+        public bool HashExists(string hashKey, string key)
+        {
+            return Database.HashExists(hashKey, key);
+        }
+
+        /// <summary>
+        ///   Returns the value associated with field in the hash stored at key.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(1)
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="key"></param>
+        /// <returns>the value associated with field, or nil when field is not present in the hash or key does not exist.</returns>
+        public T HashGet<T>(string hashKey, string key)
+        {
+            var redisValue = Database.HashGet(hashKey, key);
+            return redisValue.HasValue ? Serializer.Deserialize<T>(redisValue) : default(T);
+        }
+
+        /// <summary>
+        ///   Returns the values associated with the specified fields in the hash stored at key.
+        ///   For every field that does not exist in the hash, a nil value is returned. 
+        ///   Because a non-existing keys are treated as empty hashes, running HMGET against a non-existing key will return a list of nil values.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(N) where N is the number of fields being requested.
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="keys"></param>
+        /// <returns>list of values associated with the given fields, in the same order as they are requested.</returns>
+        public Dictionary<string, T> HashGet<T>(string hashKey, IEnumerable<string> keys)
+        {
+            return keys.Select(x => new { key = x, value = HashGet<T>(hashKey, x) })
+                        .ToDictionary(kv => kv.key, kv => kv.value);
+        }
+
+        /// <summary>
+        ///   Returns all fields and values of the hash stored at key. In the returned value, every field name is followed by its value, so the length of the reply is twice the size of the hash.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(N) where N is the size of the hash.
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <returns>list of fields and their values stored in the hash, or an empty list when key does not exist.</returns>
+        public Dictionary<string, T> HashGetAll<T>(string hashKey)
+        {
+            return Database
+                        .HashGetAll(hashKey)
+                        .ToDictionary(
+                            x => x.Name.ToString(),
+                            x => Serializer.Deserialize<T>(x.Value));
+        }
+
+        /// <summary>
+        ///   Increments the number stored at field in the hash stored at key by increment. If key does not exist, a new key holding a hash is created. 
+        ///   If field does not exist the value is set to 0 before the operation is performed.
+        ///   The range of values supported by HINCRBY is limited to 64 bit signed integers.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(1)
+        /// </remarks>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="key"></param>
+        /// <param name="value">the value at field after the increment operation</param>
+        public long HashIncerementBy(string hashKey, string key, long value)
+        {
+            return Database.HashIncrement(hashKey, key, value);
+        }
+
+        /// <summary>
+        ///   Increment the specified field of an hash stored at key, and representing a floating point number, by the specified increment. 
+        ///   If the field does not exist, it is set to 0 before performing the operation.
+        /// </summary>
+        /// <remarks>
+        ///   <para>
+        ///     An error is returned if one of the following conditions occur:
+        ///     * The field contains a value of the wrong type (not a string).
+        ///     * The current field content or the specified increment are not parsable as a double precision floating point number.
+        ///   </para>
+        ///   <para>
+        ///     Time complexity: O(1)
+        ///   </para>
+        ///   
+        /// </remarks>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="key"></param>
+        /// <param name="value">the value at field after the increment operation</param>
+        public double HashIncerementBy(string hashKey, string key, double value)
+        {
+            return Database.HashIncrement(hashKey, key, value);
+        }
+
+        /// <summary>
+        ///   Returns all field names in the hash stored at key.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(N) where N is the size of the hash.
+        /// </remarks>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <returns>list of fields in the hash, or an empty list when key does not exist.</returns>
+        public IEnumerable<string> HashKeys(string hashKey)
+        {
+            return Database.HashKeys(hashKey).Select(x => x.ToString());
+        }
+
+        /// <summary>
+        ///   Returns the number of fields contained in the hash stored at key.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(1)
+        /// </remarks>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <returns>number of fields in the hash, or 0 when key does not exist.</returns>
+        public long HashLength(string hashKey)
+        {
+            return Database.HashLength(hashKey);
+        }
+
+        /// <summary>
+        ///   Sets field in the hash stored at key to value. If key does not exist, a new key holding a hash is created. If field already exists in the hash, it is overwritten.
+        /// </summary>
+        /// 
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client">The redis client used</param>
+        /// <param name="hashKey">The key of the hash in redis</param>
+        /// <param name="key">The key of the field in the hash</param>
+        /// <param name="nx">Behave like hsetnx - set only if not exists</param>
+        /// <param name="value">The value to be inserted</param>
+        /// <returns>
+        ///   <c>true</c> if field is a new field in the hash and value was set.
+        ///   <c>false</c> if field already exists in the hash and no operation was performed.
+        /// </returns>
+        public bool HashSet<T>(string hashKey, string key, T value, bool nx = false)
+        {
+            return Database.HashSet(hashKey, key, Serializer.Serialize(value), nx ? When.NotExists : When.Always);
+        }
+
+        /// <summary>
+        ///   Sets the specified fields to their respective values in the hash stored at key. This command overwrites any existing fields in the hash. If key does not exist, a new key holding a hash is created.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(N) where N is the number of fields being set.
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="values"></param>
+        public void HashSet<T>(string hashKey, Dictionary<string, T> values)
+        {
+            var entries = values.Select(kv => new HashEntry(kv.Key, Serializer.Serialize(kv.Value)));
+            Database.HashSet(hashKey, entries.ToArray());
+        }
+
+        /// <summary>
+        ///   Returns all values in the hash stored at key.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(N) where N is the size of the hash.
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="key"></param>
+        /// <returns>list of values in the hash, or an empty list when key does not exist.</returns>
+        public IEnumerable<T> HashValues<T>(string hashKey, string key)
+        {
+            return Database.HashValues(hashKey).Select(x => Serializer.Deserialize<T>(x));
+        }
+
+        /// <summary>
+        ///   iterates fields of Hash types and their associated values.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(1) for every call. O(N) for a complete iteration, including enough command calls for the cursor to return back to 0. 
+        ///   N is the number of elements inside the collection.
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
+        public IDictionary<string, T> HashScan<T>(string hashKey, string pattern)
+        {
+            return Database
+                         .HashScan(hashKey, pattern)
+                         .ToDictionary(x => x.Name.ToString(),
+                                      x => Serializer.Deserialize<T>(x.Value));
+        }
+
+        /// <summary>
+        ///   Removes the specified fields from the hash stored at key. 
+        ///   Specified fields that do not exist within this hash are ignored. 
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(1)
+        /// </remarks>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="key"></param>
+        /// <returns>
+        ///   If key is deleted returns true.
+        ///   If key does not exist, it is treated as an empty hash and this command returns false.
+        /// </returns>
+        public async Task<bool> HashDeleteAsync(string hashKey, string key)
+        {
+            return await Database.HashDeleteAsync(hashKey, key);
+        }
+
+        /// <summary>
+        ///   Removes the specified fields from the hash stored at key. 
+        ///   Specified fields that do not exist within this hash are ignored. 
+        ///   If key does not exist, it is treated as an empty hash and this command returns 0.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(N) where N is the number of fields to be removed.
+        /// </remarks>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="keys"></param>
+        /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
+        public async Task<long> HashDeleteAsync(string hashKey, IEnumerable<string> keys)
+        {
+            return await Database.HashDeleteAsync(hashKey, keys.Select(x => (RedisValue)x).ToArray());
+        }
+
+        /// <summary>
+        ///   Removes the specified fields from the hash stored at key. 
+        ///   Specified fields that do not exist within this hash are ignored. 
+        ///   If key does not exist, it is treated as an empty hash and this command returns 0.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(N) where N is the number of fields to be removed.
+        /// </remarks>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="keys"></param>
+        /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
+        public async Task<long> HashDeleteAsync(string hashKey, params string[] keys)
+        {
+            return await Database.HashDeleteAsync(hashKey, keys.Select(x => (RedisValue)x).ToArray());
+        }
+
+        /// <summary>
+        ///   Returns if field is an existing field in the hash stored at key.
+        /// </summary>
+        /// 
+        /// <remarks>
+        ///   Time complexity: O(1)
+        /// </remarks>
+        /// <param name="client">The redis client used</param>
+        /// <param name="hashKey">The key of the hash in redis</param>
+        /// <param name="key">The key of the field in the hash</param>
+        /// <returns>Returns if field is an existing field in the hash stored at key.</returns>
+        public async Task<bool> HashExistsAsync(string hashKey, string key)
+        {
+            return await Database.HashExistsAsync(hashKey, key);
+        }
+
+        /// <summary>
+        ///   Returns the value associated with field in the hash stored at key.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(1)
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="key"></param>
+        /// <returns>the value associated with field, or nil when field is not present in the hash or key does not exist.</returns>
+        public async Task<T> HashGetAsync<T>(string hashKey, string key)
+        {
+            var redisValue = await Database.HashGetAsync(hashKey, key);
+            return redisValue.HasValue ? Serializer.Deserialize<T>(redisValue) : default(T);
+        }
+
+        /// <summary>
+        ///   Returns the values associated with the specified fields in the hash stored at key.
+        ///   For every field that does not exist in the hash, a nil value is returned. 
+        ///   Because a non-existing keys are treated as empty hashes, running HMGET against a non-existing key will return a list of nil values.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(N) where N is the number of fields being requested.
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="keys"></param>
+        /// <returns>list of values associated with the given fields, in the same order as they are requested.</returns>
+        public async Task<Dictionary<string, T>> HashGetAsync<T>(string hashKey, IEnumerable<string> keys)
+        {
+            var result = new Dictionary<string, T>();
+            foreach (var key in keys)
+            {
+                var value = await HashGetAsync<T>(hashKey, key);
+
+                result.Add(key, value);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        ///   Returns all fields and values of the hash stored at key. In the returned value, every field name is followed by its value, so the length of the reply is twice the size of the hash.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(N) where N is the size of the hash.
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <returns>list of fields and their values stored in the hash, or an empty list when key does not exist.</returns>
+        public async Task<Dictionary<string, T>> HashGetAllAsync<T>(string hashKey)
+        {
+            return (await Database
+                        .HashGetAllAsync(hashKey))
+                        .ToDictionary(
+                            x => x.Name.ToString(),
+                            x => Serializer.Deserialize<T>(x.Value));
+        }
+
+        /// <summary>
+        ///   Increments the number stored at field in the hash stored at key by increment. If key does not exist, a new key holding a hash is created. 
+        ///   If field does not exist the value is set to 0 before the operation is performed.
+        ///   The range of values supported by HINCRBY is limited to 64 bit signed integers.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(1)
+        /// </remarks>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="key"></param>
+        /// <param name="value">the value at field after the increment operation</param>
+        public async Task<long> HashIncerementByAsync(string hashKey, string key, long value)
+        {
+            return await Database.HashIncrementAsync(hashKey, key, value);
+        }
+
+        /// <summary>
+        ///   Increment the specified field of an hash stored at key, and representing a floating point number, by the specified increment. 
+        ///   If the field does not exist, it is set to 0 before performing the operation.
+        /// </summary>
+        /// <remarks>
+        ///   <para>
+        ///     An error is returned if one of the following conditions occur:
+        ///     * The field contains a value of the wrong type (not a string).
+        ///     * The current field content or the specified increment are not parsable as a double precision floating point number.
+        ///   </para>
+        ///   <para>
+        ///     Time complexity: O(1)
+        ///   </para>
+        ///   
+        /// </remarks>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="key"></param>
+        /// <param name="value">the value at field after the increment operation</param>
+        public async Task<double> HashIncerementByAsync(string hashKey, string key, double value)
+        {
+            return await Database.HashIncrementAsync(hashKey, key, value);
+        }
+
+        /// <summary>
+        ///   Returns all field names in the hash stored at key.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(N) where N is the size of the hash.
+        /// </remarks>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <returns>list of fields in the hash, or an empty list when key does not exist.</returns>
+        public async Task<IEnumerable<string>> HashKeysAsync(string hashKey)
+        {
+            return (await Database.HashKeysAsync(hashKey)).Select(x => x.ToString());
+        }
+
+        /// <summary>
+        ///   Returns the number of fields contained in the hash stored at key.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(1)
+        /// </remarks>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <returns>number of fields in the hash, or 0 when key does not exist.</returns>
+        public async Task<long> HashLengthAsync(string hashKey)
+        {
+            return await Database.HashLengthAsync(hashKey);
+        }
+
+        /// <summary>
+        ///   Sets field in the hash stored at key to value. If key does not exist, a new key holding a hash is created. If field already exists in the hash, it is overwritten.
+        /// </summary>
+        /// 
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client">The redis client used</param>
+        /// <param name="hashKey">The key of the hash in redis</param>
+        /// <param name="key">The key of the field in the hash</param>
+        /// <param name="nx">Behave like hsetnx - set only if not exists</param>
+        /// <param name="value">The value to be inserted</param>
+        /// <returns>
+        ///   <c>true</c> if field is a new field in the hash and value was set.
+        ///   <c>false</c> if field already exists in the hash and no operation was performed.
+        /// </returns>
+        public async Task<bool> HashSetAsync<T>(string hashKey, string key, T value, bool nx = false)
+        {
+            return await Database.HashSetAsync(hashKey, key, Serializer.Serialize(value), nx ? When.NotExists : When.Always);
+        }
+
+        /// <summary>
+        ///   Sets the specified fields to their respective values in the hash stored at key. This command overwrites any existing fields in the hash. If key does not exist, a new key holding a hash is created.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(N) where N is the number of fields being set.
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="values"></param>
+        public async Task HashSetAsync<T>(string hashKey, Dictionary<string, T> values)
+        {
+            var entries = values.Select(kv => new HashEntry(kv.Key, Serializer.Serialize(kv.Value)));
+            await Database.HashSetAsync(hashKey, entries.ToArray());
+        }
+
+        /// <summary>
+        ///   Returns all values in the hash stored at key.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(N) where N is the size of the hash.
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="key"></param>
+        /// <returns>list of values in the hash, or an empty list when key does not exist.</returns>
+        public async Task<IEnumerable<T>> HashValuesAsync<T>(string hashKey, string key)
+        {
+            return (await Database.HashValuesAsync(hashKey)).Select(x => Serializer.Deserialize<T>(x));
+        }
+
+        /// <summary>
+        ///   iterates fields of Hash types and their associated values.
+        /// </summary>
+        /// <remarks>
+        ///   Time complexity: O(1) for every call. O(N) for a complete iteration, including enough command calls for the cursor to return back to 0. 
+        ///   N is the number of elements inside the collection.
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="hashKey"></param>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
+        public async Task<IDictionary<string, T>> HashScanAsync<T>(string hashKey, string pattern)
+        {
+            return (await Task.Run(() => Database.HashScan(hashKey, pattern)))
+                .ToDictionary(x => x.Name.ToString(), x => Serializer.Deserialize<T>(x.Value));
+        }
+    }
 }
