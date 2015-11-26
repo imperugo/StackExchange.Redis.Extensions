@@ -36,7 +36,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		}
 
 		[Fact]
-		public void Info_Should_Return_Valid_Informatino()
+		public void Info_Should_Return_Valid_Information()
 		{
 			var response = Sut.GetInfo();
 
