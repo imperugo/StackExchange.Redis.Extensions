@@ -475,7 +475,6 @@ namespace StackExchange.Redis.Extensions.Core
         /// <remarks>
         ///     Time complexity: O(1)
         /// </remarks>
-        /// <param name="client">The redis client used</param>
         /// <param name="hashKey">The key of the hash in redis</param>
         /// <param name="key">The key of the field in the hash</param>
         /// <param name="commandFlags">Command execution flags</param>
@@ -532,6 +531,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <param name="value">the value at field after the increment operation</param>
         long HashIncerementBy(string hashKey, string key, long value, CommandFlags commandFlags = CommandFlags.None);
 
@@ -552,6 +552,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <param name="value">the value at field after the increment operation</param>
         double HashIncerementBy(string hashKey, string key, double value, CommandFlags commandFlags = CommandFlags.None);
 
@@ -627,6 +628,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="pattern">GLOB search pattern</param>
+        /// <param name="pageSize">Number of elements to retrieve from the redis server in the cursor</param>
         /// <param name="commandFlags">Command execution flags</param>
         /// <returns></returns>
         Dictionary<string, T> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags commandFlags = CommandFlags.None);
@@ -727,6 +729,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
         /// <param name="value">the value at field after the increment operation</param>
         Task<long> HashIncerementByAsync(string hashKey, string key, long value, CommandFlags commandFlags = CommandFlags.None);
 
@@ -826,6 +829,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="pattern">GLOB search pattern</param>
+        /// <param name="pageSize">Number of elements to retrieve from the redis server in the cursor</param>
         /// <param name="commandFlags">Command execution flags</param>
         /// <returns></returns> 
         Task<Dictionary<string, T>> HashScanAsync<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags commandFlags = CommandFlags.None);
