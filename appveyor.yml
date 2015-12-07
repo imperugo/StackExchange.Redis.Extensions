@@ -1,0 +1,18 @@
+version: 1.0.{build}
+os: Visual Studio 2015
+configuration: Release
+platform: Any CPU
+init:
+- cmd: set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
+install:
+- cmd: >-
+    nuget install redis-64 -excludeversion
+
+    redis-64\tools\redis-server.exe --service-install
+
+    redis-64\tools\redis-server.exe --service-start
+before_build:
+- cmd: nuget restore
+build:
+  project: StackExchange.Redis.Extensions.sln
+  verbosity: minimal

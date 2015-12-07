@@ -17,7 +17,18 @@ For example:
 - **Retrieve Redis Server status**;
 - **Much more**;
 
-[![Issue Stats](http://www.issuestats.com/github/imperugo/StackExchange.Redis.Extensions/badge/issue)](http://www.issuestats.com/github/imperugo/StackExchange.Redis.Extensions)
+
+Channel  | Status | 
+-------- | :------------: | 
+Appveyor CI (Windows) | [![Build status](https://ci.appveyor.com/api/projects/status/coarryn71v4lvgih/branch/master?svg=true)](https://ci.appveyor.com/project/imperugo/stackexchange-redis-extensions/branch/master)
+Travis CI (Linux) | [![Build Status](https://travis-ci.org/imperugo/StackExchange.Redis.Extensions.svg?branch=master)](https://travis-ci.org/imperugo/StackExchange.Redis.Extensions)
+Nuget (Core) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Core.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Core/)
+Nuget (Json.NET) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Newtonsoft.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Newtonsoft/)
+Nuget (MsgPack) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.MsgPack.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.MsgPack/)
+Nuget (Protobuf) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Protobuf.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Protobuf/)
+Issue stats | [![Issue Stats](http://www.issuestats.com/github/imperugo/StackExchange.Redis.Extensions/badge/issue)](http://www.issuestats.com/github/imperugo/StackExchange.Redis.Extensions)
+
+
 
 ##How to install it
 StackExchange.Redis.Extensions is composed by two libraries, the Core and the Serializer implementation.

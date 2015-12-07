@@ -2,6 +2,9 @@
 
 namespace StackExchange.Redis.Extensions.Core
 {
+	/// <summary>
+	/// Contract for Serializer implementation
+	/// </summary>
 	public interface ISerializer
 	{
 		/// <summary>
@@ -44,7 +47,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// The instance of the specified Item
 		/// </returns>
-		T Deserialize<T>(byte[] serializedObject) where T : class;
+		T Deserialize<T>(byte[] serializedObject);
 
 		/// <summary>
 		/// Deserializes the specified bytes.
@@ -54,6 +57,6 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>
 		/// The instance of the specified Item
 		/// </returns>
-		Task<T> DeserializeAsync<T>(byte[] serializedObject) where T : class;
+		Task<T> DeserializeAsync<T>(byte[] serializedObject);
 	}
 }

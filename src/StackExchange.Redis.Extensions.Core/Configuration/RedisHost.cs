@@ -3,8 +3,17 @@ using System.Configuration;
 
 namespace StackExchange.Redis.Extensions.Core.Configuration
 {
+	/// <summary>
+	/// Configuration element for Redis Host
+	/// </summary>
 	public class RedisHost : ConfigurationElement
 	{
+		/// <summary>
+		/// Gets the Redis host.
+		/// </summary>
+		/// <value>
+		/// The host.
+		/// </value>
 		[ConfigurationProperty("host", IsRequired = true)]
 		public string Host
 		{
@@ -14,6 +23,12 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 			}
 		}
 
+		/// <summary>
+		/// Gets the port.
+		/// </summary>
+		/// <value>
+		/// The port.
+		/// </value>
 		[ConfigurationProperty("cachePort", IsRequired = true)]
 		public int CachePort
 		{

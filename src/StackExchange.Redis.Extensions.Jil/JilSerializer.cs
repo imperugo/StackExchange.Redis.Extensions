@@ -5,6 +5,9 @@ using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.Jil
 {
+	/// <summary>
+	/// Jil implementation of <see cref="ISerializer"/>
+	/// </summary>
 	public class JilSerializer : ISerializer
 	{
 		// TODO: May make this configurable in the future.
@@ -17,35 +20,67 @@ namespace StackExchange.Redis.Extensions.Jil
 		/// </remarks>
 		private static readonly Encoding encoding = Encoding.UTF8;
 
+		/// <summary>
+		/// Serializes the specified item.
+		/// </summary>
+		/// <param name="item">The item.</param>
+		/// <returns></returns>
 		public byte[] Serialize(object item)
 		{
 			var jsonString = JSON.Serialize(item);
 			return encoding.GetBytes(jsonString);
 		}
 
+		/// <summary>
+		/// Serializes the asynchronous.
+		/// </summary>
+		/// <param name="item">The item.</param>
+		/// <returns></returns>
 		public Task<byte[]> SerializeAsync(object item)
 		{
 			return Task.Factory.StartNew(() => Serialize(item));
 		}
 
+		/// <summary>
+		/// Deserializes the specified serialized object.
+		/// </summary>
+		/// <param name="serializedObject">The serialized object.</param>
+		/// <returns></returns>
 		public object Deserialize(byte[] serializedObject)
 		{
 			var jsonString = encoding.GetString(serializedObject);
 			return JSON.Deserialize(jsonString, typeof (object));
 		}
 
+		/// <summary>
+		/// Deserializes the asynchronous.
+		/// </summary>
+		/// <param name="serializedObject">The serialized object.</param>
+		/// <returns></returns>
 		public Task<object> DeserializeAsync(byte[] serializedObject)
 		{
 			return Task.Factory.StartNew(() => Deserialize(serializedObject));
 		}
 
-		public T Deserialize<T>(byte[] serializedObject) where T : class
+		/// <summary>
+		/// Deserializes the specified serialized object.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="serializedObject">The serialized object.</param>
+		/// <returns></returns>
+		public T Deserialize<T>(byte[] serializedObject)
 		{
 			var jsonString = encoding.GetString(serializedObject);
 			return JSON.Deserialize<T>(jsonString);
 		}
 
-		public Task<T> DeserializeAsync<T>(byte[] serializedObject) where T : class
+		/// <summary>
+		/// Deserializes the asynchronous.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="serializedObject">The serialized object.</param>
+		/// <returns></returns>
+		public Task<T> DeserializeAsync<T>(byte[] serializedObject)
 		{
 			return Task.Factory.StartNew(() => Deserialize<T>(serializedObject));
 		}
