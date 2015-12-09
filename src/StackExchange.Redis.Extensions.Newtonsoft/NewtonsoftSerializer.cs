@@ -20,6 +20,8 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 		/// </remarks>
 		private static readonly Encoding encoding = Encoding.UTF8;
 
+        public static JsonSerializerSettings Settings { get; set; }
+
 		/// <summary>
 		/// Serializes the specified item.
 		/// </summary>
@@ -28,7 +30,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 		public byte[] Serialize(object item)
 		{
 			var co = new CachedObject<object>(item);
-			var jsonString = JsonConvert.SerializeObject(co);
+			var jsonString = JsonConvert.SerializeObject(co, Settings);
 			return encoding.GetBytes(jsonString);
 		}
 
@@ -40,7 +42,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 		public async Task<byte[]> SerializeAsync(object item)
 		{
 			var co = new CachedObject<object>(item);
-			var jsonString = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(co));
+			var jsonString = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(co, Settings));
 			return encoding.GetBytes(jsonString);
 		}
 
