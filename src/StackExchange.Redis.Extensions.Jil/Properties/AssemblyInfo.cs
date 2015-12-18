@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -12,6 +13,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("StackExchange.Redis.Extensions.Jil")]
 [assembly: AssemblyCopyright("Copyright © Ugo Lattanzi 2015")]
 [assembly: NeutralResourcesLanguage("en")]
+
+// Mark assembly as CLS Compliant
+[assembly: CLSCompliant(true)]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
