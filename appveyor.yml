@@ -1,7 +1,6 @@
 #---------------------------------#
 #      general configuration      #
 #---------------------------------#
-
 # version format
 version: 1.0.{build}
 os: Visual Studio 2015
@@ -17,7 +16,9 @@ init:
 install:
 - cmd: >-
     nuget install redis-64 -excludeversion
+
     redis-64\tools\redis-server.exe --service-install
+
     redis-64\tools\redis-server.exe --service-start
 
 #---------------------------------#
