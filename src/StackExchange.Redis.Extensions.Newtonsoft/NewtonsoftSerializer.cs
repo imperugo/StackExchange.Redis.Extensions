@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StackExchange.Redis.Extensions.Core;
@@ -20,6 +21,13 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 		/// </remarks>
 		private static readonly Encoding encoding = Encoding.UTF8;
 
+	    private readonly JsonSerializerSettings settings;
+
+	    public NewtonsoftSerializer(JsonSerializerSettings settings = null)
+	    {
+	        this.settings = settings ?? new JsonSerializerSettings();
+	    }
+
 		/// <summary>
 		/// Serializes the specified item.
 		/// </summary>
@@ -28,7 +36,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 		public byte[] Serialize(object item)
 		{
 			var co = new CachedObject<object>(item);
-			var jsonString = JsonConvert.SerializeObject(co);
+			var jsonString = JsonConvert.SerializeObject(co, settings);
 			return encoding.GetBytes(jsonString);
 		}
 
@@ -40,7 +48,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 		public async Task<byte[]> SerializeAsync(object item)
 		{
 			var co = new CachedObject<object>(item);
-			var jsonString = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(co));
+			var jsonString = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(co, settings));
 			return encoding.GetBytes(jsonString);
 		}
 
@@ -74,7 +82,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 		public T Deserialize<T>(byte[] serializedObject)
 		{
 			var jsonString = encoding.GetString(serializedObject);
-			return JsonConvert.DeserializeObject<CachedObject<T>>(jsonString).CachedValue;
+			return JsonConvert.DeserializeObject<CachedObject<T>>(jsonString, settings).CachedValue;
 		}
 
 		/// <summary>
