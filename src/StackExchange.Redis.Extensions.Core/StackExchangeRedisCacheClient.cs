@@ -1221,13 +1221,6 @@ namespace StackExchange.Redis.Extensions.Core
                          .ToDictionary(x => x.Name.ToString(),
                                       x => Serializer.Deserialize<T>(x.Value));
         }
-        /// <summary>
-        ///     Removes the specified fields from the hash stored at key. 
-        ///     Specified fields that do not exist within this hash are ignored. 
-        /// </summary>
-        /// <remarks>
-        ///     Time complexity: O(1)
-        /// </remarks>
 
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>

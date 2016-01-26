@@ -1,10 +1,14 @@
 ﻿using System;
+using System.CodeDom;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
+using Newtonsoft.Json;
 using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Core.Extensions;
 using StackExchange.Redis.Extensions.Tests.Extensions;
@@ -483,5 +487,112 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.Equal(item.Key, values[0].Key);
 			Assert.Equal(item.Value, values[0].Value);
 		}
-	}
+
+        // Hash tests
+
+
+        // HashDelete
+        // HashDelete multiple
+        // HashExists
+        // HashGet
+        // HashGet multiple
+        // HashGetAll
+        // HashIncerementBy long
+        // HashIncerementBy double
+        // HashKeys
+        // HashLength
+        // HashSet
+        // HashSet multiple
+        // HashValues
+        // HashScan
+
+        // async variants
+
+        /*
+	    [Fact]
+	    public void Some_Test_Template()
+	    {
+            // arrange
+            // act
+            // assert
+        }
+        */
+
+        [Fact]
+        public void HashSetSingleValueNX_ValueDoesntExists_ShouldInsertValue()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var entryValue = new TestClass<DateTime>("test", DateTime.UtcNow);
+            
+            // act
+            var res = Sut.HashSet(hashKey, entryKey, entryValue, nx: true);
+
+            // assert
+            Assert.True(res);
+            var data = Sut.HashGet<TestClass<DateTime>>(hashKey, entryKey);
+            Assert.Equal(entryValue, data);
+        }
+
+        [Fact]
+        public void HashSetSingleValueNX_ValueExists_ShouldNotInsertValue()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var entryValue = new TestClass<DateTime>("test1", DateTime.UtcNow);
+            var initialValue = new TestClass<DateTime>("test2", DateTime.UtcNow);
+            var initRes = Sut.HashSet(hashKey, entryKey, initialValue);
+
+            // act
+            var res = Sut.HashSet(hashKey, entryKey, entryValue, nx: true);
+
+            // assert
+            Assert.True(initRes);
+            Assert.False(res);
+            var data = Sut.HashGet<TestClass<DateTime>>(hashKey, entryKey);
+            Assert.Equal(initialValue, data);
+        }
+
+        [Fact]
+        public void HashSetSingleValue_ValueExists_ShouldUpdateValue()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var entryValue = new TestClass<DateTime>("test1", DateTime.UtcNow);
+            var initialValue = new TestClass<DateTime>("test2", DateTime.UtcNow);
+            var initRes = Sut.HashSet(hashKey, entryKey, initialValue);
+
+            // act
+            var res = Sut.HashSet(hashKey, entryKey, entryValue, true);
+
+            // assert
+            Assert.True(initRes);
+            Assert.True(res);
+            var data = Sut.HashGet<TestClass<DateTime>>(hashKey, entryKey);
+            Assert.Equal(entryValue, data);
+        }
+
+        [Fact]
+        public void HashSetMultipleValue_ShouldInsertAllValues()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var values = Builder<TestClass<DateTime>>.CreateListOfSize(100).All().Build();
+            var map = values.ToDictionary(val => Guid.NewGuid().ToString());
+
+            // act
+            Sut.HashSet(hashKey, map);
+
+            // assert
+            var data = Sut.HashGet<TestClass<DateTime>>(hashKey, map.Keys);
+            Assert.Equal(map.Count, data.Count);
+            foreach (var key in data.Keys)
+            {
+                Assert.True(map.ContainsKey(key));
+            }
+        }
+    }
 }
