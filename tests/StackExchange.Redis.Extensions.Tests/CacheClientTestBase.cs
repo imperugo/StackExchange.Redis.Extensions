@@ -1031,7 +1031,7 @@ namespace StackExchange.Redis.Extensions.Tests
             Assert.Equal(map.Count, data.Count());
             foreach (var val in data)
             {
-                Assert.True(map.ContainsValue(val), $"result map doesn't contain value: {val}");
+                Assert.True(map.ContainsValue(val), $"result map doesn't contain value: {val.Key}:{val.Value}");
             }
         }
 
