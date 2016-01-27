@@ -21,7 +21,12 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 		private static readonly Encoding encoding = Encoding.UTF8;
 
 	    private readonly JsonSerializerSettings settings;
-	    public NewtonsoftSerializer(JsonSerializerSettings settings = null)
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NewtonsoftSerializer"/> class.
+		/// </summary>
+		/// <param name="settings">The settings.</param>
+		public NewtonsoftSerializer(JsonSerializerSettings settings = null)
 	    {
 	        this.settings = settings ?? new JsonSerializerSettings();
 	    }
