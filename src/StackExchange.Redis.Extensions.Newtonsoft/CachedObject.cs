@@ -1,6 +1,6 @@
 ﻿namespace StackExchange.Redis.Extensions.Newtonsoft
 {
-	internal class CachedObject<T>
+	public class CachedObject<T>
 	{
 		private CachedObject()
 		{

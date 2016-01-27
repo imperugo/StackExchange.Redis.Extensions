@@ -27,7 +27,14 @@ namespace StackExchange.Redis.Extensions.Tests
 		protected CacheClientTestBase(ISerializer serializer)
 		{
 			Serializer = serializer;
-			Sut = new StackExchangeRedisCacheClient(Serializer);
+		    var mux = ConnectionMultiplexer.Connect(new ConfigurationOptions
+		    {
+		        DefaultVersion = new Version(3, 0, 500),
+		        EndPoints = {{"localhost", 6379}},
+		        AllowAdmin = true
+		    });
+
+            Sut = new StackExchangeRedisCacheClient(mux, Serializer);
 			Db = Sut.Database;
 		}
 
@@ -491,7 +498,7 @@ namespace StackExchange.Redis.Extensions.Tests
         #region Hash tests
 
         [Fact]
-        public void HashSetSingleValueNXAndGet_ValueDoesntExists_ShouldInsertAndRetrieveValue()
+        public void HashSetSingleValueNX_ValueDoesntExists_ShouldInsertAndRetrieveValue()
         {
             // arrange
             var hashKey = Guid.NewGuid().ToString();
@@ -503,7 +510,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
             // assert
             Assert.True(res);
-            var data = Sut.HashGet<TestClass<DateTime>>(hashKey, entryKey);
+            var data = Serializer.Deserialize<TestClass <DateTime>>(Sut.Database.HashGet(hashKey, entryKey));
             Assert.Equal(entryValue, data);
         }
 
@@ -523,7 +530,7 @@ namespace StackExchange.Redis.Extensions.Tests
             // assert
             Assert.True(initRes);
             Assert.False(res);
-            var data = Sut.HashGet<TestClass<DateTime>>(hashKey, entryKey);
+            var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.Database.HashGet(hashKey, entryKey));
             Assert.Equal(initialValue, data);
         }
 
@@ -535,7 +542,7 @@ namespace StackExchange.Redis.Extensions.Tests
             var entryKey = Guid.NewGuid().ToString();
             var entryValue = new TestClass<DateTime>("test1", DateTime.UtcNow);
             var initialValue = new TestClass<DateTime>("test2", DateTime.UtcNow);
-            var initRes = Sut.HashSet(hashKey, entryKey, initialValue);
+            var initRes = Sut.Database.HashSet(hashKey, entryKey, Serializer.Serialize(initialValue));
 
             // act
             var res = Sut.HashSet(hashKey, entryKey, entryValue, true);
@@ -543,12 +550,12 @@ namespace StackExchange.Redis.Extensions.Tests
             // assert
             Assert.True(initRes);
             Assert.True(res);
-            var data = Sut.HashGet<TestClass<DateTime>>(hashKey, entryKey);
+            var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.Database.HashGet(hashKey, entryKey));
             Assert.Equal(entryValue, data);
         }
 
         [Fact]
-        public void HashSetMultipleValues_HashGetMultipleValues_ShouldInsertAndRetrieveAllValues()
+        public void HashSetMultipleValues_HashGetMultipleValues_ShouldInsert()
         {
             // arrange
             var hashKey = Guid.NewGuid().ToString();
@@ -559,11 +566,14 @@ namespace StackExchange.Redis.Extensions.Tests
             Sut.HashSet(hashKey, map);
 
             // assert
-            var data = Sut.HashGet<TestClass<DateTime>>(hashKey, map.Keys);
-            Assert.Equal(map.Count, data.Count);
-            foreach (var key in data.Keys)
+            var data = Sut.Database
+                        .HashGet(hashKey, map.Keys.Select(x => (RedisValue)x).ToArray()).ToList()
+                        .Select(x => Serializer.Deserialize<TestClass<DateTime>>(x))
+                        .ToList();
+            Assert.Equal(map.Count, data.Count());
+            foreach (var val in data)
             {
-                Assert.True(map.ContainsKey(key), $"result map doesn't contain key: {key}");
+                Assert.True(map.ContainsValue(val), $"result map doesn't contain value: {val}");
             }
         }
 
@@ -793,15 +803,148 @@ namespace StackExchange.Redis.Extensions.Tests
             Assert.Equal(1000, result);
         }
 
-        // HashIncerementBy long
-        // HashIncerementBy double
-        // HashScan
+        [Fact]
+        public void HashIncerementByLong_ValueDoesntExist_EntryCreatedWithValue()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var incBy = 1;
+            // act
+            Assert.False(Sut.Database.HashExists(hashKey,entryKey));
+            var result = Sut.HashIncerementBy(hashKey, entryKey, incBy);
+            // assert
+            Assert.Equal(incBy, result);
+            Assert.True(Sut.HashExists(hashKey,entryKey));
+            Assert.Equal(incBy, Sut.Database.HashGet(hashKey,entryKey));
+        }
+
+        [Fact]
+        public void HashIncerementByLong_ValueExist_EntryIncrementedCorrectValueReturned()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var entryValue = 15;
+            var incBy = 1;
+            Assert.True(Sut.Database.HashSet(hashKey, entryKey, entryValue));
+            
+            // act
+            var result = Sut.HashIncerementBy(hashKey, entryKey, incBy);
+            
+            // assert
+            var expected = entryValue + incBy;
+            Assert.Equal(expected, result);
+            Assert.Equal(expected, Sut.Database.HashGet(hashKey, entryKey));
+        }
+
+        [Fact]
+        public void HashIncerementByDouble_ValueDoesntExist_EntryCreatedWithValue()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var incBy = 0.9;
+            // act
+            Assert.False(Sut.Database.HashExists(hashKey, entryKey));
+            var result = Sut.HashIncerementBy(hashKey, entryKey, incBy);
+            // assert
+            Assert.Equal(incBy, result);
+            Assert.True(Sut.HashExists(hashKey, entryKey));
+            Assert.Equal(incBy, (double)Sut.Database.HashGet(hashKey, entryKey), 6); // have to provide epsilon due to double error
+        }
+
+        [Fact]
+        public void HashIncerementByDouble_ValueExist_EntryIncrementedCorrectValueReturned()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var entryValue = 14.3;
+            var incBy = 9.7;
+            Assert.True(Sut.Database.HashSet(hashKey, entryKey, entryValue));
+
+            // act
+            var result = Sut.HashIncerementBy(hashKey, entryKey, incBy);
+
+            // assert
+            var expected = entryValue + incBy;
+            Assert.Equal(expected, result);
+            Assert.Equal(expected, Sut.Database.HashGet(hashKey, entryKey));
+        }
+
+
+        [Fact]
+        public void HashScan_EmptyHash_ReturnEmptyCursor()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            Assert.True(Sut.Database.HashLength(hashKey) == 0);
+            // act
+            var result = Sut.HashScan<string>(hashKey, "*");
+            // assert
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void HashScan_EntriesExistUseAstrisk_ReturnCursorToAllEntries()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var values =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
+                    .ToDictionary(x => x.Key);
+
+            Sut.Database.HashSet(hashKey,
+                values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+            
+            // act
+            var result = Sut.HashScan<TestClass<DateTime>>(hashKey, "*");
+            
+            // assert
+            Assert.NotNull(result);
+            var resultEnum = result.ToDictionary(x => x.Key, x => x.Value);
+            Assert.Equal(1000, resultEnum.Count);
+            foreach (var key in values.Keys)
+            {
+                Assert.True(resultEnum.ContainsKey(key));
+                Assert.Equal(values[key], resultEnum[key]);
+            }
+        }
+
+        [Fact]
+        public void HashScan_EntriesExistUseAstrisk_ReturnCursorToAllEntriesBeginningWithTwo()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var values =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
+                    .ToDictionary(x => x.Key);
+
+            Sut.Database.HashSet(hashKey,
+                values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+
+            // act
+            var result = Sut.HashScan<TestClass<DateTime>>(hashKey, "2*");
+
+            // assert
+            Assert.NotNull(result);
+            var resultEnum = result.ToDictionary(x => x.Key, x => x.Value);
+            Assert.Equal(values.Keys.Count(x => x.StartsWith("2")), resultEnum.Count);
+            foreach (var key in values.Keys.Where(x => x.StartsWith("2")))
+            {
+                Assert.True(resultEnum.ContainsKey(key));
+                Assert.Equal(values[key], resultEnum[key]);
+            }
+        }
 
         // async variants
 
         /*
 	    [Fact]
-	    public void Some_Test_Template()
+	    public void Method_State_ExpectedResult()
 	    {
             // arrange
             // act
