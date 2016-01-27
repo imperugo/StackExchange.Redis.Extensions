@@ -534,7 +534,7 @@ namespace StackExchange.Redis.Extensions.Tests
             Assert.Equal(initialValue, data);
         }
 
-        //[Fact] // TODO: NX doesn't work for some reason
+        [Fact] // TODO: NX doesn't work for some reason
         public void HashSetSingleValue_ValueExists_ShouldUpdateValue()
         {
             // arrange
