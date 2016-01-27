@@ -1193,10 +1193,9 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
-        /// <param name="key">Key of the entry</param>
         /// <param name="commandFlags">Command execution flags</param>
         /// <returns>list of values in the hash, or an empty list when key does not exist.</returns>
-        public IEnumerable<T> HashValues<T>(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
+        public IEnumerable<T> HashValues<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
         {
             return Database.HashValues(hashKey, commandFlags).Select(x => Serializer.Deserialize<T>(x));
         }
