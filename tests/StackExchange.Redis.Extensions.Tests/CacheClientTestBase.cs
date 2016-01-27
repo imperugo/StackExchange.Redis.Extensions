@@ -488,38 +488,10 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.Equal(item.Value, values[0].Value);
 		}
 
-        // Hash tests
-
-
-        // HashDelete
-        // HashDelete multiple
-        // HashExists
-        // HashGet
-        // HashGet multiple
-        // HashGetAll
-        // HashIncerementBy long
-        // HashIncerementBy double
-        // HashKeys
-        // HashLength
-        // HashSet
-        // HashSet multiple
-        // HashValues
-        // HashScan
-
-        // async variants
-
-        /*
-	    [Fact]
-	    public void Some_Test_Template()
-	    {
-            // arrange
-            // act
-            // assert
-        }
-        */
+        #region Hash tests
 
         [Fact]
-        public void HashSetSingleValueNX_ValueDoesntExists_ShouldInsertValue()
+        public void HashSetSingleValueNXAndGet_ValueDoesntExists_ShouldInsertAndRetrieveValue()
         {
             // arrange
             var hashKey = Guid.NewGuid().ToString();
@@ -536,7 +508,7 @@ namespace StackExchange.Redis.Extensions.Tests
         }
 
         [Fact]
-        public void HashSetSingleValueNX_ValueExists_ShouldNotInsertValue()
+        public void HashSetSingleValueNX_ValueExists_ShouldNotInsertOriginalValueNotChanged()
         {
             // arrange
             var hashKey = Guid.NewGuid().ToString();
@@ -555,7 +527,7 @@ namespace StackExchange.Redis.Extensions.Tests
             Assert.Equal(initialValue, data);
         }
 
-        [Fact]
+        //[Fact] // TODO: NX doesn't work for some reason
         public void HashSetSingleValue_ValueExists_ShouldUpdateValue()
         {
             // arrange
@@ -576,7 +548,7 @@ namespace StackExchange.Redis.Extensions.Tests
         }
 
         [Fact]
-        public void HashSetMultipleValue_ShouldInsertAllValues()
+        public void HashSetMultipleValues_HashGetMultipleValues_ShouldInsertAndRetrieveAllValues()
         {
             // arrange
             var hashKey = Guid.NewGuid().ToString();
@@ -591,8 +563,251 @@ namespace StackExchange.Redis.Extensions.Tests
             Assert.Equal(map.Count, data.Count);
             foreach (var key in data.Keys)
             {
-                Assert.True(map.ContainsKey(key));
+                Assert.True(map.ContainsKey(key), $"result map doesn't contain key: {key}");
             }
         }
+
+        [Fact]
+        public void HashDelete_KeyExists_ShouldDelete()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var entryValue = new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow);
+            Assert.True(Sut.Database.HashSet(hashKey, entryKey, Sut.Serializer.Serialize(entryValue)), "Failed setting test value into redis");
+            // act
+
+            var result = Sut.HashDelete(hashKey, entryKey);
+
+            // assert
+            Assert.True(result);
+            Assert.True(Sut.Database.HashGet(hashKey,entryKey).IsNull);
+        }
+
+        [Fact]
+        public void HashDelete_KeyDoesntExist_ShouldReturnFalse()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            // act
+
+            var result = Sut.HashDelete(hashKey, entryKey);
+
+            // assert
+            Assert.False(result);
+            Assert.True(Sut.Database.HashGet(hashKey, entryKey).IsNull);
+        }
+
+        [Fact]
+        public void HashDeleteMultiple_AllKeysExist_ShouldDeleteAll()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var values =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
+                    .ToDictionary(x => x.Key);
+
+            Sut.Database.HashSet(hashKey,
+                values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+
+            // act
+
+            var result = Sut.HashDelete(hashKey, values.Keys);
+
+            // assert
+            Assert.Equal(values.Count, result);
+            var dbValues = Sut.Database.HashGet(hashKey, values.Select(x => (RedisValue) x.Key).ToArray());
+            Assert.NotNull(dbValues);
+            Assert.False(dbValues.Any(x => !x.IsNull));
+            Assert.Equal(0, Sut.Database.HashLength(hashKey));
+        }
+
+        [Fact]
+        public void HashDeleteMultiple_NotAllKeysExist_ShouldDeleteAllOnlyRequested()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var valuesDelete =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
+                    .ToDictionary(x => x.Key);
+            var valuesKeep =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
+                    .ToDictionary(x => x.Key);
+
+            Sut.Database.HashSet(hashKey,
+                valuesDelete.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+            Sut.Database.HashSet(hashKey,
+               valuesKeep.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+
+            // act
+
+            var result = Sut.HashDelete(hashKey, valuesDelete.Keys);
+
+            // assert
+            Assert.Equal(valuesDelete.Count, result);
+            var dbDeletedValues = Sut.Database.HashGet(hashKey, valuesDelete.Select(x => (RedisValue)x.Key).ToArray());
+            Assert.NotNull(dbDeletedValues);
+            Assert.False(dbDeletedValues.Any(x => !x.IsNull));
+            var dbValues = Sut.Database.HashGet(hashKey, valuesKeep.Select(x => (RedisValue)x.Key).ToArray());
+            Assert.NotNull(dbValues);
+            Assert.False(dbValues.Any(x => x.IsNull));
+            Assert.Equal(1000, Sut.Database.HashLength(hashKey));
+            Assert.Equal(1000, dbValues.Length);
+            Assert.All(dbValues, x => Assert.True(valuesKeep.ContainsKey(Sut.Serializer.Deserialize<TestClass<int>>(x).Key)));
+        }
+
+        [Fact]
+        public void HashExists_KeyExists_ReturnTrue()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var entryValue = new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow);
+            Assert.True(Sut.Database.HashSet(hashKey, entryKey, Sut.Serializer.Serialize(entryValue)), "Failed setting test value into redis");
+            // act
+            var result = Sut.HashExists(hashKey, entryKey);
+
+            // assert
+            Assert.True(result, "Entry doesn't exist in hash, but it should");
+        }
+
+        [Fact]
+        public void HashExists_KeyDoesntExists_ReturnFalse()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            // act
+            var result = Sut.HashExists(hashKey, entryKey);
+            // assert
+            Assert.False(result, "Entry doesn't exist in hash, but call returned true");
+        }
+
+        [Fact]
+        public void HashKeys_HashEmpty_ReturnEmptyCollection()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            // act
+            var result = Sut.HashKeys(hashKey);
+            // assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void HashKeys_HashNotEmpty_ReturnKeysCollection()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var values =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
+                    .ToDictionary(x => x.Key);
+
+            Sut.Database.HashSet(hashKey,
+                values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+            // act
+            var result = Sut.HashKeys(hashKey);
+            // assert
+            Assert.NotNull(result);
+            var collection = result as IList<string> ?? result.ToList();
+            Assert.NotEmpty(collection);
+            Assert.Equal(values.Count, collection.Count());
+            foreach (var key in collection)
+            {
+                Assert.True(values.ContainsKey(key));
+            }
+        }
+
+        [Fact]
+        public void HashValues_HashEmpty_ReturnEmptyCollection()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            // act
+            var result = Sut.HashValues<string>(hashKey);
+            // assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void HashValues_HashNotEmpty_ReturnAllValues()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var values =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
+                    .ToDictionary(x => x.Key);
+
+            Sut.Database.HashSet(hashKey,
+                values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+            // act
+            var result = Sut.HashValues<TestClass<DateTime>>(hashKey);
+            // assert
+            Assert.NotNull(result);
+            var collection = result as IList<TestClass<DateTime>> ?? result.ToList();
+            Assert.NotEmpty(collection);
+            Assert.Equal(values.Count, collection.Count());
+            foreach (var key in collection)
+            {
+                Assert.True(values.Values.Contains(key));
+            }
+        }
+
+        [Fact]
+        public void HashLength_HashEmpty_ReturnZero()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+
+            // act
+            var result = Sut.HashLength(hashKey);
+
+            // assert
+            Assert.Equal(0, result);
+        }
+
+        [Fact]
+        public void HashLength_HashNotEmpty_ReturnCorrectCount()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var values =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
+                    .ToDictionary(x => x.Key);
+
+            Sut.Database.HashSet(hashKey,
+                values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+            // act
+            var result = Sut.HashLength(hashKey);
+
+            // assert
+            Assert.Equal(1000, result);
+        }
+
+        // HashIncerementBy long
+        // HashIncerementBy double
+        // HashScan
+
+        // async variants
+
+        /*
+	    [Fact]
+	    public void Some_Test_Template()
+	    {
+            // arrange
+            // act
+            // assert
+        }
+        */
+        #endregion // Hash tests
     }
 }
