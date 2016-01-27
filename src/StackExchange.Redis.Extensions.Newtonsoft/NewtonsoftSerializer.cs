@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StackExchange.Redis.Extensions.Core;
@@ -22,7 +21,6 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 		private static readonly Encoding encoding = Encoding.UTF8;
 
 	    private readonly JsonSerializerSettings settings;
-
 	    public NewtonsoftSerializer(JsonSerializerSettings settings = null)
 	    {
 	        this.settings = settings ?? new JsonSerializerSettings();
