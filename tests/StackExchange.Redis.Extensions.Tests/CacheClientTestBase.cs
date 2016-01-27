@@ -873,7 +873,6 @@ namespace StackExchange.Redis.Extensions.Tests
             Assert.Equal(expected, Sut.Database.HashGet(hashKey, entryKey));
         }
 
-
         [Fact]
         public void HashScan_EmptyHash_ReturnEmptyCursor()
         {
@@ -952,5 +951,452 @@ namespace StackExchange.Redis.Extensions.Tests
         }
         */
         #endregion // Hash tests
+
+        #region Hash async tests
+
+        [Fact]
+        public async Task HashSetSingleValueNXASync_ValueDoesntExists_ShouldInsertAndRetrieveValue()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var entryValue = new TestClass<DateTime>("test", DateTime.UtcNow);
+
+            // act
+            var res = await Sut.HashSetAsync(hashKey, entryKey, entryValue, nx: true);
+
+            // assert
+            Assert.True(res);
+            var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.Database.HashGet(hashKey, entryKey));
+            Assert.Equal(entryValue, data);
+        }
+
+        [Fact]
+        public async Task HashSetSingleValueNXAsync_ValueExists_ShouldNotInsertOriginalValueNotChanged()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var entryValue = new TestClass<DateTime>("test1", DateTime.UtcNow);
+            var initialValue = new TestClass<DateTime>("test2", DateTime.UtcNow);
+            var initRes = await Sut.HashSetAsync(hashKey, entryKey, initialValue);
+
+            // act
+            var res = await Sut.HashSetAsync(hashKey, entryKey, entryValue, nx: true);
+
+            // assert
+            Assert.True(initRes);
+            Assert.False(res);
+            var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.Database.HashGet(hashKey, entryKey));
+            Assert.Equal(initialValue, data);
+        }
+
+        [Fact] // TODO: NX doesn't work for some reason
+        public async Task HashSetSingleValueAsync_ValueExists_ShouldUpdateValue()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var entryValue = new TestClass<DateTime>("test1", DateTime.UtcNow);
+            var initialValue = new TestClass<DateTime>("test2", DateTime.UtcNow);
+            var initRes = await Sut.Database.HashSetAsync(hashKey, entryKey, Serializer.Serialize(initialValue));
+
+            // act
+            var res = await Sut.HashSetAsync(hashKey, entryKey, entryValue, true);
+
+            // assert
+            Assert.True(initRes);
+            Assert.True(res);
+            var data = Serializer.Deserialize<TestClass<DateTime>>(await Sut.Database.HashGetAsync(hashKey, entryKey));
+            Assert.Equal(entryValue, data);
+        }
+
+        [Fact]
+        public async Task HashSetMultipleValuesAsync_HashGetMultipleValues_ShouldInsert()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var values = Builder<TestClass<DateTime>>.CreateListOfSize(100).All().Build();
+            var map = values.ToDictionary(val => Guid.NewGuid().ToString());
+
+            // act
+            await Sut.HashSetAsync(hashKey, map);
+
+            // assert
+            var data = (await Sut.Database
+                        .HashGetAsync(hashKey, map.Keys.Select(x => (RedisValue)x).ToArray())).ToList()
+                        .Select(x => Serializer.Deserialize<TestClass<DateTime>>(x))
+                        .ToList();
+
+            Assert.Equal(map.Count, data.Count());
+            foreach (var val in data)
+            {
+                Assert.True(map.ContainsValue(val), $"result map doesn't contain value: {val}");
+            }
+        }
+
+        [Fact]
+        public async Task HashDeleteAsync_KeyExists_ShouldDelete()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var entryValue = new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow);
+            Assert.True(await Sut.Database.HashSetAsync(hashKey, entryKey, Sut.Serializer.Serialize(entryValue)), "Failed setting test value into redis");
+            // act
+
+            var result = await Sut.HashDeleteAsync (hashKey, entryKey);
+
+            // assert
+            Assert.True(result);
+            Assert.True((await Sut.Database.HashGetAsync(hashKey, entryKey)).IsNull);
+        }
+
+        [Fact]
+        public async Task HashDeleteAsync_KeyDoesntExist_ShouldReturnFalse()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            // act
+
+            var result = await Sut.HashDeleteAsync(hashKey, entryKey);
+
+            // assert
+            Assert.False(result);
+            Assert.True((await Sut.Database.HashGetAsync(hashKey, entryKey)).IsNull);
+        }
+
+        [Fact]
+        public async Task HashDeleteMultipleAsync_AllKeysExist_ShouldDeleteAll()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var values =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
+                    .ToDictionary(x => x.Key);
+
+            await Sut.Database.HashSetAsync(hashKey,
+                values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+
+            // act
+
+            var result = await Sut.HashDeleteAsync(hashKey, values.Keys);
+
+            // assert
+            Assert.Equal(values.Count, result);
+            var dbValues = await Sut.Database.HashGetAsync(hashKey, values.Select(x => (RedisValue)x.Key).ToArray());
+            Assert.NotNull(dbValues);
+            Assert.False(dbValues.Any(x => !x.IsNull));
+            Assert.Equal(0, await Sut.Database.HashLengthAsync(hashKey));
+        }
+
+        [Fact]
+        public async Task HashDeleteMultipleAsync_NotAllKeysExist_ShouldDeleteAllOnlyRequested()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var valuesDelete =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
+                    .ToDictionary(x => x.Key);
+            var valuesKeep =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
+                    .ToDictionary(x => x.Key);
+
+            await Sut.Database.HashSetAsync(hashKey,
+                valuesDelete.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+            await Sut.Database.HashSetAsync(hashKey,
+               valuesKeep.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+
+            // act
+
+            var result = await Sut.HashDeleteAsync(hashKey, valuesDelete.Keys);
+
+            // assert
+            Assert.Equal(valuesDelete.Count, result);
+            var dbDeletedValues = await Sut.Database.HashGetAsync(hashKey, valuesDelete.Select(x => (RedisValue)x.Key).ToArray());
+            Assert.NotNull(dbDeletedValues);
+            Assert.False(dbDeletedValues.Any(x => !x.IsNull));
+            var dbValues = await Sut.Database.HashGetAsync(hashKey, valuesKeep.Select(x => (RedisValue)x.Key).ToArray());
+            Assert.NotNull(dbValues);
+            Assert.False(dbValues.Any(x => x.IsNull));
+            Assert.Equal(1000, await Sut.Database.HashLengthAsync(hashKey));
+            Assert.Equal(1000, dbValues.Length);
+            Assert.All(dbValues, x => Assert.True(valuesKeep.ContainsKey(Sut.Serializer.Deserialize<TestClass<int>>(x).Key)));
+        }
+
+        [Fact]
+        public async Task HashExistsAsync_KeyExists_ReturnTrue()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var entryValue = new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow);
+            Assert.True(await Sut.Database.HashSetAsync(hashKey, entryKey, Sut.Serializer.Serialize(entryValue)), "Failed setting test value into redis");
+            // act
+            var result = await Sut.HashExistsAsync(hashKey, entryKey);
+
+            // assert
+            Assert.True(result, "Entry doesn't exist in hash, but it should");
+        }
+
+        [Fact]
+        public async Task HashExistsAsync_KeyDoesntExists_ReturnFalse()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            // act
+            var result = await Sut.HashExistsAsync(hashKey, entryKey);
+            // assert
+            Assert.False(result, "Entry doesn't exist in hash, but call returned true");
+        }
+
+        [Fact]
+        public async Task HashKeysAsync_HashEmpty_ReturnEmptyCollection()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            // act
+            var result = await Sut.HashKeysAsync(hashKey);
+            // assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task HashKeysAsync_HashNotEmpty_ReturnKeysCollection()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var values =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
+                    .ToDictionary(x => x.Key);
+
+            await Sut.Database.HashSetAsync(hashKey,
+                values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+            // act
+            var result = await Sut.HashKeysAsync(hashKey);
+            // assert
+            Assert.NotNull(result);
+            var collection = result as IList<string> ?? result.ToList();
+            Assert.NotEmpty(collection);
+            Assert.Equal(values.Count, collection.Count());
+            foreach (var key in collection)
+            {
+                Assert.True(values.ContainsKey(key));
+            }
+        }
+
+        [Fact]
+        public async Task HashValuesAsync_HashEmpty_ReturnEmptyCollection()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            // act
+            var result = await Sut.HashValuesAsync<string>(hashKey);
+            // assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task HashValuesAsync_HashNotEmpty_ReturnAllValues()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var values =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
+                    .ToDictionary(x => x.Key);
+
+            await Sut.Database.HashSetAsync(hashKey,
+                values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+            // act
+            var result = await Sut.HashValuesAsync<TestClass<DateTime>>(hashKey);
+            // assert
+            Assert.NotNull(result);
+            var collection = result as IList<TestClass<DateTime>> ?? result.ToList();
+            Assert.NotEmpty(collection);
+            Assert.Equal(values.Count, collection.Count());
+            foreach (var key in collection)
+            {
+                Assert.True(values.Values.Contains(key));
+            }
+        }
+
+        [Fact]
+        public async Task HashLengthAsync_HashEmpty_ReturnZero()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+
+            // act
+            var result = await Sut.HashLengthAsync(hashKey);
+
+            // assert
+            Assert.Equal(0, result);
+        }
+
+        [Fact]
+        public async Task HashLengthAsync_HashNotEmpty_ReturnCorrectCount()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var values =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
+                    .ToDictionary(x => x.Key);
+
+            await Sut.Database.HashSetAsync(hashKey,
+                values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+            // act
+            var result = await Sut.HashLengthAsync(hashKey);
+
+            // assert
+            Assert.Equal(1000, result);
+        }
+
+        [Fact]
+        public async Task HashIncerementByLongAsync_ValueDoesntExist_EntryCreatedWithValue()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var incBy = 1;
+            // act
+            Assert.False(await Sut.Database.HashExistsAsync(hashKey, entryKey));
+            var result = await Sut.HashIncerementByAsync(hashKey, entryKey, incBy);
+            // assert
+            Assert.Equal(incBy, result);
+            Assert.True(await Sut.HashExistsAsync(hashKey, entryKey));
+            Assert.Equal(incBy, await Sut.Database.HashGetAsync(hashKey, entryKey));
+        }
+
+        [Fact]
+        public async Task HashIncerementByLongAsync_ValueExist_EntryIncrementedCorrectValueReturned()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var entryValue = 15;
+            var incBy = 1;
+            Assert.True(await Sut.Database.HashSetAsync(hashKey, entryKey, entryValue));
+
+            // act
+            var result = await Sut.HashIncerementByAsync(hashKey, entryKey, incBy);
+
+            // assert
+            var expected = entryValue + incBy;
+            Assert.Equal(expected, result);
+            Assert.Equal(expected, await Sut.Database.HashGetAsync(hashKey, entryKey));
+        }
+
+        [Fact]
+        public async Task HashIncerementByDoubleAsync_ValueDoesntExist_EntryCreatedWithValue()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var incBy = 0.9;
+            // act
+            Assert.False(await Sut.Database.HashExistsAsync(hashKey, entryKey));
+            var result = await Sut.HashIncerementByAsync(hashKey, entryKey, incBy);
+            // assert
+            Assert.Equal(incBy, result);
+            Assert.True(await Sut.HashExistsAsync(hashKey, entryKey));
+            Assert.Equal(incBy, (double)await Sut.Database.HashGetAsync(hashKey, entryKey), 6); // have to provide epsilon due to double error
+        }
+
+        [Fact]
+        public async Task HashIncerementByDoubleAsync_ValueExist_EntryIncrementedCorrectValueReturned()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var entryKey = Guid.NewGuid().ToString();
+            var entryValue = 14.3;
+            var incBy = 9.7;
+            Assert.True(await Sut.Database.HashSetAsync(hashKey, entryKey, entryValue));
+
+            // act
+            var result = await Sut.HashIncerementByAsync(hashKey, entryKey, incBy);
+
+            // assert
+            var expected = entryValue + incBy;
+            Assert.Equal(expected, result);
+            Assert.Equal(expected, await Sut.Database.HashGetAsync(hashKey, entryKey));
+        }
+
+        [Fact]
+        public async Task HashScanAsync_EmptyHash_ReturnEmptyCursor()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            Assert.True(await Sut.Database.HashLengthAsync(hashKey) == 0);
+            // act
+            var result = await Sut.HashScanAsync<string>(hashKey, "*");
+            // assert
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task HashScanAsync_EntriesExistUseAstrisk_ReturnCursorToAllEntries()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var values =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
+                    .ToDictionary(x => x.Key);
+
+            await Sut.Database.HashSetAsync(hashKey,
+                values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+
+            // act
+            var result = await Sut.HashScanAsync<TestClass<DateTime>>(hashKey, "*");
+
+            // assert
+            Assert.NotNull(result);
+            var resultEnum = result.ToDictionary(x => x.Key, x => x.Value);
+            Assert.Equal(1000, resultEnum.Count);
+            foreach (var key in values.Keys)
+            {
+                Assert.True(resultEnum.ContainsKey(key));
+                Assert.Equal(values[key], resultEnum[key]);
+            }
+        }
+
+        [Fact]
+        public async Task HashScanAsync_EntriesExistUseAstrisk_ReturnCursorToAllEntriesBeginningWithTwo()
+        {
+            // arrange
+            var hashKey = Guid.NewGuid().ToString();
+            var values =
+                Enumerable.Range(0, 1000)
+                    .Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
+                    .ToDictionary(x => x.Key);
+
+            await Sut.Database.HashSetAsync(hashKey,
+                values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+
+            // act
+            var result = await Sut.HashScanAsync<TestClass<DateTime>>(hashKey, "2*");
+
+            // assert
+            Assert.NotNull(result);
+            var resultEnum = result.ToDictionary(x => x.Key, x => x.Value);
+            Assert.Equal(values.Keys.Count(x => x.StartsWith("2")), resultEnum.Count);
+            foreach (var key in values.Keys.Where(x => x.StartsWith("2")))
+            {
+                Assert.True(resultEnum.ContainsKey(key));
+                Assert.Equal(values[key], resultEnum[key]);
+            }
+        }
+
+        #endregion // Hash async tests
     }
 }
