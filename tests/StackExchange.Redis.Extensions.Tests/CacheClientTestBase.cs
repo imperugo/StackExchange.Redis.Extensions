@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using FizzWare.NBuilder;
 using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Core.Extensions;
 using StackExchange.Redis.Extensions.Tests.Extensions;
@@ -87,12 +86,14 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void Add_Multiple_Object_With_A_Single_Roundtrip_To_Redis_Must_Store_Data_Correctly_Into_Database()
 		{
-			var values = new List<Tuple<string, string>>();
-			values.Add(new Tuple<string, string>("key1", "value1"));
-			values.Add(new Tuple<string, string>("key2", "value2"));
-			values.Add(new Tuple<string, string>("key3", "value3"));
+		    var values = new List<Tuple<string, string>>
+		    {
+		        new Tuple<string, string>("key1", "value1"),
+		        new Tuple<string, string>("key2", "value2"),
+		        new Tuple<string, string>("key3", "value3")
+		    };
 
-			var added = Sut.AddAll(values);
+		    var added = Sut.AddAll(values);
 
 			Assert.True(added);
 
@@ -108,11 +109,11 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void Get_All_Should_Return_All_Database_Keys()
 		{
-			var values = Builder<TestClass<string>>
-				.CreateListOfSize(5)
-				.All()
-				.Build();
-			values.ForEach(x => Db.StringSet(x.Key, Serializer.Serialize(x.Value)));
+		    var values = Range(0, 5)
+		        .Select(i => new TestClass<string>($"Key{i}", Guid.NewGuid().ToString()))
+                .ToArray();
+
+            values.ForEach(x => Db.StringSet(x.Key, Serializer.Serialize(x.Value)));
 
 			var result = Sut.GetAll<string>(new[] {values[0].Key, values[1].Key, values[2].Key, "notexistingkey"});
 
@@ -126,14 +127,13 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void Get_With_Complex_Item_Should_Return_Correct_Value()
 		{
-			var value = Builder<ComplexClassForTest<string, string>>
-				.CreateListOfSize(1)
-				.All()
-				.Build().First();
+            var value = Range(0, 1)
+                    .Select(i => new ComplexClassForTest<string, Guid>($"Key{i}", Guid.NewGuid()))
+                    .First();
 
 			Db.StringSet(value.Item1, Serializer.Serialize(value));
 
-			var cachedObject = Sut.Get<ComplexClassForTest<string, string>>(value.Item1);
+			var cachedObject = Sut.Get<ComplexClassForTest<string, Guid>>(value.Item1);
 
 			Assert.NotNull(cachedObject);
 			Assert.Equal(value.Item1, cachedObject.Item1);
@@ -143,10 +143,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void Remove_All_Should_Remove_All_Specified_Keys()
 		{
-			var values = Builder<TestClass<string>>
-				.CreateListOfSize(5)
-				.All()
-				.Build();
+            var values = Range(1, 5)
+                    .Select(i => new TestClass<string>($"Key{i}", Guid.NewGuid().ToString()))
+                    .ToArray();
 			values.ForEach(x => Db.StringSet(x.Key, x.Value));
 
 			Sut.RemoveAll(values.Select(x => x.Key));
@@ -160,9 +159,10 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void Search_With_Valid_Start_With_Pattern_Should_Return_Correct_Keys()
 		{
-			var values = Builder<TestClass<string>>
-				.CreateListOfSize(20)
-				.Build();
+			var values = Range(1, 20)
+                    .Select(i => new TestClass<string>($"Key{i}", Guid.NewGuid().ToString()))
+                    .ToArray();
+
 			values.ForEach(x => Db.StringSet(x.Key, x.Value));
 
 			var key = Sut.SearchKeys("Key1*").ToList();
@@ -173,10 +173,10 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void Exist_With_Valid_Object_Should_Return_The_Correct_Instance()
 		{
-			var values = Builder<TestClass<string>>
-				.CreateListOfSize(2)
-				.Build();
-			values.ForEach(x => Db.StringSet(x.Key, x.Value));
+			var values = Range(0, 2)
+                    .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
+                    .ToArray();
+            values.ForEach(x => Db.StringSet(x.Key, x.Value));
 
 			Assert.True(Sut.Exists(values[0].Key));
 		}
@@ -184,9 +184,8 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void Exist_With_Not_Valid_Object_Should_Return_The_Correct_Instance()
 		{
-			var values = Builder<TestClass<string>>
-				.CreateListOfSize(2)
-				.Build();
+			var values = Range(0, 2)
+                    .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
 			values.ForEach(x => Db.StringSet(x.Key, x.Value));
 
 			Assert.False(Sut.Exists("this key doesn not exist into redi"));
@@ -195,10 +194,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void SetAdd_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
-			var values = Builder<TestClass<string>>
-				.CreateListOfSize(5)
-				.All()
-				.Build();
+			var values = Range(0, 5)
+                .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
+                .ToArray();
 
 			values.ForEach(x =>
 			{
@@ -208,16 +206,13 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			var keys = Db.SetMembers("MySet");
 
-			Assert.Equal(keys.Length, values.Count);
+			Assert.Equal(keys.Length, values.Length);
 		}
 
 		[Fact]
 		public void SetMember_With_Valid_Data_Should_Return_Correct_Keys()
 		{
-			var values = Builder<TestClass<string>>
-				.CreateListOfSize(5)
-				.All()
-				.Build();
+			var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
 
 			values.ForEach(x =>
 			{
@@ -227,17 +222,14 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			var keys = Sut.SetMember("MySet");
 
-			Assert.Equal(keys.Length, values.Count);
+			Assert.Equal(keys.Length, values.Length);
 		}
 
 		[Fact]
 		public void Massive_Add_Should_Not_Throw_Exception_And_Work_Correctly()
 		{
 			const int size = 3000;
-			var values = Builder<TestClass<string>>
-				.CreateListOfSize(size)
-				.All()
-				.Build();
+			var values = Range(0,size).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
 
 			var tupleValues = values.Select(x => new Tuple<string, TestClass<string>>(x.Key, x)).ToList();
 			var result = Sut.AddAll(tupleValues);
@@ -247,11 +239,10 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.NotNull(cached);
 			Assert.Equal(size, cached.Count);
 
-			for (var i = 0; i < values.Count; i++)
+			foreach (var value in values)
 			{
-				var value = values[i];
-				Assert.Equal(value.Key, cached[value.Key].Key);
-				Assert.Equal(value.Value, cached[value.Key].Value);
+			    Assert.Equal(value.Key, cached[value.Key].Key);
+			    Assert.Equal(value.Value, cached[value.Key].Value);
 			}
 		}
 
@@ -270,18 +261,14 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void Adding_Collection_To_Redis_Should_Work_Correctly()
 		{
-			var items = new Collection<TestClass<string>>();
-			items.Add(new TestClass<string> {Key = "key1", Value = "key1"});
-			items.Add(new TestClass<string> {Key = "key2", Value = "key2"});
-			items.Add(new TestClass<string> {Key = "key3", Value = "key3"});
-
+		    var items = Range(1, 3).Select(i => new TestClass<string> {Key = $"key{i}", Value = "value{i}"}).ToArray();
 			var added = Sut.Add("my Key", items);
 			var dbValue = Sut.Get<Collection<TestClass<string>>>("my Key");
 
 			Assert.True(added);
 			Assert.True(Db.KeyExists("my Key"));
-			Assert.Equal(dbValue.Count, items.Count);
-			for (var i = 0; i < items.Count; i++)
+			Assert.Equal(dbValue.Count, items.Length);
+			for (var i = 0; i < items.Length; i++)
 			{
 				Assert.Equal(dbValue[i].Value, items[i].Value);
 				Assert.Equal(dbValue[i].Key, items[i].Key);
@@ -289,33 +276,29 @@ namespace StackExchange.Redis.Extensions.Tests
 		}
 
 		[Fact]
-		public async Task Pub_Sub()
+		public void Pub_Sub()
 		{
-			var message = Enumerable.Range(0, 10).ToArray();
+			var message = Range(0, 10).ToArray();
 			const string channel = "unit_test";
 			var subscriberNotified = false;
 			IEnumerable<int> subscriberValue = null;
 
-			var action = new Action<IEnumerable<int>>(value =>
+			Action<IEnumerable<int>> action = value =>
 			{
 				subscriberNotified = true;
 				subscriberValue = value;
-			});
+			};
 
 			Sut.Subscribe(channel, action);
 
 			var result = Sut.Publish("unit_test", message);
 
-			await Task.Run(() =>
+			while (!subscriberNotified)
 			{
-				while (!subscriberNotified)
-				{
-					Thread.Sleep(100);
-				}
-			});
+				Thread.Sleep(100);
+			}
 
-			//TODO:need to understand why return 2 instead of 1
-			//Assert.Equal(1, result);
+			Assert.Equal(1, result);
 			Assert.True(subscriberNotified);
 			Assert.Equal(message, subscriberValue);
 		}
@@ -335,12 +318,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void SetAddGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
-			var values = Builder<TestClass<string>>
-				.CreateListOfSize(5)
-				.All()
-				.Build();
+            var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
 
-			values.ForEach(x =>
+            values.ForEach(x =>
 			{
 				Db.StringSet(x.Key, Serializer.Serialize(x.Value));
 				Sut.SetAdd("MySet", x);
@@ -348,7 +328,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			var keys = Db.SetMembers("MySet");
 
-			Assert.Equal(keys.Length, values.Count);
+			Assert.Equal(keys.Length, values.Count());
 		}
 
 		[Fact]
@@ -381,11 +361,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public async Task SetAddAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
-			var values = Builder<TestClass<string>>
-				.CreateListOfSize(5)
-				.All()
-				.Build();
-		    var key = "MySet";
+            var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
+
+            var key = "MySet";
 
             foreach (var value in values)
 		    {
@@ -396,7 +374,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			var keys = Db.SetMembers("MySet");
 
-			Assert.Equal(keys.Length, values.Count);
+			Assert.Equal(keys.Length, values.Count());
 		}
 
 		[Fact]
@@ -414,56 +392,37 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void ListAddToLeftGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
-			var values = Builder<TestClass<string>>
-				.CreateListOfSize(5)
-				.All()
-				.Build();
+			var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
 
-			var key = "MyList";
+            const string key = "MyList";
 
-			values.ForEach(x => { Sut.ListAddToLeft(key, Serializer.Serialize(x)); });
+			values.ForEach(x => Sut.ListAddToLeft(key, Serializer.Serialize(x)) );
 
 			var keys = Db.ListRange(key);
 
-			Assert.Equal(keys.Length, values.Count);
+			Assert.Equal(keys.Length, values.Count());
 		}
 
 		[Fact]
 		public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
 		{
-		    try
-		    {
-                await Sut.ListAddToLeftAsync(string.Empty, string.Empty);
-            }
-		    catch (Exception ex)
-		    {
-                Assert.IsType<ArgumentException>(ex);
-            }
-
+            await Assert.ThrowsAsync<ArgumentException>(
+                async () => await Sut.ListAddToLeftAsync(string.Empty, string.Empty));
         }
 
 		[Fact]
 		public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemIsNull()
 		{
-            try
-            {
-                await Sut.ListAddToLeftAsync<string>("MyList", null);
-            }
-            catch (Exception ex)
-            {
-                Assert.IsType<ArgumentNullException>(ex);
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                async () => await Sut.ListAddToLeftAsync<string>("MyList", null));
 		}
 
 		[Fact]
 		public async Task ListAddToLeftAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
-			var values = Builder<TestClass<string>>
-				.CreateListOfSize(5)
-				.All()
-				.Build();
+		    var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
 
-			var key = "MyListAsync";
+			const string key = "MyListAsync";
 
 		    foreach (var value in values)
 		    {
@@ -472,7 +431,7 @@ namespace StackExchange.Redis.Extensions.Tests
             }
 			var keys = Db.ListRange(key);
 
-			Assert.Equal(keys.Length, values.Count);
+			Assert.Equal(keys.Length, values.Count());
 		}
 
 		[Fact]
@@ -484,10 +443,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void ListGetFromRightGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
-			var values = Builder<TestClass<string>>
-				.CreateListOfSize(1)
-				.All()
-				.Build();
+			var values = Range(0,1)
+                .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
+                .ToArray();
 
 			var key = "MyList";
 
@@ -502,25 +460,18 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public async Task ListGetFromRightAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
 		{
-		    try
-		    {
-                await Sut.ListGetFromRightAsync<string>(string.Empty);
-            }
-            catch (Exception ex)
-		    {
-                Assert.IsType<ArgumentException>(ex);
-		    }
+            await Assert.ThrowsAsync<ArgumentException>(
+               async () => await Sut.ListGetFromRightAsync<string>(string.Empty));
 		}
 
 		[Fact]
 		public async Task ListGetFromRightAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
-			var values = Builder<TestClass<string>>
-				.CreateListOfSize(1)
-				.All()
-				.Build();
+            var values = Range(0, 1)
+                .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
+                .ToArray();
 
-			var key = "MyList";
+            var key = "MyList";
 
 			values.ForEach(x => { Db.ListLeftPush(key, Serializer.Serialize(x)); });
 
@@ -974,23 +925,12 @@ namespace StackExchange.Redis.Extensions.Tests
             }
         }
 
-        // async variants
-
-        /*
-	    [Fact]
-	    public void Method_State_ExpectedResult()
-	    {
-            // arrange
-            // act
-            // assert
-        }
-        */
         #endregion // Hash tests
 
         #region Hash async tests
 
         [Fact]
-        public async Task HashSetSingleValueNXASync_ValueDoesntExists_ShouldInsertAndRetrieveValue()
+        public async Task HashSetSingleValueNXAsync_ValueDoesntExists_ShouldInsertAndRetrieveValue()
         {
             // arrange
             var hashKey = Guid.NewGuid().ToString();
