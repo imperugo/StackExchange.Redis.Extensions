@@ -352,18 +352,31 @@ namespace StackExchange.Redis.Extensions.Tests
 		}
 
 		[Fact]
-		public void SetAddAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
+		public async Task SetAddAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
 		{
-			var exceptions = Sut.SetAddAsync<string>(string.Empty, string.Empty).Exception;
-			Assert.IsType<ArgumentException>(exceptions.Flatten().GetBaseException());
+		    try
+		    {
+		        await Sut.SetAddAsync<string>(string.Empty, string.Empty);
+		    }
+		    catch (Exception ex)
+		    {
+                Assert.IsType<ArgumentException>(ex);
+            }
+            
 		}
 
 		[Fact]
-		public void SetAddAsyncGenericShouldThrowExceptionWhenItemIsNull()
+		public async Task SetAddAsyncGenericShouldThrowExceptionWhenItemIsNull()
 		{
-			var exceptions = Sut.SetAddAsync<string>("MySet", null).Exception;
-			Assert.IsType<ArgumentNullException>(exceptions.Flatten().GetBaseException());
-		}
+		    try
+		    {
+		        await Sut.SetAddAsync<string>("MySet", null);
+		    }
+            catch (Exception ex)
+            { 
+			Assert.IsType<ArgumentNullException>(ex);
+            }
+        }
 
 		[Fact]
 		public async Task SetAddAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
@@ -416,17 +429,30 @@ namespace StackExchange.Redis.Extensions.Tests
 		}
 
 		[Fact]
-		public void ListAddToLeftAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
+		public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
 		{
-			var exceptions = Sut.ListAddToLeftAsync(string.Empty, string.Empty).Exception;
-			Assert.IsType<ArgumentException>(exceptions.Flatten().GetBaseException());
-		}
+		    try
+		    {
+                await Sut.ListAddToLeftAsync(string.Empty, string.Empty);
+            }
+		    catch (Exception ex)
+		    {
+                Assert.IsType<ArgumentException>(ex);
+            }
+
+        }
 
 		[Fact]
-		public void ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemIsNull()
+		public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemIsNull()
 		{
-			var exceptions = Sut.ListAddToLeftAsync<string>("MyList", null).Exception;
-			Assert.IsType<ArgumentNullException>(exceptions.Flatten().GetBaseException());
+            try
+            {
+                await Sut.ListAddToLeftAsync<string>("MyList", null);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsType<ArgumentNullException>(ex);
+            }
 		}
 
 		[Fact]
@@ -474,10 +500,16 @@ namespace StackExchange.Redis.Extensions.Tests
 		}
 
 		[Fact]
-		public void ListGetFromRightAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
+		public async Task ListGetFromRightAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
 		{
-			var exceptions = Sut.ListGetFromRightAsync<string>(string.Empty).Exception;
-			Assert.IsType<ArgumentException>(exceptions.Flatten().GetBaseException());
+		    try
+		    {
+                await Sut.ListGetFromRightAsync<string>(string.Empty);
+            }
+            catch (Exception ex)
+		    {
+                Assert.IsType<ArgumentException>(ex);
+		    }
 		}
 
 		[Fact]
