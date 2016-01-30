@@ -603,6 +603,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="values"></param>
+        /// <param name="commandFlags">Command execution flags</param>
         void HashSet<T>(string hashKey, Dictionary<string, T> values, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
@@ -802,7 +803,8 @@ namespace StackExchange.Redis.Extensions.Core
         /// </remarks>
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
-        /// <param name="values"></param>
+        /// <param name="values">The values to be inserted</param>
+        /// <param name="commandFlags">Command execution flags</param>
         Task HashSetAsync<T>(string hashKey, IDictionary<string, T> values, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>

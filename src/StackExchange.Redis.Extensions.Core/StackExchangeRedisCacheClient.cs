@@ -1179,6 +1179,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="values"></param>
+        /// <param name="commandFlags">Command execution flags</param>
         public void HashSet<T>(string hashKey, Dictionary<string, T> values, CommandFlags commandFlags = CommandFlags.None)
         {
             var entries = values.Select(kv => new HashEntry(kv.Key, Serializer.Serialize(kv.Value)));

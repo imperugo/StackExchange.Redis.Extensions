@@ -20,6 +20,11 @@ namespace StackExchange.Redis.Extensions.Jil
         /// hence we do same here.
         /// </remarks>
         private static readonly Encoding encoding = Encoding.UTF8;
+
+        /// <summary>
+        /// Default constructor for Jil serializer.
+        /// </summary>
+        /// This constructor uses default serialization options.
         public JilSerializer()
             : this(new Options(prettyPrint: true, 
                 excludeNulls: false, 
@@ -32,6 +37,9 @@ namespace StackExchange.Redis.Extensions.Jil
 
         }
 
+        /// <summary>
+        /// Constructor for Jil serializer.
+        /// </summary>
         public JilSerializer(Options options)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));

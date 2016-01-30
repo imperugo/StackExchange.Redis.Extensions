@@ -1176,7 +1176,7 @@ namespace StackExchange.Redis.Extensions.Tests
             // arrange
             var hashKey = Guid.NewGuid().ToString();
             var values =
-                Enumerable.Range(0, 1000)
+                Range(0, 1000)
                     .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
                     .ToDictionary(x => x.Key);
 
