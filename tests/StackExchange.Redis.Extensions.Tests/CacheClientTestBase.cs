@@ -1,14 +1,10 @@
 ﻿using System;
-using System.CodeDom;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
-using Newtonsoft.Json;
 using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Core.Extensions;
 using StackExchange.Redis.Extensions.Tests.Extensions;
@@ -55,7 +51,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			Assert.NotNull(response);
 			Assert.True(response.Any());
-			Assert.Equal(response["os"], "Windows");
+			Assert.Equal(response["os"], "Windows"); // TODO: are you sure this will hold on linux/unix machines?
 			Assert.Equal(response["tcp_port"], "6379");
 		}
 
@@ -91,7 +87,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void Add_Multiple_Object_With_A_Single_Roundtrip_To_Redis_Must_Store_Data_Correctly_Into_Database()
 		{
-			IList<Tuple<string, string>> values = new List<Tuple<string, string>>();
+			var values = new List<Tuple<string, string>>();
 			values.Add(new Tuple<string, string>("key1", "value1"));
 			values.Add(new Tuple<string, string>("key2", "value2"));
 			values.Add(new Tuple<string, string>("key3", "value3"));
@@ -370,18 +366,20 @@ namespace StackExchange.Redis.Extensions.Tests
 		}
 
 		[Fact]
-		public void SetAddAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+		public async Task SetAddAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
 			var values = Builder<TestClass<string>>
 				.CreateListOfSize(5)
 				.All()
 				.Build();
+		    var key = "MySet";
 
-			values.ForEach(x =>
-			{
-				Db.StringSet(x.Key, Serializer.Serialize(x.Value));
-				var result = Sut.SetAddAsync("MySet", x).Result;
-			});
+            foreach (var value in values)
+		    {
+                Db.StringSet(value.Key, Serializer.Serialize(value.Value));
+                var result = await Sut.SetAddAsync(key, value);
+                Assert.True(result, $"SetAddAsync {key}:{value} failed");
+            }
 
 			var keys = Db.SetMembers("MySet");
 
@@ -432,7 +430,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		}
 
 		[Fact]
-		public void ListAddToLeftAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+		public async Task ListAddToLeftAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
 			var values = Builder<TestClass<string>>
 				.CreateListOfSize(5)
@@ -441,8 +439,11 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			var key = "MyListAsync";
 
-			values.ForEach(x => { var result = Sut.ListAddToLeftAsync(key, Serializer.Serialize(x)).Result; });
-
+		    foreach (var value in values)
+		    {
+                // TODO: why no assertion on the result?
+                var result = await Sut.ListAddToLeftAsync(key, Serializer.Serialize(value));
+            }
 			var keys = Db.ListRange(key);
 
 			Assert.Equal(keys.Length, values.Count);
@@ -480,7 +481,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		}
 
 		[Fact]
-		public void ListGetFromRightAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+		public async Task ListGetFromRightAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
 			var values = Builder<TestClass<string>>
 				.CreateListOfSize(1)
@@ -491,7 +492,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			values.ForEach(x => { Db.ListLeftPush(key, Serializer.Serialize(x)); });
 
-			var item = Sut.ListGetFromRightAsync<TestClass<string>>(key).Result;
+			var item = await Sut.ListGetFromRightAsync<TestClass<string>>(key);
 
 			Assert.Equal(item.Key, values[0].Key);
 			Assert.Equal(item.Value, values[0].Value);
@@ -933,8 +934,8 @@ namespace StackExchange.Redis.Extensions.Tests
             // assert
             Assert.NotNull(result);
             var resultEnum = result.ToDictionary(x => x.Key, x => x.Value);
-            Assert.Equal(values.Keys.Count(x => x.StartsWith("2")), resultEnum.Count);
-            foreach (var key in values.Keys.Where(x => x.StartsWith("2")))
+            Assert.Equal(values.Keys.Count(x => x.StartsWith("2", StringComparison.Ordinal)), resultEnum.Count);
+            foreach (var key in values.Keys.Where(x => x.StartsWith("2", StringComparison.Ordinal)))
             {
                 Assert.True(resultEnum.ContainsKey(key));
                 Assert.Equal(values[key], resultEnum[key]);
@@ -1391,8 +1392,8 @@ namespace StackExchange.Redis.Extensions.Tests
             // assert
             Assert.NotNull(result);
             var resultEnum = result.ToDictionary(x => x.Key, x => x.Value);
-            Assert.Equal(values.Keys.Count(x => x.StartsWith("2")), resultEnum.Count);
-            foreach (var key in values.Keys.Where(x => x.StartsWith("2")))
+            Assert.Equal(values.Keys.Count(x => x.StartsWith("2", StringComparison.Ordinal)), resultEnum.Count);
+            foreach (var key in values.Keys.Where(x => x.StartsWith("2", StringComparison.Ordinal)))
             {
                 Assert.True(resultEnum.ContainsKey(key));
                 Assert.Equal(values[key], resultEnum[key]);

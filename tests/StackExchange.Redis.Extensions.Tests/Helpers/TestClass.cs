@@ -33,9 +33,9 @@ namespace StackExchange.Redis.Extensions.Tests.Helpers
         [DataMember(Order = 2)]
 		public T Value { get; set; }
 
-	    public override bool Equals(object other)
+	    public override bool Equals(object obj)
 	    {
-	        return Equals(other as TestClass<T>);
+	        return Equals(obj as TestClass<T>);
 	    }
 
 	    public bool Equals(TestClass<T> other)
