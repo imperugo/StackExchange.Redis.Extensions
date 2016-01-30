@@ -536,7 +536,7 @@ namespace StackExchange.Redis.Extensions.Tests
             Assert.Equal(initialValue, data);
         }
 
-        [Fact] // TODO: NX doesn't work for some reason
+        [Fact]
         public void HashSetSingleValue_ValueExists_ShouldUpdateValue()
         {
             // arrange
@@ -547,11 +547,11 @@ namespace StackExchange.Redis.Extensions.Tests
             var initRes = Sut.Database.HashSet(hashKey, entryKey, Serializer.Serialize(initialValue));
 
             // act
-            var res = Sut.HashSet(hashKey, entryKey, entryValue, true);
+            var res = Sut.HashSet(hashKey, entryKey, entryValue, nx: false);
 
             // assert
-            Assert.True(initRes);
-            Assert.True(res);
+            Assert.True(initRes, "Initial value was not set");
+            Assert.False(res); // NOTE: HSET returns: 1 if new field was created and value set, or 0 if field existed and value set. reference: http://redis.io/commands/HSET
             var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.Database.HashGet(hashKey, entryKey));
             Assert.Equal(entryValue, data);
         }
@@ -993,7 +993,7 @@ namespace StackExchange.Redis.Extensions.Tests
             Assert.Equal(initialValue, data);
         }
 
-        [Fact] // TODO: NX doesn't work for some reason
+        [Fact]
         public async Task HashSetSingleValueAsync_ValueExists_ShouldUpdateValue()
         {
             // arrange
@@ -1004,11 +1004,11 @@ namespace StackExchange.Redis.Extensions.Tests
             var initRes = await Sut.Database.HashSetAsync(hashKey, entryKey, Serializer.Serialize(initialValue));
 
             // act
-            var res = await Sut.HashSetAsync(hashKey, entryKey, entryValue, true);
+            var res = await Sut.HashSetAsync(hashKey, entryKey, entryValue, nx: false);
 
             // assert
             Assert.True(initRes);
-            Assert.True(res);
+            Assert.False(res); // NOTE: HSET returns: 1 if new field was created and value set, or 0 if field existed and value set. reference: http://redis.io/commands/HSET
             var data = Serializer.Deserialize<TestClass<DateTime>>(await Sut.Database.HashGetAsync(hashKey, entryKey));
             Assert.Equal(entryValue, data);
         }
