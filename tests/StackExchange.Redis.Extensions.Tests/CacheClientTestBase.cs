@@ -15,6 +15,8 @@ using StackExchange.Redis.Extensions.Tests.Extensions;
 using StackExchange.Redis.Extensions.Tests.Helpers;
 using Xunit;
 
+using static System.Linq.Enumerable;
+
 namespace StackExchange.Redis.Extensions.Tests
 {
 	[Collection("Redis")]
@@ -559,12 +561,12 @@ namespace StackExchange.Redis.Extensions.Tests
         {
             // arrange
             var hashKey = Guid.NewGuid().ToString();
-            var values = Builder<TestClass<DateTime>>.CreateListOfSize(100).All().Build();
+            var values = Range(0, 100).Select(_ => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow));
             var map = values.ToDictionary(val => Guid.NewGuid().ToString());
 
             // act
             Sut.HashSet(hashKey, map);
-
+            Thread.Sleep(500);
             // assert
             var data = Sut.Database
                         .HashGet(hashKey, map.Keys.Select(x => (RedisValue)x).ToArray()).ToList()
@@ -1016,7 +1018,7 @@ namespace StackExchange.Redis.Extensions.Tests
         {
             // arrange
             var hashKey = Guid.NewGuid().ToString();
-            var values = Builder<TestClass<DateTime>>.CreateListOfSize(100).All().Build();
+            var values = Range(0, 100).Select(_ => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow));
             var map = values.ToDictionary(val => Guid.NewGuid().ToString());
 
             // act
