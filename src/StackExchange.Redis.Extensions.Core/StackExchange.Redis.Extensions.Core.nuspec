@@ -37,6 +37,7 @@
 			- Pub/Sub events;
 			- Save;
 			- Async methods;
+			- Hash methods;
 		</releaseNotes>
 		<copyright>Ugo Lattanzi</copyright>
 		<language>en-US</language>
