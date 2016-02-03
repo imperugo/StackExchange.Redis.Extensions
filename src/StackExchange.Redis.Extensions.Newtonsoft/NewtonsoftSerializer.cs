@@ -26,7 +26,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 		/// Initializes a new instance of the <see cref="NewtonsoftSerializer"/> class.
 		/// </summary>
 		/// <param name="settings">The settings.</param>
-		public NewtonsoftSerializer(JsonSerializerSettings settings = null)
+	    public NewtonsoftSerializer(JsonSerializerSettings settings = null)
 	    {
 	        this.settings = settings ?? new JsonSerializerSettings();
 	    }
