@@ -47,6 +47,9 @@ deploy:
 #---------------------------------#
 #          Notification           #
 #---------------------------------#
-
 notifications:
-  slack: imperugo:04vtxbGUiyj89XrmKy0AU6lw
+  - provider: Slack
+    auth_token:
+      secure: Ka0JFHk0ML5+yq/Wy+1yqCMA14zPd0SDVdq050b41f0hSHiCugSNByjln/hPD+YWsnMOCqgA4v7J2FliIRpPyg==
+    channel: '#stackexchange-redis'
+    template: "<{{buildUrl}}|Build {{projectName}} {{buildVersion}} {{status}}>Commit <{{commitUrl}}|{{commitId}}> by {{commitAuthor}} on {{commitDate}}:_{{commitMessage}}_"
