@@ -43,3 +43,10 @@ deploy:
   on:
     branch: master
     appveyor_repo_tag: true
+	
+#---------------------------------#
+#          Notification           #
+#---------------------------------#
+
+notifications:
+  slack: imperugo:04vtxbGUiyj89XrmKy0AU6lw
