@@ -35,14 +35,14 @@ build:
 #---------------------------------#
 #       deploy configuration      #
 #---------------------------------#
-deploy:
-  provider: NuGet
-  api_key:
-    secure: RiD8ByY1UxUnp+hyurAO3Ux8naiPVRMUX55HjjYe/ItiuKYk1PBGS9NgH80FbQ6C
-  artifact: /.*\.nupkg/
-  on:
-    branch: master
-    appveyor_repo_tag: true
+#deploy:
+#  provider: NuGet
+#  api_key:
+#    secure: RiD8ByY1UxUnp+hyurAO3Ux8naiPVRMUX55HjjYe/ItiuKYk1PBGS9NgH80FbQ6C
+#  artifact: /.*\.nupkg/
+#  on:
+#    branch: master
+#    appveyor_repo_tag: true
 	
 #---------------------------------#
 #          Notification           #
