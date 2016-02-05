@@ -47,8 +47,16 @@ build:
 #---------------------------------#
 #          Notification           #
 #---------------------------------#
-notifications:
-  - provider: Slack
-    auth_token:
-      secure: Ka0JFHk0ML5+yq/Wy+1yqCMA14zPd0SDVdq050b41f0hSHiCugSNByjln/hPD+YWsnMOCqgA4v7J2FliIRpPyg==
-    channel: '#stackexchange-redis'
+- provider: Slack
+  auth_token:
+    secure: ix1Sdx14oYgr73GV9+dhWUdhvV3LbBl8xZ0Rr7TkLPGRPDdKmvcszg+CvX594uLy73sdXLStuE/jTaCdqWycsBa03Jiyk5YzBZQScRCH6BgopEWDpe2Jo801Xd1jxaxV
+  channel: '#stackexchange-redis'
+  template: >-
+    <{{buildUrl}}|Build {{projectName}} {{buildVersion}} {{status}}>
+
+    Commit <{{commitUrl}}|{{commitId}}> by {{commitAuthor}} on {{commitDate}}:
+
+    _{{commitMessage}}_
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: true
