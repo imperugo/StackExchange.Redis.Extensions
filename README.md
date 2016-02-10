@@ -66,7 +66,7 @@ PM> Install-Package StackExchange.Redis.Extensions.Protobuf
 
 
 ## How to configure it
-You can use it registering the instance with your favorite Container. Here an example using Castle:
+You can use it registering the instance with your favorite Container. Here an example using [Castle Windsor](https://github.com/castleproject/Windsor):
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
@@ -103,20 +103,20 @@ var cacheClient = new StackExchangeRedisCacheClient(serializer);
 
 ```
 
-To specify the connection string it's enough to add it into AppSetting in your config files (use **RedisConnectionString** as key) or specify your ``ConnectionMultiplexer``` instance into the constructor.
+To specify the connection string it's enough to add it into AppSetting in your config files (use `RedisConnectionString` as key) or specify your `ConnectionMultiplexer` instance into the constructor.
 
 
 ## Serialization
 To offer the opportunity to store a class into Redis, that class must be serializable; right now there are three serialization options:
 
-- [**BinarySerialization**](http://msdn.microsoft.com/en-us/library/72hyey7b%28v=vs.110%29.aspx) (Requires ```SerializableAttribute``` on top of the class to store into Redis)
-- [**NewtonSoft**](https://github.com/JamesNK/Newtonsoft.Json) (Uses JSon.Net to serialize a class without ```SerializableAttribute```)
+- [**BinarySerialization**](http://msdn.microsoft.com/en-us/library/72hyey7b%28v=vs.110%29.aspx) (Requires `SerializableAttribute` on top of the class to store into Redis)
+- [**NewtonSoft**](https://github.com/JamesNK/Newtonsoft.Json) (Uses JSon.Net to serialize a class without `SerializableAttribute`)
 - [**Jil**](https://github.com/kevin-montrose/Jil) (Use super fast json serializer)
 - [**MessagePack CLI**](https://github.com/msgpack/msgpack-cli) (serialization/deserialization for CLI)
 
 
 ## How can I store an object into Redis?
-There are several methods in ```ICacheClient``` that can solve this request.
+There are several methods in `ICacheClient` that can solve this request.
 
 ```csharp
 
@@ -140,7 +140,7 @@ var cachedUser = myCacheClient.Get<User>("my cache key");
 ```
 
 ## How can I retrieve multiple object with single roundtrip?
-That's a cool feature that is implemented into ```ICacheClient``` implementation:
+That's a cool feature that is implemented into `ICacheClient` implementation:
 
 ```csharp
 var cachedUsers = myCacheClient.GetAll<User>(new {"key1","key2","key3"});
@@ -161,13 +161,13 @@ bool added = sut.AddAll(values);
 
 ## Can I search keys into Redis?
 Yes that's possible using a specific pattern.
-If you want to search all keys that start with ```myCacheKey```:
+If you want to search all keys that start with `myCacheKey`:
 
 ```csharp
 var keys = myCacheClient.SearchKeys("myCacheKey*");
 ```
 
-If you want to search all keys that contain with ```myCacheKey```:
+If you want to search all keys that contain with `myCacheKey`:
 
 ```csharp
 var keys = myCacheClient.SearchKeys("*myCacheKey*");
@@ -181,14 +181,14 @@ var keys = myCacheClient.SearchKeys("*myCacheKey");
 
 ## Can I use a Redis method directly from ICacheClient without add another dependency to my class?
 
-Of course you can. ```ICacheClient``` exposes a readonly property named ```Database``` that is the implementation of IDatabase by [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis)
+Of course you can. `ICacheClient` exposes a readonly property named `Database` that is the implementation of IDatabase by [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis)
 
 ```csharp
 myCacheClient.Database.SetAdd("mykey","another key");
 ```
 
 ## How can I get server information?
-```ICacheClient``` has a method ```GetInfo``` and ```GetInfoAsync``` for that:
+`ICacheClient` has a method `GetInfo` and `GetInfoAsync` for that:
 
 ```csharp
 var info = myCacheClient.GetInfo();
