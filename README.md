@@ -4,7 +4,7 @@ StackExchange.Redis.Extensions is a library that extends [StackExchange.Redis](h
 
 
 ## What can it be used for?
-Caching of course. Instead of use directly [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) could be easier use ``ÌCacheClient```
+Caching of course. Instead of use directly [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) could be easier use `ICacheClient`
 
 For example:
 
@@ -85,9 +85,13 @@ You can use it registering the instance with your favorite Container. Here an ex
 ```
 
 ```csharp
-container.Register(Component.For<ISerializer>()				.ImplementedBy<NewtonsoftSerializer>()				.LifestyleSingleton());
+container.Register(Component.For<ISerializer>()
+				.ImplementedBy<NewtonsoftSerializer>()
+				.LifestyleSingleton());
 
-container.Register(Component.For<ICacheClient>()				.ImplementedBy<StackExchangeRedisCacheClient>()				.LifestyleSingleton());
+container.Register(Component.For<ICacheClient>()
+				.ImplementedBy<StackExchangeRedisCacheClient>()
+				.LifestyleSingleton());
 
 ```
 
@@ -146,7 +150,13 @@ var cachedUsers = myCacheClient.GetAll<User>(new {"key1","key2","key3"});
 That's a cool feature that is implemented into ICacheClient implementation:
 
 ```csharp
-IList<Tuple<string, string>> values = new List<Tuple<string, string>>();values.Add(new Tuple<string, string>("key1","value1"));values.Add(new Tuple<string, string>("key2","value2"));values.Add(new Tuple<string, string>("key3","value3"));bool added = sut.AddAll(values);
+IList<Tuple<string, string>> values = new List<Tuple<string, string>>();
+
+values.Add(new Tuple<string, string>("key1","value1"));
+values.Add(new Tuple<string, string>("key2","value2"));
+values.Add(new Tuple<string, string>("key3","value3"));
+
+bool added = sut.AddAll(values);
 ```
 
 ## Can I search keys into Redis?
