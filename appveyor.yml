@@ -43,22 +43,3 @@ build:
 #  on:
 #    branch: master
 #    appveyor_repo_tag: true
-	
-#---------------------------------#
-#          Notification           #
-#---------------------------------#
-#notifications:
-#- provider: Slack
-#  incoming_webhook: https://hooks.slack.com/services/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
-#  auth_token:
-#    secure: Ka0JFHk0ML5+yq/Wy+1yqEZZtZKoeIxx7jHAihuwTauqkLt9Ss9jQl5fdADAHz+BlYWD6Qo5oa2/6cEwuIYOGQ==
-#  channel: '#stackexchange-redis'
-#  template: >-
-#    <{{buildUrl}}|Build {{projectName}} {{buildVersion}} {{status}}>
-#
-#    Commit <{{commitUrl}}|{{commitId}}> by {{commitAuthor}} on {{commitDate}}:
-#
-#    _{{commitMessage}}_
-#  on_build_success: true
-#  on_build_failure: true
-#  on_build_status_changed: true
