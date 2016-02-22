@@ -494,7 +494,27 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			Assert.Equal(item.Key, values[0].Key);
 			Assert.Equal(item.Value, values[0].Value);
-		}
+        }
+
+        [Fact]
+        public async Task ListGetFromRightAsyncGeneric_With_An_Existing_Key_Should_Return_Null_If_List_Is_Empty()
+        {
+            var key = "MyList";
+
+            var item = await Sut.ListGetFromRightAsync<TestClass<string>>(key);
+
+            Assert.Equal(item, null);
+        }
+
+        [Fact]
+        public void ListGetFromRightAsync_With_An_Existing_Key_Should_Return_Null_If_List_Is_Empty()
+        {
+            var key = "MyList";
+
+            var item = Sut.ListGetFromRight<TestClass<string>>(key);
+
+            Assert.Equal(item, null);
+        }
 
         #region Hash tests
 

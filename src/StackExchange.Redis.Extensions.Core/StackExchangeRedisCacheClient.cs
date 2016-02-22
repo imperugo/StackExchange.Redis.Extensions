@@ -937,7 +937,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 			var item = Database.ListRightPop(key);
 
-			return Serializer.Deserialize<T>(item);
+            return item == RedisValue.Null ? null : Serializer.Deserialize<T>(item);
 		}
 
 		/// <summary>
@@ -959,8 +959,10 @@ namespace StackExchange.Redis.Extensions.Core
 
 			var item = await Database.ListRightPopAsync(key);
 
-			return await Serializer.DeserializeAsync<T>(item);
-		}
+		    if (item == RedisValue.Null) return null;
+
+            return item == RedisValue.Null ? null : await Serializer.DeserializeAsync<T>(item);
+        }
 
 		private Dictionary<string, string> ParseInfo(string info)
 		{
