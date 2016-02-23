@@ -590,23 +590,35 @@ namespace StackExchange.Redis.Extensions.Core
 		public async Task<string[]> SetMemberAsync(string memberName)
 		{
 			return (await Database.SetMembersAsync(memberName)).Select(x => x.ToString()).ToArray();
-		}
+        }
 
-		/// <summary>
-		///     Searches the keys from Redis database
-		/// </summary>
-		/// <remarks>
-		///     Consider this as a command that should only be used in production environments with extreme care. It may ruin
-		///     performance when it is executed against large databases
-		/// </remarks>
-		/// <param name="pattern">The pattern.</param>
-		/// <example>
-		///     if you want to return all keys that start with "myCacheKey" uses "myCacheKey*"
-		///     if you want to return all keys that contain with "myCacheKey" uses "*myCacheKey*"
-		///     if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
-		/// </example>
-		/// <returns>A list of cache keys retrieved from Redis database</returns>
-		public IEnumerable<string> SearchKeys(string pattern)
+        /// <summary>
+        ///     Run SMEMBERS command see http://redis.io/commands/SMEMBERS
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public async Task<T[]> SetMembersAsync<T>(string key)
+        {
+            var members = await Database.SetMembersAsync(key);
+
+            return members.Select(m => m == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(m)).ToArray();
+        }
+
+        /// <summary>
+        ///     Searches the keys from Redis database
+        /// </summary>
+        /// <remarks>
+        ///     Consider this as a command that should only be used in production environments with extreme care. It may ruin
+        ///     performance when it is executed against large databases
+        /// </remarks>
+        /// <param name="pattern">The pattern.</param>
+        /// <example>
+        ///     if you want to return all keys that start with "myCacheKey" uses "myCacheKey*"
+        ///     if you want to return all keys that contain with "myCacheKey" uses "*myCacheKey*"
+        ///     if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
+        /// </example>
+        /// <returns>A list of cache keys retrieved from Redis database</returns>
+        public IEnumerable<string> SearchKeys(string pattern)
 		{
 			var keys = new HashSet<RedisKey>();
 
@@ -925,7 +937,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 			var item = Database.ListRightPop(key);
 
-			return Serializer.Deserialize<T>(item);
+            return item == RedisValue.Null ? null : Serializer.Deserialize<T>(item);
 		}
 
 		/// <summary>
@@ -947,8 +959,10 @@ namespace StackExchange.Redis.Extensions.Core
 
 			var item = await Database.ListRightPopAsync(key);
 
-			return await Serializer.DeserializeAsync<T>(item);
-		}
+		    if (item == RedisValue.Null) return null;
+
+            return item == RedisValue.Null ? null : await Serializer.DeserializeAsync<T>(item);
+        }
 
 		private Dictionary<string, string> ParseInfo(string info)
 		{

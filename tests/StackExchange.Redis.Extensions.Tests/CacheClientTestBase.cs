@@ -223,9 +223,24 @@ namespace StackExchange.Redis.Extensions.Tests
 			var keys = Sut.SetMember("MySet");
 
 			Assert.Equal(keys.Length, values.Length);
-		}
+        }
 
-		[Fact]
+        [Fact]
+        public async void SetMembersAsync_With_Valid_Data_Should_Return_Correct_Keys()
+        {
+            var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
+
+            values.ForEach(x =>
+            {
+                Db.SetAdd("MySet", Serializer.Serialize(x));
+            });
+
+            var keys = await Sut.SetMembersAsync<TestClass<string>>("MySet");
+
+            Assert.Equal(keys.Length, values.Length);
+        }
+
+        [Fact]
 		public void Massive_Add_Should_Not_Throw_Exception_And_Work_Correctly()
 		{
 			const int size = 3000;
@@ -479,7 +494,27 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			Assert.Equal(item.Key, values[0].Key);
 			Assert.Equal(item.Value, values[0].Value);
-		}
+        }
+
+        [Fact]
+        public async Task ListGetFromRightAsyncGeneric_With_An_Existing_Key_Should_Return_Null_If_List_Is_Empty()
+        {
+            var key = "MyList";
+
+            var item = await Sut.ListGetFromRightAsync<TestClass<string>>(key);
+
+            Assert.Equal(item, null);
+        }
+
+        [Fact]
+        public void ListGetFromRightAsync_With_An_Existing_Key_Should_Return_Null_If_List_Is_Empty()
+        {
+            var key = "MyList";
+
+            var item = Sut.ListGetFromRight<TestClass<string>>(key);
+
+            Assert.Equal(item, null);
+        }
 
         #region Hash tests
 
