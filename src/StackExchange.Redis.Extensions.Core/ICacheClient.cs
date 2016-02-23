@@ -289,21 +289,30 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		Task<string[]> SetMemberAsync(string memberName);
+        
+        /// <summary>
+        ///     Run SMEMBERS command see http://redis.io/commands/SMEMBERS
+        ///     Deserializes the results to T
+        /// </summary>
+        /// <typeparam name="T">The type of the expected objects in the set</typeparam>
+        /// <param name="key">The key</param>
+        /// <returns>An array of objects in the set</returns>
+        Task<T[]> SetMembersAsync<T>(string key);
 
-		/// <summary>
-		/// Searches the keys from Redis database
-		/// </summary>
-		/// <remarks>
-		/// Consider this as a command that should only be used in production environments with extreme care. It may ruin performance when it is executed against large databases
-		/// </remarks>
-		/// <param name="pattern">The pattern.</param>
-		/// <example>
-		///		if you want to return all keys that start with "myCacheKey" uses "myCacheKey*"
-		///		if you want to return all keys that contain with "myCacheKey" uses "*myCacheKey*"
-		///		if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
-		/// </example>
-		/// <returns>A list of cache keys retrieved from Redis database</returns>
-		IEnumerable<string> SearchKeys(string pattern);
+        /// <summary>
+        /// Searches the keys from Redis database
+        /// </summary>
+        /// <remarks>
+        /// Consider this as a command that should only be used in production environments with extreme care. It may ruin performance when it is executed against large databases
+        /// </remarks>
+        /// <param name="pattern">The pattern.</param>
+        /// <example>
+        ///		if you want to return all keys that start with "myCacheKey" uses "myCacheKey*"
+        ///		if you want to return all keys that contain with "myCacheKey" uses "*myCacheKey*"
+        ///		if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
+        /// </example>
+        /// <returns>A list of cache keys retrieved from Redis database</returns>
+        IEnumerable<string> SearchKeys(string pattern);
 
 		/// <summary>
 		/// Searches the keys from Redis database
