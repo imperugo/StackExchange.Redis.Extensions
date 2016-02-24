@@ -297,7 +297,7 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">The type of the expected objects in the set</typeparam>
         /// <param name="key">The key</param>
         /// <returns>An array of objects in the set</returns>
-        Task<T[]> SetMembersAsync<T>(string key);
+        Task<IEnumerable<T>> SetMembersAsync<T>(string key);
 
         /// <summary>
         /// Searches the keys from Redis database

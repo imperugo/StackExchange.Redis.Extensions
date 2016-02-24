@@ -599,11 +599,11 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">The type of the expected objects</typeparam>
         /// <param name="key">The key</param>
         /// <returns>An array of objects in the set</returns>
-        public async Task<T[]> SetMembersAsync<T>(string key)
+        public async Task<IEnumerable<T>> SetMembersAsync<T>(string key)
         {
             var members = await Database.SetMembersAsync(key);
 
-            return members.Select(m => m == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(m)).ToArray();
+            return members.Select(m => m == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(m));
         }
 
         /// <summary>
