@@ -18,7 +18,7 @@ namespace StackExchange.Redis.Extensions.Tests
 	public abstract class CacheClientTestBase : IDisposable
 	{
 		protected readonly IDatabase Db;
-		protected readonly StackExchangeRedisCacheClient Sut;
+		protected readonly ICacheClient Sut;
 		protected ISerializer Serializer;
 
 		protected CacheClientTestBase(ISerializer serializer)
@@ -333,7 +333,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void SetAddGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
-            var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
+            var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToList();
 
             values.ForEach(x =>
 			{
@@ -343,7 +343,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			var keys = Db.SetMembers("MySet");
 
-			Assert.Equal(keys.Length, values.Count());
+			Assert.Equal(keys.Length, values.Count);
 		}
 
 		[Fact]
@@ -376,7 +376,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public async Task SetAddAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
-            var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
+            var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToList();
 
             var key = "MySet";
 
@@ -389,7 +389,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			var keys = Db.SetMembers("MySet");
 
-			Assert.Equal(keys.Length, values.Count());
+			Assert.Equal(keys.Length, values.Count);
 		}
 
 		[Fact]
@@ -407,7 +407,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void ListAddToLeftGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
-			var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
+			var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToList();
 
             const string key = "MyList";
 
@@ -415,7 +415,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			var keys = Db.ListRange(key);
 
-			Assert.Equal(keys.Length, values.Count());
+			Assert.Equal(keys.Length, values.Count);
 		}
 
 		[Fact]
@@ -435,7 +435,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public async Task ListAddToLeftAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
 		{
-		    var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
+		    var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToList();
 
 			const string key = "MyListAsync";
 
@@ -446,7 +446,7 @@ namespace StackExchange.Redis.Extensions.Tests
             }
 			var keys = Db.ListRange(key);
 
-			Assert.Equal(keys.Length, values.Count());
+			Assert.Equal(keys.Length, values.Count);
 		}
 
 		[Fact]
