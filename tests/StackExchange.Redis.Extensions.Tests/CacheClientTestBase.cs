@@ -235,7 +235,7 @@ namespace StackExchange.Redis.Extensions.Tests
                 Db.SetAdd("MySet", Serializer.Serialize(x));
             });
 
-            var keys = await Sut.SetMembersAsync<TestClass<string>>("MySet");
+            var keys = (await Sut.SetMembersAsync<TestClass<string>>("MySet")).ToArray();
 
             Assert.Equal(keys.Length, values.Length);
         }
