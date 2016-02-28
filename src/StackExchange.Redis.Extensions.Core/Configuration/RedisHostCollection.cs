@@ -48,7 +48,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		/// <returns></returns>
 		protected override object GetElementKey(ConfigurationElement element)
 		{
-			return ((RedisHost)element).Host;
+			return string.Format("{0}:{1}", ((RedisHost)element).Host, ((RedisHost)element).CachePort);
 		}
 	}
 }
