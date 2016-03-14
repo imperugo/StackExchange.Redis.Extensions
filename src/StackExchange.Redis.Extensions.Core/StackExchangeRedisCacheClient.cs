@@ -630,8 +630,13 @@ namespace StackExchange.Redis.Extensions.Core
 
 			foreach (var endpoint in endPoints)
 			{
-				var dbKeys = Database.Multiplexer.GetServer(endpoint).Keys(Database.Database, pattern);
+				var server = Database.Multiplexer.GetServer(endpoint);
+				if (!server.IsConnected || !server.Features.Scan)
+				{
+					continue;
+				}
 
+				var dbKeys = server.Keys(Database.Database, pattern);
 				foreach (var dbKey in dbKeys)
 				{
 					if (!keys.Contains(dbKey))
