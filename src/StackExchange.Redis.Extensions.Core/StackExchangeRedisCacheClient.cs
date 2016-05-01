@@ -42,7 +42,9 @@ namespace StackExchange.Redis.Extensions.Core
 			{
 				Ssl = configuration.Ssl,
 				AllowAdmin = configuration.AllowAdmin,
-				Password = configuration.Password
+				Password = configuration.Password,
+				AbortOnConnectFail = configuration.AbortOnConnectFail,
+				ConnectTimeout = configuration.ConnectTimeout,
 			};
 
 			foreach (RedisHost redisHost in configuration.RedisHosts)

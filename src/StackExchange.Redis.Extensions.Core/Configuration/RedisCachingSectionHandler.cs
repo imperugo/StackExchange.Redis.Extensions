@@ -14,13 +14,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		/// The ip or name
 		/// </value>
 		[ConfigurationProperty("hosts")]
-		public RedisHostCollection RedisHosts
-		{
-			get
-			{
-				return this["hosts"] as RedisHostCollection;
-			}
-		}
+		public RedisHostCollection RedisHosts => this["hosts"] as RedisHostCollection;
 
 		/// <summary>
 		/// Specify if the connection can use Admin commands like flush database
@@ -105,6 +99,32 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 				}
 
 				return 5000;
+			}
+		}
+
+		/// <summary>
+		/// If true, Connect will not create a connection while no servers are available
+		/// </summary>
+		[ConfigurationProperty("abortOnConnectFail")]
+		public bool AbortOnConnectFail
+		{
+			get
+			{
+				var config = this["abortOnConnectFail"];
+				if (config != null)
+				{
+					var value = config.ToString();
+					if (!string.IsNullOrWhiteSpace(value))
+					{
+						bool result;
+						if (bool.TryParse(value, out result))
+						{
+							return result;
+						}
+					}
+				}
+
+				return false;
 			}
 		}
 

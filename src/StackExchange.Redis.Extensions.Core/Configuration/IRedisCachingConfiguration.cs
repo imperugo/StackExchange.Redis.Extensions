@@ -35,6 +35,11 @@
 		int ConnectTimeout { get; }
 
 		/// <summary>
+		/// If true, Connect will not create a connection while no servers are available
+		/// </summary>
+		bool AbortOnConnectFail { get; }
+
+		/// <summary>
 		/// Database Id
 		/// </summary>
 		/// <value>
