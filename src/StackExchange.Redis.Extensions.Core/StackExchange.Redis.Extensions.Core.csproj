@@ -50,10 +50,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ServerIteration\ServerIteratorFactory.cs" />
+    <Compile Include="ServerIteration\ServerEnumerable.cs" />
     <Compile Include="Configuration\IRedisCachingConfiguration.cs" />
     <Compile Include="Configuration\RedisCachingSectionHandler.cs" />
     <Compile Include="Configuration\RedisHost.cs" />
     <Compile Include="Configuration\RedisHostCollection.cs" />
+    <Compile Include="Configuration\ServerEnumerationStrategy.cs" />
     <Compile Include="StackExchangeRedisCacheClient.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="ICacheClient.cs" />
