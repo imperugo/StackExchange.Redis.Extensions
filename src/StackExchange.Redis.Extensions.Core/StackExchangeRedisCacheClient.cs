@@ -424,64 +424,65 @@ namespace StackExchange.Redis.Extensions.Core
 			return AddAsync(key, value, expiresIn);
 		}
 
-		/// <summary>
-		///     Get the objects with the specified keys from Redis database with one roundtrip
-		/// </summary>
-		/// <typeparam name="T">The type of the expected object</typeparam>
-		/// <param name="keys">The keys.</param>
-		/// <returns>
-		///     Empty list if there are no results, otherwise the instance of T.
-		///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
-		/// </returns>
-		public IDictionary<string, T> GetAll<T>(IEnumerable<string> keys)
-		{
-			var redisKeys = keys.Select(x => (RedisKey) x).ToArray();
-			var result = Database.StringGet(redisKeys);
-			return redisKeys.ToDictionary(key => (string) key, key =>
-			{
-				{
-					var index = Array.IndexOf(redisKeys, key);
-					var value = result[index];
-					return value == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(result[index]);
-				}
-			});
-		}
+        /// <summary>
+        ///     Get the objects with the specified keys from Redis database with one roundtrip
+        /// </summary>
+        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <param name="keys">The keys.</param>
+        /// <returns>
+        ///     Empty list if there are no results, otherwise the instance of T.
+        ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
+        /// </returns>
+        public IDictionary<string, T> GetAll<T>(IEnumerable<string> keys)
+        {
+            var redisKeys = keys.Select(x => (RedisKey) x).ToArray();
+            var result = Database.StringGet(redisKeys);
 
-		/// <summary>
-		///     Get the objects with the specified keys from Redis database with one roundtrip
-		/// </summary>
-		/// <typeparam name="T">The type of the expected object</typeparam>
-		/// <param name="keys">The keys.</param>
-		/// <returns>
-		///     Empty list if there are no results, otherwise the instance of T.
-		///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
-		/// </returns>
-		public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys)
-		{
-			var redisKeys = keys.Select(x => (RedisKey) x).ToArray();
-			var result = await Database.StringGetAsync(redisKeys);
-			return redisKeys.ToDictionary(key => (string) key, key =>
-			{
-				{
-					var index = Array.IndexOf(redisKeys, key);
-					var value = result[index];
-					return value == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(result[index]);
-				}
-			});
-		}
+            var dict = new Dictionary<string, T>(StringComparer.Ordinal);
+            for (var index = 0; index < redisKeys.Length; index++)
+            {
+                var value = result[index];
+                dict.Add(redisKeys[index], value == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(value));
+            }
 
-		/// <summary>
-		///     Adds all.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="items">The items.</param>
-		public bool AddAll<T>(IList<Tuple<string, T>> items)
-		{
-			var values = items.ToDictionary<Tuple<string, T>, RedisKey, RedisValue>(item => item.Item1,
-				item => Serializer.Serialize(item.Item2));
+            return dict;
+        }
 
-			return Database.StringSet(values.ToArray());
-		}
+        /// <summary>
+        ///     Get the objects with the specified keys from Redis database with one roundtrip
+        /// </summary>
+        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <param name="keys">The keys.</param>
+        /// <returns>
+        ///     Empty list if there are no results, otherwise the instance of T.
+        ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
+        /// </returns>
+        public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys)
+        {
+            var redisKeys = keys.Select(x => (RedisKey) x).ToArray();
+            var result = await Database.StringGetAsync(redisKeys);
+            var dict = new Dictionary<string, T>(StringComparer.Ordinal);
+            for (var index = 0; index < redisKeys.Length; index++)
+            {
+                var value = result[index];
+                dict.Add(redisKeys[index], value == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(value));
+            }
+            return dict;
+        }
+
+        /// <summary>
+        ///     Adds all.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items">The items.</param>
+        public bool AddAll<T>(IList<Tuple<string, T>> items)
+        {
+            var values = items
+                .Select(item => new KeyValuePair<RedisKey,RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
+                .ToArray();
+
+            return Database.StringSet(values);
+        }
 
 		/// <summary>
 		///     Adds all asynchronous.
@@ -491,10 +492,11 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns></returns>
 		public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items)
 		{
-			var values = items.ToDictionary<Tuple<string, T>, RedisKey, RedisValue>(item => item.Item1,
-				item => Serializer.Serialize(item.Item2));
+			var values = items
+                .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
+                .ToArray();
 
-			return await Database.StringSetAsync(values.ToArray());
+            return await Database.StringSetAsync(values);
 		}
 
 		/// <summary>
@@ -1078,7 +1080,7 @@ namespace StackExchange.Redis.Extensions.Core
         public Dictionary<string, T> HashGet<T>(string hashKey, IEnumerable<string> keys, CommandFlags commandFlags = CommandFlags.None)
         {
             return keys.Select(x => new { key = x, value = HashGet<T>(hashKey, x, commandFlags) })
-                        .ToDictionary(kv => kv.key, kv => kv.value);
+                        .ToDictionary(kv => kv.key, kv => kv.value, StringComparer.Ordinal);
         }
 
         /// <summary>
@@ -1097,7 +1099,8 @@ namespace StackExchange.Redis.Extensions.Core
                         .HashGetAll(hashKey, commandFlags)
                         .ToDictionary(
                             x => x.Name.ToString(),
-                            x => Serializer.Deserialize<T>(x.Value));
+                            x => Serializer.Deserialize<T>(x.Value),
+                            StringComparer.Ordinal);
         }
 
         /// <summary>
@@ -1237,7 +1240,8 @@ namespace StackExchange.Redis.Extensions.Core
             return Database
                          .HashScan(hashKey, pattern, pageSize, commandFlags)
                          .ToDictionary(x => x.Name.ToString(),
-                                      x => Serializer.Deserialize<T>(x.Value));
+                                      x => Serializer.Deserialize<T>(x.Value),
+                                      StringComparer.Ordinal);
         }
 
         /// <param name="hashKey">Key of the hash</param>
@@ -1346,7 +1350,8 @@ namespace StackExchange.Redis.Extensions.Core
                         .HashGetAllAsync(hashKey, commandFlags))
                         .ToDictionary(
                             x => x.Name.ToString(),
-                            x => Serializer.Deserialize<T>(x.Value));
+                            x => Serializer.Deserialize<T>(x.Value),
+                            StringComparer.Ordinal);
         }
 
         /// <summary>
@@ -1487,7 +1492,7 @@ namespace StackExchange.Redis.Extensions.Core
         public async Task<Dictionary<string, T>> HashScanAsync<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags commandFlags = CommandFlags.None)
         {
             return (await Task.Run(() => Database.HashScan(hashKey, pattern, pageSize, commandFlags)))
-                .ToDictionary(x => x.Name.ToString(), x => Serializer.Deserialize<T>(x.Value));
+                .ToDictionary(x => x.Name.ToString(), x => Serializer.Deserialize<T>(x.Value), StringComparer.Ordinal);
         }
     }
 }
