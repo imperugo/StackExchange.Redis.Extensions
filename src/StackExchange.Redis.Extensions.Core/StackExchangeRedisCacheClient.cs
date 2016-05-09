@@ -15,7 +15,7 @@ namespace StackExchange.Redis.Extensions.Core
 	public class StackExchangeRedisCacheClient : ICacheClient
 	{
 		private readonly ConnectionMultiplexer connectionMultiplexer;
-		private readonly ServerEnumerationStrategy serverEnumerationStrategy;
+		private readonly ServerEnumerationStrategy serverEnumerationStrategy = new ServerEnumerationStrategy();
 
 		/// <summary>
 		///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.

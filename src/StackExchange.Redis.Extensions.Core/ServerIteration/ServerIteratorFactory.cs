@@ -9,10 +9,8 @@ namespace StackExchange.Redis.Extensions.Core.ServerIteration
 	{
 		public static IEnumerable<IServer> GetServers(
 			ConnectionMultiplexer multiplexer,
-			ServerEnumerationStrategy serverEnumerationStrategy = null)
+			ServerEnumerationStrategy serverEnumerationStrategy)
 		{
-			serverEnumerationStrategy = serverEnumerationStrategy ?? new ServerEnumerationStrategy();
-
 			switch (serverEnumerationStrategy.Mode)
 			{
 				case ServerEnumerationStrategy.ModeOptions.All:
