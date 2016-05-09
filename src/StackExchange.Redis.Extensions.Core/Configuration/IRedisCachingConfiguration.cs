@@ -14,6 +14,11 @@
 		RedisHostCollection RedisHosts { get; }
 
 		/// <summary>
+		/// The strategy to use when executing server wide commands
+		/// </summary>
+		ServerEnumerationStrategy ServerEnumerationStrategy { get; }
+
+		/// <summary>
 		/// Specify if the connection can use Admin commands like flush database
 		/// </summary>
 		/// <value>

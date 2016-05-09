@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+using StackExchange.Redis.Extensions.Core.ServerIteration;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Extensions;
 
@@ -14,6 +15,7 @@ namespace StackExchange.Redis.Extensions.Core
 	public class StackExchangeRedisCacheClient : ICacheClient
 	{
 		private readonly ConnectionMultiplexer connectionMultiplexer;
+		private readonly ServerEnumerationStrategy serverEnumerationStrategy;
 
 		/// <summary>
 		///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
@@ -46,6 +48,7 @@ namespace StackExchange.Redis.Extensions.Core
 				AbortOnConnectFail = configuration.AbortOnConnectFail,
 				ConnectTimeout = configuration.ConnectTimeout,
 			};
+			serverEnumerationStrategy = configuration.ServerEnumerationStrategy;
 
 			foreach (RedisHost redisHost in configuration.RedisHosts)
 			{
@@ -626,12 +629,12 @@ namespace StackExchange.Redis.Extensions.Core
 		{
 			var keys = new HashSet<RedisKey>();
 
-			var endPoints = Database.Multiplexer.GetEndPoints();
+			var multiplexer = Database.Multiplexer;
+			var servers = ServerIteratorFactory.GetServers(multiplexer, serverEnumerationStrategy);
 
-			foreach (var endpoint in endPoints)
+			foreach (var server in servers)
 			{
-				var dbKeys = Database.Multiplexer.GetServer(endpoint).Keys(Database.Database, pattern);
-
+				var dbKeys = server.Keys(Database.Database, pattern);
 				foreach (var dbKey in dbKeys)
 				{
 					if (!keys.Contains(dbKey))
@@ -641,7 +644,7 @@ namespace StackExchange.Redis.Extensions.Core
 				}
 			}
 
-			return keys.Select(x => (string) x);
+			return keys.Select(x => (string)x);
 		}
 
 		/// <summary>
