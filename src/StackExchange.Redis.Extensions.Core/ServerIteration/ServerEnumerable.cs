@@ -34,7 +34,7 @@ namespace StackExchange.Redis.Extensions.Core.ServerIteration
 				}
 				if (unreachableServerAction == ServerEnumerationStrategy.UnreachableServerActionOptions.Ignore)
 				{
-					if (!server.IsConnected)
+					if (!server.IsConnected || !server.Features.Scan)
 						continue;
 				}
 
