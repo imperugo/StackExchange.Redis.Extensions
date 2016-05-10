@@ -14,7 +14,16 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		/// The ip or name
 		/// </value>
 		[ConfigurationProperty("hosts")]
-		public RedisHostCollection RedisHosts => this["hosts"] as RedisHostCollection;
+		public RedisHostCollection RedisHosts
+			=> this["hosts"] as RedisHostCollection;
+
+		/// <summary>
+		/// The strategy to use when executing server wide commands
+		/// </summary>
+		[ConfigurationProperty("serverEnumerationStrategy")]
+		public ServerEnumerationStrategy ServerEnumerationStrategy
+			=> this["serverEnumerationStrategy"] as ServerEnumerationStrategy;
+		
 
 		/// <summary>
 		/// Specify if the connection can use Admin commands like flush database
