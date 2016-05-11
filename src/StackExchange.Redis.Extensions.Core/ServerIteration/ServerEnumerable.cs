@@ -32,7 +32,7 @@ namespace StackExchange.Redis.Extensions.Core.ServerIteration
 					if (!server.IsSlave)
 						continue;
 				}
-				if (unreachableServerAction == ServerEnumerationStrategy.UnreachableServerActionOptions.Ignore)
+				if (unreachableServerAction == ServerEnumerationStrategy.UnreachableServerActionOptions.IgnoreIfOtherAvailable)
 				{
 					if (!server.IsConnected || !server.Features.Scan)
 						continue;
