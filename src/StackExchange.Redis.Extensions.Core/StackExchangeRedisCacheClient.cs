@@ -632,7 +632,11 @@ namespace StackExchange.Redis.Extensions.Core
 			var keys = new HashSet<RedisKey>();
 
 			var multiplexer = Database.Multiplexer;
-			var servers = ServerIteratorFactory.GetServers(multiplexer, serverEnumerationStrategy);
+			var servers = ServerIteratorFactory.GetServers(multiplexer, serverEnumerationStrategy).ToArray();
+			if (!servers.Any())
+			{
+				throw new Exception("No server found to serve the KEYS command.");
+			}
 
 			foreach (var server in servers)
 			{

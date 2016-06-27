@@ -20,7 +20,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		public enum UnreachableServerActionOptions
 		{
 			Throw = 0,
-			Ignore
+			IgnoreIfOtherAvailable
 		}
 
 		[ConfigurationProperty("mode", IsRequired = false, DefaultValue = "All")]
