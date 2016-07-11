@@ -14,7 +14,7 @@ namespace StackExchange.Redis.Extensions.Core
 	/// </summary>
 	public class StackExchangeRedisCacheClient : ICacheClient
 	{
-		private readonly ConnectionMultiplexer connectionMultiplexer;
+		private readonly IConnectionMultiplexer connectionMultiplexer;
 		private readonly ServerEnumerationStrategy serverEnumerationStrategy = new ServerEnumerationStrategy();
 
 		/// <summary>
@@ -90,7 +90,7 @@ namespace StackExchange.Redis.Extensions.Core
 		///     or
 		///     serializer
 		/// </exception>
-		public StackExchangeRedisCacheClient(ConnectionMultiplexer connectionMultiplexer, ISerializer serializer,
+		public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer,
 			int database = 0)
 		{
 			if (connectionMultiplexer == null)
