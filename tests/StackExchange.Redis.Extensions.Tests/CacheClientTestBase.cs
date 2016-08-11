@@ -207,9 +207,27 @@ namespace StackExchange.Redis.Extensions.Tests
 			var keys = Db.SetMembers("MySet");
 
 			Assert.Equal(keys.Length, values.Length);
-		}
+        }
 
-		[Fact]
+        [Fact]
+        public void SetMembers_With_Valid_Data_Should_Return_Correct_Keys()
+        {
+            var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
+
+            values.ForEach(x =>
+            {
+                Db.SetAdd("MySet", Serializer.Serialize(x));
+            });
+
+            var keys = (Sut.SetMembers<TestClass<string>>("MySet")).ToArray();
+
+            Assert.Equal(keys.Length, values.Length);
+
+            foreach (var key in keys)
+                Assert.Contains(values, x => x.Key == key.Key && x.Value == key.Value);
+        }
+
+        [Fact]
 		public void SetMember_With_Valid_Data_Should_Return_Correct_Keys()
 		{
 			var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();

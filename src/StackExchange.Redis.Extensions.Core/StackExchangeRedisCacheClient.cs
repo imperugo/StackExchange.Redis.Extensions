@@ -587,7 +587,21 @@ namespace StackExchange.Redis.Extensions.Core
 		public string[] SetMember(string memberName)
 		{
 			return Database.SetMembers(memberName).Select(x => x.ToString()).ToArray();
-		}
+        }
+
+        /// <summary>
+        ///     Run SMEMBERS command see http://redis.io/commands/SMEMBERS
+        ///     Deserializes the results to T
+        /// </summary>
+        /// <typeparam name="T">The type of the expected objects</typeparam>
+        /// <param name="key">The key</param>
+        /// <returns>An array of objects in the set</returns>
+        public IEnumerable<T> SetMembers<T>(string key)
+        {
+            var members = Database.SetMembers(key);
+
+            return members.Select(m => m == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(m));
+        }
 
 		/// <summary>
 		///     Run SMEMBERS command see http://redis.io/commands/SMEMBERS

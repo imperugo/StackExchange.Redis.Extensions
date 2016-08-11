@@ -284,11 +284,20 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="memberName">Name of the member.</param>
 		string[] SetMember(string memberName);
 
-		/// <summary>
-		/// Run SMEMBERS command see http://redis.io/commands/SMEMBERS
-		/// </summary>
-		/// <param name="memberName">Name of the member.</param>
-		Task<string[]> SetMemberAsync(string memberName);
+        /// <summary>
+        ///     Run SMEMBERS command see http://redis.io/commands/SMEMBERS
+        ///     Deserializes the results to T
+        /// </summary>
+        /// <typeparam name="T">The type of the expected objects in the set</typeparam>
+        /// <param name="key">The key</param>
+        /// <returns>An array of objects in the set</returns>
+        IEnumerable<T> SetMembers<T>(string key);
+
+        /// <summary>
+        /// Run SMEMBERS command see http://redis.io/commands/SMEMBERS
+        /// </summary>
+        /// <param name="memberName">Name of the member.</param>
+        Task<string[]> SetMemberAsync(string memberName);
         
         /// <summary>
         ///     Run SMEMBERS command see http://redis.io/commands/SMEMBERS
