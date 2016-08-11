@@ -46,9 +46,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		/// </summary>
 		/// <param name="element">The element.</param>
 		/// <returns></returns>
-		protected override object GetElementKey(ConfigurationElement element)
-		{
-			return ((RedisHost)element).Host;
-		}
+		protected override object GetElementKey(ConfigurationElement element) 
+            => $"{((RedisHost) element).Host}:{((RedisHost) element).CachePort}";
 	}
 }

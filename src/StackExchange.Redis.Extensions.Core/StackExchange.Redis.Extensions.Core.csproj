@@ -35,9 +35,9 @@
     </NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="StackExchange.Redis, Version=1.0.316.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="StackExchange.Redis, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\StackExchange.Redis.1.0.488\lib\net45\StackExchange.Redis.dll</HintPath>
+      <HintPath>..\..\packages\StackExchange.Redis.1.1.603\lib\net45\StackExchange.Redis.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -50,10 +50,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ServerIteration\ServerIteratorFactory.cs" />
+    <Compile Include="ServerIteration\ServerEnumerable.cs" />
     <Compile Include="Configuration\IRedisCachingConfiguration.cs" />
     <Compile Include="Configuration\RedisCachingSectionHandler.cs" />
     <Compile Include="Configuration\RedisHost.cs" />
     <Compile Include="Configuration\RedisHostCollection.cs" />
+    <Compile Include="Configuration\ServerEnumerationStrategy.cs" />
     <Compile Include="StackExchangeRedisCacheClient.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="ICacheClient.cs" />
