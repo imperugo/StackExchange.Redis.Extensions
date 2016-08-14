@@ -37,8 +37,8 @@
 		<language>en-US</language>
 		<tags>Async Redis NoSQL Client Distributed Cache PubSub Messaging protobuf protobuf-net</tags>
 		<dependencies>
-			<dependency id="StackExchange.Redis.Extensions.Core" version="1.3.6.0" />
-			<dependency id="protobuf-net" version="2.0.0.668" />
+			<dependency id="StackExchange.Redis.Extensions.Core" version="1.4.0.0" />
+			<dependency id="protobuf-net" version="2.1.0" />
 		</dependencies>
 	</metadata>
 </package>
