@@ -12,7 +12,6 @@ using System.Runtime.Serialization;
 
 namespace StackExchange.Redis.Extensions.Tests.Helpers
 {
-	[Serializable]
     [DataContract]
 	public class TestClass<T> : IEquatable<TestClass<T>>
 	{
@@ -64,7 +63,6 @@ namespace StackExchange.Redis.Extensions.Tests.Helpers
 	    }
 	}
 
-    [Serializable]
     [DataContract]
 	public class ComplexClassForTest<T,TK> : IEquatable<ComplexClassForTest<T, TK>>
     {
