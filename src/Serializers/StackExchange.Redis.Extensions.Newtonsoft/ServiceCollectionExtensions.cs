@@ -6,18 +6,28 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 {
     public static class ServiceCollectionExtensions
     {
-        public static RedisExtensionsConfigurations WithNewtonsoft(this RedisExtensionsConfigurations configurator, JsonSerializerSettings serializationSettings = null)
+        public static RedisExtensionsConfigurations WithNewtonsoft(this RedisExtensionsConfigurations redisExtensionsConfigurations, JsonSerializerSettings serializationSettings = null)
         {
-            configurator.Serializer = new NewtonsoftSerializer(serializationSettings);
+            redisExtensionsConfigurations.Serializer = new NewtonsoftSerializer(serializationSettings);
 
-            return configurator;
+            return redisExtensionsConfigurations;
         }
 
-        public static RedisExtensionsConfigurations WithNewtonsoft(this RedisExtensionsConfigurations configurator, Func<JsonSerializerSettings> serializationSettingsCreator)
+        public static RedisExtensionsConfigurations WithNewtonsoft(this RedisExtensionsConfigurations redisExtensionsConfigurations, Func<JsonSerializerSettings> serializationSettingsCreator)
         {
-            WithNewtonsoft(configurator, serializationSettingsCreator());
+            WithNewtonsoft(redisExtensionsConfigurations, serializationSettingsCreator());
 
-            return configurator;
+            return redisExtensionsConfigurations;
+        }
+
+        public static RedisExtensionsConfigurations WithNewtonsoft(this RedisExtensionsConfigurations redisExtensionsConfigurations, Action<JsonSerializerSettings> serializationSettingsCreator)
+        {
+            var jsonSerializerConfigurations = new JsonSerializerSettings();
+            serializationSettingsCreator(jsonSerializerConfigurations);
+
+            WithNewtonsoft(redisExtensionsConfigurations, jsonSerializerConfigurations);
+
+            return redisExtensionsConfigurations;
         }
     }
 }

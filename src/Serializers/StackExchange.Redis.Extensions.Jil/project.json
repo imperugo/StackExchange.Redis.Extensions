@@ -1,10 +1,10 @@
 {
-  "version": "2.0.0-*",
+  "version": "1.0.0-*",
 
   "dependencies": {
-    "MsgPack.Cli": "0.8.0",
+    "Jil": "2.14.5",
     "NETStandard.Library": "1.6.0",
-    "StackExchange.Redis.Extensions.Core": "2.0.0-*"
+    "StackExchange.Redis.Extensions.Core": "1.0.0-*"
   },
 
   "frameworks": {

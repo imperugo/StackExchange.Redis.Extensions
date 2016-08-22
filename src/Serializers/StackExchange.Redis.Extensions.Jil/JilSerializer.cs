@@ -1,15 +1,15 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using StackExchange.Redis.Extensions.Core;
+using Jil;
+using System;
+using StackExchange.Redis.Extensions.Core.Interfaces;
 
-namespace StackExchange.Redis.Extensions.Newtonsoft
+namespace StackExchange.Redis.Extensions.Jil
 {
     /// <summary>
-    /// JSon.Net implementation of <see cref="ISerializer"/>
+    /// Jil implementation of <see cref="ISerializer"/>
     /// </summary>
-    public class NewtonsoftSerializer : ISerializer
+    public class JilSerializer : ISerializer
     {
         // TODO: May make this configurable in the future.
         /// <summary>
@@ -21,17 +21,31 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
         /// </remarks>
         private static readonly Encoding encoding = Encoding.UTF8;
 
-        private readonly JsonSerializerSettings settings;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="NewtonsoftSerializer"/> class.
+        /// Default constructor for Jil serializer.
         /// </summary>
-        /// <param name="settings">The settings.</param>
-        public NewtonsoftSerializer(JsonSerializerSettings settings = null)
+        /// This constructor uses default serialization options.
+        public JilSerializer()
+            : this(new Options(prettyPrint: true, 
+                excludeNulls: false, 
+                jsonp: false, 
+                dateFormat: 
+                DateTimeFormat.ISO8601, 
+                includeInherited: true, 
+                unspecifiedDateTimeKindBehavior: UnspecifiedDateTimeKindBehavior.IsLocal))
         {
-            this.settings = settings ?? new JsonSerializerSettings();
+
         }
 
+        /// <summary>
+        /// Constructor for Jil serializer.
+        /// </summary>
+        public JilSerializer(Options options)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+
+            JSON.SetDefaultOptions(options);
+        }
         /// <summary>
         /// Serializes the specified item.
         /// </summary>
@@ -39,8 +53,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
         /// <returns></returns>
         public byte[] Serialize(object item)
         {
-            var type = item.GetType();
-            var jsonString = JsonConvert.SerializeObject(item, type, settings);
+            var jsonString = JSON.Serialize(item);
             return encoding.GetBytes(jsonString);
         }
 
@@ -49,11 +62,9 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns></returns>
-        public async Task<byte[]> SerializeAsync(object item)
+        public Task<byte[]> SerializeAsync(object item)
         {
-            var type = item.GetType();
-            var jsonString = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(item, type, settings));
-            return encoding.GetBytes(jsonString);
+            return Task.Factory.StartNew(() => Serialize(item));
         }
 
         /// <summary>
@@ -64,7 +75,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
         public object Deserialize(byte[] serializedObject)
         {
             var jsonString = encoding.GetString(serializedObject);
-            return JsonConvert.DeserializeObject(jsonString, typeof(object));
+            return JSON.Deserialize(jsonString, typeof(object));
         }
 
         /// <summary>
@@ -86,7 +97,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
         public T Deserialize<T>(byte[] serializedObject)
         {
             var jsonString = encoding.GetString(serializedObject);
-            return JsonConvert.DeserializeObject<T>(jsonString, settings);
+            return JSON.Deserialize<T>(jsonString);
         }
 
         /// <summary>

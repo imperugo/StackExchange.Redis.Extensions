@@ -38,6 +38,7 @@ namespace StackExchange.Redis.Extensions.Core
                 Password = string.Empty,
                 AbortOnConnectFail = true,
                 ConnectTimeout = 5000,
+                EndPoints = { { "localhost", 6379 } }
             };
 
             //serverEnumerationStrategy = configuration.ServerEnumerationStrategy;

@@ -2709,7 +2709,7 @@
           "lib/netstandard1.1/xunit.runner.utility.dotnet.dll": {}
         }
       },
-      "StackExchange.Redis.Extensions.Core/1.0.0": {
+      "StackExchange.Redis.Extensions.Core/2.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
@@ -2724,13 +2724,13 @@
           "netstandard1.6/StackExchange.Redis.Extensions.Core.dll": {}
         }
       },
-      "StackExchange.Redis.Extensions.MsgPack/1.0.0": {
+      "StackExchange.Redis.Extensions.MsgPack/2.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
           "MsgPack.Cli": "0.8.0",
           "NETStandard.Library": "1.6.0",
-          "StackExchange.Redis.Extensions.Core": "1.0.0"
+          "StackExchange.Redis.Extensions.Core": "2.0.0"
         },
         "compile": {
           "netstandard1.6/StackExchange.Redis.Extensions.MsgPack.dll": {}
@@ -2739,13 +2739,13 @@
           "netstandard1.6/StackExchange.Redis.Extensions.MsgPack.dll": {}
         }
       },
-      "StackExchange.Redis.Extensions.Newtonsoft/1.0.0": {
+      "StackExchange.Redis.Extensions.Newtonsoft/2.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
           "NETStandard.Library": "1.6.0",
           "Newtonsoft.Json": "9.0.1",
-          "StackExchange.Redis.Extensions.Core": "1.0.0"
+          "StackExchange.Redis.Extensions.Core": "2.0.0"
         },
         "compile": {
           "netstandard1.6/StackExchange.Redis.Extensions.Newtonsoft.dll": {}
@@ -2754,12 +2754,12 @@
           "netstandard1.6/StackExchange.Redis.Extensions.Newtonsoft.dll": {}
         }
       },
-      "StackExchange.Redis.Extensions.Protobuf/1.0.0": {
+      "StackExchange.Redis.Extensions.Protobuf/2.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
           "NETStandard.Library": "1.6.0",
-          "StackExchange.Redis.Extensions.Core": "1.0.0",
+          "StackExchange.Redis.Extensions.Core": "2.0.0",
           "protobuf-net": "2.1.0"
         },
         "compile": {
@@ -8094,22 +8094,22 @@
         "xunit.runner.utility.nuspec"
       ]
     },
-    "StackExchange.Redis.Extensions.Core/1.0.0": {
+    "StackExchange.Redis.Extensions.Core/2.0.0": {
       "type": "project",
       "path": "../../src/StackExchange.Redis.Extensions.Core/project.json",
       "msbuildProject": "../../src/StackExchange.Redis.Extensions.Core/StackExchange.Redis.Extensions.Core.xproj"
     },
-    "StackExchange.Redis.Extensions.MsgPack/1.0.0": {
+    "StackExchange.Redis.Extensions.MsgPack/2.0.0": {
       "type": "project",
       "path": "../../src/Serializers/StackExchange.Redis.Extensions.MsgPack/project.json",
       "msbuildProject": "../../src/Serializers/StackExchange.Redis.Extensions.MsgPack/StackExchange.Redis.Extensions.MsgPack.xproj"
     },
-    "StackExchange.Redis.Extensions.Newtonsoft/1.0.0": {
+    "StackExchange.Redis.Extensions.Newtonsoft/2.0.0": {
       "type": "project",
       "path": "../../src/Serializers/StackExchange.Redis.Extensions.Newtonsoft/project.json",
       "msbuildProject": "../../src/Serializers/StackExchange.Redis.Extensions.Newtonsoft/StackExchange.Redis.Extensions.Newtonsoft.xproj"
     },
-    "StackExchange.Redis.Extensions.Protobuf/1.0.0": {
+    "StackExchange.Redis.Extensions.Protobuf/2.0.0": {
       "type": "project",
       "path": "../../src/Serializers/StackExchange.Redis.Extensions.Protobuf/project.json",
       "msbuildProject": "../../src/Serializers/StackExchange.Redis.Extensions.Protobuf/StackExchange.Redis.Extensions.Protobuf.xproj"

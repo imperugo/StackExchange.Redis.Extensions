@@ -5,11 +5,11 @@ namespace StackExchange.Redis.Extensions.Protobuf
 {
     public static class ServiceCollectionExtensions
     {
-        public static RedisExtensionsConfigurations WithProtobuf(this RedisExtensionsConfigurations configurator)
+        public static RedisExtensionsConfigurations WithProtobuf(this RedisExtensionsConfigurations redisExtensionsConfigurations)
         {
-            configurator.Serializer = new ProtobufSerializer();
+            redisExtensionsConfigurations.Serializer = new ProtobufSerializer();
 
-            return configurator;
+            return redisExtensionsConfigurations;
         }
     }
 }
