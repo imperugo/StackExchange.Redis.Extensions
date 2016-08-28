@@ -49,7 +49,7 @@ build_script:
 # - dotnet pack .\src\Serializers\StackExchange.Redis.Extensions.Protobuf\project.json -c Release -o .\nuget 
 
 test_script:
-- dotnet test "test\StackExchange.Redis.Extensions.Tests" -c Release
+- dotnet test "tests\StackExchange.Redis.Extensions.Tests" -c Release
 
 # artifacts:
 # - path: artifacts\**\*.*
