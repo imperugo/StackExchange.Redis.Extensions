@@ -288,7 +288,15 @@ namespace StackExchange.Redis.Extensions.Core.Interfaces
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		Task<string[]> SetMemberAsync(string memberName);
-        
+
+        ///     Run SMEMBERS command see http://redis.io/commands/SMEMBERS
+        ///     Deserializes the results to T
+        /// </summary>
+        /// <typeparam name="T">The type of the expected objects in the set</typeparam>
+        /// <param name="key">The key</param>
+        /// <returns>An array of objects in the set</returns>
+        IEnumerable<T> SetMembers<T>(string key);
+
         /// <summary>
         ///     Run SMEMBERS command see http://redis.io/commands/SMEMBERS
         ///     Deserializes the results to T
@@ -312,8 +320,7 @@ namespace StackExchange.Redis.Extensions.Core.Interfaces
         /// </example>
         /// <returns>A list of cache keys retrieved from Redis database</returns>
         
-        //TODO : figure out the logic behind the server iterators and rewrite for .net core
-        //IEnumerable<string> SearchKeys(string pattern);
+        IEnumerable<string> SearchKeys(string pattern);
 
         /// <summary>
         /// Searches the keys from Redis database
@@ -329,8 +336,7 @@ namespace StackExchange.Redis.Extensions.Core.Interfaces
         /// </example>
         /// <returns>A list of cache keys retrieved from Redis database</returns>
 
-        //TODO : figure out the logic behind the server iterators and rewrite for .net core
-        //Task<IEnumerable<string>> SearchKeysAsync(string pattern);
+        Task<IEnumerable<string>> SearchKeysAsync(string pattern);
 
 		/// <summary>
 		/// Flushes the database.

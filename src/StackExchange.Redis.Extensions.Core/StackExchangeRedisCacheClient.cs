@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-//using StackExchange.Redis.Extensions.Core.ServerIteration;
+using StackExchange.Redis.Extensions.Core.ServerIteration;
 using StackExchange.Redis.Extensions.Core.Extensions;
 using StackExchange.Redis.Extensions.Core.Interfaces;
-using StackExchange.Redis.Extensions.Core.Configurations;
 
 using Microsoft.Extensions.Options;
 
@@ -17,7 +16,7 @@ namespace StackExchange.Redis.Extensions.Core
     public class StackExchangeRedisCacheClient : ICacheClient
     {
         private readonly IConnectionMultiplexer connectionMultiplexer;
-        //private readonly ServerEnumerationStrategy serverEnumerationStrategy = new ServerEnumerationStrategy();
+        private readonly ServerEnumerationStrategy serverEnumerationStrategy = new ServerEnumerationStrategy();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
@@ -620,6 +619,19 @@ namespace StackExchange.Redis.Extensions.Core
         ///     Run SMEMBERS command see http://redis.io/commands/SMEMBERS
         ///     Deserializes the results to T
         /// </summary>
+        /// <typeparam name="T">The type of the expected objects in the set</typeparam>
+        /// <param name="key">The key</param>
+        /// <returns>An array of objects in the set</returns>
+        public IEnumerable<T> SetMembers<T>(string key)
+        {
+            var members = Database.SetMembers(key);
+            return members.Select(m => m == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(m));
+        }
+
+        /// <summary>
+        ///     Run SMEMBERS command see http://redis.io/commands/SMEMBERS
+        ///     Deserializes the results to T
+        /// </summary>
         /// <typeparam name="T">The type of the expected objects</typeparam>
         /// <param name="key">The key</param>
         /// <returns>An array of objects in the set</returns>
@@ -644,33 +656,31 @@ namespace StackExchange.Redis.Extensions.Core
         ///     if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
         /// </example>
         /// <returns>A list of cache keys retrieved from Redis database</returns>
-        
-        //TODO : figure out the logic behind the server iterators and rewrite for .net core
-        //public IEnumerable<string> SearchKeys(string pattern)
-        //{
-        //    var keys = new HashSet<RedisKey>();
+        public IEnumerable<string> SearchKeys(string pattern)
+        {
+            var keys = new HashSet<RedisKey>();
 
-        //    var multiplexer = Database.Multiplexer;
-        //    var servers = ServerIteratorFactory.GetServers(multiplexer, serverEnumerationStrategy).ToArray();
-        //    if (!servers.Any())
-        //    {
-        //        throw new Exception("No server found to serve the KEYS command.");
-        //    }
+            var multiplexer = Database.Multiplexer;
+            var servers = ServerIteratorFactory.GetServers(multiplexer, serverEnumerationStrategy).ToArray();
+            if (!servers.Any())
+            {
+                throw new Exception("No server found to serve the KEYS command.");
+            }
 
-        //    foreach (var server in servers)
-        //    {
-        //        var dbKeys = server.Keys(Database.Database, pattern);
-        //        foreach (var dbKey in dbKeys)
-        //        {
-        //            if (!keys.Contains(dbKey))
-        //            {
-        //                keys.Add(dbKey);
-        //            }
-        //        }
-        //    }
+            foreach (var server in servers)
+            {
+                var dbKeys = server.Keys(Database.Database, pattern);
+                foreach (var dbKey in dbKeys)
+                {
+                    if (!keys.Contains(dbKey))
+                    {
+                        keys.Add(dbKey);
+                    }
+                }
+            }
 
-        //    return keys.Select(x => (string)x);
-        //}
+            return keys.Select(x => (string)x);
+        }
 
         /// <summary>
         ///     Searches the keys from Redis database
@@ -686,12 +696,10 @@ namespace StackExchange.Redis.Extensions.Core
         ///     if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
         /// </example>
         /// <returns>A list of cache keys retrieved from Redis database</returns>
-
-        //TODO : figure out the logic behind the server iterators and rewrite for .net core
-        //public Task<IEnumerable<string>> SearchKeysAsync(string pattern)
-        //{
-        //    return Task.Factory.StartNew(() => SearchKeys(pattern));
-        //}
+        public Task<IEnumerable<string>> SearchKeysAsync(string pattern)
+        {
+            return Task.Factory.StartNew(() => SearchKeys(pattern));
+        }
 
         /// <summary>
         ///     Flushes the database.

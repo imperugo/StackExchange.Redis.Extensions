@@ -44,14 +44,14 @@ namespace StackExchange.Redis.Extensions.Tests
 			Sut.Dispose();
 		}
 
-		[Fact(Skip = "This doesn't hold on linux machines and docker on windows")]
+		[Fact]
 		public void Info_Should_Return_Valid_Information()
 		{
 			var response = Sut.GetInfo();
 
 			Assert.NotNull(response);
 			Assert.True(response.Any());
-			Assert.Equal(response["os"], "Windows"); // TODO: are you sure this will hold on linux/unix machines?
+			//Assert.Equal(response["os"], "Windows"); // TODO: this assert doesn't hold on non-windows OSes (linux and docker)
 			Assert.Equal(response["tcp_port"], "6379");
 		}
 

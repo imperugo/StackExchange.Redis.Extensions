@@ -1,3 +1,3 @@
 {
-  "projects": [ "src", "test", "src/Serializers" ]
+    "projects": [ "src", "src/Serializers", "test" ]
 }
