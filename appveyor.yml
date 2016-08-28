@@ -50,7 +50,7 @@ after_build:
 test_script:
 - dotnet test "tests\StackExchange.Redis.Extensions.Tests" -c Release
 
- artifacts:
+artifacts:
  - path: artifacts\**\*.*
 cache:
 - '%USERPROFILE%\.nuget\packages'
