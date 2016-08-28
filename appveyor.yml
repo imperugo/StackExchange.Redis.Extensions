@@ -39,12 +39,12 @@ build_script:
 - dotnet build "tests\StackExchange.Redis.Extensions.Tests\project.json" 
 # - dotnet build "src\Serializers\StackExchange.Redis.Extensions.Jil\project.json" -c Release -o .\nuget # currently not supported
 
-after_build:  "src\Serializers\StackExchange.Redis.Extensions.Protobuf\project.json" -c Release -o "artifacts\nuget" 
+after_build:  
 - dotnet pack "src\StackExchange.Redis.Extensions.Core\project.json" -c Release -o "artifacts\nuget"
-- dotnet pack "src\Serializers\StackExchange.Redis.Extensions.Jil\project.json" -c Release -o "artifacts\nuget" 
 - dotnet pack "src\Serializers\StackExchange.Redis.Extensions.Newtonsoft\project.json" -c Release -o "artifacts\nuget"
 - dotnet pack "src\Serializers\StackExchange.Redis.Extensions.MsgPack\project.json" -c Release -o "artifacts\nuget"
 - dotnet pack "src\Serializers\StackExchange.Redis.Extensions.Protobuf\project.json" -c Release -o "artifacts\nuget"
+#- dotnet pack "src\Serializers\StackExchange.Redis.Extensions.Jil\project.json" -c Release -o "artifacts\nuget" 
 
 
 test_script:
