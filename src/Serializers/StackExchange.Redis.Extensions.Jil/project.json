@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "Jil": "2.14.5",
+    "NETStandard.Library": "1.6.0",
+    "StackExchange.Redis.Extensions.Core": "1.0.0-*"
+  },
+
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
+    }
+  }
+}

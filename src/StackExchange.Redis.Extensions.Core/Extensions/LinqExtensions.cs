@@ -25,18 +25,14 @@ namespace StackExchange.Redis.Extensions.Core.Extensions
 			}
 		}
 
-		/// <summary>
-		/// Fors the each asynchronous.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="source">The source.</param>
-		/// <param name="body">The body.</param>
-		/// <returns></returns>
-		public static Task ForEachAsync<T>(this IEnumerable<T> source, Func<T, Task> body)
-		{
-			return Task.WhenAll(
-				from item in source
-				select Task.Run(() => body(item)));
-		}
+        /// <summary>
+        /// Fors the each asynchronous.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="body">The body.</param>
+        /// <returns></returns>
+        public static Task ForEachAsync<T>(this IEnumerable<T> source, Func<T, Task> body)
+            => Task.WhenAll(source.Select(item => Task.Run(() => body(item))));
 	}
 }

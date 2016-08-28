@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0-*",
+    "packOptions": {
+        "summary": "Redis client extensions library for MskPack serialization",
+        "tags": [ "Async", "Redis", "Cache", "PubSub", "Messaging", "MsgPack" ],
+        "owners": [ "imperugo" ],
+        "releaseNotes": "Alpha for .NET Core; if you aren't doing .NET Core, you probably don't want this",
+        "requireLicenseAcceptance": false,
+        "projectUrl": "https://github.com/imperugo/StackExchange.Redis.Extensions",
+        "licenseUrl": "https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/LICENSE",
+        "repository": {
+            "type": "git",
+            "url": "https://github.com/imperugo/StackExchange.Redis.Extensions"
+        }
+    },
+
+    "dependencies": {
+        "MsgPack.Cli": "0.8.0",
+        "NETStandard.Library": "1.6.0",
+        "StackExchange.Redis.Extensions.Core": "2.0.0-*"
+    },
+
+    "frameworks": {
+        "netstandard1.6": {
+            "imports": "dnxcore50"
+        }
+    }
+}
