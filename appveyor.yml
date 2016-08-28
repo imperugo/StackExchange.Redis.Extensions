@@ -30,7 +30,7 @@ before_build:
 build_script:
 - dotnet build "src\StackExchange.Redis.Extensions.Core" -c Release
 - dotnet build "src\StackExchange.Redis.Extensions.Core\project.json" -c Release -o .\nuget
-- dotnet build "src\Serializers\StackExchange.Redis.Extensions.Jil\project.json" -c Release -o .\nuget 
+# - dotnet build "src\Serializers\StackExchange.Redis.Extensions.Jil\project.json" -c Release -o .\nuget # currently not supported
 - dotnet build "src\Serializers\StackExchange.Redis.Extensions.Newtonsoft\project.json" -c Release -o .\nuget
 - dotnet build "src\Serializers\StackExchange.Redis.Extensions.MsgPack\project.json" -c Release -o .\nuget 
 
