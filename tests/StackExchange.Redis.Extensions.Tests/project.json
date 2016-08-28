@@ -6,7 +6,7 @@
 	"StackExchange.Redis.Extensions.Core": "2.0.0-*",
     "StackExchange.Redis.Extensions.Protobuf": "2.0.0-*",
     "StackExchange.Redis.Extensions.MsgPack": "2.0.0-*",
-    "StackExchange.Redis.Extensions.Newtonsoft": "2.0.0-*"
+    "StackExchange.Redis.Extensions.Newtonsoft": "2.0.0-*",
 	"xunit": "2.2.0-beta2-build3300",
 	"dotnet-test-xunit": "2.2.0-preview2-build1029"
   },
