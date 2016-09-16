@@ -279,6 +279,52 @@ namespace StackExchange.Redis.Extensions.Core
 		Task<bool> SetAddAsync<T>(string key, T item) where T : class;
 
 		/// <summary>
+		/// Run SADD command http://redis.io/commands/sadd
+		/// </summary>
+		/// <param name="items">Name of the member.</param>
+		/// <param name="key">The key.</param>
+		long SetAddAll<T>(string key, params T[] items) where T : class;
+
+		/// <summary>
+		/// Run SADD command http://redis.io/commands/sadd
+		/// </summary>
+		/// <param name="items">Name of the member.</param>
+		/// <param name="key">The key.</param>
+		Task<long> SetAddAllAsync<T>(string key, params T[] items) where T : class;
+
+		/// <summary>
+		/// Run SREM command http://redis.io/commands/srem
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key"></param>
+		/// <param name="item"></param>
+		bool SetRemove<T>(string key, T item) where T : class;
+
+		/// <summary>
+		/// Run SREM command http://redis.io/commands/srem"
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key"></param>
+		/// <param name="item"></param>
+		Task<bool> SetRemoveAsync<T>(string key, T item) where T : class;
+
+		/// <summary>
+		/// Run SREM command http://redis.io/commands/srem
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key"></param>
+		/// <param name="items"></param>
+		long SetRemoveAll<T>(string key, params T[] items) where T : class;
+
+		/// <summary>
+		/// Run SREM command http://redis.io/commands/srem
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key"></param>
+		/// <param name="items"></param>
+		Task<long> SetRemoveAllAsync<T>(string key, params T[] items) where T : class;
+
+		/// <summary>
 		/// Run SMEMBERS command http://redis.io/commands/SMEMBERS
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>

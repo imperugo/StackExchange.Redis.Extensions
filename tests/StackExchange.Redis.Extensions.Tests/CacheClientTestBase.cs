@@ -413,6 +413,145 @@ namespace StackExchange.Redis.Extensions.Tests
 		}
 
 		[Fact]
+		public void SetAddAllGenericShouldReturnValidData()
+		{
+			var items = new[] { "val1", "val2", "val3" };
+			long result = Sut.SetAddAll<string>("MySet", items);
+			Assert.Equal(result, items.Length);
+		}
+
+		[Fact]
+		public void SetAddAllGenericShouldThrowExceptionWhenItemsIsNull()
+		{
+			try
+			{
+				long result = Sut.SetAddAll<string>("MySet", (string[])null);
+			}
+			catch (Exception ex)
+			{
+				Assert.IsType<ArgumentNullException>(ex);
+			}
+		}
+
+		[Fact]
+		public void SetAddAllGenericShouldThrowExceptionWhenItemsContainsOneNullItem()
+		{
+			try
+			{
+				long result = Sut.SetAddAll<string>("MySet", "value", null, "value2");
+			}
+			catch (Exception ex)
+			{
+				Assert.IsType<ArgumentException>(ex);
+			}
+		}
+
+		[Fact]
+		public async Task SetAddAllAsyncGenericShouldReturnValidData()
+		{
+			var items = new[] { "val1", "val2", "val3" };
+			long result = await Sut.SetAddAllAsync<string>("MySet", items);
+			Assert.Equal(result, items.Length);
+		}
+
+		[Fact]
+		public async Task SetAddAllAsyncGenericShouldThrowExceptionWhenItemsContainsOneNullItem()
+		{
+			try
+			{
+				var items = new string[] { "value", null, "value2" };
+				long result = await Sut.SetAddAllAsync<string>("MySet", items);
+			}
+			catch (Exception ex)
+			{
+				Assert.IsType<ArgumentException>(ex);
+			}
+		}
+
+		[Fact]
+		public void SetRemoveGenericWithAnExistingItemShouldReturnTrue()
+		{
+			const string key = "MySet", item = "MyItem";
+
+			Sut.SetAdd<string>(key, item);
+
+			var result = Sut.SetRemove(key, item);
+			Assert.True(result);
+		}
+
+		[Fact]
+		public void SetRemoveGenericWithAnUnexistingItemShouldReturnFalse()
+		{
+			const string key = "MySet";
+
+			Sut.SetAdd<string>(key, "ExistingItem");
+
+			var result = Sut.SetRemove(key, "UnexistingItem");
+			Assert.False(result);
+		}
+
+		[Fact]
+		public async Task SetRemoveAsyncGenericWithAnExistingItemShouldReturnTrue()
+		{
+			const string key = "MySet", item = "MyItem";
+
+			Sut.SetAdd<string>(key, item);
+
+			var result = await Sut.SetRemoveAsync(key, item);
+			Assert.True(result);
+		}
+
+		[Fact]
+		public void SetRemoveAllGenericWithAnExistingItemShouldReturnValidData()
+		{
+			const string key = "MySet";
+			var items = new[] { "MyItem1", "MyItem2" };
+
+			Sut.SetAddAll<string>(key, items);
+
+			var result = Sut.SetRemoveAll(key, items);
+			Assert.Equal(items.Length, result);
+		}
+
+		[Fact]
+		public void SetRemoveAllGenericShouldThrowExceptionWhenItemsContainsOneNullItem()
+		{
+			try
+			{
+				long result = Sut.SetRemoveAll<string>("MySet", "value", null, "value2");
+			}
+			catch (Exception ex)
+			{
+				Assert.IsType<ArgumentException>(ex);
+			}
+		}
+
+		[Fact]
+		public async Task SetRemoveAllAsyncGenericWithAnExistingItemShouldReturnValidData()
+		{
+			const string key = "MySet";
+			var items = new[] { "MyItem1", "MyItem2" };
+
+			Sut.SetAddAll<string>(key, items);
+
+			var result = await Sut.SetRemoveAllAsync(key, items);
+			Assert.Equal(items.Length, result);
+		}
+
+		[Fact]
+		public async Task SetRemoveAllAsyncGenericShouldThrowExceptionWhenItemsContainsOneNullItem()
+		{
+			try
+			{
+				long result = await Sut.SetRemoveAllAsync<string>("MySet", "value", null, "value2");
+			}
+			catch (Exception ex)
+			{
+				Assert.IsType<ArgumentException>(ex);
+			}
+		}
+
+		[Fact]
 		public void ListAddToLeftGenericShouldThrowExceptionWhenKeyIsEmpty()
 		{
 			Assert.Throws<ArgumentException>(() => Sut.ListAddToLeft(string.Empty, string.Empty));
