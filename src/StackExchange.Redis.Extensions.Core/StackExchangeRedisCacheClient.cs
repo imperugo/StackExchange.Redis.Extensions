@@ -579,11 +579,166 @@ namespace StackExchange.Redis.Extensions.Core
 		}
 
 		/// <summary>
+		///     Run SADD command http://redis.io/commands/sadd
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key"></param>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public long SetAddAll<T>(string key, params T[] items) where T : class
+		{
+			if (string.IsNullOrEmpty(key))
+			{
+				throw new ArgumentException("key cannot be empty.", nameof(key));
+			}
+
+			if (items == null)
+			{
+				throw new ArgumentNullException(nameof(items), "items cannot be null.");
+			}
+
+			if (items.Any((item) => item == null))
+			{
+				throw new ArgumentException(nameof(items), "items cannot contains any null item.");
+			}
+
+			return Database.SetAdd(key, items.Select(item => Serializer.Serialize(item)).Select((x) => (RedisValue)x).ToArray());
+		}
+
+		/// <summary>
+		///     Run SADD command http://redis.io/commands/sadd
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key"></param>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public async Task<long> SetAddAllAsync<T>(string key, params T[] items) where T : class
+		{
+			if (string.IsNullOrEmpty(key))
+			{
+				throw new ArgumentException("key cannot be empty.", nameof(key));
+			}
+
+			if (items == null)
+			{
+				throw new ArgumentNullException(nameof(items), "items cannot be null.");
+			}
+
+			if (items.Any((item) => item == null))
+			{
+				throw new ArgumentException(nameof(items), "items cannot contains any null item.");
+			}
+
+			return await Database.SetAddAsync(key, items.Select(item => Serializer.Serialize(item)).Select((x) => (RedisValue)x).ToArray());
+		}
+
+		/// <summary>
+		///     Run SREM command http://redis.io/commands/srem
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key"></param>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public bool SetRemove<T>(string key, T item) where T : class
+		{
+			if (string.IsNullOrEmpty(key))
+			{
+				throw new ArgumentException("key cannot be empty.", nameof(key));
+			}
+
+			if (item == null)
+			{
+				throw new ArgumentNullException(nameof(item), "item cannot be null.");
+			}
+
+			var serializedObject = Serializer.Serialize(item);
+
+			return Database.SetRemove(key, serializedObject);
+		}
+
+		/// <summary>
+		///     Run SREM command http://redis.io/commands/srem"
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key"></param>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public async Task<bool> SetRemoveAsync<T>(string key, T item) where T : class
+		{
+			if (string.IsNullOrEmpty(key))
+			{
+				throw new ArgumentException("key cannot be empty.", nameof(key));
+			}
+
+			if (item == null)
+			{
+				throw new ArgumentNullException(nameof(item), "item cannot be null.");
+			}
+
+			var serializedObject = await Serializer.SerializeAsync(item);
+
+			return await Database.SetRemoveAsync(key, serializedObject);
+		}
+
+		/// <summary>
+		///     Run SREM command http://redis.io/commands/srem
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key"></param>
+		/// <param name="items"></param>
+		/// <returns></returns>
+		public long SetRemoveAll<T>(string key, params T[] items) where T : class
+		{
+			if (string.IsNullOrEmpty(key))
+			{
+				throw new ArgumentException("key cannot be empty.", nameof(key));
+			}
+
+			if (items == null)
+			{
+				throw new ArgumentNullException(nameof(items), "items cannot be null.");
+			}
+
+			if (items.Any((item) => item == null))
+			{
+				throw new ArgumentException(nameof(items), "items cannot contains any null item.");
+			}
+
+			return Database.SetRemove(key, items.Select(item => Serializer.Serialize(item)).Select((x) => (RedisValue)x).ToArray());
+		}
+
+		/// <summary>
+		///     Run SREM command http://redis.io/commands/srem
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key"></param>
+		/// <param name="items"></param>
+		/// <returns></returns>
+		public async Task<long> SetRemoveAllAsync<T>(string key, params T[] items) where T : class
+		{
+			if (string.IsNullOrEmpty(key))
+			{
+				throw new ArgumentException("key cannot be empty.", nameof(key));
+			}
+
+			if (items == null)
+			{
+				throw new ArgumentNullException(nameof(items), "items cannot be null.");
+			}
+
+			if (items.Any((item) => item == null))
+			{
+				throw new ArgumentException(nameof(items), "items cannot contains any null item.");
+			}
+
+			return await Database.SetRemoveAsync(key, items.Select(item => Serializer.Serialize(item)).Select((x) => (RedisValue)x).ToArray());
+		}
+
+		/// <summary>
 		///     Run SMEMBERS command http://redis.io/commands/SMEMBERS
 		/// </summary>
 		/// <param name="memberName">Name of the member.</param>
 		/// <returns></returns>
-		/// <exception cref="System.NotImplementedException"></exception>
 		public string[] SetMember(string memberName)
 		{
 			return Database.SetMembers(memberName).Select(x => x.ToString()).ToArray();
