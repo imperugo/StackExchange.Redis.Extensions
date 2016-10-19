@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core.ServerIteration;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Extensions;
+using StackExchange.Redis.KeyspaceIsolation;
 
 namespace StackExchange.Redis.Extensions.Core
 {
@@ -57,6 +58,10 @@ namespace StackExchange.Redis.Extensions.Core
 
 			connectionMultiplexer = ConnectionMultiplexer.Connect(options);
 			Database = connectionMultiplexer.GetDatabase(configuration.Database);
+
+			if (!string.IsNullOrWhiteSpace(configuration.KeyPrefix))
+				Database = Database.WithKeyPrefix(configuration.KeyPrefix);
+
 			Serializer = serializer;
 		}
 
@@ -77,6 +82,30 @@ namespace StackExchange.Redis.Extensions.Core
 			Serializer = serializer;
 			connectionMultiplexer = ConnectionMultiplexer.Connect(connectionString);
 			Database = connectionMultiplexer.GetDatabase(database);
+		}
+
+		/// <summary>
+		///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
+		/// </summary>
+		/// <param name="serializer">The serializer.</param>
+		/// <param name="connectionString">The connection string.</param>
+		/// <param name="keyPrefix">Specifies the key separation prefix to be used for all keys</param>
+		/// <param name="database">The database.</param>
+		/// <exception cref="System.ArgumentNullException">serializer</exception>
+		public StackExchangeRedisCacheClient(ISerializer serializer, string connectionString, string keyPrefix = null,
+			int database = 0)
+		{
+			if (serializer == null)
+			{
+				throw new ArgumentNullException(nameof(serializer));
+			}
+
+			Serializer = serializer;
+			connectionMultiplexer = ConnectionMultiplexer.Connect(connectionString);
+			Database = connectionMultiplexer.GetDatabase(database);
+
+			if (!string.IsNullOrWhiteSpace(keyPrefix))
+				Database = Database.WithKeyPrefix(keyPrefix);
 		}
 
 		/// <summary>
@@ -109,6 +138,39 @@ namespace StackExchange.Redis.Extensions.Core
 			Database = connectionMultiplexer.GetDatabase(database);
 		}
 
+		/// <summary>
+		///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
+		/// </summary>
+		/// <param name="connectionMultiplexer">The connection multiplexer.</param>
+		/// <param name="serializer">The serializer.</param>
+		/// <param name="keyPrefix">Specifies the key separation prefix to be used for all keys</param>
+		/// <param name="database">The database.</param>
+		/// <exception cref="System.ArgumentNullException">
+		///     connectionMultiplexer
+		///     or
+		///     serializer
+		/// </exception>
+		public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer,
+			string keyPrefix = null, int database = 0)
+		{
+			if (connectionMultiplexer == null)
+			{
+				throw new ArgumentNullException(nameof(connectionMultiplexer));
+			}
+
+			if (serializer == null)
+			{
+				throw new ArgumentNullException(nameof(serializer));
+			}
+
+			Serializer = serializer;
+			this.connectionMultiplexer = connectionMultiplexer;
+
+			Database = connectionMultiplexer.GetDatabase(database);
+
+			if (!string.IsNullOrWhiteSpace(keyPrefix))
+				Database = Database.WithKeyPrefix(keyPrefix);
+		}
 		/// <summary>
 		///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>

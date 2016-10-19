@@ -116,6 +116,12 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		public string Password => this["password"] as string;
 
         /// <summary>
+        /// The key separation prefix used for all cache entries
+        /// </summary>
+        [ConfigurationProperty("keyprefix", IsRequired = false)]
+        public string KeyPrefix => this["keyprefix"] as string;
+
+        /// <summary>
         /// Gets the configuration.
         /// </summary>
         /// <returns></returns>
