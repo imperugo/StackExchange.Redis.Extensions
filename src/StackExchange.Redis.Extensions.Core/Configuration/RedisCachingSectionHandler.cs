@@ -36,23 +36,10 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		{
 			get
 			{
-				bool result = false;
-				var config = this["allowAdmin"];
+			    var value = this["allowAdmin"]?.ToString();
 
-				if (config != null)
-				{
-					var value = config.ToString();
-
-					if (!string.IsNullOrEmpty(value))
-					{
-						if (bool.TryParse(value, out result))
-						{
-							return result;
-						}
-					}
-				}
-
-				return result;
+                bool result;
+                return !string.IsNullOrEmpty(value) && bool.TryParse(value, out result) && result;
 			}
 		}
 
@@ -67,21 +54,10 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		{
 			get
 			{
-				bool result = false;
-				var config = this["ssl"];
-				if (config != null)
-				{
-					var value = config.ToString();
-					if (!string.IsNullOrWhiteSpace(value))
-					{
-						if (bool.TryParse(value, out result))
-						{
-							return result;
-						}
-					}
-				}
+			    var value = this["ssl"]?.ToString();
 
-				return result;
+                bool result;
+                return !string.IsNullOrWhiteSpace(value) && bool.TryParse(value, out result) && result;
 			}
 		}
 
@@ -93,21 +69,10 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		{
 			get
 			{
-				var config = this["connectTimeout"];
-				if (config != null)
-				{
-					var value = config.ToString();
-					if (!string.IsNullOrWhiteSpace(value))
-					{
-						int result;
-						if (int.TryParse(value, out result))
-						{
-							return result;
-						}
-					}
-				}
+			    var value = this["connectTimeout"]?.ToString();
 
-				return 5000;
+                int result;
+			    return !string.IsNullOrWhiteSpace(value) && int.TryParse(value, out result) ? result : 5000;
 			}
 		}
 
@@ -119,21 +84,10 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		{
 			get
 			{
-				var config = this["abortOnConnectFail"];
-				if (config != null)
-				{
-					var value = config.ToString();
-					if (!string.IsNullOrWhiteSpace(value))
-					{
-						bool result;
-						if (bool.TryParse(value, out result))
-						{
-							return result;
-						}
-					}
-				}
+			    var value = this["abortOnConnectFail"]?.ToString();
 
-				return false;
+                bool result;
+			    return !string.IsNullOrWhiteSpace(value) && bool.TryParse(value, out result) && result;
 			}
 		}
 
@@ -148,21 +102,10 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		{
 			get
 			{
-				var config = this["database"];
-				if (config != null)
-				{
-					var value = config.ToString();
-					if (!string.IsNullOrWhiteSpace(value))
-					{
-						int result;
-						if (int.TryParse(value, out result))
-						{
-							return result;
-						}
-					}
-				}
+			    var value = this["database"]?.ToString();
 
-				return 0;
+			    int result;
+			    return !string.IsNullOrWhiteSpace(value) && int.TryParse(value, out result) ? result : 0;
 			}
 		}
 
@@ -170,21 +113,12 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		/// The password or access key
 		/// </summary>
 		[ConfigurationProperty("password", IsRequired = false)]
-		public string Password
-		{
-			get
-			{
-				return this["password"] as string;
-			}
-		}
+		public string Password => this["password"] as string;
 
-		/// <summary>
-		/// Gets the configuration.
-		/// </summary>
-		/// <returns></returns>
-		public static RedisCachingSectionHandler GetConfig()
-		{
-			return ConfigurationManager.GetSection("redisCacheClient") as RedisCachingSectionHandler;
-		}
+        /// <summary>
+        /// Gets the configuration.
+        /// </summary>
+        /// <returns></returns>
+        public static RedisCachingSectionHandler GetConfig() => ConfigurationManager.GetSection("redisCacheClient") as RedisCachingSectionHandler;
 	}
 }
