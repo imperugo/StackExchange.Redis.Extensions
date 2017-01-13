@@ -35,13 +35,14 @@
 			- Save;
 			- Async methods;
 			- Hash methods;
+			- Support for Keyspace isolation;
 		</releaseNotes>
 		<copyright>Ugo Lattanzi</copyright>
 		<language>en-US</language>
 		<tags>Async Redis NoSQL Client Distributed Cache PubSub Messaging</tags>
 		<dependencies>
-			<dependency id="StackExchange.Redis.Extensions.Core" version="2.0.0.0" />
-			<dependency id="Jil" version="2.14.5" />
+			<dependency id="StackExchange.Redis.Extensions.Core" version="2.1.0" />
+			<dependency id="Jil" version="2.15.0" />
 			<dependency id="Sigil" version="4.7.0" />
 		</dependencies>
 	</metadata>

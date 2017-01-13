@@ -41,12 +41,13 @@
 			- Save;
 			- Async methods;
 			- Hash methods;
+			- Support for Keyspace isolation;
 		</releaseNotes>
 		<copyright>Ugo Lattanzi</copyright>
 		<language>en-US</language>
 		<tags>Async Redis NoSQL Client Distributed Cache PubSub Messaging</tags>
 		<dependencies>
-			<dependency id="StackExchange.Redis" version="1.1.605" />
+			<dependency id="StackExchange.Redis" version="1.2.0" />
 		</dependencies>
 	</metadata>
 </package>
