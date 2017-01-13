@@ -503,34 +503,6 @@ namespace StackExchange.Redis.Extensions.Core
 		}
 
 		/// <summary>
-		///     Run SADD command see http://redis.io/commands/sadd
-		/// </summary>
-		/// <param name="memberName">Name of the member.</param>
-		/// <param name="key">The key.</param>
-		/// <returns></returns>
-		[Obsolete(
-			"Parameters are a little misleading. Digging further reveals the parameters should be swapped. Use SetAdd<T> instead."
-			)]
-		public bool SetAdd(string memberName, string key)
-		{
-			return Database.SetAdd(memberName, key);
-		}
-
-		/// <summary>
-		///     Run SADD command see http://redis.io/commands/sadd
-		/// </summary>
-		/// <param name="memberName">Name of the member.</param>
-		/// <param name="key">The key.</param>
-		/// <returns></returns>
-		[Obsolete(
-			"Parameters are a little misleading. Digging further reveals the parameters should be swapped. Use SetAddAsync<T> instead."
-			)]
-		public Task<bool> SetAddAsync(string memberName, string key)
-		{
-			return Database.SetAddAsync(memberName, key);
-		}
-
-		/// <summary>
 		///     Run SADD command http://redis.io/commands/sadd
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
@@ -579,12 +551,10 @@ namespace StackExchange.Redis.Extensions.Core
 		}
 
 		/// <summary>
-		///     Run SADD command http://redis.io/commands/sadd
+		/// Run SADD command http://redis.io/commands/sadd
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="key"></param>
-		/// <param name="item"></param>
-		/// <returns></returns>
+		/// <param name="items">Name of the member.</param>
+		/// <param name="key">The key.</param>
 		public long SetAddAll<T>(string key, params T[] items) where T : class
 		{
 			if (string.IsNullOrEmpty(key))
@@ -599,19 +569,17 @@ namespace StackExchange.Redis.Extensions.Core
 
 			if (items.Any((item) => item == null))
 			{
-				throw new ArgumentException(nameof(items), "items cannot contains any null item.");
+				throw new ArgumentException("items cannot contains any null item.", nameof(items));
 			}
 
 			return Database.SetAdd(key, items.Select(item => Serializer.Serialize(item)).Select((x) => (RedisValue)x).ToArray());
 		}
 
 		/// <summary>
-		///     Run SADD command http://redis.io/commands/sadd
+		/// Run SADD command http://redis.io/commands/sadd
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="key"></param>
-		/// <param name="item"></param>
-		/// <returns></returns>
+		/// <param name="items">Name of the member.</param>
+		/// <param name="key">The key.</param>
 		public async Task<long> SetAddAllAsync<T>(string key, params T[] items) where T : class
 		{
 			if (string.IsNullOrEmpty(key))
@@ -626,7 +594,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 			if (items.Any((item) => item == null))
 			{
-				throw new ArgumentException(nameof(items), "items cannot contains any null item.");
+				throw new ArgumentException("items cannot contains any null item.", nameof(items));
 			}
 
 			return await Database.SetAddAsync(key, items.Select(item => Serializer.Serialize(item)).Select((x) => (RedisValue)x).ToArray());
@@ -701,7 +669,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 			if (items.Any((item) => item == null))
 			{
-				throw new ArgumentException(nameof(items), "items cannot contains any null item.");
+				throw new ArgumentException("items cannot contains any null item.", nameof(items));
 			}
 
 			return Database.SetRemove(key, items.Select(item => Serializer.Serialize(item)).Select((x) => (RedisValue)x).ToArray());
@@ -728,7 +696,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 			if (items.Any((item) => item == null))
 			{
-				throw new ArgumentException(nameof(items), "items cannot contains any null item.");
+				throw new ArgumentException("items cannot contains any null item.", nameof(items));
 			}
 
 			return await Database.SetRemoveAsync(key, items.Select(item => Serializer.Serialize(item)).Select((x) => (RedisValue)x).ToArray());

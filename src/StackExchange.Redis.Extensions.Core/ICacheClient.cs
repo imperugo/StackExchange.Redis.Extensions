@@ -249,22 +249,6 @@ namespace StackExchange.Redis.Extensions.Core
 		Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items);
 
 		/// <summary>
-		/// Run SADD command see http://redis.io/commands/sadd
-		/// </summary>
-		/// <param name="memberName">Name of the member.</param>
-		/// <param name="key">The key.</param>
-		[Obsolete("Parameters are a little misleading. Digging further reveals the parameters should be swapped. Use SetAdd<T> instead.")]
-		bool SetAdd(string memberName, string key);
-
-		/// <summary>
-		/// Run SADD command see http://redis.io/commands/sadd
-		/// </summary>
-		/// <param name="memberName">Name of the member.</param>
-		/// <param name="key">The key.</param>
-		[Obsolete("Parameters are a little misleading. Digging further reveals the parameters should be swapped. Use SetAddAsync<T> instead.")]
-		Task<bool> SetAddAsync(string memberName, string key);
-
-		/// <summary>
 		/// Run SADD command http://redis.io/commands/sadd
 		/// </summary>
 		/// <param name="item">Name of the member.</param>
