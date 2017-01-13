@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core.ServerIteration;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Extensions;
+using StackExchange.Redis.KeyspaceIsolation;
 
 namespace StackExchange.Redis.Extensions.Core
 {
@@ -57,6 +58,10 @@ namespace StackExchange.Redis.Extensions.Core
 
 			connectionMultiplexer = ConnectionMultiplexer.Connect(options);
 			Database = connectionMultiplexer.GetDatabase(configuration.Database);
+
+			if (!string.IsNullOrWhiteSpace(configuration.KeyPrefix))
+				Database = Database.WithKeyPrefix(configuration.KeyPrefix);
+
 			Serializer = serializer;
 		}
 
@@ -65,9 +70,23 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </summary>
 		/// <param name="serializer">The serializer.</param>
 		/// <param name="connectionString">The connection string.</param>
-		/// <param name="database">The database.</param>
+		/// <param name="keyPrefix">Specifies the key separation prefix to be used for all keys</param>
 		/// <exception cref="System.ArgumentNullException">serializer</exception>
-		public StackExchangeRedisCacheClient(ISerializer serializer, string connectionString, int database = 0)
+		public StackExchangeRedisCacheClient(ISerializer serializer, string connectionString, string keyPrefix)
+			: this(serializer, connectionString, 0, keyPrefix)
+		{
+		}
+
+		/// <summary>
+		///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
+		/// </summary>
+		/// <param name="serializer">The serializer.</param>
+		/// <param name="connectionString">The connection string.</param>
+		/// <param name="database">The database.</param>
+		/// <param name="keyPrefix">Specifies the key separation prefix to be used for all keys</param>
+		/// <exception cref="System.ArgumentNullException">serializer</exception>
+		public StackExchangeRedisCacheClient(ISerializer serializer, string connectionString, int database = 0,
+			string keyPrefix = null)
 		{
 			if (serializer == null)
 			{
@@ -77,6 +96,25 @@ namespace StackExchange.Redis.Extensions.Core
 			Serializer = serializer;
 			connectionMultiplexer = ConnectionMultiplexer.Connect(connectionString);
 			Database = connectionMultiplexer.GetDatabase(database);
+
+			if (!string.IsNullOrWhiteSpace(keyPrefix))
+				Database = Database.WithKeyPrefix(keyPrefix);
+		}
+
+		/// <summary>
+		///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
+		/// </summary>
+		/// <param name="connectionMultiplexer">The connection multiplexer.</param>
+		/// <param name="serializer">The serializer.</param>
+		/// <param name="keyPrefix">Specifies the key separation prefix to be used for all keys</param>
+		/// <exception cref="System.ArgumentNullException">
+		///     connectionMultiplexer
+		///     or
+		///     serializer
+		/// </exception>
+		public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer, string keyPrefix)
+			: this(connectionMultiplexer, serializer, 0, keyPrefix)
+		{
 		}
 
 		/// <summary>
@@ -85,13 +123,14 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="connectionMultiplexer">The connection multiplexer.</param>
 		/// <param name="serializer">The serializer.</param>
 		/// <param name="database">The database.</param>
+		/// <param name="keyPrefix">Specifies the key separation prefix to be used for all keys</param>
 		/// <exception cref="System.ArgumentNullException">
 		///     connectionMultiplexer
 		///     or
 		///     serializer
 		/// </exception>
 		public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer,
-			int database = 0)
+			int database = 0, string keyPrefix = null)
 		{
 			if (connectionMultiplexer == null)
 			{
@@ -107,6 +146,9 @@ namespace StackExchange.Redis.Extensions.Core
 			this.connectionMultiplexer = connectionMultiplexer;
 
 			Database = connectionMultiplexer.GetDatabase(database);
+
+			if (!string.IsNullOrWhiteSpace(keyPrefix))
+				Database = Database.WithKeyPrefix(keyPrefix);
 		}
 
 		/// <summary>

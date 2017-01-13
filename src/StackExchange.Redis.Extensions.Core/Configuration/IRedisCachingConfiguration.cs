@@ -57,5 +57,10 @@
         /// The password or access key
         /// </summary>
         string Password { get; }
+
+	    /// <summary>
+	    /// The key separation prefix used for all cache entries
+	    /// </summary>
+	    string KeyPrefix { get; }
     }
 }
