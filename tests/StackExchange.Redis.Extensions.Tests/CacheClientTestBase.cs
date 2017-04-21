@@ -298,11 +298,11 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 		    var items = Range(1, 3).Select(i => new TestClass<string> {Key = $"key{i}", Value = "value{i}"}).ToArray();
 			var added = Sut.Add("my Key", items);
-			var dbValue = Sut.Get<Collection<TestClass<string>>>("my Key");
+			var dbValue = Sut.Get<TestClass<string>[]>("my Key");
 
 			Assert.True(added);
 			Assert.True(Db.KeyExists("my Key"));
-			Assert.Equal(dbValue.Count, items.Length);
+			Assert.Equal(dbValue.Length, items.Length);
 			for (var i = 0; i < items.Length; i++)
 			{
 				Assert.Equal(dbValue[i].Value, items[i].Value);
