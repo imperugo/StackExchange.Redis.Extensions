@@ -109,10 +109,11 @@ To specify the connection string it's enough to add it into AppSetting in your c
 ## Serialization
 To offer the opportunity to store a class into Redis, that class must be serializable; right now there are three serialization options:
 
-- [**BinarySerialization**](http://msdn.microsoft.com/en-us/library/72hyey7b%28v=vs.110%29.aspx) (Requires `SerializableAttribute` on top of the class to store into Redis)
-- [**NewtonSoft**](https://github.com/JamesNK/Newtonsoft.Json) (Uses JSon.Net to serialize a class without `SerializableAttribute`)
-- [**Jil**](https://github.com/kevin-montrose/Jil) (Use super fast json serializer)
+- [**BinaryFormatter**](http://msdn.microsoft.com/en-us/library/72hyey7b%28v=vs.110%29.aspx) - Requires `SerializableAttribute` on top of the class to store into Redis
+- [**Newtonsoft**](https://github.com/JamesNK/Newtonsoft.Json) - Uses Json.Net to serialize a class without `SerializableAttribute`
+- [**Jil**](https://github.com/kevin-montrose/Jil) - Fastest JSON serializer
 - [**MessagePack CLI**](https://github.com/msgpack/msgpack-cli) (serialization/deserialization for CLI)
+- [**Protocol Buffers**](https://developers.google.com/protocol-buffers/) Fastest overall serializer which also happens to produce the smallest output. Developed by Google. Using [protobuf-net](https://github.com/mgravell/protobuf-net) implementation.
 
 
 ## How can I store an object into Redis?
