@@ -89,6 +89,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinarySerializeTest.cs" />
     <Compile Include="Extensions\RedisDatabaseExtensions.cs" />
     <Compile Include="Helpers\TestClass.cs" />
     <Compile Include="JilSerializerTest.cs" />
@@ -99,6 +100,10 @@
     <Compile Include="ProtobufSerializeTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.Binary\StackExchange.Redis.Extensions.Binary.csproj">
+      <Project>{5e848af6-102e-4586-9343-9eaee0fb93c6}</Project>
+      <Name>StackExchange.Redis.Extensions.Binary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj">
       <Project>{73b53b53-ecab-47c5-945f-3f6fb0940a53}</Project>
       <Name>StackExchange.Redis.Extensions.Core</Name>
