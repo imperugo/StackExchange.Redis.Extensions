@@ -226,7 +226,8 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="keys">The key.</param>
 		public void RemoveAll(IEnumerable<string> keys)
 		{
-			keys.ForEach(x => Remove(x));
+			var redisKeys = keys.Select(x => (RedisKey)x).ToArray();
+			Database.KeyDelete(redisKeys);
 		}
 
 		/// <summary>
@@ -236,7 +237,8 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns></returns>
 		public Task RemoveAllAsync(IEnumerable<string> keys)
 		{
-			return keys.ForEachAsync(RemoveAsync);
+			var redisKeys = keys.Select(x => (RedisKey)x).ToArray();
+			return Database.KeyDeleteAsync(redisKeys);
 		}
 
 		/// <summary>
