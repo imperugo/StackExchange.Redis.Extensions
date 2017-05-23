@@ -7,3 +7,5 @@
 .\.nuget\NuGet.exe pack .\src\StackExchange.Redis.Extensions.MsgPack\StackExchange.Redis.Extensions.MsgPack.csproj -Prop Configuration=Release -OutputDirectory .\nuget
 
 .\.nuget\NuGet.exe pack .\src\StackExchange.Redis.Extensions.Protobuf\StackExchange.Redis.Extensions.Protobuf.csproj -Prop Configuration=Release -OutputDirectory .\nuget
+
+.\.nuget\NuGet.exe pack .\src\StackExchange.Redis.Extensions.Binary\StackExchange.Redis.Extensions.Binary.csproj -Prop Configuration=Release -OutputDirectory .\nuget
