@@ -30,11 +30,11 @@ Issue stats | [![Issue Stats](http://www.issuestats.com/github/imperugo/StackExc
 
 
 
-##How to install it
+## How to install it
 StackExchange.Redis.Extensions is composed by two libraries, the Core and the Serializer implementation.
 Because there are several good serializer and we don't want add another dependency in your project you can choose your favorite or create a new one.
 
-##Install Core [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Core.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Core/)
+## Install Core [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Core.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Core/)
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Core
@@ -46,19 +46,19 @@ PM> Install-Package StackExchange.Redis.Extensions.Core
 PM> Install-Package StackExchange.Redis.Extensions.Newtonsoft
 ```
 
-##Install Jil implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Jil.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Jil/)
+## Install Jil implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Jil.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Jil/)
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Jil
 ```
 
-##Install Message Pack CLI implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.MsgPack.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.MsgPack/)
+## Install Message Pack CLI implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.MsgPack.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.MsgPack/)
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.MsgPack
 ```
 
-##Install Protocol Buffers implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Protobuf.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Protobuf/)
+## Install Protocol Buffers implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Protobuf.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Protobuf/)
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Protobuf 
@@ -85,9 +85,13 @@ You can use it registering the instance with your favorite Container. Here an ex
 ```
 
 ```csharp
-container.Register(Component.For<ISerializer>()				.ImplementedBy<NewtonsoftSerializer>()				.LifestyleSingleton());
+container.Register(Component.For<ISerializer>()
+				.ImplementedBy<NewtonsoftSerializer>()
+				.LifestyleSingleton());
 
-container.Register(Component.For<ICacheClient>()				.ImplementedBy<StackExchangeRedisCacheClient>()				.LifestyleSingleton());
+container.Register(Component.For<ICacheClient>()
+				.ImplementedBy<StackExchangeRedisCacheClient>()
+				.LifestyleSingleton());
 
 ```
 
@@ -146,7 +150,13 @@ var cachedUsers = myCacheClient.GetAll<User>(new {"key1","key2","key3"});
 That's a cool feature that is implemented into ICacheClient implementation:
 
 ```csharp
-IList<Tuple<string, string>> values = new List<Tuple<string, string>>();values.Add(new Tuple<string, string>("key1","value1"));values.Add(new Tuple<string, string>("key2","value2"));values.Add(new Tuple<string, string>("key3","value3"));bool added = sut.AddAll(values);
+IList<Tuple<string, string>> values = new List<Tuple<string, string>>();
+
+values.Add(new Tuple<string, string>("key1","value1"));
+values.Add(new Tuple<string, string>("key2","value2"));
+values.Add(new Tuple<string, string>("key3","value3"));
+
+bool added = sut.AddAll(values);
 ```
 
 ## Can I search keys into Redis?
