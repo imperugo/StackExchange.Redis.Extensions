@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 	<metadata>
-		<id>StackExchange.Redis.Extensions.Core</id>
-		<title>StackExchange.Redis.Extensions.Core</title>
+		<id>StackExchange.Redis.Extensions.Core.StrongName</id>
+		<title>StackExchange.Redis.Extensions.Core.StrongName</title>
 		<version>$version$</version>
 		<authors>$author$</authors>
 		<owners>$author$</owners>
@@ -47,7 +47,7 @@
 		<language>en-US</language>
 		<tags>Async Redis NoSQL Client Distributed Cache PubSub Messaging</tags>
 		<dependencies>
-			<dependency id="StackExchange.Redis" version="1.2.3" />
+			<dependency id="StackExchange.Redis.StrongName" version="1.2.4" />
 		</dependencies>
 	</metadata>
 </package>
