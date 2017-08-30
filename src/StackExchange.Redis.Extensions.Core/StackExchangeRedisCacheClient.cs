@@ -515,45 +515,125 @@ namespace StackExchange.Redis.Extensions.Core
 				dict.Add(redisKeys[index], value == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(value));
 			}
 			return dict;
-		}
+        }
 
-		/// <summary>
-		///     Adds all.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="items">The items.</param>
-		public bool AddAll<T>(IList<Tuple<string, T>> items)
-		{
-			var values = items
-				.Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
-				.ToArray();
+        /// <summary>
+        ///     Adds all.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items">The items.</param>
+        public bool AddAll<T>(IList<Tuple<string, T>> items)
+        {
+            var values = items
+                .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
+                .ToArray();
 
-			return Database.StringSet(values);
-		}
+            return Database.StringSet(values);
+        }
 
-		/// <summary>
-		///     Adds all asynchronous.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="items">The items.</param>
-		/// <returns></returns>
-		public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items)
-		{
-			var values = items
-				.Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
-				.ToArray();
+        /// <summary>
+        ///     Adds all asynchronous.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items">The items.</param>
+        /// <returns></returns>
+        public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items)
+        {
+            var values = items
+                .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
+                .ToArray();
 
-			return await Database.StringSetAsync(values);
-		}
+            return await Database.StringSetAsync(values);
+        }
 
-		/// <summary>
-		///     Run SADD command http://redis.io/commands/sadd
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="key"></param>
-		/// <param name="item"></param>
-		/// <returns></returns>
-		public bool SetAdd<T>(string key, T item) where T : class
+        /// <summary>
+        ///     Adds all.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items">The items.</param>
+        public bool AddAll<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt)
+        {
+            var values = items
+                .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
+                .ToArray();
+
+            var result = Database.StringSet(values);
+
+            foreach(var value in values)
+            {
+                Database.KeyExpire(value.Key, expiresAt.DateTime);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        ///     Adds all asynchronous.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items">The items.</param>
+        /// <returns></returns>
+        public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt)
+        {
+            var values = items
+                .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
+                .ToArray();
+
+            var result = await Database.StringSetAsync(values);
+
+            Parallel.ForEach(values, async value => await Database.KeyExpireAsync(value.Key, expiresAt.DateTime));
+
+            return result;
+        }
+
+        /// <summary>
+        ///     Adds all.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items">The items.</param>
+        public bool AddAll<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn)
+        {
+            var values = items
+                .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
+                .ToArray();
+
+            var result = Database.StringSet(values);
+
+            foreach (var value in values)
+            {
+                Database.KeyExpire(value.Key, expiresOn);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        ///     Adds all asynchronous.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items">The items.</param>
+        /// <returns></returns>
+        public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn)
+        {
+            var values = items
+                .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
+                .ToArray();
+
+            var result = await Database.StringSetAsync(values);
+
+            Parallel.ForEach(values, async value => await Database.KeyExpireAsync(value.Key, expiresOn));
+
+            return result;
+        }
+
+        /// <summary>
+        ///     Run SADD command http://redis.io/commands/sadd
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool SetAdd<T>(string key, T item) where T : class
 		{
 			if (string.IsNullOrEmpty(key))
 			{

@@ -291,26 +291,40 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.True(added);
 			Assert.True(Db.KeyExists("my Key"));
 			Assert.Equal(dbValue, d);
-		}
+        }
 
-		[Fact]
-		public void Adding_Collection_To_Redis_Should_Work_Correctly()
-		{
-		    var items = Range(1, 3).Select(i => new TestClass<string> {Key = $"key{i}", Value = "value{i}"}).ToArray();
-			var added = Sut.Add("my Key", items);
-			var dbValue = Sut.Get<TestClass<string>[]>("my Key");
+        [Fact]
+        public void Adding_Collection_To_Redis_Should_Work_Correctly()
+        {
+            var items = Range(1, 3).Select(i => new TestClass<string> { Key = $"key{i}", Value = "value{i}" }).ToArray();
+            var added = Sut.Add("my Key", items);
+            var dbValue = Sut.Get<TestClass<string>[]>("my Key");
 
-			Assert.True(added);
-			Assert.True(Db.KeyExists("my Key"));
-			Assert.Equal(dbValue.Length, items.Length);
-			for (var i = 0; i < items.Length; i++)
-			{
-				Assert.Equal(dbValue[i].Value, items[i].Value);
-				Assert.Equal(dbValue[i].Key, items[i].Key);
-			}
-		}
+            Assert.True(added);
+            Assert.True(Db.KeyExists("my Key"));
+            Assert.Equal(dbValue.Length, items.Length);
+            for (var i = 0; i < items.Length; i++)
+            {
+                Assert.Equal(dbValue[i].Value, items[i].Value);
+                Assert.Equal(dbValue[i].Key, items[i].Key);
+            }
+        }
 
-		[Fact(Skip = "AppVeyor, see here http://help.appveyor.com/discussions/problems/3760-vs-runner-hangs-on-run-all")]
+        [Fact]
+        public void Adding_Collection_To_Redis_Should_Expire()
+        {
+            var expiresIn = new TimeSpan(0, 0, 1);
+            var items = Range(1, 3).Select(i => new Tuple<string, string>($"key{i}", "value{i}")).ToArray();
+            var added = Sut.AddAll(items, expiresIn);
+
+            Thread.Sleep(expiresIn.Add(new TimeSpan(0, 0, 1)));
+            var hasExpired = items.All(x => !Db.KeyExists(x.Item1));
+
+            Assert.True(added);
+            Assert.True(hasExpired);
+        }
+
+        [Fact(Skip = "AppVeyor, see here http://help.appveyor.com/discussions/problems/3760-vs-runner-hangs-on-run-all")]
 		public void Pub_Sub()
 		{
 			var message = Range(0, 10).ToArray();
