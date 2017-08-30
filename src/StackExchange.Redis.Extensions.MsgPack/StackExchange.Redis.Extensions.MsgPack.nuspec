@@ -41,7 +41,7 @@
 		<language>en-US</language>
 		<tags>Async Redis NoSQL Client Distributed Cache PubSub Messaging</tags>
 		<dependencies>
-			<dependency id="StackExchange.Redis.Extensions.Core" version="2.2.0" />
+			<dependency id="StackExchange.Redis.Extensions.Core" version="2.3.0" />
 			<dependency id="MsgPack.Cli" version="0.8.0" />
 		</dependencies>
 	</metadata>

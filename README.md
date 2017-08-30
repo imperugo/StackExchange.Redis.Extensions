@@ -9,14 +9,24 @@ Caching of course. Instead of use directly [StackExchange.Redis](https://github.
 For example:
 
 - **Add an object to Redis**;
+- **Custom Serialized (need to implement your own serializer inherit from ISerializer)**;
+- **Changed Flush method**;
 - **Remove an object from Redis**;
 - **Search Keys into Redis**;
 - **Retrieve multiple object with a single roundtrip**;
 - **Store multiple object with a single roundtrip**;
+- **Get Redis Server information**;
+- **Set Add**;
+- **Set AddAdd**;
+- **SetRemove**;
+- **SetRemoveAll**;
+- **Set Member**;
+- **Pub/Sub events**;
+- **Save**;
 - **Async methods**;
-- **Retrieve Redis Server status**;
+- **Hash methods**;
+- **Support for Keyspace isolation**;
 - **Much more**;
-
 
 Channel  | Status | 
 -------- | :------------: | 
@@ -64,6 +74,11 @@ PM> Install-Package StackExchange.Redis.Extensions.MsgPack
 PM> Install-Package StackExchange.Redis.Extensions.Protobuf 
 ```
 
+##Install Binary Formatter implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Binary.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Binary/)
+
+```
+PM> Install-Package StackExchange.Redis.Extensions.Protobuf 
+```
 
 ## How to configure it
 You can use it registering the instance with your favorite Container. Here an example using [Castle Windsor](https://github.com/castleproject/Windsor):
@@ -114,6 +129,7 @@ In order to store a class into Redis, that class must be serializable. Below is 
 - [**MessagePack CLI**](https://github.com/msgpack/msgpack-cli) - serialization/deserialization for CLI.
 - [**Newtonsoft**](https://github.com/JamesNK/Newtonsoft.Json) - Uses Json.Net to serialize a class without `SerializableAttribute`.
 - [**Protocol Buffers**](https://developers.google.com/protocol-buffers/) Fastest overall serializer which also happens to produce the smallest output. Developed by Google. Using [protobuf-net](https://github.com/mgravell/protobuf-net) implementation.
+- [**Binary formatter**](https://developers.google.com/protocol-buffers/) Serializing using the classi Binary Formatter that comes out of the box with the .NET Framework.
 
 
 ## How can I store an object into Redis?
