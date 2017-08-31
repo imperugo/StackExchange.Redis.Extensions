@@ -77,7 +77,7 @@ PM> Install-Package StackExchange.Redis.Extensions.Protobuf
 ##Install Binary Formatter implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Binary.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Binary/)
 
 ```
-PM> Install-Package StackExchange.Redis.Extensions.Protobuf 
+PM> Install-Package StackExchange.Redis.Extensions.Binary 
 ```
 
 ## How to configure it
@@ -129,7 +129,7 @@ In order to store a class into Redis, that class must be serializable. Below is 
 - [**MessagePack CLI**](https://github.com/msgpack/msgpack-cli) - serialization/deserialization for CLI.
 - [**Newtonsoft**](https://github.com/JamesNK/Newtonsoft.Json) - Uses Json.Net to serialize a class without `SerializableAttribute`.
 - [**Protocol Buffers**](https://developers.google.com/protocol-buffers/) Fastest overall serializer which also happens to produce the smallest output. Developed by Google. Using [protobuf-net](https://github.com/mgravell/protobuf-net) implementation.
-- [**Binary formatter**](https://developers.google.com/protocol-buffers/) Serializing using the classi Binary Formatter that comes out of the box with the .NET Framework.
+- [**Binary formatter**](https://docs.microsoft.com/en-us/dotnet/standard/serialization/binary-serialization) Serializing using the classi Binary Formatter that comes out of the box with the .NET Framework.
 
 
 ## How can I store an object into Redis?
