@@ -117,19 +117,37 @@ namespace StackExchange.Redis.Extensions.Core
 		{
 		}
 
-		/// <summary>
+        /// <summary>
 		///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
 		/// </summary>
 		/// <param name="connectionMultiplexer">The connection multiplexer.</param>
 		/// <param name="serializer">The serializer.</param>
-		/// <param name="database">The database.</param>
+		/// <param name="serverEnumerationStrategy">The strategy to use when executing server wide commands.</param>
 		/// <param name="keyPrefix">Specifies the key separation prefix to be used for all keys</param>
 		/// <exception cref="System.ArgumentNullException">
 		///     connectionMultiplexer
 		///     or
 		///     serializer
 		/// </exception>
-		public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer,
+        public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer, ServerEnumerationStrategy serverEnumerationStrategy, string keyPrefix)
+            : this(connectionMultiplexer, serializer, 0, keyPrefix)
+        {
+            this.serverEnumerationStrategy = serverEnumerationStrategy;
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
+        /// </summary>
+        /// <param name="connectionMultiplexer">The connection multiplexer.</param>
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="database">The database.</param>
+        /// <param name="keyPrefix">Specifies the key separation prefix to be used for all keys</param>
+        /// <exception cref="System.ArgumentNullException">
+        ///     connectionMultiplexer
+        ///     or
+        ///     serializer
+        /// </exception>
+        public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer,
 			int database = 0, string keyPrefix = null)
 		{
 			if (connectionMultiplexer == null)
