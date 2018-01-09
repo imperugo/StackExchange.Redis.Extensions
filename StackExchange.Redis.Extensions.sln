@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 14.0.22823.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.Jil", "src\StackExchange.Redis.Extensions.Jil\StackExchange.Redis.Extensions.Jil.csproj", "{CB7B4AD8-86EA-4F8A-98F0-C419A972CB75}"
 EndProject
@@ -40,6 +40,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.Protobuf", "src\StackExchange.Redis.Extensions.Protobuf\StackExchange.Redis.Extensions.Protobuf.csproj", "{0A07E6BB-BA9C-4448-BFEA-3E490A3EE60F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.Binary", "src\StackExchange.Redis.Extensions.Binary\StackExchange.Redis.Extensions.Binary.csproj", "{5E848AF6-102E-4586-9343-9EAEE0FB93C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.Utf8Json", "StackExchange.Redis.Extensions.Utf8Json\StackExchange.Redis.Extensions.Utf8Json.csproj", "{DDD570A3-1960-4555-8931-C474DE0116A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -129,6 +131,22 @@ Global
 		{5E848AF6-102E-4586-9343-9EAEE0FB93C6}.Release|x64.Build.0 = Release|Any CPU
 		{5E848AF6-102E-4586-9343-9EAEE0FB93C6}.Release|x86.ActiveCfg = Release|Any CPU
 		{5E848AF6-102E-4586-9343-9EAEE0FB93C6}.Release|x86.Build.0 = Release|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Debug|ARM.Build.0 = Debug|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Debug|x64.Build.0 = Debug|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Debug|x86.Build.0 = Debug|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Release|ARM.ActiveCfg = Release|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Release|ARM.Build.0 = Release|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Release|x64.ActiveCfg = Release|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Release|x64.Build.0 = Release|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Release|x86.ActiveCfg = Release|Any CPU
+		{DDD570A3-1960-4555-8931-C474DE0116A2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -143,5 +161,9 @@ Global
 		{D3CE4F97-FDCD-4514-93AA-DE50BC379567} = {1FBB92DE-CD94-4757-8FFD-2AC8790020B1}
 		{0A07E6BB-BA9C-4448-BFEA-3E490A3EE60F} = {1FBB92DE-CD94-4757-8FFD-2AC8790020B1}
 		{5E848AF6-102E-4586-9343-9EAEE0FB93C6} = {1FBB92DE-CD94-4757-8FFD-2AC8790020B1}
+		{DDD570A3-1960-4555-8931-C474DE0116A2} = {1FBB92DE-CD94-4757-8FFD-2AC8790020B1}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {98936462-B15B-4E14-B863-7A1922B8DEB0}
 	EndGlobalSection
 EndGlobal

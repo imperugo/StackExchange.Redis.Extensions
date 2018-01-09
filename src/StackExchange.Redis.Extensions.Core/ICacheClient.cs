@@ -415,7 +415,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <summary>
 		/// Save the DB in background asynchronous.
 		/// </summary>
-		void SaveAsync(SaveType saveType);
+		Task SaveAsync(SaveType saveType);
 
 		/// <summary>
 		/// Gets the information about redis.

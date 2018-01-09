@@ -171,6 +171,19 @@ namespace StackExchange.Redis.Extensions.Tests
 		}
 
 		[Fact]
+		public void SearchKeys_With_Key_Prefix_Should_Return_All_Database_Keys()
+		{
+			var client = new StackExchangeRedisCacheClient(Serializer, "localhost", "MyPrefix__");
+			client.Add("mykey1", "Foo");
+			client.Add("mykey2", "Bar");
+			client.Add("key3", "Bar");
+
+			var keys = client.SearchKeys("*mykey*");
+
+			Assert.True(keys.Count() == 2);
+		}
+
+		[Fact]
 		public void Exist_With_Valid_Object_Should_Return_The_Correct_Instance()
 		{
 			var values = Range(0, 2)

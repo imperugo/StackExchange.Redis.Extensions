@@ -15,6 +15,7 @@ namespace StackExchange.Redis.Extensions.Core
 	/// </summary>
 	public class StackExchangeRedisCacheClient : ICacheClient
 	{
+		private string keyprefix = null;
 		private readonly IConnectionMultiplexer connectionMultiplexer;
 		private readonly ServerEnumerationStrategy serverEnumerationStrategy = new ServerEnumerationStrategy();
 
@@ -63,6 +64,7 @@ namespace StackExchange.Redis.Extensions.Core
 				Database = Database.WithKeyPrefix(configuration.KeyPrefix);
 
 			Serializer = serializer;
+			keyprefix = configuration.KeyPrefix;
 		}
 
 		/// <summary>
@@ -99,6 +101,8 @@ namespace StackExchange.Redis.Extensions.Core
 
 			if (!string.IsNullOrWhiteSpace(keyPrefix))
 				Database = Database.WithKeyPrefix(keyPrefix);
+
+			keyprefix = keyPrefix;
 		}
 
 		/// <summary>
@@ -167,6 +171,8 @@ namespace StackExchange.Redis.Extensions.Core
 
 			if (!string.IsNullOrWhiteSpace(keyPrefix))
 				Database = Database.WithKeyPrefix(keyPrefix);
+
+			keyprefix = keyPrefix;
 		}
 
 		/// <summary>
@@ -907,6 +913,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>A list of cache keys retrieved from Redis database</returns>
 		public IEnumerable<string> SearchKeys(string pattern)
 		{
+			pattern = $"{keyprefix}{pattern}";
 			var keys = new HashSet<RedisKey>();
 
 			var multiplexer = Database.Multiplexer;
@@ -995,7 +1002,7 @@ namespace StackExchange.Redis.Extensions.Core
 		///     Save the DB in background asynchronous.
 		/// </summary>
 		/// <param name="saveType"></param>
-		public async void SaveAsync(SaveType saveType)
+		public async Task SaveAsync(SaveType saveType)
 		{
 			var endPoints = Database.Multiplexer.GetEndPoints();
 
