@@ -58,7 +58,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj">
+    <ProjectReference Include="..\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj">
       <Project>{73b53b53-ecab-47c5-945f-3f6fb0940a53}</Project>
       <Name>StackExchange.Redis.Extensions.Core</Name>
     </ProjectReference>

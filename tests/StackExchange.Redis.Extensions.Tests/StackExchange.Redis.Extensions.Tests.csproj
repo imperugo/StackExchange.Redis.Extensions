@@ -125,7 +125,7 @@
       <Project>{0A07E6BB-BA9C-4448-BFEA-3E490A3EE60F}</Project>
       <Name>StackExchange.Redis.Extensions.Protobuf</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\StackExchange.Redis.Extensions.Utf8Json\StackExchange.Redis.Extensions.Utf8Json.csproj">
+    <ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.Utf8Json\StackExchange.Redis.Extensions.Utf8Json.csproj">
       <Project>{ddd570a3-1960-4555-8931-c474de0116a2}</Project>
       <Name>StackExchange.Redis.Extensions.Utf8Json</Name>
     </ProjectReference>
