@@ -9,14 +9,11 @@ namespace StackExchange.Redis.Extensions.Utf8Json
     /// </summary>
     public class Utf8JsonSerializer : ISerializer
     {
-	    private Utf8JsonSerializer serializer;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Utf8JsonSerializer"/> class.
 		/// </summary>
 		public Utf8JsonSerializer()
 	    {
-			this.serializer = new Utf8JsonSerializer();
 	    }
 
 	    /// <summary>
@@ -26,8 +23,7 @@ namespace StackExchange.Redis.Extensions.Utf8Json
 		/// <returns></returns>
 		public byte[] Serialize(object item)
         {
-            var type = item.GetType();
-			return serializer.Serialize(item);
+			return global::Utf8Json.JsonSerializer.Serialize(item);
         }
 
         /// <summary>
@@ -37,7 +33,7 @@ namespace StackExchange.Redis.Extensions.Utf8Json
         /// <returns></returns>
         public Task<byte[]> SerializeAsync(object item)
         {
-	        return serializer.SerializeAsync(item);
+	        return Task.Factory.StartNew(() => global::Utf8Json.JsonSerializer.Serialize(item));
         }
 
         /// <summary>
@@ -47,7 +43,7 @@ namespace StackExchange.Redis.Extensions.Utf8Json
         /// <returns></returns>
         public object Deserialize(byte[] serializedObject)
         {
-	        return serializer.Deserialize(serializedObject);
+	        return global::Utf8Json.JsonSerializer.Deserialize<object>(serializedObject);
         }
 
         /// <summary>
@@ -57,7 +53,7 @@ namespace StackExchange.Redis.Extensions.Utf8Json
         /// <returns></returns>
         public Task<object> DeserializeAsync(byte[] serializedObject)
         {
-	        return serializer.DeserializeAsync(serializedObject);
+	        return Task.Factory.StartNew(() =>  global::Utf8Json.JsonSerializer.Deserialize<object>(serializedObject));
         }
 
         /// <summary>
@@ -68,7 +64,7 @@ namespace StackExchange.Redis.Extensions.Utf8Json
         /// <returns></returns>
         public T Deserialize<T>(byte[] serializedObject)
         {
-	        return serializer.Deserialize<T>(serializedObject);
+	        return global::Utf8Json.JsonSerializer.Deserialize<T>(serializedObject);
         }
 
         /// <summary>
@@ -79,7 +75,7 @@ namespace StackExchange.Redis.Extensions.Utf8Json
         /// <returns></returns>
         public Task<T> DeserializeAsync<T>(byte[] serializedObject)
         {
-			return serializer.DeserializeAsync<T>(serializedObject);
+	        return Task.Factory.StartNew(() =>  global::Utf8Json.JsonSerializer.Deserialize<T>(serializedObject));
 		}
     }
 }

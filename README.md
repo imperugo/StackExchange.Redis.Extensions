@@ -1,6 +1,7 @@
 # StackExchange.Redis.Extensions
 
 StackExchange.Redis.Extensions is a library that extends [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) allowing you a set of functionality needed by common applications.
+The library is signed and completely compatible with the **.Net Standard 2.0**
 
 
 ## What can it be used for?
@@ -36,7 +37,9 @@ Nuget (Core) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redi
 Nuget (Json.NET) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Newtonsoft.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Newtonsoft/)
 Nuget (MsgPack) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.MsgPack.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.MsgPack/)
 Nuget (Protobuf) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Protobuf.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Protobuf/)
-Issue stats | [![Issue Stats](http://www.issuestats.com/github/imperugo/StackExchange.Redis.Extensions/badge/issue)](http://www.issuestats.com/github/imperugo/StackExchange.Redis.Extensions)
+Nuget (UTF8Json) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Utf8Json.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Utf8Json/)
+Nuget (Binary) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Binary.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Binary/)
+Nuget (Binary) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Jil.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Jil/)
 
 
 
@@ -56,48 +59,107 @@ PM> Install-Package StackExchange.Redis.Extensions.Core
 PM> Install-Package StackExchange.Redis.Extensions.Newtonsoft
 ```
 
-##Install Jil implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Jil.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Jil/)
+## Install Jil implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Jil.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Jil/)
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Jil
 ```
 
-##Install Message Pack CLI implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.MsgPack.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.MsgPack/)
+## Install Message Pack CLI implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.MsgPack.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.MsgPack/)
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.MsgPack
 ```
 
-##Install Protocol Buffers implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Protobuf.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Protobuf/)
+## Install Protocol Buffers implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Protobuf.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Protobuf/)
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Protobuf 
 ```
 
-##Install Binary Formatter implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Binary.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Binary/)
+## Install Binary Formatter implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Binary.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Binary/)
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Binary 
 ```
 
+## Install UTF8Json Formatter implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Utf8Json?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Utf8Json/)
+
+```
+PM> Install-Package StackExchange.Redis.Extensions.Utf8Json 
+```
+
 ## How to configure it
 You can use it registering the instance with your favorite Container. Here an example using [Castle Windsor](https://github.com/castleproject/Windsor):
 
-```xml
-<?xml version="1.0" encoding="utf-8" ?>
-<configuration>
-	<configSections>
-		<section name="redisCacheClient"
-			   type="StackExchange.Redis.Extensions.Core.Configuration.RedisCachingSectionHandler, StackExchange.Redis.Extensions.Core" />
-	</configSections>
+About the configuration is enough to create an instance of `RedisConfiguration`
 
-	<redisCacheClient allowAdmin="true" ssl="false" connectTimeout="5000" database="0" password="my password">
-		<hosts>
-			<add host="127.0.0.1" cachePort="6379"/>
-		</hosts>
-	</redisCacheClient>
-</configuration>
+```csharp
+var redisConfiguration = new RedisConfiguration()
+{
+	AbortOnConnectFail = true,
+	KeyPrefix = "_my_key_prefix_",
+	Hosts = new RedisHost[]
+	{
+		new RedisHost(){Host = "192.168.0.10", Port = 6379},
+		new RedisHost(){Host = "192.168.0.11",  Port =6379},
+		new RedisHost(){Host = "192.168.0.12",  Port =6379}
+	},
+	AllowAdmin = true,
+	ConnectTimeout = 3000,
+	Database = 0,
+	Ssl = true,
+	Password = "my_super_secret_password",
+	ServerEnumerationStrategy = new ServerEnumerationStrategy()
+	{
+		Mode = ServerEnumerationStrategy.ModeOptions.All,
+		TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
+		UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
+	}
+};
 ```
+
+of course some of them are options (take a look [here]())
+
+if you are running this library on ASP.NET Core, you can use the following code:
+
+```csharp
+config.SetBasePath(env.ContentRootPath)
+.AddJsonFile("./Configuration/appSettings.json", optional: false, reloadOnChange: true)
+.AddJsonFile($"./Configuration/appSettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+.AddEnvironmentVariables();
+
+IConfigurationRoot cfg = config.Build();
+
+var redisConfiguration = cfg.GetSection("Redis").Get<RedisConfiguration>();
+```
+
+here the json file
+
+```json
+{
+	"Redis": {
+    "Password": "R9MAjUNrgGTi",
+    "AllowAdmin": true,
+    "Ssl": false,
+    "ConnectTimeout": 6000,
+    "ConnectRetry": 2,
+    "Database": 0,
+    "Hosts": [
+      {
+        "Host": "192.168.0.10",
+        "Port": "6379"
+      },
+      {
+      	"Host": "192.168.0.11",
+      	"Port": "6381"
+      }
+    ]
+  }
+}
+```
+
+With dependency Injection you can do something like this using Castle Windsor
 
 ```csharp
 container.Register(Component.For<ISerializer>()
@@ -110,15 +172,21 @@ container.Register(Component.For<ICacheClient>()
 
 ```
 
+or using ASP.NET Core integrated DI:
+
+```csharp
+services.AddSingleton(redisConfiguration);
+services.AddSingleton<ICacheClient,StackExchangeRedisCacheClient>();
+services.AddSingleton<ISerializer,NewtonsoftSerializer>();
+```
+
 of you can create your own instance
 
 ```csharp
 var serializer = new NewtonsoftSerializer();
-var cacheClient = new StackExchangeRedisCacheClient(serializer);
+var cacheClient = new StackExchangeRedisCacheClient(serializer, redisConfiguration);
 
 ```
-
-To specify the connection string it's enough to add it into AppSetting in your config files (use `RedisConnectionString` as key) or specify your `ConnectionMultiplexer` instance into the constructor.
 
 
 ## Serialization

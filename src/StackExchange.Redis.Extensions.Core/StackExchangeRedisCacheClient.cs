@@ -24,22 +24,16 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </summary>
 		/// <param name="serializer">The serializer.</param>
 		/// <param name="configuration">The configuration.</param>
-		public StackExchangeRedisCacheClient(ISerializer serializer, IRedisCachingConfiguration configuration = null)
+		public StackExchangeRedisCacheClient(ISerializer serializer, RedisConfiguration configuration)
 		{
 			if (serializer == null)
 			{
-				throw new ArgumentNullException(nameof(serializer));
+				throw new ArgumentNullException(nameof(serializer), "The serializer could not be null.");
 			}
 
 			if (configuration == null)
 			{
-				configuration = RedisCachingSectionHandler.GetConfig();
-			}
-
-			if (configuration == null)
-			{
-				throw new ConfigurationErrorsException(
-					"Unable to locate <redisCacheClient> section into your configuration file. Take a look https://github.com/imperugo/StackExchange.Redis.Extensions");
+				throw new ArgumentNullException(nameof(configuration), "The configuration could not be null");
 			}
 
 			var options = new ConfigurationOptions
@@ -52,9 +46,9 @@ namespace StackExchange.Redis.Extensions.Core
 			};
 			serverEnumerationStrategy = configuration.ServerEnumerationStrategy;
 
-			foreach (RedisHost redisHost in configuration.RedisHosts)
+			foreach (RedisHost redisHost in configuration.Hosts)
 			{
-				options.EndPoints.Add(redisHost.Host, redisHost.CachePort);
+				options.EndPoints.Add(redisHost.Host, redisHost.Port);
 			}
 
 			connectionMultiplexer = ConnectionMultiplexer.Connect(options);

@@ -1,11 +1,13 @@
-.\.nuget\NuGet.exe pack .\src\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj -Prop Configuration=Release -OutputDirectory .\nuget\
+dotnet pack src\StackExchange.Redis.Extensions.Core\ -o ..\..\packages\ -c Release
 
-.\.nuget\NuGet.exe pack .\src\StackExchange.Redis.Extensions.Jil\StackExchange.Redis.Extensions.Jil.csproj -Prop Configuration=Release -OutputDirectory .\nuget 
+dotnet pack src\StackExchange.Redis.Extensions.Binary\ -o ..\..\packages\ -c Release
 
-.\.nuget\NuGet.exe pack .\src\StackExchange.Redis.Extensions.Newtonsoft\StackExchange.Redis.Extensions.Newtonsoft.csproj -Prop Configuration=Release -OutputDirectory .\nuget
+dotnet pack src\StackExchange.Redis.Extensions.Jil\ -o ..\..\packages\ -c Release
 
-.\.nuget\NuGet.exe pack .\src\StackExchange.Redis.Extensions.MsgPack\StackExchange.Redis.Extensions.MsgPack.csproj -Prop Configuration=Release -OutputDirectory .\nuget
+dotnet pack src\StackExchange.Redis.Extensions.MsgPack\ -o ..\..\packages\ -c Release
 
-.\.nuget\NuGet.exe pack .\src\StackExchange.Redis.Extensions.Protobuf\StackExchange.Redis.Extensions.Protobuf.csproj -Prop Configuration=Release -OutputDirectory .\nuget
+dotnet pack src\StackExchange.Redis.Extensions.Newtonsoft\ -o ..\..\packages\ -c Release
 
-.\.nuget\NuGet.exe pack .\src\StackExchange.Redis.Extensions.Binary\StackExchange.Redis.Extensions.Binary.csproj -Prop Configuration=Release -OutputDirectory .\nuget
+dotnet pack src\StackExchange.Redis.Extensions.Protobuf\ -o ..\..\packages\ -c Release
+
+dotnet pack src\StackExchange.Redis.Extensions.Utf8Json\ -o ..\..\packages\ -c Release

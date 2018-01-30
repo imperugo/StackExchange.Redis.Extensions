@@ -1,9 +1,6 @@
-﻿using System;
-using System.Configuration;
-
-namespace StackExchange.Redis.Extensions.Core.Configuration
+﻿namespace StackExchange.Redis.Extensions.Core.Configuration
 {
-	public class ServerEnumerationStrategy : ConfigurationElement
+	public partial class ServerEnumerationStrategy
 	{
 		public enum ModeOptions
 		{
@@ -23,25 +20,30 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 			IgnoreIfOtherAvailable
 		}
 
-		[ConfigurationProperty("mode", IsRequired = false, DefaultValue = "All")]
-		public ModeOptions Mode
-		{
-			get { return (ModeOptions)base["mode"]; }
-			set { base["mode"] = value; }
-		}
+		//[ConfigurationProperty("mode", IsRequired = false, DefaultValue = "All")]
 
-		[ConfigurationProperty("targetRole", IsRequired = false, DefaultValue = "Any")]
-		public TargetRoleOptions TargetRole
-		{
-			get { return (TargetRoleOptions)base["targetRole"]; }
-			set { base["targetRole"] = value; }
-		}
+		/// <summary>
+		/// Specify the strategy mode
+		/// </summary>
+		/// <value>
+		///   Default value All.
+		/// </value>
+		public ModeOptions Mode { get; set; }
 
-		[ConfigurationProperty("unreachableServerAction", IsRequired = false, DefaultValue = "Throw")]
-		public UnreachableServerActionOptions UnreachableServerAction
-		{
-			get { return (UnreachableServerActionOptions)base["unreachableServerAction"]; }
-			set { base["unreachableServerAction"] = value; }
-		}
+		/// <summary>
+		/// Specify the target role
+		/// </summary>
+		/// <value>
+		///   Default value Any.
+		/// </value>
+		public TargetRoleOptions TargetRole { get; set; }
+
+		/// <summary>
+		/// Specify the unreachable server action
+		/// </summary>
+		/// <value>
+		///   Default value Throw.
+		/// </value>
+		public UnreachableServerActionOptions UnreachableServerAction { get; set; }
 	}
 }

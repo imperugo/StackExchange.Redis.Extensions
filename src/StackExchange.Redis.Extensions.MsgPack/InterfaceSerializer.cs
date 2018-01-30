@@ -7,7 +7,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
 {
 	public class InterfaceSerializer<T> : MessagePackSerializer<T>
 	{
-		private readonly Dictionary<string, IMessagePackSerializer> serializers;
+		private readonly Dictionary<string, MessagePackSerializer> serializers;
 
 		public InterfaceSerializer()
 			: this(SerializationContext.Default)
@@ -17,7 +17,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
 		public InterfaceSerializer(SerializationContext context)
 			: base(context)
 		{
-			serializers = new Dictionary<string, IMessagePackSerializer>();
+			serializers = new Dictionary<string, MessagePackSerializer>();
 
 			// Get all types that implement T interface
 			var implementingTypes = System.Reflection.Assembly
@@ -36,7 +36,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
 
 		protected override void PackToCore(Packer packer, T objectTree)
 		{
-			IMessagePackSerializer serializer;
+			MessagePackSerializer serializer;
 			string typeName = objectTree.GetType().Name;
 
 			// Find matching serializer
@@ -52,13 +52,13 @@ namespace StackExchange.Redis.Extensions.MsgPack
 
 		protected override T UnpackFromCore(Unpacker unpacker)
 		{
-			IMessagePackSerializer serializer;
+			MessagePackSerializer serializer;
 			string typeName;
 
 			// Read type name and packed object
 			if (!(unpacker.ReadString(out typeName) && unpacker.Read()))
 			{
-				throw SerializationExceptions.NewUnexpectedEndOfStream();
+				throw new System.IO.EndOfStreamException();
 			}
 
 			// Find matching serializer

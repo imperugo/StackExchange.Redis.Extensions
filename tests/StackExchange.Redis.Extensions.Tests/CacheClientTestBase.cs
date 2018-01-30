@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core;
+using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Extensions;
 using StackExchange.Redis.Extensions.Tests.Extensions;
 using StackExchange.Redis.Extensions.Tests.Helpers;
@@ -33,6 +35,29 @@ namespace StackExchange.Redis.Extensions.Tests
 
             Sut = new StackExchangeRedisCacheClient(mux, Serializer);
 			Db = Sut.Database;
+
+			var redisConfiguration = new RedisConfiguration()
+			{
+				AbortOnConnectFail = true,
+				KeyPrefix = "_my_key_prefix_",
+				Hosts = new RedisHost[]
+				{
+					new RedisHost(){Host = "192.168.0.10", Port = 6379},
+					new RedisHost(){Host = "192.168.0.11",  Port =6379},
+					new RedisHost(){Host = "192.168.0.12",  Port =6379}
+				},
+				AllowAdmin = true,
+				ConnectTimeout = 3000,
+				Database = 0,
+				Ssl = true,
+				Password = "my_super_secret_password",
+				ServerEnumerationStrategy = new ServerEnumerationStrategy()
+				{
+					Mode = ServerEnumerationStrategy.ModeOptions.All,
+					TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
+					UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
+				}
+			};
 		}
 
 		public void Dispose()
@@ -341,7 +366,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		public void Pub_Sub()
 		{
 			var message = Range(0, 10).ToArray();
-			const string channel = "unit_test";
+			var channel = new RedisChannel(Encoding.UTF8.GetBytes("unit_test"), RedisChannel.PatternMode.Auto);
 			var subscriberNotified = false;
 			IEnumerable<int> subscriberValue = null;
 
@@ -353,7 +378,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			Sut.Subscribe(channel, action);
 
-			var result = Sut.Publish("unit_test", message);
+			var result = Sut.Publish(channel, message);
 
 			while (!subscriberNotified)
 			{
