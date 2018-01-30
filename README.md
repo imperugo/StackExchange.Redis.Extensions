@@ -119,7 +119,7 @@ var redisConfiguration = new RedisConfiguration()
 };
 ```
 
-of course some of them are options (take a look [here]())
+of course some of them are options (take a look [here](https://github.com/imperugo/StackExchange.Redis.Extensions/blob/master/src/StackExchange.Redis.Extensions.Core/Configuration/RedisConfiguration.cs))
 
 if you are running this library on ASP.NET Core, you can use the following code:
 
