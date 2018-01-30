@@ -39,7 +39,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
         /// <returns></returns>
         public byte[] Serialize(object item)
         {
-            var type = item.GetType();
+            var type = item?.GetType();
             var jsonString = JsonConvert.SerializeObject(item, type, settings);
             return encoding.GetBytes(jsonString);
         }
@@ -51,7 +51,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
         /// <returns></returns>
         public async Task<byte[]> SerializeAsync(object item)
         {
-            var type = item.GetType();
+            var type = item?.GetType();
             var jsonString = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(item, type, settings));
             return encoding.GetBytes(jsonString);
         }
