@@ -68,22 +68,60 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <returns>Null if not present, otherwise the instance of T.</returns>
 		T Get<T>(string key);
 
-		/// <summary>
-		/// Get the object with the specified key from Redis database
-		/// </summary>
-		/// <typeparam name="T">The type of the expected object</typeparam>
-		/// <param name="key">The cache key.</param>
-		/// <returns>Null if not present, otherwise the instance of T.</returns>
-		Task<T> GetAsync<T>(string key);
+        /// <summary>
+        /// Get the object with the specified key from Redis database and update the expiry time
+        /// </summary>
+        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <param name="key">The cache key.</param>
+        /// <param name="expiresAt">Expiration time.</param>
+        /// <returns>Null if not present, otherwise the instance of T.</returns>
+        T Get<T>(string key, DateTimeOffset expiresAt);
 
-		/// <summary>
-		/// Adds the specified instance to the Redis database.
-		/// </summary>
-		/// <typeparam name="T">The type of the class to add to Redis</typeparam>
-		/// <param name="key">The cache key.</param>
-		/// <param name="value">The instance of T.</param>
-		/// <returns>True if the object has been added. Otherwise false</returns>
-		bool Add<T>(string key, T value);
+        /// <summary>
+        ///     Get the object with the specified key from Redis database and update the expiry time
+        /// </summary>
+        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <param name="key">The cache key.</param>
+        /// <param name="expiresIn">Time till the object expires.</param>
+        /// <returns>
+        ///     Null if not present, otherwise the instance of T.
+        /// </returns>
+        T Get<T>(string key, TimeSpan expiresIn);
+
+        /// <summary>
+        /// Get the object with the specified key from Redis database
+        /// </summary>
+        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <param name="key">The cache key.</param>
+        /// <returns>Null if not present, otherwise the instance of T.</returns>
+        Task<T> GetAsync<T>(string key);
+
+        /// <summary>Get the object with the specified key from Redis database and update the expiry time</summary>
+        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <param name="key">The cache key.</param>
+        /// <param name="expiresAt">Expiration time.</param>
+        /// <returns>Null if not present, otherwise the instance of T.</returns>
+        Task<T> GetAsync<T>(string key, DateTimeOffset expiresAt);
+
+        /// <summary>
+        ///     Get the object with the specified key from Redis database and update the expiry time
+        /// </summary>
+        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <param name="key">The cache key.</param>
+        /// <param name="expiresIn">Time till the object expires.</param>
+        /// <returns>
+        ///     Null if not present, otherwise the instance of T.
+        /// </returns>
+        Task<T> GetAsync<T>(string key, TimeSpan expiresIn);
+
+        /// <summary>
+        /// Adds the specified instance to the Redis database.
+        /// </summary>
+        /// <typeparam name="T">The type of the class to add to Redis</typeparam>
+        /// <param name="key">The cache key.</param>
+        /// <param name="value">The instance of T.</param>
+        /// <returns>True if the object has been added. Otherwise false</returns>
+        bool Add<T>(string key, T value);
 
 		/// <summary>
 		/// Adds the specified instance to the Redis database.
@@ -223,16 +261,64 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </returns>
 		IDictionary<string, T> GetAll<T>(IEnumerable<string> keys);
 
-		/// <summary>
-		/// Get the objects with the specified keys from Redis database with a single roundtrip
-		/// </summary>
-		/// <typeparam name="T">The type of the expected object</typeparam>
-		/// <param name="keys">The keys.</param>
-		/// <returns>
-		/// Empty list if there are no results, otherwise the instance of T.
-		/// If a cache key is not present on Redis the specified object into the returned Dictionary will be null
-		/// </returns>
-		Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys);
+        /// <summary>
+        ///     Get the objects with the specified keys from Redis database with one roundtrip
+        /// </summary>
+        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <param name="keys">The keys.</param>
+        /// <param name="expiresAt">Expiration time.</param>
+        /// <returns>
+        ///     Empty list if there are no results, otherwise the instance of T.
+        ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
+        /// </returns>
+        IDictionary<string, T> GetAll<T>(IEnumerable<string> keys, DateTimeOffset expiresAt);
+
+        /// <summary>
+        ///     Get the objects with the specified keys from Redis database with one roundtrip
+        /// </summary>
+        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <param name="keys">The keys.</param>
+        /// <param name="expiresIn">Time until expiration.</param>
+        /// <returns>
+        ///     Empty list if there are no results, otherwise the instance of T.
+        ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
+        /// </returns>
+        IDictionary<string, T> GetAll<T>(IEnumerable<string> keys, TimeSpan expiresIn);
+
+        /// <summary>
+        /// Get the objects with the specified keys from Redis database with a single roundtrip
+        /// </summary>
+        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <param name="keys">The keys.</param>
+        /// <returns>
+        /// Empty list if there are no results, otherwise the instance of T.
+        /// If a cache key is not present on Redis the specified object into the returned Dictionary will be null
+        /// </returns>
+        Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys);
+
+        /// <summary>
+        ///     Get the objects with the specified keys from Redis database with one roundtrip
+        /// </summary>
+        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <param name="keys">The keys.</param>
+        /// <param name="expiresAt">Expiration time.</param>
+        /// <returns>
+        ///     Empty list if there are no results, otherwise the instance of T.
+        ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
+        /// </returns>
+        Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys, DateTimeOffset expiresAt);
+
+        /// <summary>
+        ///     Get the objects with the specified keys from Redis database with one roundtrip
+        /// </summary>
+        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <param name="keys">The keys.</param>
+        /// <param name="expiresIn">Time until expiration.</param>
+        /// <returns>
+        ///     Empty list if there are no results, otherwise the instance of T.
+        ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
+        /// </returns>
+        Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys, TimeSpan expiresIn);
 
         /// <summary>
         /// Add the objects with the specified keys to Redis database with a single roundtrip
@@ -909,5 +995,69 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="commandFlags">Command execution flags</param>
 		/// <returns></returns> 
 		Task<Dictionary<string, T>> HashScanAsync<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags commandFlags = CommandFlags.None);
-	}
+
+        /// <summary>
+        /// Updates the expiry time of a redis cache object
+        /// </summary>
+        /// <param name="key">The key of the object</param>
+        /// <param name="expiresAt">The new expiry time of the object</param>
+        /// <returns>True if the object is updated, false if the object does not exist</returns>
+        bool UpdateExpiry(string key, DateTimeOffset expiresAt);
+
+        /// <summary>
+        /// Updates the expiry time of a redis cache object
+        /// </summary>
+        /// <param name="key">The key of the object</param>
+        /// <param name="expiresIn">Time until the object will expire</param>
+        /// <returns>True if the object is updated, false if the object does not exist</returns>
+        bool UpdateExpiry(string key, TimeSpan expiresIn);
+
+        /// <summary>
+        /// Updates the expiry time of a redis cache object
+        /// </summary>
+        /// <param name="key">The key of the object</param>
+        /// <param name="expiresAt">The new expiry time of the object</param>
+        /// <returns>True if the object is updated, false if the object does not exist</returns>
+        Task<bool> UpdateExpiryAsync(string key, DateTimeOffset expiresAt);
+
+        /// <summary>
+        /// Updates the expiry time of a redis cache object
+        /// </summary>
+        /// <param name="key">The key of the object</param>
+        /// <param name="expiresIn">Time until the object will expire</param>
+        /// <returns>True if the object is updated, false if the object does not exist</returns>
+        Task<bool> UpdateExpiryAsync(string key, TimeSpan expiresIn);
+
+        /// <summary>
+        /// Updates the expiry time of a redis cache object
+        /// </summary>
+        /// <param name="keys">An array of keys to be updated</param>
+        /// <param name="expiresAt">The new expiry time of the object</param>
+        /// <returns>An array of type bool, where true if the object is updated and false if the object does not exist at the same index as the input keys</returns>
+        IDictionary<string, bool> UpdateExpiryAll(string[] keys, DateTimeOffset expiresAt);
+
+        /// <summary>
+        /// Updates the expiry time of a redis cache object
+        /// </summary>
+        /// <param name="keys">An array of keys to be updated</param>
+        /// <param name="expiresIn">Time until the object will expire</param>
+        /// <returns>An IDictionary object that contains the origional key and the result of the operation</returns>
+        IDictionary<string, bool> UpdateExpiryAll(string[] keys, TimeSpan expiresIn);
+
+        /// <summary>
+        /// Updates the expiry time of a redis cache object
+        /// </summary>
+        /// <param name="keys">An array of keys to be updated</param>
+        /// <param name="expiresAt">The new expiry time of the object</param>
+        /// <returns>An array of type bool, where true if the object is updated and false if the object does not exist at the same index as the input keys</returns>
+        Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, DateTimeOffset expiresAt);
+
+        /// <summary>
+        /// Updates the expiry time of a redis cache object
+        /// </summary>
+        /// <param name="keys">An array of keys to be updated</param>
+        /// <param name="expiresIn">Time until the object will expire</param>
+        /// <returns>An IDictionary object that contains the origional key and the result of the operation</returns>
+        Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, TimeSpan expiresIn);
+    }
 }
