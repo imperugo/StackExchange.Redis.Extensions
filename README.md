@@ -139,24 +139,54 @@ here the json file
 ```json
 {
 	"Redis": {
-    "Password": "R9MAjUNrgGTi",
-    "AllowAdmin": true,
-    "Ssl": false,
-    "ConnectTimeout": 6000,
-    "ConnectRetry": 2,
-    "Database": 0,
-    "Hosts": [
-      {
-        "Host": "192.168.0.10",
-        "Port": "6379"
-      },
-      {
-      	"Host": "192.168.0.11",
-      	"Port": "6381"
-      }
-    ]
-  }
+		"Password": "R9MAjUNrgGTi",
+		"AllowAdmin": true,
+		"Ssl": false,
+		"ConnectTimeout": 6000,
+		"ConnectRetry": 2,
+		"Database": 0,
+		"Hosts": [
+		{
+			"Host": "192.168.0.10",
+			"Port": "6379"
+		},
+		{
+			"Host": "192.168.0.11",
+			"Port": "6381"
+		}]
+	}
 }
+```
+
+In case of `App.Config` or `Web.Config` you have to use a specific package that reads the configuration from the "old" configuration file.
+
+```
+PM> Install-Package StackExchange.Redis.Extensions.LegacyConfiguration
+```
+
+Here the example of an `App.config` file
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+	<configSections>
+		<section name="redisCacheClient" type="StackExchange.Redis.Extensions.LegacyConfiguration.RedisCachingSectionHandler, StackExchange.Redis.Extensions.LegacyConfiguration" />
+	</configSections>
+
+	<redisCacheClient allowAdmin="true" ssl="false" connectTimeout="3000" database="24">
+		<serverEnumerationStrategy mode="Single" targetRole="PreferSlave" unreachableServerAction="IgnoreIfOtherAvailable" /> 
+		<hosts>
+			<add host="127.0.0.1" cachePort="6379" />
+		</hosts>
+	</redisCacheClient>
+
+</configuration>
+```
+
+after that, to have the configuration, is enough to run this code
+
+```chsarp
+var redisConfiguration = RedisCachingSectionHandler.GetConfig();
 ```
 
 With dependency Injection you can do something like this using Castle Windsor

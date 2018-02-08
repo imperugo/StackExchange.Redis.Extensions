@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StackExchange.Redis.Extensions.Core;
@@ -49,11 +48,13 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns></returns>
-        public async Task<byte[]> SerializeAsync(object item)
+        public Task<byte[]> SerializeAsync(object item)
         {
             var type = item?.GetType();
-            var jsonString = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(item, type, settings));
-            return encoding.GetBytes(jsonString);
+
+	        var jsonString = JsonConvert.SerializeObject(item, type, settings);
+
+			return Task.FromResult(encoding.GetBytes(jsonString));
         }
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
         /// <returns></returns>
         public Task<object> DeserializeAsync(byte[] serializedObject)
         {
-            return Task.Factory.StartNew(() => Deserialize(serializedObject));
+	        return Task.FromResult(Deserialize(serializedObject));
         }
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
         /// <returns></returns>
         public Task<T> DeserializeAsync<T>(byte[] serializedObject)
         {
-            return Task.Factory.StartNew(() => Deserialize<T>(serializedObject));
+	        return Task.FromResult(Deserialize<T>(serializedObject));
         }
     }
 }

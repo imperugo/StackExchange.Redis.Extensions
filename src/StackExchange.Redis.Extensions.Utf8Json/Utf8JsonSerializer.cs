@@ -33,7 +33,7 @@ namespace StackExchange.Redis.Extensions.Utf8Json
         /// <returns></returns>
         public Task<byte[]> SerializeAsync(object item)
         {
-	        return Task.Factory.StartNew(() => global::Utf8Json.JsonSerializer.Serialize(item));
+	        return Task.FromResult(global::Utf8Json.JsonSerializer.Serialize(item));
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace StackExchange.Redis.Extensions.Utf8Json
         /// <returns></returns>
         public Task<object> DeserializeAsync(byte[] serializedObject)
         {
-	        return Task.Factory.StartNew(() =>  global::Utf8Json.JsonSerializer.Deserialize<object>(serializedObject));
+	        return Task.FromResult(global::Utf8Json.JsonSerializer.Deserialize<object>(serializedObject));
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace StackExchange.Redis.Extensions.Utf8Json
         /// <returns></returns>
         public Task<T> DeserializeAsync<T>(byte[] serializedObject)
         {
-	        return Task.Factory.StartNew(() =>  global::Utf8Json.JsonSerializer.Deserialize<T>(serializedObject));
+	        return Task.FromResult(global::Utf8Json.JsonSerializer.Deserialize<T>(serializedObject));
 		}
     }
 }
