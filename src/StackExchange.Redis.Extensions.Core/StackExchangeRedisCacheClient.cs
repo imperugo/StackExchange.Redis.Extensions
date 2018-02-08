@@ -133,11 +133,29 @@ namespace StackExchange.Redis.Extensions.Core
             this.serverEnumerationStrategy = serverEnumerationStrategy;
         }
 
-        /// <summary>
+		/// <summary>
+		///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
+		/// </summary>
+		/// <param name="connectionMultiplexer">The connection multiplexer.</param>
+		/// <param name="serializer">The serializer.</param>
+		/// <param name="database">The database.</param>
+		/// <param name="keyPrefix">Specifies the key separation prefix to be used for all keys</param>
+		/// <exception cref="System.ArgumentNullException">
+		///     connectionMultiplexer
+		///     or
+		///     serializer
+		/// </exception>
+		public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer, int database = 0, string keyPrefix = null)
+			: this(connectionMultiplexer, serializer, new ServerEnumerationStrategy(), 0, keyPrefix)
+		{
+		}
+
+		/// <summary>
         ///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
         /// </summary>
         /// <param name="connectionMultiplexer">The connection multiplexer.</param>
         /// <param name="serializer">The serializer.</param>
+		/// <param name="serverEnumerationStrategy">The strategy to use when executing server wide commands.</param>
         /// <param name="database">The database.</param>
         /// <param name="keyPrefix">Specifies the key separation prefix to be used for all keys</param>
         /// <exception cref="System.ArgumentNullException">
@@ -145,8 +163,7 @@ namespace StackExchange.Redis.Extensions.Core
         ///     or
         ///     serializer
         /// </exception>
-        public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer,
-			int database = 0, string keyPrefix = null)
+        public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer,ServerEnumerationStrategy serverEnumerationStrategy, int database = 0, string keyPrefix = null)
 		{
 			if (connectionMultiplexer == null)
 			{
@@ -158,6 +175,7 @@ namespace StackExchange.Redis.Extensions.Core
 				throw new ArgumentNullException(nameof(serializer));
 			}
 
+			this.serverEnumerationStrategy = serverEnumerationStrategy;
 			Serializer = serializer;
 			this.connectionMultiplexer = connectionMultiplexer;
 

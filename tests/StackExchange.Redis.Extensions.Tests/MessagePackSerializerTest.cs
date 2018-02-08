@@ -2,12 +2,12 @@
 
 namespace StackExchange.Redis.Extensions.Tests
 {
-    public class MessagePackSerializerTest : CacheClientTestBase
-    {
-        public MessagePackSerializerTest()
-            : base(new MsgPackObjectSerializer())
-        {
+	public class MessagePackSerializerTest : CacheClientTestBase
+	{
+		public MessagePackSerializerTest()
+			: base(new MsgPackObjectSerializer())
+		{
 
-        }
-    }
+		}
+	}
 }
