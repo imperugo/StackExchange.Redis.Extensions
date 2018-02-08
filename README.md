@@ -45,43 +45,43 @@ Nuget (Binary) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Re
 StackExchange.Redis.Extensions is composed by two libraries, the Core and the Serializer implementation.
 Because there are several good serializer and we don't want add another dependency in your project you can choose your favorite or create a new one.
 
-##Install Core [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Core.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Core/)
+##Install Core 
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Core
 ```
 
-## Install Json.NET implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Newtonsoft.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Newtonsoft/)
+## Install Json.NET implementation 
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Newtonsoft
 ```
 
-## Install Jil implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Jil.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Jil/)
+## Install Jil implementation 
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Jil
 ```
 
-## Install Message Pack CLI implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.MsgPack.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.MsgPack/)
+## Install Message Pack CLI implementation 
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.MsgPack
 ```
 
-## Install Protocol Buffers implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Protobuf.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Protobuf/)
+## Install Protocol Buffers implementation 
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Protobuf 
 ```
 
-## Install Binary Formatter implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Binary.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Binary/)
+## Install Binary Formatter implementation 
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Binary 
 ```
 
-## Install UTF8Json Formatter implementation [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Utf8Json?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Utf8Json/)
+## Install UTF8Json Formatter implementation 
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Utf8Json 
@@ -224,7 +224,8 @@ In order to store a class into Redis, that class must be serializable. Below is 
 - [**Jil**](https://github.com/kevin-montrose/Jil) - Fastest JSON serializer.
 - [**MessagePack CLI**](https://github.com/msgpack/msgpack-cli) - serialization/deserialization for CLI.
 - [**Newtonsoft**](https://github.com/JamesNK/Newtonsoft.Json) - Uses Json.Net to serialize a class without `SerializableAttribute`.
-- [**Protocol Buffers**](https://developers.google.com/protocol-buffers/) Fastest overall serializer which also happens to produce the smallest output. Developed by Google. Using [protobuf-net](https://github.com/mgravell/protobuf-net) implementation.
+- [**Protocol Buffers**](https://developers.google.com/protocol-buffers/) - Fastest overall serializer which also happens to produce the smallest output. Developed by Google. Using [protobuf-net](https://github.com/mgravell/protobuf-net) implementation.
+- [**Utf8Json**](https://github.com/neuecc/Utf8Json) - Definitely Fastest and Zero Allocation JSON Serializer for C#(.NET, .NET Core, Unity and Xamarin), this serializer write/read directly to UTF8 binary so boostup performance
 
 
 ## How can I store an object into Redis?
