@@ -54,5 +54,8 @@
       <Name>StackExchange.Redis.Extensions.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="StackExchange.Redis.Extensions.LegacyConfiguration.nuspec" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
