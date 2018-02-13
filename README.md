@@ -137,7 +137,7 @@ here the json file
 ```json
 {
 	"Redis": {
-		"Password": "R9MAjUNrgGTi",
+		"Password": "my_super_secret_password",
 		"AllowAdmin": true,
 		"Ssl": false,
 		"ConnectTimeout": 6000,
