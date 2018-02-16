@@ -1,4 +1,8 @@
-﻿using StackExchange.Redis.Extensions.Newtonsoft;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using StackExchange.Redis.Extensions.Newtonsoft;
+using Xunit;
 
 namespace StackExchange.Redis.Extensions.Tests
 {

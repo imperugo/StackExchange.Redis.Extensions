@@ -1078,8 +1078,23 @@ namespace StackExchange.Redis.Extensions.Core
 		public IEnumerable<string> SearchKeys(string pattern)
 		{
 			pattern = $"{keyprefix}{pattern}";
-			var keys = new HashSet<RedisKey>();
+			var keys = new HashSet<string>();
 
+			int nextCursor = 0;
+			do
+			{
+				RedisResult redisResult = this.Database.Execute("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000");
+				var innerResult = (RedisResult[])redisResult;
+
+				nextCursor = int.Parse((string)innerResult[0]);
+
+				List<string> resultLines = ((string[])innerResult[1]).ToList();
+
+				keys.UnionWith(resultLines);
+			}
+			while (nextCursor != 0);
+
+			/*
 			var multiplexer = Database.Multiplexer;
 			var servers = ServerIteratorFactory.GetServers(multiplexer, serverEnumerationStrategy).ToArray();
 			if (!servers.Any())
@@ -1098,8 +1113,9 @@ namespace StackExchange.Redis.Extensions.Core
 					}
 				}
 			}
+			*/
 
-			return keys.Select(x => (string)x);
+			return keys;
 		}
 
 		/// <summary>
