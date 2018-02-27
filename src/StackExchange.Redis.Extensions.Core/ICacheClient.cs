@@ -334,33 +334,37 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="items">The items.</param>
         Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items);
 
-        /// <summary>
-        /// Add the objects with the specified keys to Redis database with a single roundtrip
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="items">The items.</param>
-        bool AddAll<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt);
+		/// <summary>
+		/// Add the objects with the specified keys to Redis database with a single roundtrip
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="items">The items.</param>
+		/// <param name="expiresAt"></param>
+		bool AddAll<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt);
 
-        /// <summary>
-        /// Add the objects with the specified keys to Redis database with a single roundtrip
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="items">The items.</param>
-        Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt);
+		/// <summary>
+		/// Add the objects with the specified keys to Redis database with a single roundtrip
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="items">The items.</param>
+		/// <param name="expiresAt"></param>
+		Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt);
 
-        /// <summary>
-        /// Add the objects with the specified keys to Redis database with a single roundtrip
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="items">The items.</param>
-        bool AddAll<T>(IList<Tuple<string, T>> items, TimeSpan expiresIn);
+		/// <summary>
+		/// Add the objects with the specified keys to Redis database with a single roundtrip
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="items">The items.</param>
+		/// <param name="expiresIn"></param>
+		bool AddAll<T>(IList<Tuple<string, T>> items, TimeSpan expiresIn);
 
-        /// <summary>
-        /// Add the objects with the specified keys to Redis database with a single roundtrip
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="items">The items.</param>
-        Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresIn);
+		/// <summary>
+		/// Add the objects with the specified keys to Redis database with a single roundtrip
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="items">The items.</param>
+		/// <param name="expiresIn"></param>
+		Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresIn);
 
         /// <summary>
         /// Run SADD command http://redis.io/commands/sadd

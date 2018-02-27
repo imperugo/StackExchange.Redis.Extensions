@@ -734,12 +734,13 @@ namespace StackExchange.Redis.Extensions.Core
             return await Database.StringSetAsync(values);
         }
 
-        /// <summary>
-        ///     Adds all.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items">The items.</param>
-        public bool AddAll<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt)
+		/// <summary>
+		///     Adds all.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="items">The items.</param>
+		/// <param name="expiresAt"></param>
+		public bool AddAll<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt)
         {
             var values = items
                 .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
@@ -755,13 +756,14 @@ namespace StackExchange.Redis.Extensions.Core
             return result;
         }
 
-        /// <summary>
-        ///     Adds all asynchronous.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items">The items.</param>
-        /// <returns></returns>
-        public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt)
+		/// <summary>
+		///     Adds all asynchronous.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="items">The items.</param>
+		/// <param name="expiresAt"></param>
+		/// <returns></returns>
+		public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt)
         {
             var values = items
                 .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
@@ -774,12 +776,13 @@ namespace StackExchange.Redis.Extensions.Core
             return result;
         }
 
-        /// <summary>
-        ///     Adds all.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items">The items.</param>
-        public bool AddAll<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn)
+		/// <summary>
+		///     Adds all.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="items">The items.</param>
+		/// <param name="expiresOn"></param>
+		public bool AddAll<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn)
         {
             var values = items
                 .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
@@ -795,13 +798,14 @@ namespace StackExchange.Redis.Extensions.Core
             return result;
         }
 
-        /// <summary>
-        ///     Adds all asynchronous.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items">The items.</param>
-        /// <returns></returns>
-        public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn)
+		/// <summary>
+		///     Adds all asynchronous.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="items">The items.</param>
+		/// <param name="expiresOn"></param>
+		/// <returns></returns>
+		public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn)
         {
             var values = items
                 .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
