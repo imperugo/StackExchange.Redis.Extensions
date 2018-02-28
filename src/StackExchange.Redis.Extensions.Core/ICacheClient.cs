@@ -1063,5 +1063,104 @@ namespace StackExchange.Redis.Extensions.Core
         /// <param name="expiresIn">Time until the object will expire</param>
         /// <returns>An IDictionary object that contains the origional key and the result of the operation</returns>
         Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, TimeSpan expiresIn);
-    }
+
+		/// <summary>
+		///     Add the entry to a sorted set with a score 
+		/// </summary>
+		/// <remarks>
+		///     Time complexity: O(1)
+		/// </remarks>
+		/// <param name="key">Key of the set</param>
+		/// <param name="value">The instance of T.</param>
+		/// <param name="score">Score of the entry</param>
+		/// <param name="commandFlags">Command execution flags</param>
+		/// <returns>
+		///     True if the object has been added. Otherwise false
+		/// </returns>
+		bool SortedSetAdd<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None);
+
+		/// <summary>
+		///     Add the entry to a sorted set with a score 
+		/// </summary>
+		/// <remarks>
+		///     Time complexity: O(1)
+		/// </remarks>
+		/// <param name="key">Key of the set</param>
+		/// <param name="value">The instance of T.</param>
+		/// <param name="score">Score of the entry</param>
+		/// <param name="commandFlags">Command execution flags</param>
+		/// <returns>
+		///     True if the object has been added. Otherwise false
+		/// </returns>
+		Task<bool> SortedSetAddAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None);
+
+		/// <summary>
+		///     Remove the entry to a sorted set 
+		/// </summary>
+		/// <remarks>
+		///     Time complexity: O(1)
+		/// </remarks>
+		/// <param name="key">Key of the set</param>
+		/// <param name="value">The instance of T.</param>
+		/// <param name="commandFlags">Command execution flags</param>
+		/// <returns>
+		///     True if the object has been removed. Otherwise false
+		/// </returns>
+		bool SortedSetRemove<T>(string key, T value, CommandFlags commandFlags = CommandFlags.None);
+
+		/// <summary>
+		///     Remove the entry to a sorted set 
+		/// </summary>
+		/// <remarks>
+		///     Time complexity: O(1)
+		/// </remarks>
+		/// <param name="key">Key of the set</param>
+		/// <param name="value">The instance of T.</param>
+		/// <param name="commandFlags">Command execution flags</param>
+		/// <returns>
+		///     True if the object has been removed. Otherwise false
+		///  </returns>
+		Task<bool> SortedSetRemoveAsync<T>(string key, T value, CommandFlags commandFlags = CommandFlags.None);
+
+		/// <summary>
+		///     Get entries from sorted-set ordered 
+		/// </summary>
+		/// <remarks>
+		///     Time complexity: O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements being returned. If M is constant (e.g. always asking for the first 10 elements with LIMIT), you can consider it O(log(N) 
+		/// </remarks>
+		/// <param name="key">Key of the set</param>
+		/// <param name="start">Min score</param>
+		/// <param name="stop">Max score</param>
+		/// <param name="exclude">Exclude start / stop</param>
+		/// <param name="order">Order of sorted set</param>
+		/// <param name="take">Take count</param>
+		/// <param name="skip">Skip count</param>
+		/// <param name="commandFlags">Command execution flags</param>
+		/// <returns>
+		///     True if the object has been removed. Otherwise false
+		///  </returns>
+		IEnumerable<T> SortedSetRangeByScore<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending, long skip = 0L,
+			long take = -1L, CommandFlags commandFlags = CommandFlags.None);
+
+		/// <summary>
+		///     Get entries from sorted-set ordered 
+		/// </summary>
+		/// <remarks>
+		///     Time complexity: O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements being returned. If M is constant (e.g. always asking for the first 10 elements with LIMIT), you can consider it O(log(N) 
+		/// </remarks>
+		/// <param name="key">Key of the set</param>
+		/// <param name="start">Min score</param>
+		/// <param name="stop">Max score</param>
+		/// <param name="exclude">Exclude start / stop</param>
+		/// <param name="order">Order of sorted set</param>
+		/// <param name="take">Take count</param>
+		/// <param name="skip">Skip count</param>
+		/// <param name="commandFlags">Command execution flags</param>
+		/// <returns>
+		///     True if the object has been removed. Otherwise false
+		///  </returns>
+		Task<IEnumerable<T>> SortedSetRangeByScoreAsync<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending,
+			long skip = 0L,
+			long take = -1L, CommandFlags commandFlags = CommandFlags.None);
+	}
 }
