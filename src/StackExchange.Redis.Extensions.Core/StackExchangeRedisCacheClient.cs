@@ -734,12 +734,13 @@ namespace StackExchange.Redis.Extensions.Core
             return await Database.StringSetAsync(values);
         }
 
-        /// <summary>
-        ///     Adds all.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items">The items.</param>
-        public bool AddAll<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt)
+		/// <summary>
+		///     Adds all.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="items">The items.</param>
+		/// <param name="expiresAt"></param>
+		public bool AddAll<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt)
         {
             var values = items
                 .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
@@ -755,13 +756,14 @@ namespace StackExchange.Redis.Extensions.Core
             return result;
         }
 
-        /// <summary>
-        ///     Adds all asynchronous.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items">The items.</param>
-        /// <returns></returns>
-        public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt)
+		/// <summary>
+		///     Adds all asynchronous.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="items">The items.</param>
+		/// <param name="expiresAt"></param>
+		/// <returns></returns>
+		public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt)
         {
             var values = items
                 .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
@@ -774,12 +776,13 @@ namespace StackExchange.Redis.Extensions.Core
             return result;
         }
 
-        /// <summary>
-        ///     Adds all.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items">The items.</param>
-        public bool AddAll<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn)
+		/// <summary>
+		///     Adds all.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="items">The items.</param>
+		/// <param name="expiresOn"></param>
+		public bool AddAll<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn)
         {
             var values = items
                 .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
@@ -795,13 +798,14 @@ namespace StackExchange.Redis.Extensions.Core
             return result;
         }
 
-        /// <summary>
-        ///     Adds all asynchronous.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items">The items.</param>
-        /// <returns></returns>
-        public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn)
+		/// <summary>
+		///     Adds all asynchronous.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="items">The items.</param>
+		/// <param name="expiresOn"></param>
+		/// <returns></returns>
+		public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn)
         {
             var values = items
                 .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
@@ -2093,6 +2097,135 @@ namespace StackExchange.Redis.Extensions.Core
                 results.Add(keys[i], await UpdateExpiryAsync(keys[i], expiresIn));
             }
             return results;
+        }
+
+        /// <summary>
+        ///     Add the entry to a sorted set with a score 
+        /// </summary>
+        /// <remarks>
+        ///     Time complexity: O(1)
+        /// </remarks>
+        /// <param name="key">Key of the set</param>
+        /// <param name="value">The instance of T.</param>
+        /// <param name="score">Score of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
+        /// <returns>
+        ///     True if the object has been added. Otherwise false
+        /// </returns>
+        public bool SortedSetAdd<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var entryBytes = Serializer.Serialize(value);
+
+            return Database.SortedSetAdd(key, entryBytes, score, commandFlags);
+        }
+
+        /// <summary>
+        ///     Add the entry to a sorted set with a score 
+        /// </summary>
+        /// <remarks>
+        ///     Time complexity: O(1)
+        /// </remarks>
+        /// <param name="key">Key of the set</param>
+        /// <param name="value">The instance of T.</param>
+        /// <param name="score">Score of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
+        /// <returns>
+        ///     True if the object has been added. Otherwise false
+        /// </returns>
+        public async Task<bool> SortedSetAddAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var entryBytes = Serializer.Serialize(value);
+
+            return await Database.SortedSetAddAsync(key, entryBytes, score, commandFlags);
+        }
+
+        /// <summary>
+        ///     Remove the entry to a sorted set 
+        /// </summary>
+        /// <remarks>
+        ///     Time complexity: O(1)
+        /// </remarks>
+        /// <param name="key">Key of the set</param>
+        /// <param name="value">The instance of T.</param>
+        /// <param name="commandFlags">Command execution flags</param>
+        /// <returns>
+        ///     True if the object has been removed. Otherwise false
+        /// </returns>
+        public bool SortedSetRemove<T>(string key, T value, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var entryBytes = Serializer.Serialize(value);
+
+            return Database.SortedSetRemove(key, entryBytes, commandFlags);
+        }
+
+        /// <summary>
+        ///     Remove the entry to a sorted set 
+        /// </summary>
+        /// <remarks>
+        ///     Time complexity: O(1)
+        /// </remarks>
+        /// <param name="key">Key of the set</param>
+        /// <param name="value">The instance of T.</param>
+        /// <param name="commandFlags">Command execution flags</param>
+        /// <returns>
+        ///     True if the object has been removed. Otherwise false
+        ///  </returns>
+        public async Task<bool> SortedSetRemoveAsync<T>(string key, T value, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var entryBytes = Serializer.Serialize(value);
+
+            return await Database.SortedSetRemoveAsync(key, entryBytes, commandFlags);
+        }
+
+        /// <summary>
+        ///     Get entries from sorted-set ordered 
+        /// </summary>
+        /// <remarks>
+        ///     Time complexity: O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements being returned. If M is constant (e.g. always asking for the first 10 elements with LIMIT), you can consider it O(log(N) 
+        /// </remarks>
+        /// <param name="key">Key of the set</param>
+        /// <param name="start">Min score</param>
+        /// <param name="stop">Max score</param>
+        /// <param name="exclude">Exclude start / stop</param>
+        /// <param name="order">Order of sorted set</param>
+        /// <param name="take">Take count</param>
+        /// <param name="skip">Skip count</param>
+        /// <param name="commandFlags">Command execution flags</param>
+        /// <returns>
+        ///     True if the object has been removed. Otherwise false
+        ///  </returns>
+        public IEnumerable<T> SortedSetRangeByScore<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending, long skip = 0L,
+            long take = -1L, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var result = Database.SortedSetRangeByScore(key, start, stop, exclude, order, skip, take, commandFlags);
+
+            return result.Select(m => m == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(m));
+        }
+
+        /// <summary>
+        ///     Get entries from sorted-set ordered 
+        /// </summary>
+        /// <remarks>
+        ///     Time complexity: O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements being returned. If M is constant (e.g. always asking for the first 10 elements with LIMIT), you can consider it O(log(N) 
+        /// </remarks>
+        /// <param name="key">Key of the set</param>
+        /// <param name="start">Min score</param>
+        /// <param name="stop">Max score</param>
+        /// <param name="exclude">Exclude start / stop</param>
+        /// <param name="order">Order of sorted set</param>
+        /// <param name="take">Take count</param>
+        /// <param name="skip">Skip count</param>
+        /// <param name="commandFlags">Command execution flags</param>
+        /// <returns>
+        ///     True if the object has been removed. Otherwise false
+        ///  </returns>
+        public async Task<IEnumerable<T>> SortedSetRangeByScoreAsync<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending,
+            long skip = 0L,
+            long take = -1L, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var result = await Database.SortedSetRangeByScoreAsync(key, start, stop, exclude, order, skip, take, commandFlags);
+
+            return result.Select(m => m == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(m));
         }
     }
 }
