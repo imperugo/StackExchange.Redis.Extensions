@@ -146,7 +146,7 @@ namespace StackExchange.Redis.Extensions.Core
 		///     serializer
 		/// </exception>
 		public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer, int database = 0, string keyPrefix = null)
-			: this(connectionMultiplexer, serializer, new ServerEnumerationStrategy(), 0, keyPrefix)
+			: this(connectionMultiplexer, serializer, new ServerEnumerationStrategy(), database, keyPrefix)
 		{
 		}
 
