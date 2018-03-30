@@ -282,12 +282,13 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </summary>
 		/// <typeparam name="T">The type of the expected object</typeparam>
 		/// <param name="key">The cache key.</param>
+		/// <param name="flag">Behaviour markers associated with a given command</param>
 		/// <returns>
 		///     Null if not present, otherwise the instance of T.
 		/// </returns>
-		public T Get<T>(string key)
+		public T Get<T>(string key, CommandFlags flag = CommandFlags.None)
 		{
-			var valueBytes = Database.StringGet(key);
+			var valueBytes = Database.StringGet(key,flag);
 
 			if (!valueBytes.HasValue)
 			{
@@ -303,12 +304,13 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">The type of the expected object</typeparam>
         /// <param name="key">The cache key.</param>
         /// <param name="expiresAt">Expiration time.</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <returns>
         ///     Null if not present, otherwise the instance of T.
         /// </returns>
-        public T Get<T>(string key, DateTimeOffset expiresAt)
+        public T Get<T>(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)
         {
-            var result = Get<T>(key);
+            var result = Get<T>(key,flag);
             
             if (!Equals(result, default(T)))
             {
@@ -327,9 +329,9 @@ namespace StackExchange.Redis.Extensions.Core
         /// <returns>
         ///     Null if not present, otherwise the instance of T.
         /// </returns>
-        public T Get<T>(string key, TimeSpan expiresIn)
+        public T Get<T>(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None)
         {
-            var result = Get<T>(key);
+            var result = Get<T>(key,flag);
 
             if (!Equals(result, default(T)))
             {
@@ -344,12 +346,13 @@ namespace StackExchange.Redis.Extensions.Core
         /// </summary>
         /// <typeparam name="T">The type of the expected object</typeparam>
         /// <param name="key">The cache key.</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <returns>
         ///     Null if not present, otherwise the instance of T.
         /// </returns>
-        public async Task<T> GetAsync<T>(string key)
+        public async Task<T> GetAsync<T>(string key, CommandFlags flag = CommandFlags.None)
 		{
-			var valueBytes = await Database.StringGetAsync(key);
+			var valueBytes = await Database.StringGetAsync(key,flag);
 
 			if (!valueBytes.HasValue)
 			{
@@ -365,12 +368,13 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">The type of the expected object</typeparam>
         /// <param name="key">The cache key.</param>
         /// <param name="expiresAt">Expiration time.</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <returns>
         ///     Null if not present, otherwise the instance of T.
         /// </returns>
-        public async Task<T> GetAsync<T>(string key, DateTimeOffset expiresAt)
+        public async Task<T> GetAsync<T>(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)
         {
-            var result = await GetAsync<T>(key);
+            var result = await GetAsync<T>(key,flag);
 
             if (!Equals(result, default(T)))
             {
@@ -386,12 +390,13 @@ namespace StackExchange.Redis.Extensions.Core
         /// <typeparam name="T">The type of the expected object</typeparam>
         /// <param name="key">The cache key.</param>
         /// <param name="expiresIn">Time till the object expires.</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <returns>
         ///     Null if not present, otherwise the instance of T.
         /// </returns>
-        public async Task<T> GetAsync<T>(string key, TimeSpan expiresIn)
+        public async Task<T> GetAsync<T>(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None)
         {
-            var result = await GetAsync<T>(key);
+            var result = await GetAsync<T>(key,flag);
 
             if (!Equals(result, default(T)))
             {

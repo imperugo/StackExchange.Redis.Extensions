@@ -1777,8 +1777,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public async Task Add_More_Items_To_Sorted_Set_In_Order()
 		{
-			var entryValueFirst = new TestClass<DateTime>("test_first", DateTime.UtcNow);
-			var entryValueLast = new TestClass<DateTime>("test_last", DateTime.UtcNow);
+			var utcNow = DateTime.UtcNow;
+			var entryValueFirst = new TestClass<DateTime>("test_first", utcNow);
+			var entryValueLast = new TestClass<DateTime>("test_last", utcNow);
 	  
 			await Sut.SortedSetAddAsync("my Key", entryValueFirst, 1);
 			await Sut.SortedSetAddAsync("my Key", entryValueLast, 2);
