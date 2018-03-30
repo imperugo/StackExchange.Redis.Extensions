@@ -146,6 +146,7 @@ namespace StackExchange.Redis.Extensions.LegacyConfiguration
 	        result.Database = cfg.Database;
 	        result.KeyPrefix = cfg.KeyPrefix;
 	        result.Password = cfg.Password;
+	        result.Ssl = cfg.Ssl;
 
 			List<Core.Configuration.RedisHost> hosts = new List<Core.Configuration.RedisHost>();
 
