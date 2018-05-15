@@ -82,8 +82,7 @@
 
 				    options.CertificateValidation += (sender, cert, chain, errors) => true;
                 }
-
-				return options;
+                return options;
 			}
 		}
 
