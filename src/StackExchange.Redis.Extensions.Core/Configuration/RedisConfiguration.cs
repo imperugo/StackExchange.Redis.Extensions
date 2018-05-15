@@ -62,7 +62,7 @@
 		/// </summary>
 		public ServerEnumerationStrategy ServerEnumerationStrategy { get; set; }
 
-		public ConfigurationOptions ConfigurationOptions
+	    public ConfigurationOptions ConfigurationOptions
 		{
 			get
 			{
@@ -74,12 +74,14 @@
 						AllowAdmin = AllowAdmin,
 						Password = Password,
 						ConnectTimeout = ConnectTimeout,
-						AbortOnConnectFail = AbortOnConnectFail
-					};
+						AbortOnConnectFail = AbortOnConnectFail,
+                    };
 
 					foreach (var redisHost in Hosts)
 						options.EndPoints.Add((string) redisHost.Host, redisHost.Port);
-				}
+
+				    options.CertificateValidation += (sender, cert, chain, errors) => true;
+                }
 
 				return options;
 			}
