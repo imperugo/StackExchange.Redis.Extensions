@@ -79,9 +79,8 @@
 
 					foreach (var redisHost in Hosts)
 						options.EndPoints.Add((string) redisHost.Host, redisHost.Port);
-
-				    options.CertificateValidation += (sender, cert, chain, errors) => true;
                 }
+
                 return options;
 			}
 		}

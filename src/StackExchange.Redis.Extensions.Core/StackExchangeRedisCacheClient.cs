@@ -50,8 +50,9 @@ namespace StackExchange.Redis.Extensions.Core
 			{
 				options.EndPoints.Add(redisHost.Host, redisHost.Port);
 			}
+		    options.CertificateValidation += (sender, cert, chain, errors) => true;
 
-			connectionMultiplexer = ConnectionMultiplexer.Connect(options);
+		    connectionMultiplexer = ConnectionMultiplexer.Connect(options);
 			Database = connectionMultiplexer.GetDatabase(configuration.Database);
 
 			if (!string.IsNullOrWhiteSpace(configuration.KeyPrefix))
