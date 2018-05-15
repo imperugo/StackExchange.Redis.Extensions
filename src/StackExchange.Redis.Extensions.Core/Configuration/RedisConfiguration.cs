@@ -74,7 +74,7 @@
 						AllowAdmin = AllowAdmin,
 						Password = Password,
 						ConnectTimeout = ConnectTimeout,
-						AbortOnConnectFail = AbortOnConnectFail,
+						AbortOnConnectFail = AbortOnConnectFail
                     };
 
 					foreach (var redisHost in Hosts)
