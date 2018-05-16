@@ -1,4 +1,6 @@
-﻿namespace StackExchange.Redis.Extensions.Core.Configuration
+﻿using System.Net.Security;
+
+namespace StackExchange.Redis.Extensions.Core.Configuration
 {
 	public class RedisConfiguration
 	{
@@ -62,7 +64,14 @@
 		/// </summary>
 		public ServerEnumerationStrategy ServerEnumerationStrategy { get; set; }
 
-	    public ConfigurationOptions ConfigurationOptions
+
+	    /// <summary>
+	    /// A RemoteCertificateValidationCallback delegate responsible for validating the certificate supplied by the remote party; note
+	    /// that this cannot be specified in the configuration-string.
+	    /// </summary>
+	    public event RemoteCertificateValidationCallback CertificateValidation;
+
+        public ConfigurationOptions ConfigurationOptions
 		{
 			get
 			{
@@ -79,7 +88,9 @@
 
 					foreach (var redisHost in Hosts)
 						options.EndPoints.Add((string) redisHost.Host, redisHost.Port);
-                }
+
+				    options.CertificateValidation += CertificateValidation;
+				}
 
                 return options;
 			}
