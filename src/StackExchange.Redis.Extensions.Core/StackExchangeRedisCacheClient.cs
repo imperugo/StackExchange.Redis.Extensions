@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
-using StackExchange.Redis.Extensions.Core.ServerIteration;
 using StackExchange.Redis.Extensions.Core.Configuration;
-using StackExchange.Redis.Extensions.Core.Extensions;
 using StackExchange.Redis.KeyspaceIsolation;
 
 namespace StackExchange.Redis.Extensions.Core
@@ -36,22 +33,8 @@ namespace StackExchange.Redis.Extensions.Core
 				throw new ArgumentNullException(nameof(configuration), "The configuration could not be null");
 			}
 
-			var options = new ConfigurationOptions
-			{
-				Ssl = configuration.Ssl,
-				AllowAdmin = configuration.AllowAdmin,
-				Password = configuration.Password,
-				AbortOnConnectFail = configuration.AbortOnConnectFail,
-				ConnectTimeout = configuration.ConnectTimeout,
-			};
-			serverEnumerationStrategy = configuration.ServerEnumerationStrategy;
-
-			foreach (RedisHost redisHost in configuration.Hosts)
-			{
-				options.EndPoints.Add(redisHost.Host, redisHost.Port);
-			}
-
-			connectionMultiplexer = ConnectionMultiplexer.Connect(options);
+		    serverEnumerationStrategy = configuration.ServerEnumerationStrategy;
+            connectionMultiplexer = ConnectionMultiplexer.Connect(configuration.ConfigurationOptions);
 			Database = connectionMultiplexer.GetDatabase(configuration.Database);
 
 			if (!string.IsNullOrWhiteSpace(configuration.KeyPrefix))
