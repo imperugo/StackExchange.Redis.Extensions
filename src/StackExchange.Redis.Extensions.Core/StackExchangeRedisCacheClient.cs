@@ -15,6 +15,7 @@ namespace StackExchange.Redis.Extensions.Core
 		private string keyprefix = null;
 		private readonly IConnectionMultiplexer connectionMultiplexer;
 		private readonly ServerEnumerationStrategy serverEnumerationStrategy = new ServerEnumerationStrategy();
+		private readonly bool disposeConnectionMultiplexer = false;
 
 		/// <summary>
 		///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
@@ -23,24 +24,22 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="configuration">The configuration.</param>
 		public StackExchangeRedisCacheClient(ISerializer serializer, RedisConfiguration configuration)
 		{
-			if (serializer == null)
-			{
-				throw new ArgumentNullException(nameof(serializer), "The serializer could not be null.");
-			}
-
 			if (configuration == null)
 			{
-				throw new ArgumentNullException(nameof(configuration), "The configuration could not be null");
+				throw new ArgumentNullException(nameof(configuration), "The configuration can not be null");
 			}
 
 		    serverEnumerationStrategy = configuration.ServerEnumerationStrategy;
             connectionMultiplexer = ConnectionMultiplexer.Connect(configuration.ConfigurationOptions);
+			disposeConnectionMultiplexer = true;
 			Database = connectionMultiplexer.GetDatabase(configuration.Database);
 
 			if (!string.IsNullOrWhiteSpace(configuration.KeyPrefix))
+			{
 				Database = Database.WithKeyPrefix(configuration.KeyPrefix);
+			}
 
-			Serializer = serializer;
+			Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer), "The serializer can not be null.");
 			keyprefix = configuration.KeyPrefix;
 		}
 
@@ -64,20 +63,17 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="database">The database.</param>
 		/// <param name="keyPrefix">Specifies the key separation prefix to be used for all keys</param>
 		/// <exception cref="System.ArgumentNullException">serializer</exception>
-		public StackExchangeRedisCacheClient(ISerializer serializer, string connectionString, int database = 0,
-			string keyPrefix = null)
+		public StackExchangeRedisCacheClient(ISerializer serializer, string connectionString, int database = 0, string keyPrefix = null)
 		{
-			if (serializer == null)
-			{
-				throw new ArgumentNullException(nameof(serializer));
-			}
-
-			Serializer = serializer;
+			Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 			connectionMultiplexer = ConnectionMultiplexer.Connect(connectionString);
+			disposeConnectionMultiplexer = true;
 			Database = connectionMultiplexer.GetDatabase(database);
 
 			if (!string.IsNullOrWhiteSpace(keyPrefix))
+			{
 				Database = Database.WithKeyPrefix(keyPrefix);
+			}
 
 			keyprefix = keyPrefix;
 		}
@@ -111,9 +107,8 @@ namespace StackExchange.Redis.Extensions.Core
 		///     serializer
 		/// </exception>
         public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer, ServerEnumerationStrategy serverEnumerationStrategy, string keyPrefix)
-            : this(connectionMultiplexer, serializer, 0, keyPrefix)
+            : this(connectionMultiplexer, serializer, serverEnumerationStrategy, 0, keyPrefix)
         {
-            this.serverEnumerationStrategy = serverEnumerationStrategy;
         }
 
 		/// <summary>
@@ -148,24 +143,16 @@ namespace StackExchange.Redis.Extensions.Core
         /// </exception>
         public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer,ServerEnumerationStrategy serverEnumerationStrategy, int database = 0, string keyPrefix = null)
 		{
-			if (connectionMultiplexer == null)
-			{
-				throw new ArgumentNullException(nameof(connectionMultiplexer));
-			}
-
-			if (serializer == null)
-			{
-				throw new ArgumentNullException(nameof(serializer));
-			}
-
 			this.serverEnumerationStrategy = serverEnumerationStrategy;
-			Serializer = serializer;
-			this.connectionMultiplexer = connectionMultiplexer;
+			Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
+			this.connectionMultiplexer = connectionMultiplexer ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
 
 			Database = connectionMultiplexer.GetDatabase(database);
 
 			if (!string.IsNullOrWhiteSpace(keyPrefix))
+			{
 				Database = Database.WithKeyPrefix(keyPrefix);
+			}
 
 			keyprefix = keyPrefix;
 		}
@@ -175,7 +162,10 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </summary>
 		public void Dispose()
 		{
-			connectionMultiplexer.Dispose();
+			if (disposeConnectionMultiplexer)
+			{
+				connectionMultiplexer.Dispose();
+			}
 		}
 
 		/// <summary>
