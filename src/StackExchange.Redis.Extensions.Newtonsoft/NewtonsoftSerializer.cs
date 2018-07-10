@@ -22,11 +22,18 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
 
         private readonly JsonSerializerSettings settings;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NewtonsoftSerializer"/> class.
-        /// </summary>
-        /// <param name="settings">The settings.</param>
-        public NewtonsoftSerializer(JsonSerializerSettings settings = null)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NewtonsoftSerializer"/> class.
+		/// </summary>
+		public NewtonsoftSerializer() : this(null)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NewtonsoftSerializer"/> class.
+		/// </summary>
+		/// <param name="settings">The settings.</param>
+		public NewtonsoftSerializer(JsonSerializerSettings settings)
         {
             this.settings = settings ?? new JsonSerializerSettings();
         }

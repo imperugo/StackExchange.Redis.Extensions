@@ -1,0 +1,13 @@
+﻿{
+	"redisConfiguration": {
+		"password": "",
+		"allowAdmin": true,
+		"ssl": false,
+		"hosts": [
+			{
+				"Host": "my_super_secret_host_dev",
+				"Port": "6379"
+			}
+		]
+	}
+}

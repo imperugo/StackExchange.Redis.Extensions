@@ -65,13 +65,13 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		public ServerEnumerationStrategy ServerEnumerationStrategy { get; set; }
 
 
-	    /// <summary>
-	    /// A RemoteCertificateValidationCallback delegate responsible for validating the certificate supplied by the remote party; note
-	    /// that this cannot be specified in the configuration-string.
-	    /// </summary>
-	    public event RemoteCertificateValidationCallback CertificateValidation;
+		/// <summary>
+		/// A RemoteCertificateValidationCallback delegate responsible for validating the certificate supplied by the remote party; note
+		/// that this cannot be specified in the configuration-string.
+		/// </summary>
+		public event RemoteCertificateValidationCallback CertificateValidation;
 
-        public ConfigurationOptions ConfigurationOptions
+		public ConfigurationOptions ConfigurationOptions
 		{
 			get
 			{
@@ -84,15 +84,15 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 						Password = Password,
 						ConnectTimeout = ConnectTimeout,
 						AbortOnConnectFail = AbortOnConnectFail
-                    };
+					};
 
 					foreach (var redisHost in Hosts)
-						options.EndPoints.Add((string) redisHost.Host, redisHost.Port);
+						options.EndPoints.Add(redisHost.Host, redisHost.Port);
 
-				    options.CertificateValidation += CertificateValidation;
+					options.CertificateValidation += CertificateValidation;
 				}
 
-                return options;
+				return options;
 			}
 		}
 

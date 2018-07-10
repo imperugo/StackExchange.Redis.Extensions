@@ -1,0 +1,15 @@
+﻿{
+	"redisConfiguration": {
+		"password": "my_super_secret_passwors",
+		"allowAdmin": true,
+		"ssl": false,
+		"connectTimeout": 5000,
+		"database": 0,
+		"hosts": [
+			{
+				"Host": "my_super_secret_host",
+				"Port": "6379"
+			}
+		]
+	} 
+}
