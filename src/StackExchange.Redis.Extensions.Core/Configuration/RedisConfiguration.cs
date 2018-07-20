@@ -52,10 +52,10 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		public int Database { get; set; } = 0;
 
 		/// <summary>
-		/// The host of Redis Server
+		/// The host of Redis Servers
 		/// </summary>
 		/// <value>
-		/// The ip or name
+		/// The ips or names
 		/// </value>
 		public RedisHost[] Hosts { get; set; }
 
