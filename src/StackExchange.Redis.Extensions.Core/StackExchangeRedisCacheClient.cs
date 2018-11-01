@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.Core.ServerIteration;
 using StackExchange.Redis.KeyspaceIsolation;
 
 namespace StackExchange.Redis.Extensions.Core
@@ -29,8 +30,8 @@ namespace StackExchange.Redis.Extensions.Core
 				throw new ArgumentNullException(nameof(configuration), "The configuration can not be null");
 			}
 
-		    serverEnumerationStrategy = configuration.ServerEnumerationStrategy;
-            connectionMultiplexer = ConnectionMultiplexer.Connect(configuration.ConfigurationOptions);
+			serverEnumerationStrategy = configuration.ServerEnumerationStrategy;
+			connectionMultiplexer = ConnectionMultiplexer.Connect(configuration.ConfigurationOptions);
 			disposeConnectionMultiplexer = true;
 			Database = connectionMultiplexer.GetDatabase(configuration.Database);
 
@@ -94,7 +95,7 @@ namespace StackExchange.Redis.Extensions.Core
 		{
 		}
 
-        /// <summary>
+		/// <summary>
 		///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
 		/// </summary>
 		/// <param name="connectionMultiplexer">The connection multiplexer.</param>
@@ -106,10 +107,10 @@ namespace StackExchange.Redis.Extensions.Core
 		///     or
 		///     serializer
 		/// </exception>
-        public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer, ServerEnumerationStrategy serverEnumerationStrategy, string keyPrefix)
-            : this(connectionMultiplexer, serializer, serverEnumerationStrategy, 0, keyPrefix)
-        {
-        }
+		public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer, ServerEnumerationStrategy serverEnumerationStrategy, string keyPrefix)
+			: this(connectionMultiplexer, serializer, serverEnumerationStrategy, 0, keyPrefix)
+		{
+		}
 
 		/// <summary>
 		///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
@@ -129,19 +130,19 @@ namespace StackExchange.Redis.Extensions.Core
 		}
 
 		/// <summary>
-        ///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
-        /// </summary>
-        /// <param name="connectionMultiplexer">The connection multiplexer.</param>
-        /// <param name="serializer">The serializer.</param>
+		///     Initializes a new instance of the <see cref="StackExchangeRedisCacheClient" /> class.
+		/// </summary>
+		/// <param name="connectionMultiplexer">The connection multiplexer.</param>
+		/// <param name="serializer">The serializer.</param>
 		/// <param name="serverEnumerationStrategy">The strategy to use when executing server wide commands.</param>
-        /// <param name="database">The database.</param>
-        /// <param name="keyPrefix">Specifies the key separation prefix to be used for all keys</param>
-        /// <exception cref="System.ArgumentNullException">
-        ///     connectionMultiplexer
-        ///     or
-        ///     serializer
-        /// </exception>
-        public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer,ServerEnumerationStrategy serverEnumerationStrategy, int database = 0, string keyPrefix = null)
+		/// <param name="database">The database.</param>
+		/// <param name="keyPrefix">Specifies the key separation prefix to be used for all keys</param>
+		/// <exception cref="System.ArgumentNullException">
+		///     connectionMultiplexer
+		///     or
+		///     serializer
+		/// </exception>
+		public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer, ServerEnumerationStrategy serverEnumerationStrategy, int database = 0, string keyPrefix = null)
 		{
 			this.serverEnumerationStrategy = serverEnumerationStrategy;
 			Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
@@ -261,7 +262,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </returns>
 		public T Get<T>(string key, CommandFlags flag = CommandFlags.None)
 		{
-			var valueBytes = Database.StringGet(key,flag);
+			var valueBytes = Database.StringGet(key, flag);
 
 			if (!valueBytes.HasValue)
 			{
@@ -271,61 +272,61 @@ namespace StackExchange.Redis.Extensions.Core
 			return Serializer.Deserialize<T>(valueBytes);
 		}
 
-        /// <summary>
-        ///     Get the object with the specified key from Redis database and update the expiry time
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="key">The cache key.</param>
-        /// <param name="expiresAt">Expiration time.</param>
-        /// <param name="flag">Behaviour markers associated with a given command</param>
-        /// <returns>
-        ///     Null if not present, otherwise the instance of T.
-        /// </returns>
-        public T Get<T>(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)
-        {
-            var result = Get<T>(key,flag);
-            
-            if (!Equals(result, default(T)))
-            {
-                Database.KeyExpire(key, expiresAt.Subtract(DateTime.Now));
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        ///     Get the object with the specified key from Redis database and update the expiry time
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="key">The cache key.</param>
-        /// <param name="expiresIn">Time till the object expires.</param>
-        /// <returns>
-        ///     Null if not present, otherwise the instance of T.
-        /// </returns>
-        public T Get<T>(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None)
-        {
-            var result = Get<T>(key,flag);
-
-            if (!Equals(result, default(T)))
-            {
-                Database.KeyExpire(key, expiresIn);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        ///     Get the object with the specified key from Redis database
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="key">The cache key.</param>
-        /// <param name="flag">Behaviour markers associated with a given command</param>
-        /// <returns>
-        ///     Null if not present, otherwise the instance of T.
-        /// </returns>
-        public async Task<T> GetAsync<T>(string key, CommandFlags flag = CommandFlags.None)
+		/// <summary>
+		///     Get the object with the specified key from Redis database and update the expiry time
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="key">The cache key.</param>
+		/// <param name="expiresAt">Expiration time.</param>
+		/// <param name="flag">Behaviour markers associated with a given command</param>
+		/// <returns>
+		///     Null if not present, otherwise the instance of T.
+		/// </returns>
+		public T Get<T>(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)
 		{
-			var valueBytes = await Database.StringGetAsync(key,flag);
+			var result = Get<T>(key, flag);
+
+			if (!Equals(result, default(T)))
+			{
+				Database.KeyExpire(key, expiresAt.Subtract(DateTime.Now));
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		///     Get the object with the specified key from Redis database and update the expiry time
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="key">The cache key.</param>
+		/// <param name="expiresIn">Time till the object expires.</param>
+		/// <returns>
+		///     Null if not present, otherwise the instance of T.
+		/// </returns>
+		public T Get<T>(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None)
+		{
+			var result = Get<T>(key, flag);
+
+			if (!Equals(result, default(T)))
+			{
+				Database.KeyExpire(key, expiresIn);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		///     Get the object with the specified key from Redis database
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="key">The cache key.</param>
+		/// <param name="flag">Behaviour markers associated with a given command</param>
+		/// <returns>
+		///     Null if not present, otherwise the instance of T.
+		/// </returns>
+		public async Task<T> GetAsync<T>(string key, CommandFlags flag = CommandFlags.None)
+		{
+			var valueBytes = await Database.StringGetAsync(key, flag);
 
 			if (!valueBytes.HasValue)
 			{
@@ -335,60 +336,60 @@ namespace StackExchange.Redis.Extensions.Core
 			return await Serializer.DeserializeAsync<T>(valueBytes);
 		}
 
-        /// <summary>
-        ///     Get the object with the specified key from Redis database and update the expiry time
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="key">The cache key.</param>
-        /// <param name="expiresAt">Expiration time.</param>
-        /// <param name="flag">Behaviour markers associated with a given command</param>
-        /// <returns>
-        ///     Null if not present, otherwise the instance of T.
-        /// </returns>
-        public async Task<T> GetAsync<T>(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)
-        {
-            var result = await GetAsync<T>(key,flag);
+		/// <summary>
+		///     Get the object with the specified key from Redis database and update the expiry time
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="key">The cache key.</param>
+		/// <param name="expiresAt">Expiration time.</param>
+		/// <param name="flag">Behaviour markers associated with a given command</param>
+		/// <returns>
+		///     Null if not present, otherwise the instance of T.
+		/// </returns>
+		public async Task<T> GetAsync<T>(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)
+		{
+			var result = await GetAsync<T>(key, flag);
 
-            if (!Equals(result, default(T)))
-            {
-                await Database.KeyExpireAsync(key, expiresAt.Subtract(DateTime.Now));
-            }
+			if (!Equals(result, default(T)))
+			{
+				await Database.KeyExpireAsync(key, expiresAt.Subtract(DateTime.Now));
+			}
 
-            return default(T);
-        }
+			return default(T);
+		}
 
-        /// <summary>
-        ///     Get the object with the specified key from Redis database and update the expiry time
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="key">The cache key.</param>
-        /// <param name="expiresIn">Time till the object expires.</param>
-        /// <param name="flag">Behaviour markers associated with a given command</param>
-        /// <returns>
-        ///     Null if not present, otherwise the instance of T.
-        /// </returns>
-        public async Task<T> GetAsync<T>(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None)
-        {
-            var result = await GetAsync<T>(key,flag);
+		/// <summary>
+		///     Get the object with the specified key from Redis database and update the expiry time
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="key">The cache key.</param>
+		/// <param name="expiresIn">Time till the object expires.</param>
+		/// <param name="flag">Behaviour markers associated with a given command</param>
+		/// <returns>
+		///     Null if not present, otherwise the instance of T.
+		/// </returns>
+		public async Task<T> GetAsync<T>(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None)
+		{
+			var result = await GetAsync<T>(key, flag);
 
-            if (!Equals(result, default(T)))
-            {
-                await Database.KeyExpireAsync(key, expiresIn);
-            }
+			if (!Equals(result, default(T)))
+			{
+				await Database.KeyExpireAsync(key, expiresIn);
+			}
 
-            return default(T);
-        }
+			return default(T);
+		}
 
-        /// <summary>
-        ///     Adds the specified instance to the Redis database.
-        /// </summary>
-        /// <typeparam name="T">The type of the class to add to Redis</typeparam>
-        /// <param name="key">The cache key.</param>
-        /// <param name="value">The instance of T.</param>
-        /// <returns>
-        ///     True if the object has been added. Otherwise false
-        /// </returns>
-        public bool Add<T>(string key, T value)
+		/// <summary>
+		///     Adds the specified instance to the Redis database.
+		/// </summary>
+		/// <typeparam name="T">The type of the class to add to Redis</typeparam>
+		/// <param name="key">The cache key.</param>
+		/// <param name="value">The instance of T.</param>
+		/// <returns>
+		///     True if the object has been added. Otherwise false
+		/// </returns>
+		public bool Add<T>(string key, T value)
 		{
 			var entryBytes = Serializer.Serialize(value);
 
@@ -593,50 +594,50 @@ namespace StackExchange.Redis.Extensions.Core
 			return dict;
 		}
 
-        /// <summary>
-        ///     Get the objects with the specified keys from Redis database with one roundtrip
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="keys">The keys.</param>
-        /// <param name="expiresAt">Expiration time.</param>
-        /// <returns>
-        ///     Empty list if there are no results, otherwise the instance of T.
-        ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
-        /// </returns>
-        public IDictionary<string, T> GetAll<T>(IEnumerable<string> keys, DateTimeOffset expiresAt)
-        {
-            var result = GetAll<T>(keys);
-            UpdateExpiryAll(keys.ToArray(), expiresAt);
-            return result;
-        }
+		/// <summary>
+		///     Get the objects with the specified keys from Redis database with one roundtrip
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="keys">The keys.</param>
+		/// <param name="expiresAt">Expiration time.</param>
+		/// <returns>
+		///     Empty list if there are no results, otherwise the instance of T.
+		///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
+		/// </returns>
+		public IDictionary<string, T> GetAll<T>(IEnumerable<string> keys, DateTimeOffset expiresAt)
+		{
+			var result = GetAll<T>(keys);
+			UpdateExpiryAll(keys.ToArray(), expiresAt);
+			return result;
+		}
 
-        /// <summary>
-        ///     Get the objects with the specified keys from Redis database with one roundtrip
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="keys">The keys.</param>
-        /// <param name="expiresIn">Time until expiration.</param>
-        /// <returns>
-        ///     Empty list if there are no results, otherwise the instance of T.
-        ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
-        /// </returns>
-        public IDictionary<string, T> GetAll<T>(IEnumerable<string> keys, TimeSpan expiresIn)
-        {
-            var result = GetAll<T>(keys);
-            UpdateExpiryAll(keys.ToArray(), expiresIn);
-            return result;
-        }
+		/// <summary>
+		///     Get the objects with the specified keys from Redis database with one roundtrip
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="keys">The keys.</param>
+		/// <param name="expiresIn">Time until expiration.</param>
+		/// <returns>
+		///     Empty list if there are no results, otherwise the instance of T.
+		///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
+		/// </returns>
+		public IDictionary<string, T> GetAll<T>(IEnumerable<string> keys, TimeSpan expiresIn)
+		{
+			var result = GetAll<T>(keys);
+			UpdateExpiryAll(keys.ToArray(), expiresIn);
+			return result;
+		}
 
-        /// <summary>
-        ///     Get the objects with the specified keys from Redis database with one roundtrip
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="keys">The keys.</param>
-        /// <returns>
-        ///     Empty list if there are no results, otherwise the instance of T.
-        ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
-        /// </returns>
-        public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys)
+		/// <summary>
+		///     Get the objects with the specified keys from Redis database with one roundtrip
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="keys">The keys.</param>
+		/// <returns>
+		///     Empty list if there are no results, otherwise the instance of T.
+		///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
+		/// </returns>
+		public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys)
 		{
 			var redisKeys = keys.Select(x => (RedisKey)x).ToArray();
 			var result = await Database.StringGetAsync(redisKeys);
@@ -647,70 +648,70 @@ namespace StackExchange.Redis.Extensions.Core
 				dict.Add(redisKeys[index], value == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(value));
 			}
 			return dict;
-        }
+		}
 
-        /// <summary>
-        ///     Get the objects with the specified keys from Redis database with one roundtrip
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="keys">The keys.</param>
-        /// <param name="expiresAt">Expiration time.</param>
-        /// <returns>
-        ///     Empty list if there are no results, otherwise the instance of T.
-        ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
-        /// </returns>
-        public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys, DateTimeOffset expiresAt)
-        {
-            var result = await GetAllAsync<T>(keys);
-            await UpdateExpiryAllAsync(keys.ToArray(), expiresAt);
-            return result;
-        }
+		/// <summary>
+		///     Get the objects with the specified keys from Redis database with one roundtrip
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="keys">The keys.</param>
+		/// <param name="expiresAt">Expiration time.</param>
+		/// <returns>
+		///     Empty list if there are no results, otherwise the instance of T.
+		///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
+		/// </returns>
+		public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys, DateTimeOffset expiresAt)
+		{
+			var result = await GetAllAsync<T>(keys);
+			await UpdateExpiryAllAsync(keys.ToArray(), expiresAt);
+			return result;
+		}
 
-        /// <summary>
-        ///     Get the objects with the specified keys from Redis database with one roundtrip
-        /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="keys">The keys.</param>
-        /// <param name="expiresIn">Time until expiration.</param>
-        /// <returns>
-        ///     Empty list if there are no results, otherwise the instance of T.
-        ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
-        /// </returns>
-        public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys, TimeSpan expiresIn)
-        {
-            var result = await GetAllAsync<T>(keys);
-            await UpdateExpiryAllAsync(keys.ToArray(), expiresIn);
-            return result;
-        }
+		/// <summary>
+		///     Get the objects with the specified keys from Redis database with one roundtrip
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object</typeparam>
+		/// <param name="keys">The keys.</param>
+		/// <param name="expiresIn">Time until expiration.</param>
+		/// <returns>
+		///     Empty list if there are no results, otherwise the instance of T.
+		///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
+		/// </returns>
+		public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys, TimeSpan expiresIn)
+		{
+			var result = await GetAllAsync<T>(keys);
+			await UpdateExpiryAllAsync(keys.ToArray(), expiresIn);
+			return result;
+		}
 
-        /// <summary>
-        ///     Adds all.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items">The items.</param>
-        public bool AddAll<T>(IList<Tuple<string, T>> items)
-        {
-            var values = items
-                .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
-                .ToArray();
+		/// <summary>
+		///     Adds all.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="items">The items.</param>
+		public bool AddAll<T>(IList<Tuple<string, T>> items)
+		{
+			var values = items
+				.Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
+				.ToArray();
 
-            return Database.StringSet(values);
-        }
+			return Database.StringSet(values);
+		}
 
-        /// <summary>
-        ///     Adds all asynchronous.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items">The items.</param>
-        /// <returns></returns>
-        public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items)
-        {
-            var values = items
-                .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
-                .ToArray();
+		/// <summary>
+		///     Adds all asynchronous.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="items">The items.</param>
+		/// <returns></returns>
+		public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items)
+		{
+			var values = items
+				.Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
+				.ToArray();
 
-            return await Database.StringSetAsync(values);
-        }
+			return await Database.StringSetAsync(values);
+		}
 
 		/// <summary>
 		///     Adds all.
@@ -719,20 +720,20 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="items">The items.</param>
 		/// <param name="expiresAt"></param>
 		public bool AddAll<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt)
-        {
-            var values = items
-                .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
-                .ToArray();
+		{
+			var values = items
+				.Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
+				.ToArray();
 
-            var result = Database.StringSet(values);
+			var result = Database.StringSet(values);
 
-            foreach(var value in values)
-            {
-                Database.KeyExpire(value.Key, expiresAt.DateTime);
-            }
+			foreach (var value in values)
+			{
+				Database.KeyExpire(value.Key, expiresAt.DateTime);
+			}
 
-            return result;
-        }
+			return result;
+		}
 
 		/// <summary>
 		///     Adds all asynchronous.
@@ -742,17 +743,17 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="expiresAt"></param>
 		/// <returns></returns>
 		public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt)
-        {
-            var values = items
-                .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
-                .ToArray();
+		{
+			var values = items
+				.Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
+				.ToArray();
 
-            var result = await Database.StringSetAsync(values);
+			var result = await Database.StringSetAsync(values);
 
-            Parallel.ForEach(values, async value => await Database.KeyExpireAsync(value.Key, expiresAt.DateTime));
+			Parallel.ForEach(values, async value => await Database.KeyExpireAsync(value.Key, expiresAt.DateTime));
 
-            return result;
-        }
+			return result;
+		}
 
 		/// <summary>
 		///     Adds all.
@@ -761,20 +762,20 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="items">The items.</param>
 		/// <param name="expiresOn"></param>
 		public bool AddAll<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn)
-        {
-            var values = items
-                .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
-                .ToArray();
+		{
+			var values = items
+				.Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
+				.ToArray();
 
-            var result = Database.StringSet(values);
+			var result = Database.StringSet(values);
 
-            foreach (var value in values)
-            {
-                Database.KeyExpire(value.Key, expiresOn);
-            }
+			foreach (var value in values)
+			{
+				Database.KeyExpire(value.Key, expiresOn);
+			}
 
-            return result;
-        }
+			return result;
+		}
 
 		/// <summary>
 		///     Adds all asynchronous.
@@ -784,26 +785,26 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <param name="expiresOn"></param>
 		/// <returns></returns>
 		public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn)
-        {
-            var values = items
-                .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
-                .ToArray();
+		{
+			var values = items
+				.Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
+				.ToArray();
 
-            var result = await Database.StringSetAsync(values);
+			var result = await Database.StringSetAsync(values);
 
-            Parallel.ForEach(values, async value => await Database.KeyExpireAsync(value.Key, expiresOn));
+			Parallel.ForEach(values, async value => await Database.KeyExpireAsync(value.Key, expiresOn));
 
-            return result;
-        }
+			return result;
+		}
 
-        /// <summary>
-        ///     Run SADD command http://redis.io/commands/sadd
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        public bool SetAdd<T>(string key, T item) where T : class
+		/// <summary>
+		///     Run SADD command http://redis.io/commands/sadd
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key"></param>
+		/// <param name="item"></param>
+		/// <returns></returns>
+		public bool SetAdd<T>(string key, T item) where T : class
 		{
 			if (string.IsNullOrEmpty(key))
 			{
@@ -1062,23 +1063,8 @@ namespace StackExchange.Redis.Extensions.Core
 			pattern = $"{keyprefix}{pattern}";
 			var keys = new HashSet<string>();
 
-			int nextCursor = 0;
-			do
-			{
-				RedisResult redisResult = this.Database.Execute("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000");
-				var innerResult = (RedisResult[])redisResult;
-
-				nextCursor = int.Parse((string)innerResult[0]);
-
-				List<string> resultLines = ((string[])innerResult[1]).ToList();
-
-				keys.UnionWith(resultLines);
-			}
-			while (nextCursor != 0);
-
-			/*
 			var multiplexer = Database.Multiplexer;
-			var servers = ServerIteratorFactory.GetServers(multiplexer, serverEnumerationStrategy).ToArray();
+			var servers = ServerIteratorFactory.GetServers(connectionMultiplexer, serverEnumerationStrategy).ToArray();
 			if (!servers.Any())
 			{
 				throw new Exception("No server found to serve the KEYS command.");
@@ -1086,16 +1072,20 @@ namespace StackExchange.Redis.Extensions.Core
 
 			foreach (var server in servers)
 			{
-				var dbKeys = server.Keys(Database.Database, pattern);
-				foreach (var dbKey in dbKeys)
+				int nextCursor = 0;
+				do
 				{
-					if (!keys.Contains(dbKey))
-					{
-						keys.Add(dbKey);
-					}
+					RedisResult redisResult = this.Database.Execute("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000");
+					var innerResult = (RedisResult[])redisResult;
+
+					nextCursor = int.Parse((string)innerResult[0]);
+
+					List<string> resultLines = ((string[])innerResult[1]).ToList();
+
+					keys.UnionWith(resultLines);
 				}
+				while (nextCursor != 0);
 			}
-			*/
 
 			return keys;
 		}
@@ -1125,10 +1115,13 @@ namespace StackExchange.Redis.Extensions.Core
 		public void FlushDb()
 		{
 			var endPoints = Database.Multiplexer.GetEndPoints();
-
 			foreach (var endpoint in endPoints)
 			{
-				Database.Multiplexer.GetServer(endpoint).FlushDatabase(Database.Database);
+				var server = Database.Multiplexer.GetServer(endpoint);
+				if (!server.IsSlave)
+				{
+					server.FlushDatabase(Database.Database);
+				}
 			}
 		}
 
@@ -1142,7 +1135,11 @@ namespace StackExchange.Redis.Extensions.Core
 
 			foreach (var endpoint in endPoints)
 			{
-				await Database.Multiplexer.GetServer(endpoint).FlushDatabaseAsync(Database.Database);
+				var server = Database.Multiplexer.GetServer(endpoint);
+				if (!server.IsSlave)
+				{
+					await server.FlushDatabaseAsync(Database.Database);
+				}
 			}
 		}
 
@@ -1949,261 +1946,261 @@ namespace StackExchange.Redis.Extensions.Core
 				.ToDictionary(x => x.Name.ToString(), x => Serializer.Deserialize<T>(x.Value), StringComparer.Ordinal);
 		}
 
-        /// <summary>
-        /// Updates the expiry time of a redis cache object
-        /// </summary>
-        /// <param name="key">The key of the object</param>
-        /// <param name="expiresAt">The new expiry time of the object</param>
-        /// <returns>True if the object is updated, false if the object does not exist</returns>
-        public bool UpdateExpiry(string key, DateTimeOffset expiresAt)
-        {
-            if (Database.KeyExists(key))
-            {
-                return Database.KeyExpire(key, expiresAt.Subtract(DateTime.Now));
-            }
+		/// <summary>
+		/// Updates the expiry time of a redis cache object
+		/// </summary>
+		/// <param name="key">The key of the object</param>
+		/// <param name="expiresAt">The new expiry time of the object</param>
+		/// <returns>True if the object is updated, false if the object does not exist</returns>
+		public bool UpdateExpiry(string key, DateTimeOffset expiresAt)
+		{
+			if (Database.KeyExists(key))
+			{
+				return Database.KeyExpire(key, expiresAt.Subtract(DateTime.Now));
+			}
 
-            return false;
-        }
+			return false;
+		}
 
-        /// <summary>
-        /// Updates the expiry time of a redis cache object
-        /// </summary>
-        /// <param name="key">The key of the object</param>
-        /// <param name="expiresIn">Time until the object will expire</param>
-        /// <returns>True if the object is updated, false if the object does not exist</returns>
-        public bool UpdateExpiry(string key, TimeSpan expiresIn)
-        {
-            if (Database.KeyExists(key))
-            {
-                return Database.KeyExpire(key, expiresIn);
-            }
+		/// <summary>
+		/// Updates the expiry time of a redis cache object
+		/// </summary>
+		/// <param name="key">The key of the object</param>
+		/// <param name="expiresIn">Time until the object will expire</param>
+		/// <returns>True if the object is updated, false if the object does not exist</returns>
+		public bool UpdateExpiry(string key, TimeSpan expiresIn)
+		{
+			if (Database.KeyExists(key))
+			{
+				return Database.KeyExpire(key, expiresIn);
+			}
 
-            return false;
-        }
+			return false;
+		}
 
-        /// <summary>
-        /// Updates the expiry time of a redis cache object
-        /// </summary>
-        /// <param name="key">The key of the object</param>
-        /// <param name="expiresAt">The new expiry time of the object</param>
-        /// <returns>True if the object is updated, false if the object does not exist</returns>
-        public async Task<bool> UpdateExpiryAsync(string key, DateTimeOffset expiresAt)
-        {
-            if (await Database.KeyExistsAsync(key))
-            {
-                return await Database.KeyExpireAsync(key, expiresAt.Subtract(DateTime.Now));
-            }
+		/// <summary>
+		/// Updates the expiry time of a redis cache object
+		/// </summary>
+		/// <param name="key">The key of the object</param>
+		/// <param name="expiresAt">The new expiry time of the object</param>
+		/// <returns>True if the object is updated, false if the object does not exist</returns>
+		public async Task<bool> UpdateExpiryAsync(string key, DateTimeOffset expiresAt)
+		{
+			if (await Database.KeyExistsAsync(key))
+			{
+				return await Database.KeyExpireAsync(key, expiresAt.Subtract(DateTime.Now));
+			}
 
-            return false;
-        }
+			return false;
+		}
 
-        /// <summary>
-        /// Updates the expiry time of a redis cache object
-        /// </summary>
-        /// <param name="key">The key of the object</param>
-        /// <param name="expiresIn">Time until the object will expire</param>
-        /// <returns>True if the object is updated, false if the object does not exist</returns>
-        public async Task<bool> UpdateExpiryAsync(string key, TimeSpan expiresIn)
-        {
-            if (await Database.KeyExistsAsync(key))
-            {
-                return await Database.KeyExpireAsync(key, expiresIn);
-            }
+		/// <summary>
+		/// Updates the expiry time of a redis cache object
+		/// </summary>
+		/// <param name="key">The key of the object</param>
+		/// <param name="expiresIn">Time until the object will expire</param>
+		/// <returns>True if the object is updated, false if the object does not exist</returns>
+		public async Task<bool> UpdateExpiryAsync(string key, TimeSpan expiresIn)
+		{
+			if (await Database.KeyExistsAsync(key))
+			{
+				return await Database.KeyExpireAsync(key, expiresIn);
+			}
 
-            return false;
-        }
+			return false;
+		}
 
-        /// <summary>
-        /// Updates the expiry time of a redis cache object
-        /// </summary>
-        /// <param name="keys">An array of keys to be updated</param>
-        /// <param name="expiresAt">The new expiry time of the object</param>
-        /// <returns>An IDictionary object that contains the origional key and the result of the operation</returns>
-        public IDictionary<string, bool> UpdateExpiryAll(string[] keys, DateTimeOffset expiresAt)
-        {
-            var results = new Dictionary<string, bool>(StringComparer.Ordinal);
-            for (int i = 0; i < keys.Length; i++)
-            {
-                results.Add(keys[i], UpdateExpiry(keys[i], expiresAt));
-            }
-            return results;
-        }
+		/// <summary>
+		/// Updates the expiry time of a redis cache object
+		/// </summary>
+		/// <param name="keys">An array of keys to be updated</param>
+		/// <param name="expiresAt">The new expiry time of the object</param>
+		/// <returns>An IDictionary object that contains the origional key and the result of the operation</returns>
+		public IDictionary<string, bool> UpdateExpiryAll(string[] keys, DateTimeOffset expiresAt)
+		{
+			var results = new Dictionary<string, bool>(StringComparer.Ordinal);
+			for (int i = 0; i < keys.Length; i++)
+			{
+				results.Add(keys[i], UpdateExpiry(keys[i], expiresAt));
+			}
+			return results;
+		}
 
-        /// <summary>
-        /// Updates the expiry time of a redis cache object
-        /// </summary>
-        /// <param name="keys">An array of keys to be updated</param>
-        /// <param name="expiresIn">Time until the object will expire</param>
-        /// <returns>An IDictionary object that contains the origional key and the result of the operation</returns>
-        public IDictionary<string, bool> UpdateExpiryAll(string[] keys, TimeSpan expiresIn)
-        {
-            var results = new Dictionary<string, bool>(StringComparer.Ordinal);
-            for (int i = 0; i < keys.Length; i++)
-            {
-                results.Add(keys[i], UpdateExpiry(keys[i], expiresIn));
-            }
-            return results;
-        }
+		/// <summary>
+		/// Updates the expiry time of a redis cache object
+		/// </summary>
+		/// <param name="keys">An array of keys to be updated</param>
+		/// <param name="expiresIn">Time until the object will expire</param>
+		/// <returns>An IDictionary object that contains the origional key and the result of the operation</returns>
+		public IDictionary<string, bool> UpdateExpiryAll(string[] keys, TimeSpan expiresIn)
+		{
+			var results = new Dictionary<string, bool>(StringComparer.Ordinal);
+			for (int i = 0; i < keys.Length; i++)
+			{
+				results.Add(keys[i], UpdateExpiry(keys[i], expiresIn));
+			}
+			return results;
+		}
 
-        /// <summary>
-        /// Updates the expiry time of a redis cache object
-        /// </summary>
-        /// <param name="keys">An array of keys to be updated</param>
-        /// <param name="expiresAt">The new expiry time of the object</param>
-        /// <returns>An IDictionary object that contains the origional key and the result of the operation</returns>
-        public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, DateTimeOffset expiresAt)
-        {
-            var results = new Dictionary<string, bool>(StringComparer.Ordinal);
-            for (int i = 0; i < keys.Length; i++)
-            {
-                results.Add(keys[i], await UpdateExpiryAsync(keys[i], expiresAt));
-            }
-            return results;
-        }
+		/// <summary>
+		/// Updates the expiry time of a redis cache object
+		/// </summary>
+		/// <param name="keys">An array of keys to be updated</param>
+		/// <param name="expiresAt">The new expiry time of the object</param>
+		/// <returns>An IDictionary object that contains the origional key and the result of the operation</returns>
+		public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, DateTimeOffset expiresAt)
+		{
+			var results = new Dictionary<string, bool>(StringComparer.Ordinal);
+			for (int i = 0; i < keys.Length; i++)
+			{
+				results.Add(keys[i], await UpdateExpiryAsync(keys[i], expiresAt));
+			}
+			return results;
+		}
 
-        /// <summary>
-        /// Updates the expiry time of a redis cache object
-        /// </summary>
-        /// <param name="keys">An array of keys to be updated</param>
-        /// <param name="expiresIn">Time until the object will expire</param>
-        /// <returns>An IDictionary object that contains the origional key and the result of the operation</returns>
-        public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, TimeSpan expiresIn)
-        {
-            var results = new Dictionary<string, bool>(StringComparer.Ordinal);
-            for (int i = 0; i < keys.Length; i++)
-            {
-                results.Add(keys[i], await UpdateExpiryAsync(keys[i], expiresIn));
-            }
-            return results;
-        }
+		/// <summary>
+		/// Updates the expiry time of a redis cache object
+		/// </summary>
+		/// <param name="keys">An array of keys to be updated</param>
+		/// <param name="expiresIn">Time until the object will expire</param>
+		/// <returns>An IDictionary object that contains the origional key and the result of the operation</returns>
+		public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, TimeSpan expiresIn)
+		{
+			var results = new Dictionary<string, bool>(StringComparer.Ordinal);
+			for (int i = 0; i < keys.Length; i++)
+			{
+				results.Add(keys[i], await UpdateExpiryAsync(keys[i], expiresIn));
+			}
+			return results;
+		}
 
-        /// <summary>
-        ///     Add the entry to a sorted set with a score 
-        /// </summary>
-        /// <remarks>
-        ///     Time complexity: O(1)
-        /// </remarks>
-        /// <param name="key">Key of the set</param>
-        /// <param name="value">The instance of T.</param>
-        /// <param name="score">Score of the entry</param>
-        /// <param name="commandFlags">Command execution flags</param>
-        /// <returns>
-        ///     True if the object has been added. Otherwise false
-        /// </returns>
-        public bool SortedSetAdd<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
-        {
-            var entryBytes = Serializer.Serialize(value);
+		/// <summary>
+		///     Add the entry to a sorted set with a score 
+		/// </summary>
+		/// <remarks>
+		///     Time complexity: O(1)
+		/// </remarks>
+		/// <param name="key">Key of the set</param>
+		/// <param name="value">The instance of T.</param>
+		/// <param name="score">Score of the entry</param>
+		/// <param name="commandFlags">Command execution flags</param>
+		/// <returns>
+		///     True if the object has been added. Otherwise false
+		/// </returns>
+		public bool SortedSetAdd<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+		{
+			var entryBytes = Serializer.Serialize(value);
 
-            return Database.SortedSetAdd(key, entryBytes, score, commandFlags);
-        }
+			return Database.SortedSetAdd(key, entryBytes, score, commandFlags);
+		}
 
-        /// <summary>
-        ///     Add the entry to a sorted set with a score 
-        /// </summary>
-        /// <remarks>
-        ///     Time complexity: O(1)
-        /// </remarks>
-        /// <param name="key">Key of the set</param>
-        /// <param name="value">The instance of T.</param>
-        /// <param name="score">Score of the entry</param>
-        /// <param name="commandFlags">Command execution flags</param>
-        /// <returns>
-        ///     True if the object has been added. Otherwise false
-        /// </returns>
-        public async Task<bool> SortedSetAddAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
-        {
-            var entryBytes = Serializer.Serialize(value);
+		/// <summary>
+		///     Add the entry to a sorted set with a score 
+		/// </summary>
+		/// <remarks>
+		///     Time complexity: O(1)
+		/// </remarks>
+		/// <param name="key">Key of the set</param>
+		/// <param name="value">The instance of T.</param>
+		/// <param name="score">Score of the entry</param>
+		/// <param name="commandFlags">Command execution flags</param>
+		/// <returns>
+		///     True if the object has been added. Otherwise false
+		/// </returns>
+		public async Task<bool> SortedSetAddAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+		{
+			var entryBytes = Serializer.Serialize(value);
 
-            return await Database.SortedSetAddAsync(key, entryBytes, score, commandFlags);
-        }
+			return await Database.SortedSetAddAsync(key, entryBytes, score, commandFlags);
+		}
 
-        /// <summary>
-        ///     Remove the entry to a sorted set 
-        /// </summary>
-        /// <remarks>
-        ///     Time complexity: O(1)
-        /// </remarks>
-        /// <param name="key">Key of the set</param>
-        /// <param name="value">The instance of T.</param>
-        /// <param name="commandFlags">Command execution flags</param>
-        /// <returns>
-        ///     True if the object has been removed. Otherwise false
-        /// </returns>
-        public bool SortedSetRemove<T>(string key, T value, CommandFlags commandFlags = CommandFlags.None)
-        {
-            var entryBytes = Serializer.Serialize(value);
+		/// <summary>
+		///     Remove the entry to a sorted set 
+		/// </summary>
+		/// <remarks>
+		///     Time complexity: O(1)
+		/// </remarks>
+		/// <param name="key">Key of the set</param>
+		/// <param name="value">The instance of T.</param>
+		/// <param name="commandFlags">Command execution flags</param>
+		/// <returns>
+		///     True if the object has been removed. Otherwise false
+		/// </returns>
+		public bool SortedSetRemove<T>(string key, T value, CommandFlags commandFlags = CommandFlags.None)
+		{
+			var entryBytes = Serializer.Serialize(value);
 
-            return Database.SortedSetRemove(key, entryBytes, commandFlags);
-        }
+			return Database.SortedSetRemove(key, entryBytes, commandFlags);
+		}
 
-        /// <summary>
-        ///     Remove the entry to a sorted set 
-        /// </summary>
-        /// <remarks>
-        ///     Time complexity: O(1)
-        /// </remarks>
-        /// <param name="key">Key of the set</param>
-        /// <param name="value">The instance of T.</param>
-        /// <param name="commandFlags">Command execution flags</param>
-        /// <returns>
-        ///     True if the object has been removed. Otherwise false
-        ///  </returns>
-        public async Task<bool> SortedSetRemoveAsync<T>(string key, T value, CommandFlags commandFlags = CommandFlags.None)
-        {
-            var entryBytes = Serializer.Serialize(value);
+		/// <summary>
+		///     Remove the entry to a sorted set 
+		/// </summary>
+		/// <remarks>
+		///     Time complexity: O(1)
+		/// </remarks>
+		/// <param name="key">Key of the set</param>
+		/// <param name="value">The instance of T.</param>
+		/// <param name="commandFlags">Command execution flags</param>
+		/// <returns>
+		///     True if the object has been removed. Otherwise false
+		///  </returns>
+		public async Task<bool> SortedSetRemoveAsync<T>(string key, T value, CommandFlags commandFlags = CommandFlags.None)
+		{
+			var entryBytes = Serializer.Serialize(value);
 
-            return await Database.SortedSetRemoveAsync(key, entryBytes, commandFlags);
-        }
+			return await Database.SortedSetRemoveAsync(key, entryBytes, commandFlags);
+		}
 
-        /// <summary>
-        ///     Get entries from sorted-set ordered 
-        /// </summary>
-        /// <remarks>
-        ///     Time complexity: O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements being returned. If M is constant (e.g. always asking for the first 10 elements with LIMIT), you can consider it O(log(N) 
-        /// </remarks>
-        /// <param name="key">Key of the set</param>
-        /// <param name="start">Min score</param>
-        /// <param name="stop">Max score</param>
-        /// <param name="exclude">Exclude start / stop</param>
-        /// <param name="order">Order of sorted set</param>
-        /// <param name="take">Take count</param>
-        /// <param name="skip">Skip count</param>
-        /// <param name="commandFlags">Command execution flags</param>
-        /// <returns>
-        ///     True if the object has been removed. Otherwise false
-        ///  </returns>
-        public IEnumerable<T> SortedSetRangeByScore<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending, long skip = 0L,
-            long take = -1L, CommandFlags commandFlags = CommandFlags.None)
-        {
-            var result = Database.SortedSetRangeByScore(key, start, stop, exclude, order, skip, take, commandFlags);
+		/// <summary>
+		///     Get entries from sorted-set ordered 
+		/// </summary>
+		/// <remarks>
+		///     Time complexity: O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements being returned. If M is constant (e.g. always asking for the first 10 elements with LIMIT), you can consider it O(log(N) 
+		/// </remarks>
+		/// <param name="key">Key of the set</param>
+		/// <param name="start">Min score</param>
+		/// <param name="stop">Max score</param>
+		/// <param name="exclude">Exclude start / stop</param>
+		/// <param name="order">Order of sorted set</param>
+		/// <param name="take">Take count</param>
+		/// <param name="skip">Skip count</param>
+		/// <param name="commandFlags">Command execution flags</param>
+		/// <returns>
+		///     True if the object has been removed. Otherwise false
+		///  </returns>
+		public IEnumerable<T> SortedSetRangeByScore<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending, long skip = 0L,
+			long take = -1L, CommandFlags commandFlags = CommandFlags.None)
+		{
+			var result = Database.SortedSetRangeByScore(key, start, stop, exclude, order, skip, take, commandFlags);
 
-            return result.Select(m => m == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(m));
-        }
+			return result.Select(m => m == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(m));
+		}
 
-        /// <summary>
-        ///     Get entries from sorted-set ordered 
-        /// </summary>
-        /// <remarks>
-        ///     Time complexity: O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements being returned. If M is constant (e.g. always asking for the first 10 elements with LIMIT), you can consider it O(log(N) 
-        /// </remarks>
-        /// <param name="key">Key of the set</param>
-        /// <param name="start">Min score</param>
-        /// <param name="stop">Max score</param>
-        /// <param name="exclude">Exclude start / stop</param>
-        /// <param name="order">Order of sorted set</param>
-        /// <param name="take">Take count</param>
-        /// <param name="skip">Skip count</param>
-        /// <param name="commandFlags">Command execution flags</param>
-        /// <returns>
-        ///     True if the object has been removed. Otherwise false
-        ///  </returns>
-        public async Task<IEnumerable<T>> SortedSetRangeByScoreAsync<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending,
-            long skip = 0L,
-            long take = -1L, CommandFlags commandFlags = CommandFlags.None)
-        {
-            var result = await Database.SortedSetRangeByScoreAsync(key, start, stop, exclude, order, skip, take, commandFlags);
+		/// <summary>
+		///     Get entries from sorted-set ordered 
+		/// </summary>
+		/// <remarks>
+		///     Time complexity: O(log(N)+M) with N being the number of elements in the sorted set and M the number of elements being returned. If M is constant (e.g. always asking for the first 10 elements with LIMIT), you can consider it O(log(N) 
+		/// </remarks>
+		/// <param name="key">Key of the set</param>
+		/// <param name="start">Min score</param>
+		/// <param name="stop">Max score</param>
+		/// <param name="exclude">Exclude start / stop</param>
+		/// <param name="order">Order of sorted set</param>
+		/// <param name="take">Take count</param>
+		/// <param name="skip">Skip count</param>
+		/// <param name="commandFlags">Command execution flags</param>
+		/// <returns>
+		///     True if the object has been removed. Otherwise false
+		///  </returns>
+		public async Task<IEnumerable<T>> SortedSetRangeByScoreAsync<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending,
+			long skip = 0L,
+			long take = -1L, CommandFlags commandFlags = CommandFlags.None)
+		{
+			var result = await Database.SortedSetRangeByScoreAsync(key, start, stop, exclude, order, skip, take, commandFlags);
 
-            return result.Select(m => m == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(m));
-        }
-    }
+			return result.Select(m => m == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(m));
+		}
+	}
 }

@@ -8,12 +8,12 @@ namespace StackExchange.Redis.Extensions.Core.ServerIteration
 {
 	public class ServerEnumerable : IEnumerable<IServer>
 	{
-		private readonly ConnectionMultiplexer multiplexer;
+		private readonly IConnectionMultiplexer multiplexer;
 		private readonly ServerEnumerationStrategy.TargetRoleOptions targetRole;
 		private readonly ServerEnumerationStrategy.UnreachableServerActionOptions unreachableServerAction;
 
 		public ServerEnumerable(
-			ConnectionMultiplexer multiplexer,
+			IConnectionMultiplexer multiplexer,
 			ServerEnumerationStrategy.TargetRoleOptions targetRole,
 			ServerEnumerationStrategy.UnreachableServerActionOptions unreachableServerAction)
 		{

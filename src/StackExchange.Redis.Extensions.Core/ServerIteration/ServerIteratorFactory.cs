@@ -8,7 +8,7 @@ namespace StackExchange.Redis.Extensions.Core.ServerIteration
 	public class ServerIteratorFactory
 	{
 		public static IEnumerable<IServer> GetServers(
-			ConnectionMultiplexer multiplexer,
+			IConnectionMultiplexer multiplexer,
 			ServerEnumerationStrategy serverEnumerationStrategy)
 		{
 			switch (serverEnumerationStrategy.Mode)
