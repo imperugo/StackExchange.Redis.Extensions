@@ -30,7 +30,7 @@ namespace StackExchange.Redis.Extensions.Core
 				throw new ArgumentNullException(nameof(configuration), "The configuration can not be null");
 			}
 
-			serverEnumerationStrategy = configuration.ServerEnumerationStrategy;
+			serverEnumerationStrategy = configuration.ServerEnumerationStrategy ?? new ServerEnumerationStrategy();
 			connectionMultiplexer = ConnectionMultiplexer.Connect(configuration.ConfigurationOptions);
 			disposeConnectionMultiplexer = true;
 			Database = connectionMultiplexer.GetDatabase(configuration.Database);
@@ -144,7 +144,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </exception>
 		public StackExchangeRedisCacheClient(IConnectionMultiplexer connectionMultiplexer, ISerializer serializer, ServerEnumerationStrategy serverEnumerationStrategy, int database = 0, string keyPrefix = null)
 		{
-			this.serverEnumerationStrategy = serverEnumerationStrategy;
+			this.serverEnumerationStrategy = serverEnumerationStrategy ?? new ServerEnumerationStrategy();
 			Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 			this.connectionMultiplexer = connectionMultiplexer ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
 
