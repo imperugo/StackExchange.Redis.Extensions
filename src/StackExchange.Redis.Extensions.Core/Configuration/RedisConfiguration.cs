@@ -38,6 +38,11 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		/// </summary>
 		public int ConnectTimeout { get; set; } = 5000;
 
+        /// <summary>
+        /// Time (ms) to allow for synchronous operations
+        /// </summary>
+        public int SyncTimeout { get; set; } = 1000;
+		
 		/// <summary>
 		/// If true, Connect will not create a connection while no servers are available
 		/// </summary>
@@ -83,6 +88,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 						AllowAdmin = AllowAdmin,
 						Password = Password,
 						ConnectTimeout = ConnectTimeout,
+						SyncTimeout = SyncTimeout,
 						AbortOnConnectFail = AbortOnConnectFail
 					};
 

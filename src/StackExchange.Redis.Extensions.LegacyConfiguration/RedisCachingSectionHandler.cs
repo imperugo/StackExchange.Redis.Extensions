@@ -82,6 +82,21 @@ namespace StackExchange.Redis.Extensions.LegacyConfiguration
 		}
 
 		/// <summary>
+		/// Time (ms) to allow for synchronous operations
+		/// </summary>
+		[ConfigurationProperty("syncTimeout")]
+		public int SyncTimeout
+		{
+			get
+			{
+			    var value = this["syncTimeout"]?.ToString();
+
+				int result;
+			    return !string.IsNullOrWhiteSpace(value) && int.TryParse(value, out result) ? result : 1000;
+			}
+		}
+
+		/// <summary>
 		/// If true, Connect will not create a connection while no servers are available
 		/// </summary>
 		[ConfigurationProperty("abortOnConnectFail")]
@@ -143,6 +158,7 @@ namespace StackExchange.Redis.Extensions.LegacyConfiguration
 	        result.AbortOnConnectFail = cfg.AbortOnConnectFail;
 	        result.AllowAdmin = cfg.AllowAdmin;
 	        result.ConnectTimeout = cfg.ConnectTimeout;
+	        result.SyncTimeout = cfg.SyncTimeout;
 	        result.Database = cfg.Database;
 	        result.KeyPrefix = cfg.KeyPrefix;
 	        result.Password = cfg.Password;
