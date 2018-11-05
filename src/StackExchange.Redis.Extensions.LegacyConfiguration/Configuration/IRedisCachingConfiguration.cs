@@ -40,6 +40,11 @@
 		int ConnectTimeout { get; }
 
 		/// <summary>
+		/// Time (ms) to allow for synchronous operations
+		/// </summary>
+		int SyncTimeout { get; }
+
+		/// <summary>
 		/// If true, Connect will not create a connection while no servers are available
 		/// </summary>
 		bool AbortOnConnectFail { get; }
