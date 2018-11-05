@@ -4,6 +4,7 @@
 		"allowAdmin": true,
 		"ssl": false,
 		"connectTimeout": 5000,
+		"syncTimeout": 2000,
 		"database": 0,
 		"hosts": [
 			{
