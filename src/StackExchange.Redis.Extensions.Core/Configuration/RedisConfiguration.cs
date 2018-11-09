@@ -4,8 +4,8 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 {
 	public class RedisConfiguration
 	{
-		private static ConnectionMultiplexer connection;
-		private static ConfigurationOptions options;
+		private ConnectionMultiplexer connection;
+		private ConfigurationOptions options;
 
 		/// <summary>
 		/// The key separation prefix used for all cache entries
