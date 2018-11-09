@@ -5,7 +5,6 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 	public class RedisConfiguration
 	{
 		private static ConnectionMultiplexer connection;
-		private static ConfigurationOptions options;
 
 		/// <summary>
 		/// The key separation prefix used for all cache entries
@@ -80,24 +79,21 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 		{
 			get
 			{
-				if (options == null)
+				var options =  new ConfigurationOptions
 				{
-					options = new ConfigurationOptions
-					{
-						Ssl = Ssl,
-						AllowAdmin = AllowAdmin,
-						Password = Password,
-						ConnectTimeout = ConnectTimeout,
-						SyncTimeout = SyncTimeout,
-						AbortOnConnectFail = AbortOnConnectFail
-					};
+					Ssl = Ssl,
+					AllowAdmin = AllowAdmin,
+					Password = Password,
+					ConnectTimeout = ConnectTimeout,
+					SyncTimeout = SyncTimeout,
+					AbortOnConnectFail = AbortOnConnectFail
+				};
 
-					foreach (var redisHost in Hosts)
-						options.EndPoints.Add(redisHost.Host, redisHost.Port);
+				foreach (var redisHost in Hosts)
+					options.EndPoints.Add(redisHost.Host, redisHost.Port);
 
-					options.CertificateValidation += CertificateValidation;
-				}
-
+				options.CertificateValidation += CertificateValidation;
+				
 				return options;
 			}
 		}
@@ -107,7 +103,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 			get
 			{
 				if (connection == null)
-					connection = ConnectionMultiplexer.Connect(options);
+					connection = ConnectionMultiplexer.Connect(ConfigurationOptions);
 
 				return connection;
 			}
