@@ -1087,7 +1087,7 @@ namespace StackExchange.Redis.Extensions.Core
 				while (nextCursor != 0);
 			}
 
-			return keys;
+			return !string.IsNullOrEmpty(keyprefix) ? keys.Select(k => k.Substring(keyprefix.Length)) : keys;
 		}
 
 		/// <summary>
