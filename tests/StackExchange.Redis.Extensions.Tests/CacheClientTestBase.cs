@@ -183,7 +183,28 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.True(keys.Count() == 2);
 		}
 
-		[Fact]
+	    [Fact]
+	    public void SearchKeys_With_Key_Prefix_Should_Return_Keys_Without_Prefix()
+	    {
+	        var client = new StackExchangeRedisCacheClient(Serializer, "localhost", "MyPrefix__");
+
+	        var values = Range(0, 10)
+	            .Select(i => new TestClass<string>($"mykey{i}", Guid.NewGuid().ToString()))
+	            .ToArray();
+
+            values.ForEach(x => client.Add(x.Key, x.Value));
+
+            var result = client.SearchKeys("*mykey*").OrderBy(k => k).ToList();
+
+	        Assert.True(result.Count == 10);
+
+            for (int i = 0; i < result.Count; i++)
+	        {
+	            Assert.Equal(result[i], values[i].Key);
+            }
+	    }
+
+        [Fact]
 		public void Exist_With_Valid_Object_Should_Return_The_Correct_Instance()
 		{
 			var values = Range(0, 2)
