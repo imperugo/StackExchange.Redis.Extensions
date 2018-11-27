@@ -41,11 +41,11 @@ Nuget (UTF8Json) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.
 Nuget (Binary) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Binary.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Binary/)
 
 
-##How to install it
+## How to install it
 StackExchange.Redis.Extensions is composed by two libraries, the Core and the Serializer implementation.
 Because there are several good serializer and we don't want add another dependency in your project you can choose your favorite or create a new one.
 
-##Install Core 
+## Install Core 
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Core
