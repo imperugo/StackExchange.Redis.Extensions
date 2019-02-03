@@ -184,17 +184,31 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </returns>
 		Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt);
 
-		/// <summary>
-		/// Replaces the object with specified key into Redis database.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="key">The key.</param>
-		/// <param name="value">The instance of T</param>
-		/// <param name="expiresAt">Expiration time.</param>
-		/// <returns>
-		/// True if the object has been added. Otherwise false
-		/// </returns>
-		bool Replace<T>(string key, T value, DateTimeOffset expiresAt);
+        /// <summary>
+        /// Adds the specified instance to the Redis database.
+        /// </summary>
+        /// <typeparam name="T">The type of the class to add to Redis</typeparam>
+        /// <param name="key">The cache key.</param>
+        /// <param name="value">The instance of T.</param>
+        /// <param name="expiresAt">Expiration time.</param>
+        /// <param name="when">Indicate when should the operation be performed</param>
+        /// <param name="command">Add Operation Behavior</param>
+        /// <returns>
+        /// True if the object has been added. Otherwise false
+        /// </returns>
+        Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt, When when, CommandFlags command);
+
+        /// <summary>
+        /// Replaces the object with specified key into Redis database.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The instance of T</param>
+        /// <param name="expiresAt">Expiration time.</param>
+        /// <returns>
+        /// True if the object has been added. Otherwise false
+        /// </returns>
+        bool Replace<T>(string key, T value, DateTimeOffset expiresAt);
 
 		/// <summary>
 		/// Replaces the object with specified key into Redis database.
