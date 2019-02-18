@@ -8,6 +8,7 @@ namespace StackExchange.Redis.Extensions.Core
 	/// <summary>
 	/// Contrac for ICache implementation
 	/// </summary>
+	[Obsolete("This interface will be removed with the next major. Please use IRedisCacheClient instead.")]
 	public interface ICacheClient : IDisposable
 	{
 		/// <summary>

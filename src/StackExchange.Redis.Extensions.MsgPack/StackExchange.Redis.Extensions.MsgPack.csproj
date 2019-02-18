@@ -8,8 +8,8 @@
 		<Description>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis allowing you a set of functionality needed by common applications.
 
 This implementation is based on MsgPack serializer.</Description>
-	  <VersionPrefix>4.0.5</VersionPrefix>
-	  <!--<VersionSuffix>dev</VersionSuffix>-->
+	  <VersionPrefix>5.0.1</VersionPrefix>
+	  <VersionSuffix>pre</VersionSuffix>
 		<Authors>Ugo Lattanzi</Authors>
 		<Copyright>Ugo Lattanzi</Copyright>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>

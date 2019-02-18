@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;net461;net472</TargetFrameworks>
-		
 		<Title>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis</Title>
 		<Summary>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis</Summary>
 		<Description>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis allowing you a set of functionality needed by common applications.
@@ -14,8 +13,10 @@ To store complex data It requires one of the following implementations:
 - StackExchange.Redis.Extensions.Protobuf
 - StackExchange.Redis.Extensions.Utf8Json
 - StackExchange.Redis.Extensions.Binary</Description>
-		<VersionPrefix>4.0.5</VersionPrefix>
-		<!--<VersionSuffix>dev</VersionSuffix>-->
+		<VersionPrefix>5.0.1</VersionPrefix>
+		<VersionSuffix>pre</VersionSuffix>
+		<IncludeSource>false</IncludeSource>
+		<IncludeSymbols>true</IncludeSymbols>
 		<Authors>Ugo Lattanzi</Authors>
 		<Copyright>Ugo Lattanzi</Copyright>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -54,6 +55,6 @@ To store complex data It requires one of the following implementations:
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
 	<ItemGroup>
-	  <PackageReference Include="StackExchange.Redis" Version="2.0.513" />
+	  <PackageReference Include="StackExchange.Redis" Version="2.0.519" />
 	</ItemGroup>
 </Project>

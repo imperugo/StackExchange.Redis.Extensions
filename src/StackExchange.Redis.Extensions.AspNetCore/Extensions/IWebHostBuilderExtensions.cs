@@ -9,7 +9,7 @@ namespace Microsoft.AspNetCore.Hosting
 {
 	public static class IWebHostBuilderExtensions
 	{
-		public static IWebHostBuilder ConfigureStackExchangeRedisExtensions<T>(this IWebHostBuilder hostBuilder, string jsonBasePath = "Configurations") where T : ISerializer, new()
+		public static IWebHostBuilder ConfigureStackExchangeRedisExtensions<T>(this IWebHostBuilder hostBuilder, string jsonBasePath = "Configurations") where T : class, ISerializer, new()
 		{
 			hostBuilder.ConfigureServices(services =>
 			   {

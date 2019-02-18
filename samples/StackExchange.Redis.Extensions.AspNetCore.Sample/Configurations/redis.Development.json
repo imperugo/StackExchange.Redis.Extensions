@@ -5,7 +5,7 @@
 		"ssl": false,
 		"hosts": [
 			{
-				"Host": "my_super_secret_host_dev",
+				"Host": "localhost",
 				"Port": "6379"
 			}
 		]

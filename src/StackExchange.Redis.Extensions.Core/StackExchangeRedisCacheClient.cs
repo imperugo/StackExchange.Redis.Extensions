@@ -11,6 +11,7 @@ namespace StackExchange.Redis.Extensions.Core
 	/// <summary>
 	///     The implementation of <see cref="ICacheClient" />
 	/// </summary>
+	[Obsolete("This interface will be removed with the next major. Please use RedisCacheClient instead.")]
 	public class StackExchangeRedisCacheClient : ICacheClient
 	{
 		private string keyprefix = null;
