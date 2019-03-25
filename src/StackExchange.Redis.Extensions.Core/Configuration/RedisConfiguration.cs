@@ -6,75 +6,164 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 	{
 		private ConnectionMultiplexer connection;
 		private ConfigurationOptions options;
+        private string keyPrefix;
+        private string password;
+        private bool allowAdmin;
+        private bool ssl;
+        private int connectTimeout = 5000;
+        private int syncTimeout = 1000;
+        private bool abortOnConnectFail;
+        private int database = 0;
+        private RedisHost[] hosts;
+        private ServerEnumerationStrategy serverEnumerationStrategy;
 
-		/// <summary>
-		/// The key separation prefix used for all cache entries
-		/// </summary>
-		public string KeyPrefix { get; set; }
+        /// <summary>
+        /// The key separation prefix used for all cache entries
+        /// </summary>
+        public string KeyPrefix
+        {
+            get => keyPrefix;
+            set
+            {
+                keyPrefix = value;
+                ResetConfigurationOptions();
+            }
+        }
 
-		/// <summary>
-		/// The password or access key
-		/// </summary>
-		public string Password { get; set; }
+        /// <summary>
+        /// The password or access key
+        /// </summary>
+        public string Password
+        {
+            get => password;
+            set
+            {
+                password = value;
+                ResetConfigurationOptions();
+            }
+        }
 
-		/// <summary>
-		/// Specify if the connection can use Admin commands like flush database
-		/// </summary>
-		/// <value>
-		///   <c>true</c> if can use admin commands; otherwise, <c>false</c>.
-		/// </value>
-		public bool AllowAdmin { get; set; } = false;
+        /// <summary>
+        /// Specify if the connection can use Admin commands like flush database
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if can use admin commands; otherwise, <c>false</c>.
+        /// </value>
+        public bool AllowAdmin
+        {
+            get => allowAdmin;
+            set
+            {
+                allowAdmin = value;
+                ResetConfigurationOptions();
+            }
+        }
 
-		/// <summary>
-		/// Specify if the connection is a secure connection or not.
-		/// </summary>
-		/// <value>
-		///   <c>true</c> if is secure; otherwise, <c>false</c>.
-		/// </value>
-		public bool Ssl { get; set; } = false;
+        /// <summary>
+        /// Specify if the connection is a secure connection or not.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if is secure; otherwise, <c>false</c>.
+        /// </value>
+        public bool Ssl
+        {
+            get => ssl;
+            set
+            {
+                ssl = value;
+                ResetConfigurationOptions();
+            }
+        }
 
-		/// <summary>
-		/// The connection timeout
-		/// </summary>
-		public int ConnectTimeout { get; set; } = 5000;
+        /// <summary>
+        /// The connection timeout
+        /// </summary>
+        public int ConnectTimeout
+        {
+            get => connectTimeout;
+            set
+            {
+                connectTimeout = value;
+                ResetConfigurationOptions();
+            }
+        }
 
         /// <summary>
         /// Time (ms) to allow for synchronous operations
         /// </summary>
-        public int SyncTimeout { get; set; } = 1000;
-		
-		/// <summary>
-		/// If true, Connect will not create a connection while no servers are available
-		/// </summary>
-		public bool AbortOnConnectFail { get; set; }
+        public int SyncTimeout
+        {
+            get => syncTimeout;
+            set
+            {
+                syncTimeout = value;
+                ResetConfigurationOptions();
+            }
+        }
 
-		/// <summary>
-		/// Database Id
-		/// </summary>
-		/// <value>
-		/// The database id, the default value is 0
-		/// </value>
-		public int Database { get; set; } = 0;
+        /// <summary>
+        /// If true, Connect will not create a connection while no servers are available
+        /// </summary>
+        public bool AbortOnConnectFail
+        {
+            get => abortOnConnectFail;
+            set
+            {
+                abortOnConnectFail = value;
+                ResetConfigurationOptions();
+            }
+        }
 
-		/// <summary>
-		/// The host of Redis Servers
-		/// </summary>
-		/// <value>
-		/// The ips or names
-		/// </value>
-		public RedisHost[] Hosts { get; set; }
+        /// <summary>
+        /// Database Id
+        /// </summary>
+        /// <value>
+        /// The database id, the default value is 0
+        /// </value>
+        public int Database
+        {
+            get => database;
+            set
+            {
+                database = value;
+                ResetConfigurationOptions();
+            }
+        }
 
-		/// <summary>
-		/// The strategy to use when executing server wide commands
-		/// </summary>
-		public ServerEnumerationStrategy ServerEnumerationStrategy { get; set; }
+        /// <summary>
+        /// The host of Redis Servers
+        /// </summary>
+        /// <value>
+        /// The ips or names
+        /// </value>
+        public RedisHost[] Hosts
+        {
+            get => hosts;
+            set
+            {
+                hosts = value;
+                ResetConfigurationOptions();
+            }
+        }
 
+        /// <summary>
+        /// The strategy to use when executing server wide commands
+        /// </summary>
+        public ServerEnumerationStrategy ServerEnumerationStrategy
+        {
+            get => serverEnumerationStrategy;
+            set
+            {
+                serverEnumerationStrategy = value;
+                ResetConfigurationOptions();
+            }
+        }
 
-		/// <summary>
-		/// A RemoteCertificateValidationCallback delegate responsible for validating the certificate supplied by the remote party; note
-		/// that this cannot be specified in the configuration-string.
-		/// </summary>
-		public event RemoteCertificateValidationCallback CertificateValidation;
+        /// <summary>
+        /// A RemoteCertificateValidationCallback delegate responsible for validating the certificate supplied by the remote party; note
+        /// that this cannot be specified in the configuration-string.
+        /// </summary>
+        public event RemoteCertificateValidationCallback CertificateValidation;
 
 		public ConfigurationOptions ConfigurationOptions
 		{
@@ -111,6 +200,13 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 
 				return connection;
 			}
+		}
+		
+		private void ResetConfigurationOptions()
+		{
+		    // this is needed in order to cover this scenario
+		    // https://github.com/imperugo/StackExchange.Redis.Extensions/issues/165
+		    options = null;
 		}
 	}
 }

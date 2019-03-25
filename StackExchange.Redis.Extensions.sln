@@ -35,6 +35,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{759DEA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.AspNetCore.Sample", "samples\StackExchange.Redis.Extensions.AspNetCore.Sample\StackExchange.Redis.Extensions.AspNetCore.Sample.csproj", "{72140DD6-A5B0-4CF0-B0BF-A9017F1E7FC6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "items", "items", "{ABCD7C37-9983-46F1-92EF-8D611A7563FF}"
+ProjectSection(SolutionItems) = preProject
+	appveyor.yml = appveyor.yml
+	LICENSE = LICENSE
+	NuGetPack.bat = NuGetPack.bat
+	README.md = README.md
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -18,6 +18,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 .vs/
+.idea/
 
 # Roslyn cache directories
 *.ide/
@@ -182,3 +183,4 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+

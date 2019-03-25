@@ -13,6 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
 		{
 			services.AddSingleton<IRedisCacheClient,RedisCacheClient>();
 			services.AddSingleton<IRedisCacheConnectionPoolManager, RedisCacheConnectionPoolManager>();
+            services.AddSingleton<IRedisDefaultCacheClient, RedisDefaultCacheClient>();
 			services.AddSingleton<IRedisCacheClient, RedisCacheClient>();
 			services.AddSingleton<ISerializer, T>();
 
@@ -27,6 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
 		{
 			services.AddSingleton<IRedisCacheClient,RedisCacheClient>();
 			services.AddSingleton<IRedisCacheConnectionPoolManager, RedisCacheConnectionPoolManager>();
+			services.AddSingleton<IRedisDefaultCacheClient, RedisDefaultCacheClient>();
 			services.AddSingleton<IRedisCacheClient, RedisCacheClient>();
 			services.AddSingleton<ISerializer, T>();
 
@@ -40,6 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
 		{
 			services.AddSingleton<IRedisCacheClient,RedisCacheClient>();
 			services.AddSingleton<IRedisCacheConnectionPoolManager, RedisCacheConnectionPoolManager>();
+            services.AddSingleton<IRedisDefaultCacheClient, RedisDefaultCacheClient>();
 			services.AddSingleton<IRedisCacheClient, RedisCacheClient>();
 			services.AddSingleton<ISerializer, T>();
 

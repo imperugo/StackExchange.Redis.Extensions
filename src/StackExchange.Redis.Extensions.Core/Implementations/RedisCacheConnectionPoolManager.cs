@@ -10,12 +10,9 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 	{
 		private const int POOL_SIZE = 10;
 		private static ConcurrentBag<Lazy<ConnectionMultiplexer>> connections = new ConcurrentBag<Lazy<ConnectionMultiplexer>>();
-		private readonly RedisConfiguration redisConfiguration;
 
 		public RedisCacheConnectionPoolManager(RedisConfiguration redisConfiguration)
 		{
-			this.redisConfiguration = redisConfiguration;
-
 			for (int i = 0; i < POOL_SIZE; i++)
 			{
 				connections.Add(new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions)));

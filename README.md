@@ -27,12 +27,11 @@ For example:
 - **Async methods**;
 - **Hash methods**;
 - **Support for Keyspace isolation**;
+- **Support for multiple database**:
 - **Much more**;
 
 Channel  | Status | 
 -------- | :------------: | 
-Appveyor CI (Windows) | [![Build status](https://ci.appveyor.com/api/projects/status/coarryn71v4lvgih/branch/master?svg=true)](https://ci.appveyor.com/project/imperugo/stackexchange-redis-extensions/branch/master)
-Travis CI (Linux) | [![Build Status](https://travis-ci.org/imperugo/StackExchange.Redis.Extensions.svg?branch=master)](https://travis-ci.org/imperugo/StackExchange.Redis.Extensions)
 Nuget (Core) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Core.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Core/)
 Nuget (Json.NET) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Newtonsoft.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Newtonsoft/)
 Nuget (MsgPack) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.MsgPack.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.MsgPack/)
@@ -216,6 +215,20 @@ var cacheClient = new StackExchangeRedisCacheClient(serializer, redisConfigurati
 
 ```
 
+or install the specific package
+
+```
+PM> StackExchange.Redis.Extensions.AspNetCore
+```
+and then 
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+	services.AddStackExchangeRedisExtensions<NewtonsoftSerializer>(myRedisConfigurationInstance);
+}
+```
+
 
 ## Serialization
 In order to store a class into Redis, that class must be serializable. Below is the list of serialization options:
@@ -229,7 +242,7 @@ In order to store a class into Redis, that class must be serializable. Below is 
 
 
 ## How can I store an object into Redis?
-There are several methods in `ICacheClient` that can solve this request.
+There are several methods in `IRedisCacheClient` that can solve this request.
 
 ```csharp
 
@@ -241,7 +254,7 @@ var user = new User()
 	Blog = "http://tostring.it"
 }
 
-bool added = myCacheClient.Add("my cache key", user, DateTimeOffset.Now.AddMinutes(10));
+bool added = cacheClient.Db0.Add("my cache key", user, DateTimeOffset.Now.AddMinutes(10));
 
 ```
 
@@ -249,18 +262,18 @@ bool added = myCacheClient.Add("my cache key", user, DateTimeOffset.Now.AddMinut
 Easy:
 
 ```csharp
-var cachedUser = myCacheClient.Get<User>("my cache key");
+var cachedUser = cacheClient.Db0.Get<User>("my cache key");
 ```
 
 ## How can I retrieve multiple object with single roundtrip?
 That's a cool feature that is implemented into `ICacheClient` implementation:
 
 ```csharp
-var cachedUsers = myCacheClient.GetAll<User>(new {"key1","key2","key3"});
+var cachedUsers = cacheClient.Db0.GetAll<User>(new {"key1","key2","key3"});
 ```
 
 ## How can I add multiple object with single roundtrip?
-That's a cool feature that is implemented into ICacheClient implementation:
+That's a cool feature that is implemented into `IRedisCacheClient` implementation:
 
 ```csharp
 IList<Tuple<string, string>> values = new List<Tuple<string, string>>();
@@ -269,7 +282,7 @@ values.Add(new Tuple<string, string>("key1","value1"));
 values.Add(new Tuple<string, string>("key2","value2"));
 values.Add(new Tuple<string, string>("key3","value3"));
 
-bool added = sut.AddAll(values);
+bool added = cacheClient.Db0.AddAll(values);
 ```
 
 ## Can I search keys into Redis?
@@ -277,35 +290,38 @@ Yes that's possible using a specific pattern.
 If you want to search all keys that start with `myCacheKey`:
 
 ```csharp
-var keys = myCacheClient.SearchKeys("myCacheKey*");
+var keys = cacheClient.Db0.SearchKeys("myCacheKey*");
 ```
 
 If you want to search all keys that contain with `myCacheKey`:
 
 ```csharp
-var keys = myCacheClient.SearchKeys("*myCacheKey*");
+var keys = cacheClient.Db0.SearchKeys("*myCacheKey*");
 ```
 
 If you want to search all keys that end with ```myCacheKey```:
 
 ```csharp
-var keys = myCacheClient.SearchKeys("*myCacheKey");
+var keys = cacheClient.Db0.SearchKeys("*myCacheKey");
 ```
 
 ## Can I use a Redis method directly from ICacheClient without add another dependency to my class?
 
-Of course you can. `ICacheClient` exposes a readonly property named `Database` that is the implementation of IDatabase by [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis)
+Of course you can. `IRedisCacheClient` exposes a readonly property named `Database` that is the implementation of IDatabase by [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis)
 
 ```csharp
-myCacheClient.Database.SetAdd("mykey","another key");
+cacheClient.Db0.Database.SetAdd("mykey","another key");
 ```
 
 ## How can I get server information?
 `ICacheClient` has a method `GetInfo` and `GetInfoAsync` for that:
 
 ```csharp
-var info = myCacheClient.GetInfo();
+var info = cacheClient.Db0.GetInfo();
 ```
+
+>If you don't want to specify every time you can use the client the database, is enought to use `IRedisDefaultCacheClient` instead of `IRedisCacheClient`
+
 
 For more info about the values returned, take a look [here](http://redis.io/commands/INFO)
 
