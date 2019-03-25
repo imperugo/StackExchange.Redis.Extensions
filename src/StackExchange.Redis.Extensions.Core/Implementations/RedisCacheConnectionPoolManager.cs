@@ -9,14 +9,25 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 	public class RedisCacheConnectionPoolManager : IRedisCacheConnectionPoolManager
 	{
 		private const int POOL_SIZE = 10;
-		private static ConcurrentBag<Lazy<ConnectionMultiplexer>> connections = new ConcurrentBag<Lazy<ConnectionMultiplexer>>();
+		private static ConcurrentBag<Lazy<ConnectionMultiplexer>> connections;
+		private readonly RedisConfiguration redisConfiguration;
 
 		public RedisCacheConnectionPoolManager(RedisConfiguration redisConfiguration)
 		{
-			for (int i = 0; i < POOL_SIZE; i++)
+			this.redisConfiguration =  redisConfiguration;
+			Initialize();
+		}
+
+		public void Dispose()
+		{
+			var activeConnections = connections.Where(lazy => lazy.IsValueCreated).ToList();
+
+			foreach (var connection in activeConnections)
 			{
-				connections.Add(new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions)));
+				connection.Value.Dispose();
 			}
+
+			Initialize();
 		}
 
 		public IConnectionMultiplexer GetConnection()
@@ -37,5 +48,16 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
 			return response.Value;
 		}
+
+		private void Initialize()
+		{
+			connections = new ConcurrentBag<Lazy<ConnectionMultiplexer>>();
+
+			for (int i = 0; i < POOL_SIZE; i++)
+			{
+				connections.Add(new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions)));
+			}
+		}
+
 	}
 }

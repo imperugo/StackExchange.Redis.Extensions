@@ -196,7 +196,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 			get
 			{
 				if (connection == null)
-					connection = ConnectionMultiplexer.Connect(options);
+					connection = ConnectionMultiplexer.Connect(ConfigurationOptions);
 
 				return connection;
 			}

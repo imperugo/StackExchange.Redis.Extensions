@@ -14,7 +14,6 @@ namespace Microsoft.Extensions.DependencyInjection
 			services.AddSingleton<IRedisCacheClient,RedisCacheClient>();
 			services.AddSingleton<IRedisCacheConnectionPoolManager, RedisCacheConnectionPoolManager>();
             services.AddSingleton<IRedisDefaultCacheClient, RedisDefaultCacheClient>();
-			services.AddSingleton<IRedisCacheClient, RedisCacheClient>();
 			services.AddSingleton<ISerializer, T>();
 
 			services.AddSingleton<ICacheClient>(new StackExchangeRedisCacheClient(connectionMultiplexer, new T()));
@@ -29,7 +28,6 @@ namespace Microsoft.Extensions.DependencyInjection
 			services.AddSingleton<IRedisCacheClient,RedisCacheClient>();
 			services.AddSingleton<IRedisCacheConnectionPoolManager, RedisCacheConnectionPoolManager>();
 			services.AddSingleton<IRedisDefaultCacheClient, RedisDefaultCacheClient>();
-			services.AddSingleton<IRedisCacheClient, RedisCacheClient>();
 			services.AddSingleton<ISerializer, T>();
 
 			services.AddSingleton<ICacheClient>(new StackExchangeRedisCacheClient(new T(), connectionString));
@@ -43,7 +41,6 @@ namespace Microsoft.Extensions.DependencyInjection
 			services.AddSingleton<IRedisCacheClient,RedisCacheClient>();
 			services.AddSingleton<IRedisCacheConnectionPoolManager, RedisCacheConnectionPoolManager>();
             services.AddSingleton<IRedisDefaultCacheClient, RedisDefaultCacheClient>();
-			services.AddSingleton<IRedisCacheClient, RedisCacheClient>();
 			services.AddSingleton<ISerializer, T>();
 
 			services.AddSingleton<ICacheClient>( new StackExchangeRedisCacheClient(new T(), redisConfiguration));

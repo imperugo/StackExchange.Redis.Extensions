@@ -193,8 +193,16 @@ container.Register(Component.For<ISerializer>()
 				.ImplementedBy<NewtonsoftSerializer>()
 				.LifestyleSingleton());
 
-container.Register(Component.For<ICacheClient>()
-				.ImplementedBy<StackExchangeRedisCacheClient>()
+container.Register(Component.For<IRedisCacheClient>()
+				.ImplementedBy<RedisCacheClient>()
+				.LifestyleSingleton());
+
+container.Register(Component.For<IRedisCacheConnectionPoolManager>()
+				.ImplementedBy<RedisCacheConnectionPoolManager>()
+				.LifestyleSingleton());
+
+container.Register(Component.For<IRedisDefaultCacheClient>()
+				.ImplementedBy<RedisDefaultCacheClient>()
 				.LifestyleSingleton());
 
 ```
@@ -203,7 +211,9 @@ or using ASP.NET Core integrated DI:
 
 ```csharp
 services.AddSingleton(redisConfiguration);
-services.AddSingleton<ICacheClient,StackExchangeRedisCacheClient>();
+services.AddSingleton<IRedisCacheClient,RedisCacheClient>();
+services.AddSingleton<IRedisCacheConnectionPoolManager, RedisCacheConnectionPoolManager>();
+services.AddSingleton<IRedisDefaultCacheClient, RedisDefaultCacheClient>();
 services.AddSingleton<ISerializer,NewtonsoftSerializer>();
 ```
 
@@ -212,7 +222,6 @@ of you can create your own instance
 ```csharp
 var serializer = new NewtonsoftSerializer();
 var cacheClient = new StackExchangeRedisCacheClient(serializer, redisConfiguration);
-
 ```
 
 or install the specific package

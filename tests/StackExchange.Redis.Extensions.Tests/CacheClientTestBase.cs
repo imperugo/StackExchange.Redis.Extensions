@@ -5,7 +5,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core;
+using StackExchange.Redis.Extensions.Core.Abstractions;
+using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Extensions;
+using StackExchange.Redis.Extensions.Core.Implementations;
 using StackExchange.Redis.Extensions.Tests.Extensions;
 using StackExchange.Redis.Extensions.Tests.Helpers;
 using Xunit;
@@ -18,46 +21,61 @@ namespace StackExchange.Redis.Extensions.Tests
 	public abstract class CacheClientTestBase : IDisposable
 	{
 		protected readonly IDatabase Db;
-		protected readonly ICacheClient Sut;
+		protected readonly IRedisCacheClient Sut;
 		protected ISerializer Serializer;
+		protected RedisConfiguration redisConfiguration;
+		protected IRedisCacheConnectionPoolManager ConnectionPoolManager;
 
 		protected CacheClientTestBase(ISerializer serializer)
 		{
-			Serializer = serializer;
-			var mux = ConnectionMultiplexer.Connect(new ConfigurationOptions
+			redisConfiguration = new RedisConfiguration()
 			{
-				DefaultVersion = new Version(3, 0, 500),
-				EndPoints = { { "localhost", 6379 } },
-				AllowAdmin = true
-			});
+				AbortOnConnectFail = true,
+				KeyPrefix = "MyPrefix__",
+				Hosts = new RedisHost[]
+				{
+					new RedisHost(){Host = "localhost", Port = 6379}
+				},
+				AllowAdmin = true,
+				ConnectTimeout = 3000,
+				Database = 0,
+				ServerEnumerationStrategy = new ServerEnumerationStrategy()
+				{
+					Mode = ServerEnumerationStrategy.ModeOptions.All,
+					TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
+					UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
+				}
+			};
 
-			Sut = new StackExchangeRedisCacheClient(mux, Serializer);
-			Db = Sut.Database;
+			Serializer = serializer;
+			//redisCacheConnectionPoolManager = new SinglePool(redisConfiguration);
+			ConnectionPoolManager = new RedisCacheConnectionPoolManager(redisConfiguration);
+			Sut = new RedisCacheClient(ConnectionPoolManager, Serializer, redisConfiguration);
+			Db = Sut.GetDbFromConfiguration().Database;
 		}
 
 		public void Dispose()
 		{
 			Db.FlushDatabase();
 			Db.Multiplexer.GetSubscriber().UnsubscribeAll();
-			Db.Multiplexer.Dispose();
-			Sut.Dispose();
+			ConnectionPoolManager.Dispose();
 		}
 
 		[Fact]
 		public void Info_Should_Return_Valid_Information()
 		{
-			var response = Sut.GetInfo();
+			var response = Sut.GetDbFromConfiguration().GetInfo();
 
 			Assert.NotNull(response);
 			Assert.True(response.Any());
-			Assert.Equal(response["os"], "Windows"); // TODO: are you sure this will hold on linux/unix machines?
-			Assert.Equal(response["tcp_port"], "6379");
+			Assert.Equal("Windows", response["os"]); // TODO: are you sure this will hold on linux/unix machines?
+			Assert.Equal("6379", response["tcp_port"]);
 		}
 
 		[Fact]
 		public void Add_Item_To_Redis_Database()
 		{
-			var added = Sut.Add("my Key", "my value");
+			var added = Sut.GetDbFromConfiguration().Add("my Key", "my value");
 
 			Assert.True(added);
 			Assert.True(Db.KeyExists("my Key"));
@@ -68,12 +86,11 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			var testobject = new TestClass<DateTime>();
 
-			var added = Sut.Add("my Key", testobject);
+			var added = Sut.GetDbFromConfiguration().Add("my Key", testobject);
 
 			var result = Db.StringGet("my Key");
 
 			Assert.True(added);
-			Assert.NotNull(result);
 
 			var obj = Serializer.Deserialize<TestClass<DateTime>>(result);
 
@@ -93,7 +110,7 @@ namespace StackExchange.Redis.Extensions.Tests
 				new Tuple<string, string>("key3", "value3")
 			};
 
-			var added = Sut.AddAll(values);
+			var added = Sut.GetDbFromConfiguration().AddAll(values);
 
 			Assert.True(added);
 
@@ -101,9 +118,9 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.True(Db.KeyExists("key2"));
 			Assert.True(Db.KeyExists("key3"));
 
-			Assert.Equal(Serializer.Deserialize<string>(Db.StringGet("key1")), "value1");
-			Assert.Equal(Serializer.Deserialize<string>(Db.StringGet("key2")), "value2");
-			Assert.Equal(Serializer.Deserialize<string>(Db.StringGet("key3")), "value3");
+			Assert.Equal("value1", Serializer.Deserialize<string>(Db.StringGet("key1")));
+			Assert.Equal("value2", Serializer.Deserialize<string>(Db.StringGet("key2")));
+			Assert.Equal("value3", Serializer.Deserialize<string>(Db.StringGet("key3")));
 		}
 
 		[Fact]
@@ -115,7 +132,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			values.ForEach(x => Db.StringSet(x.Key, Serializer.Serialize(x.Value)));
 
-			var result = Sut.GetAll<string>(new[] { values[0].Key, values[1].Key, values[2].Key, "notexistingkey" });
+			var result = Sut.GetDbFromConfiguration().GetAll<string>(new[] { values[0].Key, values[1].Key, values[2].Key, "notexistingkey" });
 
 			Assert.True(result.Count() == 4);
 			Assert.Equal(result[values[0].Key], values[0].Value);
@@ -133,7 +150,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			Db.StringSet(value.Item1, Serializer.Serialize(value));
 
-			var cachedObject = Sut.Get<ComplexClassForTest<string, Guid>>(value.Item1);
+			var cachedObject = Sut.GetDbFromConfiguration().Get<ComplexClassForTest<string, Guid>>(value.Item1);
 
 			Assert.NotNull(cachedObject);
 			Assert.Equal(value.Item1, cachedObject.Item1);
@@ -148,7 +165,7 @@ namespace StackExchange.Redis.Extensions.Tests
 					.ToArray();
 			values.ForEach(x => Db.StringSet(x.Key, x.Value));
 
-			Sut.RemoveAll(values.Select(x => x.Key));
+			Sut.GetDbFromConfiguration().RemoveAll(values.Select(x => x.Key));
 
 			foreach (var value in values)
 			{
@@ -165,7 +182,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			values.ForEach(x => Db.StringSet(x.Key, x.Value));
 
-			var key = Sut.SearchKeys("Key1*").ToList();
+			var key = Sut.GetDbFromConfiguration().SearchKeys("Key1*").ToList();
 
 			Assert.True(key.Count == 11);
 		}
@@ -173,12 +190,11 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void SearchKeys_With_Key_Prefix_Should_Return_All_Database_Keys()
 		{
-			var client = new StackExchangeRedisCacheClient(Serializer, "localhost", "MyPrefix__");
-			client.Add("mykey1", "Foo");
-			client.Add("mykey2", "Bar");
-			client.Add("key3", "Bar");
+			Sut.GetDbFromConfiguration().Add("mykey1", "Foo");
+			Sut.GetDbFromConfiguration().Add("mykey2", "Bar");
+			Sut.GetDbFromConfiguration().Add("key3", "Bar");
 
-			var keys = client.SearchKeys("*mykey*");
+			var keys = Sut.GetDbFromConfiguration().SearchKeys("*mykey*");
 
 			Assert.True(keys.Count() == 2);
 		}
@@ -186,15 +202,13 @@ namespace StackExchange.Redis.Extensions.Tests
 	    [Fact]
 	    public void SearchKeys_With_Key_Prefix_Should_Return_Keys_Without_Prefix()
 	    {
-	        var client = new StackExchangeRedisCacheClient(Serializer, "localhost", "MyPrefix__");
-
 	        var values = Range(0, 10)
 	            .Select(i => new TestClass<string>($"mykey{i}", Guid.NewGuid().ToString()))
 	            .ToArray();
 
-            values.ForEach(x => client.Add(x.Key, x.Value));
+            values.ForEach(x => Sut.GetDbFromConfiguration().Add(x.Key, x.Value));
 
-            var result = client.SearchKeys("*mykey*").OrderBy(k => k).ToList();
+            var result = Sut.GetDbFromConfiguration().SearchKeys("*mykey*").OrderBy(k => k).ToList();
 
 	        Assert.True(result.Count == 10);
 
@@ -212,7 +226,7 @@ namespace StackExchange.Redis.Extensions.Tests
 					.ToArray();
 			values.ForEach(x => Db.StringSet(x.Key, x.Value));
 
-			Assert.True(Sut.Exists(values[0].Key));
+			Assert.True(Sut.GetDbFromConfiguration().Exists(values[0].Key));
 		}
 
 		[Fact]
@@ -222,7 +236,7 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
 			values.ForEach(x => Db.StringSet(x.Key, x.Value));
 
-			Assert.False(Sut.Exists("this key doesn not exist into redi"));
+			Assert.False(Sut.GetDbFromConfiguration().Exists("this key doesn not exist into redi"));
 		}
 
 		[Fact]
@@ -235,7 +249,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			values.ForEach(x =>
 			{
 				Db.StringSet(x.Key, Serializer.Serialize(x.Value));
-				Sut.SetAdd<string>("MySet", x.Key);
+				Sut.GetDbFromConfiguration().SetAdd<string>("MySet", x.Key);
 			});
 
 			var keys = Db.SetMembers("MySet");
@@ -253,7 +267,7 @@ namespace StackExchange.Redis.Extensions.Tests
 				Db.SetAdd("MySet", Serializer.Serialize(x));
 			});
 
-			var keys = (Sut.SetMembers<TestClass<string>>("MySet")).ToArray();
+			var keys = (Sut.GetDbFromConfiguration().SetMembers<TestClass<string>>("MySet")).ToArray();
 
 			Assert.Equal(keys.Length, values.Length);
 
@@ -274,7 +288,7 @@ namespace StackExchange.Redis.Extensions.Tests
 				Db.SetAdd("MySet", x.Key);
 			});
 
-			var keys = Sut.SetMember("MySet");
+			var keys = Sut.GetDbFromConfiguration().SetMember("MySet");
 
 			Assert.Equal(keys.Length, values.Length);
 		}
@@ -289,7 +303,7 @@ namespace StackExchange.Redis.Extensions.Tests
 				Db.SetAdd("MySet", Serializer.Serialize(x));
 			});
 
-			var keys = (await Sut.SetMembersAsync<TestClass<string>>("MySet")).ToArray();
+			var keys = (await Sut.GetDbFromConfiguration().SetMembersAsync<TestClass<string>>("MySet")).ToArray();
 
 			Assert.Equal(keys.Length, values.Length);
 		}
@@ -301,8 +315,8 @@ namespace StackExchange.Redis.Extensions.Tests
 			var values = Range(0, size).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
 
 			var tupleValues = values.Select(x => new Tuple<string, TestClass<string>>(x.Key, x)).ToList();
-			var result = Sut.AddAll(tupleValues);
-			var cached = Sut.GetAll<TestClass<string>>(values.Select(x => x.Key));
+			var result = Sut.GetDbFromConfiguration().AddAll(tupleValues);
+			var cached = Sut.GetDbFromConfiguration().GetAll<TestClass<string>>(values.Select(x => x.Key));
 
 			Assert.True(result);
 			Assert.NotNull(cached);
@@ -319,8 +333,8 @@ namespace StackExchange.Redis.Extensions.Tests
 		public void Adding_Value_Type_Should_Return_Correct_Value()
 		{
 			var d = 1;
-			var added = Sut.Add("my Key", d);
-			var dbValue = Sut.Get<int>("my Key");
+			var added = Sut.GetDbFromConfiguration().Add("my Key", d);
+			var dbValue = Sut.GetDbFromConfiguration().Get<int>("my Key");
 
 			Assert.True(added);
 			Assert.True(Db.KeyExists("my Key"));
@@ -331,8 +345,8 @@ namespace StackExchange.Redis.Extensions.Tests
 		public void Adding_Collection_To_Redis_Should_Work_Correctly()
 		{
 			var items = Range(1, 3).Select(i => new TestClass<string> { Key = $"key{i}", Value = "value{i}" }).ToArray();
-			var added = Sut.Add("my Key", items);
-			var dbValue = Sut.Get<TestClass<string>[]>("my Key");
+			var added = Sut.GetDbFromConfiguration().Add("my Key", items);
+			var dbValue = Sut.GetDbFromConfiguration().Get<TestClass<string>[]>("my Key");
 
 			Assert.True(added);
 			Assert.True(Db.KeyExists("my Key"));
@@ -349,7 +363,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			var expiresIn = new TimeSpan(0, 0, 1);
 			var items = Range(1, 3).Select(i => new Tuple<string, string>($"key{i}", "value{i}")).ToArray();
-			var added = Sut.AddAll(items, expiresIn);
+			var added = Sut.GetDbFromConfiguration().AddAll(items, expiresIn);
 
 			Thread.Sleep(expiresIn.Add(new TimeSpan(0, 0, 1)));
 			var hasExpired = items.All(x => !Db.KeyExists(x.Item1));
@@ -373,9 +387,9 @@ namespace StackExchange.Redis.Extensions.Tests
 				subscriberValue = value;
 			};
 
-			Sut.Subscribe(channel, action);
+			Sut.GetDbFromConfiguration().Subscribe(channel, action);
 
-			var result = Sut.Publish(channel, message);
+			var result = Sut.GetDbFromConfiguration().Publish(channel, message);
 
 			while (!subscriberNotified)
 			{
@@ -390,13 +404,13 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void SetAddGenericShouldThrowExceptionWhenKeyIsEmpty()
 		{
-			Assert.Throws<ArgumentException>(() => Sut.SetAdd<string>(string.Empty, string.Empty));
+			Assert.Throws<ArgumentException>(() => Sut.GetDbFromConfiguration().SetAdd<string>(string.Empty, string.Empty));
 		}
 
 		[Fact]
 		public void SetAddGenericShouldThrowExceptionWhenItemIsNull()
 		{
-			Assert.Throws<ArgumentNullException>(() => Sut.SetAdd<string>("MySet", null));
+			Assert.Throws<ArgumentNullException>(() => Sut.GetDbFromConfiguration().SetAdd<string>("MySet", null));
 		}
 
 		[Fact]
@@ -407,7 +421,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			values.ForEach(x =>
 			{
 				Db.StringSet(x.Key, Serializer.Serialize(x.Value));
-				Sut.SetAdd("MySet", x);
+				Sut.GetDbFromConfiguration().SetAdd("MySet", x);
 			});
 
 			var keys = Db.SetMembers("MySet");
@@ -420,7 +434,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			try
 			{
-				await Sut.SetAddAsync<string>(string.Empty, string.Empty);
+				await Sut.GetDbFromConfiguration().SetAddAsync<string>(string.Empty, string.Empty);
 			}
 			catch (Exception ex)
 			{
@@ -433,7 +447,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			try
 			{
-				await Sut.SetAddAsync<string>("MySet", null);
+				await Sut.GetDbFromConfiguration().SetAddAsync<string>("MySet", null);
 			}
 			catch (Exception ex)
 			{
@@ -451,7 +465,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			foreach (var value in values)
 			{
 				Db.StringSet(value.Key, Serializer.Serialize(value.Value));
-				var result = await Sut.SetAddAsync(key, value);
+				var result = await Sut.GetDbFromConfiguration().SetAddAsync(key, value);
 				Assert.True(result, $"SetAddAsync {key}:{value} failed");
 			}
 
@@ -464,7 +478,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		public void SetAddAllGenericShouldReturnValidData()
 		{
 			var items = new[] { "val1", "val2", "val3" };
-			long result = Sut.SetAddAll<string>("MySet", items);
+			long result = Sut.GetDbFromConfiguration().SetAddAll<string>("MySet", CommandFlags.None, items);
 			Assert.Equal(result, items.Length);
 		}
 
@@ -473,7 +487,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			try
 			{
-				long result = Sut.SetAddAll<string>("MySet", (string[])null);
+				long result = Sut.GetDbFromConfiguration().SetAddAll<string>("MySet", CommandFlags.None, (string[])null);
 			}
 			catch (Exception ex)
 			{
@@ -486,7 +500,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			try
 			{
-				long result = Sut.SetAddAll<string>("MySet", "value", null, "value2");
+				long result = Sut.GetDbFromConfiguration().SetAddAll<string>("MySet", CommandFlags.None, "value", null, "value2");
 			}
 			catch (Exception ex)
 			{
@@ -498,7 +512,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		public async Task SetAddAllAsyncGenericShouldReturnValidData()
 		{
 			var items = new[] { "val1", "val2", "val3" };
-			long result = await Sut.SetAddAllAsync<string>("MySet", items);
+			long result = await Sut.GetDbFromConfiguration().SetAddAllAsync<string>("MySet", CommandFlags.None, items);
 			Assert.Equal(result, items.Length);
 		}
 
@@ -508,7 +522,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			try
 			{
 				var items = new string[] { "value", null, "value2" };
-				long result = await Sut.SetAddAllAsync<string>("MySet", items);
+				long result = await Sut.GetDbFromConfiguration().SetAddAllAsync<string>("MySet", CommandFlags.None, items);
 			}
 			catch (Exception ex)
 			{
@@ -521,9 +535,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			const string key = "MySet", item = "MyItem";
 
-			Sut.SetAdd<string>(key, item);
+			Sut.GetDbFromConfiguration().SetAdd<string>(key, item);
 
-			var result = Sut.SetRemove(key, item);
+			var result = Sut.GetDbFromConfiguration().SetRemove(key, item);
 			Assert.True(result);
 		}
 
@@ -532,9 +546,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			const string key = "MySet";
 
-			Sut.SetAdd<string>(key, "ExistingItem");
+			Sut.GetDbFromConfiguration().SetAdd<string>(key, "ExistingItem");
 
-			var result = Sut.SetRemove(key, "UnexistingItem");
+			var result = Sut.GetDbFromConfiguration().SetRemove(key, "UnexistingItem");
 			Assert.False(result);
 		}
 
@@ -543,9 +557,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			const string key = "MySet", item = "MyItem";
 
-			Sut.SetAdd<string>(key, item);
+			Sut.GetDbFromConfiguration().SetAdd<string>(key, item);
 
-			var result = await Sut.SetRemoveAsync(key, item);
+			var result = await Sut.GetDbFromConfiguration().SetRemoveAsync(key, item);
 			Assert.True(result);
 		}
 
@@ -555,9 +569,9 @@ namespace StackExchange.Redis.Extensions.Tests
 			const string key = "MySet";
 			var items = new[] { "MyItem1", "MyItem2" };
 
-			Sut.SetAddAll<string>(key, items);
+			Sut.GetDbFromConfiguration().SetAddAll<string>(key, CommandFlags.None, items);
 
-			var result = Sut.SetRemoveAll(key, items);
+			var result = Sut.GetDbFromConfiguration().SetRemoveAll(key, CommandFlags.None, items);
 			Assert.Equal(items.Length, result);
 		}
 
@@ -566,7 +580,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			try
 			{
-				long result = Sut.SetRemoveAll<string>("MySet", "value", null, "value2");
+				long result = Sut.GetDbFromConfiguration().SetRemoveAll<string>("MySet",CommandFlags.None,  "value", null, "value2");
 			}
 			catch (Exception ex)
 			{
@@ -580,9 +594,9 @@ namespace StackExchange.Redis.Extensions.Tests
 			const string key = "MySet";
 			var items = new[] { "MyItem1", "MyItem2" };
 
-			Sut.SetAddAll<string>(key, items);
+			Sut.GetDbFromConfiguration().SetAddAll<string>(key, CommandFlags.None, items);
 
-			var result = await Sut.SetRemoveAllAsync(key, items);
+			var result = await Sut.GetDbFromConfiguration().SetRemoveAllAsync(key,CommandFlags.None, items);
 			Assert.Equal(items.Length, result);
 		}
 
@@ -591,7 +605,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			try
 			{
-				long result = await Sut.SetRemoveAllAsync<string>("MySet", "value", null, "value2");
+				long result = await Sut.GetDbFromConfiguration().SetRemoveAllAsync<string>("MySet", CommandFlags.None, "value", null, "value2");
 			}
 			catch (Exception ex)
 			{
@@ -602,13 +616,13 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void ListAddToLeftGenericShouldThrowExceptionWhenKeyIsEmpty()
 		{
-			Assert.Throws<ArgumentException>(() => Sut.ListAddToLeft(string.Empty, string.Empty));
+			Assert.Throws<ArgumentException>(() => Sut.GetDbFromConfiguration().ListAddToLeft(string.Empty, string.Empty));
 		}
 
 		[Fact]
 		public void ListAddToLeftGenericShouldThrowExceptionWhenItemIsNull()
 		{
-			Assert.Throws<ArgumentNullException>(() => Sut.ListAddToLeft<string>("MyList", null));
+			Assert.Throws<ArgumentNullException>(() => Sut.GetDbFromConfiguration().ListAddToLeft<string>("MyList", null));
 		}
 
 		[Fact]
@@ -618,7 +632,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			const string key = "MyList";
 
-			values.ForEach(x => Sut.ListAddToLeft(key, Serializer.Serialize(x)));
+			values.ForEach(x => Sut.GetDbFromConfiguration().ListAddToLeft(key, Serializer.Serialize(x)));
 
 			var keys = Db.ListRange(key);
 
@@ -629,14 +643,14 @@ namespace StackExchange.Redis.Extensions.Tests
 		public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
 		{
 			await Assert.ThrowsAsync<ArgumentException>(
-				async () => await Sut.ListAddToLeftAsync(string.Empty, string.Empty));
+				async () => await Sut.GetDbFromConfiguration().ListAddToLeftAsync(string.Empty, string.Empty));
 		}
 
 		[Fact]
 		public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemIsNull()
 		{
 			await Assert.ThrowsAsync<ArgumentNullException>(
-				async () => await Sut.ListAddToLeftAsync<string>("MyList", null));
+				async () => await Sut.GetDbFromConfiguration().ListAddToLeftAsync<string>("MyList", null));
 		}
 
 		[Fact]
@@ -649,7 +663,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			foreach (var value in values)
 			{
 				// TODO: why no assertion on the result?
-				var result = await Sut.ListAddToLeftAsync(key, Serializer.Serialize(value));
+				var result = await Sut.GetDbFromConfiguration().ListAddToLeftAsync(key, Serializer.Serialize(value));
 			}
 			var keys = Db.ListRange(key);
 
@@ -659,7 +673,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		[Fact]
 		public void ListGetFromRightGenericShouldThrowExceptionWhenKeyIsEmpty()
 		{
-			Assert.Throws<ArgumentException>(() => Sut.ListGetFromRight<string>(string.Empty));
+			Assert.Throws<ArgumentException>(() => Sut.GetDbFromConfiguration().ListGetFromRight<string>(string.Empty));
 		}
 
 		[Fact]
@@ -673,7 +687,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			values.ForEach(x => { Db.ListLeftPush(key, Serializer.Serialize(x)); });
 
-			var item = Sut.ListGetFromRight<TestClass<string>>(key);
+			var item = Sut.GetDbFromConfiguration().ListGetFromRight<TestClass<string>>(key);
 
 			Assert.Equal(item.Key, values[0].Key);
 			Assert.Equal(item.Value, values[0].Value);
@@ -683,7 +697,7 @@ namespace StackExchange.Redis.Extensions.Tests
 		public async Task ListGetFromRightAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
 		{
 			await Assert.ThrowsAsync<ArgumentException>(
-			   async () => await Sut.ListGetFromRightAsync<string>(string.Empty));
+			   async () => await Sut.GetDbFromConfiguration().ListGetFromRightAsync<string>(string.Empty));
 		}
 
 		[Fact]
@@ -697,7 +711,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			values.ForEach(x => { Db.ListLeftPush(key, Serializer.Serialize(x)); });
 
-			var item = await Sut.ListGetFromRightAsync<TestClass<string>>(key);
+			var item = await Sut.GetDbFromConfiguration().ListGetFromRightAsync<TestClass<string>>(key);
 
 			Assert.Equal(item.Key, values[0].Key);
 			Assert.Equal(item.Value, values[0].Value);
@@ -708,9 +722,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			var key = "MyList";
 
-			var item = await Sut.ListGetFromRightAsync<TestClass<string>>(key);
+			var item = await Sut.GetDbFromConfiguration().ListGetFromRightAsync<TestClass<string>>(key);
 
-			Assert.Equal(item, null);
+			Assert.Null(item);
 		}
 
 		[Fact]
@@ -718,9 +732,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			var key = "MyList";
 
-			var item = Sut.ListGetFromRight<TestClass<string>>(key);
+			var item = Sut.GetDbFromConfiguration().ListGetFromRight<TestClass<string>>(key);
 
-			Assert.Equal(item, null);
+			Assert.Null(item);
 		}
 
 		[Fact]
@@ -732,8 +746,8 @@ namespace StackExchange.Redis.Extensions.Tests
 			var testTime = DateTime.UtcNow.AddSeconds(20);
 			var resultTimeSpan = originalTime.Subtract(DateTime.UtcNow);
 
-			Sut.Add(key, value, originalTime);
-			Sut.Get<string>(key, testTime);
+			Sut.GetDbFromConfiguration().Add(key, value, originalTime);
+			Sut.GetDbFromConfiguration().Get<string>(key, testTime);
 			var resultValue = Db.StringGetWithExpiry(key);
 
 			Assert.True(resultTimeSpan < resultValue.Expiry.Value);
@@ -748,8 +762,8 @@ namespace StackExchange.Redis.Extensions.Tests
 			var testTime = new TimeSpan(0, 0, 20);
 			var resultTimeSpan = originalTime;
 
-			Sut.Add(key, value, originalTime);
-			Sut.Get<string>(key, testTime);
+			Sut.GetDbFromConfiguration().Add(key, value, originalTime);
+			Sut.GetDbFromConfiguration().Get<string>(key, testTime);
 			var resultValue = Db.StringGetWithExpiry(key);
 
 			Assert.True(resultTimeSpan < resultValue.Expiry.Value);
@@ -763,8 +777,8 @@ namespace StackExchange.Redis.Extensions.Tests
 			var originalTime = DateTime.UtcNow.AddSeconds(5);
 			var testTime = DateTime.UtcNow.AddSeconds(20);
 
-			await Sut.AddAsync(key, value, originalTime);
-			await Sut.GetAsync<string>(key, testTime);
+			await Sut.GetDbFromConfiguration().AddAsync(key, value, originalTime);
+			await Sut.GetDbFromConfiguration().GetAsync<string>(key, testTime);
 			var resultValue = Db.StringGetWithExpiry(key);
 
 			Assert.True(originalTime.Subtract(DateTime.UtcNow) < resultValue.Expiry.Value);
@@ -778,8 +792,8 @@ namespace StackExchange.Redis.Extensions.Tests
 			var originalTime = DateTime.UtcNow.AddSeconds(5).Subtract(DateTime.UtcNow);
 			var testTime = DateTime.UtcNow.AddSeconds(20).Subtract(DateTime.UtcNow);
 
-			await Sut.AddAsync(key, value, originalTime);
-			await Sut.GetAsync<string>(key, testTime);
+			await Sut.GetDbFromConfiguration().AddAsync(key, value, originalTime);
+			await Sut.GetDbFromConfiguration().GetAsync<string>(key, testTime);
 			var resultValue = Db.StringGetWithExpiry(key);
 
 			Assert.True(originalTime < resultValue.Expiry.Value);
@@ -796,8 +810,8 @@ namespace StackExchange.Redis.Extensions.Tests
 			var values = new List<Tuple<string, TestClass<string>>>() { new Tuple<string, TestClass<string>>(key, value) };
 			var keys = new List<string> { key };
 
-			Sut.AddAll(values, originalTime);
-			Sut.GetAll<TestClass<string>>(keys, testTime);
+			Sut.GetDbFromConfiguration().AddAll(values, originalTime);
+			Sut.GetDbFromConfiguration().GetAll<TestClass<string>>(keys, testTime);
 			var resultValue = Db.StringGetWithExpiry(key);
 
 			Assert.True(originalTime < resultValue.Expiry.Value);
@@ -814,8 +828,8 @@ namespace StackExchange.Redis.Extensions.Tests
 			var values = new List<Tuple<string, TestClass<string>>>() { new Tuple<string, TestClass<string>>(key, value) };
 			var keys = new List<string> { key };
 
-			await Sut.AddAllAsync(values, originalTime);
-			await Sut.GetAllAsync<TestClass<string>>(keys, testTime);
+			await Sut.GetDbFromConfiguration().AddAllAsync(values, originalTime);
+			await Sut.GetDbFromConfiguration().GetAllAsync<TestClass<string>>(keys, testTime);
 			var resultValue = Db.StringGetWithExpiry(key);
 
 			Assert.True(originalTime < resultValue.Expiry.Value);
@@ -829,8 +843,8 @@ namespace StackExchange.Redis.Extensions.Tests
 			var originalTime = DateTime.UtcNow.AddSeconds(5).Subtract(DateTime.UtcNow);
 			var testTime = DateTime.UtcNow.AddSeconds(20).Subtract(DateTime.UtcNow);
 
-			Sut.Add(key, value, originalTime);
-			Sut.UpdateExpiry(key, testTime);
+			Sut.GetDbFromConfiguration().Add(key, value, originalTime);
+			Sut.GetDbFromConfiguration().UpdateExpiry(key, testTime);
 
 			var resultValue = Db.StringGetWithExpiry(key);
 			Assert.True(originalTime < resultValue.Expiry.Value);
@@ -844,8 +858,8 @@ namespace StackExchange.Redis.Extensions.Tests
 			var originalTime = DateTime.UtcNow.AddSeconds(5).Subtract(DateTime.UtcNow);
 			var testTime = DateTime.UtcNow.AddSeconds(20).Subtract(DateTime.UtcNow);
 
-			await Sut.AddAsync(key, value, originalTime);
-			await Sut.UpdateExpiryAsync(key, testTime);
+			await Sut.GetDbFromConfiguration().AddAsync(key, value, originalTime);
+			await Sut.GetDbFromConfiguration().UpdateExpiryAsync(key, testTime);
 
 			var resultValue = Db.StringGetWithExpiry(key);
 			Assert.True(originalTime < resultValue.Expiry.Value);
@@ -859,8 +873,8 @@ namespace StackExchange.Redis.Extensions.Tests
 			var originalTime = DateTime.UtcNow.AddSeconds(5);
 			var testTime = DateTime.UtcNow.AddSeconds(20);
 
-			Sut.Add(key, value, originalTime);
-			Sut.UpdateExpiry(key, testTime);
+			Sut.GetDbFromConfiguration().Add(key, value, originalTime);
+			Sut.GetDbFromConfiguration().UpdateExpiry(key, testTime);
 
 			var resultValue = Db.StringGetWithExpiry(key);
 			Assert.True(originalTime.Subtract(DateTime.UtcNow) < resultValue.Expiry.Value);
@@ -874,8 +888,8 @@ namespace StackExchange.Redis.Extensions.Tests
 			var originalTime = DateTime.UtcNow.AddSeconds(5);
 			var testTime = DateTime.UtcNow.AddSeconds(20);
 
-			await Sut.AddAsync(key, value, originalTime);
-			await Sut.UpdateExpiryAsync(key, testTime);
+			await Sut.GetDbFromConfiguration().AddAsync(key, value, originalTime);
+			await Sut.GetDbFromConfiguration().UpdateExpiryAsync(key, testTime);
 
 			var resultValue = Db.StringGetWithExpiry(key);
 			Assert.True(originalTime.Subtract(DateTime.UtcNow) < resultValue.Expiry.Value);
@@ -892,11 +906,11 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryValue = new TestClass<DateTime>("test", DateTime.UtcNow);
 
 			// act
-			var res = Sut.HashSet(hashKey, entryKey, entryValue, nx: true);
+			var res = Sut.GetDbFromConfiguration().HashSet(hashKey, entryKey, entryValue, nx: true);
 
 			// assert
 			Assert.True(res);
-			var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.Database.HashGet(hashKey, entryKey));
+			var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.GetDbFromConfiguration().Database.HashGet(hashKey, entryKey));
 			Assert.Equal(entryValue, data);
 		}
 
@@ -908,15 +922,15 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryKey = Guid.NewGuid().ToString();
 			var entryValue = new TestClass<DateTime>("test1", DateTime.UtcNow);
 			var initialValue = new TestClass<DateTime>("test2", DateTime.UtcNow);
-			var initRes = Sut.HashSet(hashKey, entryKey, initialValue);
+			var initRes = Sut.GetDbFromConfiguration().HashSet(hashKey, entryKey, initialValue);
 
 			// act
-			var res = Sut.HashSet(hashKey, entryKey, entryValue, nx: true);
+			var res = Sut.GetDbFromConfiguration().HashSet(hashKey, entryKey, entryValue, nx: true);
 
 			// assert
 			Assert.True(initRes);
 			Assert.False(res);
-			var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.Database.HashGet(hashKey, entryKey));
+			var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.GetDbFromConfiguration().Database.HashGet(hashKey, entryKey));
 			Assert.Equal(initialValue, data);
 		}
 
@@ -928,15 +942,15 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryKey = Guid.NewGuid().ToString();
 			var entryValue = new TestClass<DateTime>("test1", DateTime.UtcNow);
 			var initialValue = new TestClass<DateTime>("test2", DateTime.UtcNow);
-			var initRes = Sut.Database.HashSet(hashKey, entryKey, Serializer.Serialize(initialValue));
+			var initRes = Sut.GetDbFromConfiguration().Database.HashSet(hashKey, entryKey, Serializer.Serialize(initialValue));
 
 			// act
-			var res = Sut.HashSet(hashKey, entryKey, entryValue, nx: false);
+			var res = Sut.GetDbFromConfiguration().HashSet(hashKey, entryKey, entryValue, nx: false);
 
 			// assert
 			Assert.True(initRes, "Initial value was not set");
 			Assert.False(res); // NOTE: HSET returns: 1 if new field was created and value set, or 0 if field existed and value set. reference: http://redis.io/commands/HSET
-			var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.Database.HashGet(hashKey, entryKey));
+			var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.GetDbFromConfiguration().Database.HashGet(hashKey, entryKey));
 			Assert.Equal(entryValue, data);
 		}
 
@@ -949,10 +963,10 @@ namespace StackExchange.Redis.Extensions.Tests
 			var map = values.ToDictionary(val => Guid.NewGuid().ToString());
 
 			// act
-			Sut.HashSet(hashKey, map);
+			Sut.GetDbFromConfiguration().HashSet(hashKey, map);
 			Thread.Sleep(500);
 			// assert
-			var data = Sut.Database
+			var data = Sut.GetDbFromConfiguration().Database
 						.HashGet(hashKey, map.Keys.Select(x => (RedisValue)x).ToArray()).ToList()
 						.Select(x => Serializer.Deserialize<TestClass<DateTime>>(x))
 						.ToList();
@@ -970,14 +984,14 @@ namespace StackExchange.Redis.Extensions.Tests
 			var hashKey = Guid.NewGuid().ToString();
 			var entryKey = Guid.NewGuid().ToString();
 			var entryValue = new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow);
-			Assert.True(Sut.Database.HashSet(hashKey, entryKey, Sut.Serializer.Serialize(entryValue)), "Failed setting test value into redis");
+			Assert.True(Sut.GetDbFromConfiguration().Database.HashSet(hashKey, entryKey, Sut.GetDbFromConfiguration().Serializer.Serialize(entryValue)), "Failed setting test value into redis");
 			// act
 
-			var result = Sut.HashDelete(hashKey, entryKey);
+			var result = Sut.GetDbFromConfiguration().HashDelete(hashKey, entryKey);
 
 			// assert
 			Assert.True(result);
-			Assert.True(Sut.Database.HashGet(hashKey, entryKey).IsNull);
+			Assert.True(Sut.GetDbFromConfiguration().Database.HashGet(hashKey, entryKey).IsNull);
 		}
 
 		[Fact]
@@ -988,11 +1002,11 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryKey = Guid.NewGuid().ToString();
 			// act
 
-			var result = Sut.HashDelete(hashKey, entryKey);
+			var result = Sut.GetDbFromConfiguration().HashDelete(hashKey, entryKey);
 
 			// assert
 			Assert.False(result);
-			Assert.True(Sut.Database.HashGet(hashKey, entryKey).IsNull);
+			Assert.True(Sut.GetDbFromConfiguration().Database.HashGet(hashKey, entryKey).IsNull);
 		}
 
 		[Fact]
@@ -1005,19 +1019,19 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
 					.ToDictionary(x => x.Key);
 
-			Sut.Database.HashSet(hashKey,
-				values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+			Sut.GetDbFromConfiguration().Database.HashSet(hashKey,
+				values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 
 			// act
 
-			var result = Sut.HashDelete(hashKey, values.Keys);
+			var result = Sut.GetDbFromConfiguration().HashDelete(hashKey, values.Keys);
 
 			// assert
 			Assert.Equal(values.Count, result);
-			var dbValues = Sut.Database.HashGet(hashKey, values.Select(x => (RedisValue)x.Key).ToArray());
+			var dbValues = Sut.GetDbFromConfiguration().Database.HashGet(hashKey, values.Select(x => (RedisValue)x.Key).ToArray());
 			Assert.NotNull(dbValues);
-			Assert.False(dbValues.Any(x => !x.IsNull));
-			Assert.Equal(0, Sut.Database.HashLength(hashKey));
+			Assert.DoesNotContain(dbValues, x => !x.IsNull);
+			Assert.Equal(0, Sut.GetDbFromConfiguration().Database.HashLength(hashKey));
 		}
 
 		[Fact]
@@ -1034,26 +1048,26 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
 					.ToDictionary(x => x.Key);
 
-			Sut.Database.HashSet(hashKey,
-				valuesDelete.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
-			Sut.Database.HashSet(hashKey,
-			   valuesKeep.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+			Sut.GetDbFromConfiguration().Database.HashSet(hashKey,
+				valuesDelete.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
+			Sut.GetDbFromConfiguration().Database.HashSet(hashKey,
+			   valuesKeep.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 
 			// act
 
-			var result = Sut.HashDelete(hashKey, valuesDelete.Keys);
+			var result = Sut.GetDbFromConfiguration().HashDelete(hashKey, valuesDelete.Keys);
 
 			// assert
 			Assert.Equal(valuesDelete.Count, result);
-			var dbDeletedValues = Sut.Database.HashGet(hashKey, valuesDelete.Select(x => (RedisValue)x.Key).ToArray());
+			var dbDeletedValues = Sut.GetDbFromConfiguration().Database.HashGet(hashKey, valuesDelete.Select(x => (RedisValue)x.Key).ToArray());
 			Assert.NotNull(dbDeletedValues);
-			Assert.False(dbDeletedValues.Any(x => !x.IsNull));
-			var dbValues = Sut.Database.HashGet(hashKey, valuesKeep.Select(x => (RedisValue)x.Key).ToArray());
+			Assert.DoesNotContain(dbDeletedValues, x => !x.IsNull);
+			var dbValues = Sut.GetDbFromConfiguration().Database.HashGet(hashKey, valuesKeep.Select(x => (RedisValue)x.Key).ToArray());
 			Assert.NotNull(dbValues);
-			Assert.False(dbValues.Any(x => x.IsNull));
-			Assert.Equal(1000, Sut.Database.HashLength(hashKey));
+			Assert.DoesNotContain(dbValues, x => x.IsNull);
+			Assert.Equal(1000, Sut.GetDbFromConfiguration().Database.HashLength(hashKey));
 			Assert.Equal(1000, dbValues.Length);
-			Assert.All(dbValues, x => Assert.True(valuesKeep.ContainsKey(Sut.Serializer.Deserialize<TestClass<int>>(x).Key)));
+			Assert.All(dbValues, x => Assert.True(valuesKeep.ContainsKey(Sut.GetDbFromConfiguration().Serializer.Deserialize<TestClass<int>>(x).Key)));
 		}
 
 		[Fact]
@@ -1063,9 +1077,9 @@ namespace StackExchange.Redis.Extensions.Tests
 			var hashKey = Guid.NewGuid().ToString();
 			var entryKey = Guid.NewGuid().ToString();
 			var entryValue = new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow);
-			Assert.True(Sut.Database.HashSet(hashKey, entryKey, Sut.Serializer.Serialize(entryValue)), "Failed setting test value into redis");
+			Assert.True(Sut.GetDbFromConfiguration().Database.HashSet(hashKey, entryKey, Sut.GetDbFromConfiguration().Serializer.Serialize(entryValue)), "Failed setting test value into redis");
 			// act
-			var result = Sut.HashExists(hashKey, entryKey);
+			var result = Sut.GetDbFromConfiguration().HashExists(hashKey, entryKey);
 
 			// assert
 			Assert.True(result, "Entry doesn't exist in hash, but it should");
@@ -1078,7 +1092,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			var hashKey = Guid.NewGuid().ToString();
 			var entryKey = Guid.NewGuid().ToString();
 			// act
-			var result = Sut.HashExists(hashKey, entryKey);
+			var result = Sut.GetDbFromConfiguration().HashExists(hashKey, entryKey);
 			// assert
 			Assert.False(result, "Entry doesn't exist in hash, but call returned true");
 		}
@@ -1089,7 +1103,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			// arrange
 			var hashKey = Guid.NewGuid().ToString();
 			// act
-			var result = Sut.HashKeys(hashKey);
+			var result = Sut.GetDbFromConfiguration().HashKeys(hashKey);
 			// assert
 			Assert.NotNull(result);
 			Assert.Empty(result);
@@ -1105,10 +1119,10 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
 					.ToDictionary(x => x.Key);
 
-			Sut.Database.HashSet(hashKey,
-				values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+			Sut.GetDbFromConfiguration().Database.HashSet(hashKey,
+				values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 			// act
-			var result = Sut.HashKeys(hashKey);
+			var result = Sut.GetDbFromConfiguration().HashKeys(hashKey);
 			// assert
 			Assert.NotNull(result);
 			var collection = result as IList<string> ?? result.ToList();
@@ -1126,7 +1140,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			// arrange
 			var hashKey = Guid.NewGuid().ToString();
 			// act
-			var result = Sut.HashValues<string>(hashKey);
+			var result = Sut.GetDbFromConfiguration().HashValues<string>(hashKey);
 			// assert
 			Assert.NotNull(result);
 			Assert.Empty(result);
@@ -1142,10 +1156,10 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
 					.ToDictionary(x => x.Key);
 
-			Sut.Database.HashSet(hashKey,
-				values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+			Sut.GetDbFromConfiguration().Database.HashSet(hashKey,
+				values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 			// act
-			var result = Sut.HashValues<TestClass<DateTime>>(hashKey);
+			var result = Sut.GetDbFromConfiguration().HashValues<TestClass<DateTime>>(hashKey);
 			// assert
 			Assert.NotNull(result);
 			var collection = result as IList<TestClass<DateTime>> ?? result.ToList();
@@ -1153,7 +1167,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.Equal(values.Count, collection.Count());
 			foreach (var key in collection)
 			{
-				Assert.True(values.Values.Contains(key));
+				Assert.Contains(key, values.Values);
 			}
 		}
 
@@ -1164,7 +1178,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			var hashKey = Guid.NewGuid().ToString();
 
 			// act
-			var result = Sut.HashLength(hashKey);
+			var result = Sut.GetDbFromConfiguration().HashLength(hashKey);
 
 			// assert
 			Assert.Equal(0, result);
@@ -1180,10 +1194,10 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
 					.ToDictionary(x => x.Key);
 
-			Sut.Database.HashSet(hashKey,
-				values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+			Sut.GetDbFromConfiguration().Database.HashSet(hashKey,
+				values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 			// act
-			var result = Sut.HashLength(hashKey);
+			var result = Sut.GetDbFromConfiguration().HashLength(hashKey);
 
 			// assert
 			Assert.Equal(1000, result);
@@ -1197,12 +1211,12 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryKey = Guid.NewGuid().ToString();
 			var incBy = 1;
 			// act
-			Assert.False(Sut.Database.HashExists(hashKey, entryKey));
-			var result = Sut.HashIncerementBy(hashKey, entryKey, incBy);
+			Assert.False(Sut.GetDbFromConfiguration().Database.HashExists(hashKey, entryKey));
+			var result = Sut.GetDbFromConfiguration().HashIncerementBy(hashKey, entryKey, incBy);
 			// assert
 			Assert.Equal(incBy, result);
-			Assert.True(Sut.HashExists(hashKey, entryKey));
-			Assert.Equal(incBy, Sut.Database.HashGet(hashKey, entryKey));
+			Assert.True(Sut.GetDbFromConfiguration().HashExists(hashKey, entryKey));
+			Assert.Equal(incBy, Sut.GetDbFromConfiguration().Database.HashGet(hashKey, entryKey));
 		}
 
 		[Fact]
@@ -1213,15 +1227,15 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryKey = Guid.NewGuid().ToString();
 			var entryValue = 15;
 			var incBy = 1;
-			Assert.True(Sut.Database.HashSet(hashKey, entryKey, entryValue));
+			Assert.True(Sut.GetDbFromConfiguration().Database.HashSet(hashKey, entryKey, entryValue));
 
 			// act
-			var result = Sut.HashIncerementBy(hashKey, entryKey, incBy);
+			var result = Sut.GetDbFromConfiguration().HashIncerementBy(hashKey, entryKey, incBy);
 
 			// assert
 			var expected = entryValue + incBy;
 			Assert.Equal(expected, result);
-			Assert.Equal(expected, Sut.Database.HashGet(hashKey, entryKey));
+			Assert.Equal(expected, Sut.GetDbFromConfiguration().Database.HashGet(hashKey, entryKey));
 		}
 
 		[Fact]
@@ -1232,12 +1246,12 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryKey = Guid.NewGuid().ToString();
 			var incBy = 0.9;
 			// act
-			Assert.False(Sut.Database.HashExists(hashKey, entryKey));
-			var result = Sut.HashIncerementBy(hashKey, entryKey, incBy);
+			Assert.False(Sut.GetDbFromConfiguration().Database.HashExists(hashKey, entryKey));
+			var result = Sut.GetDbFromConfiguration().HashIncerementBy(hashKey, entryKey, incBy);
 			// assert
 			Assert.Equal(incBy, result);
-			Assert.True(Sut.HashExists(hashKey, entryKey));
-			Assert.Equal(incBy, (double)Sut.Database.HashGet(hashKey, entryKey), 6); // have to provide epsilon due to double error
+			Assert.True(Sut.GetDbFromConfiguration().HashExists(hashKey, entryKey));
+			Assert.Equal(incBy, (double)Sut.GetDbFromConfiguration().Database.HashGet(hashKey, entryKey), 6); // have to provide epsilon due to double error
 		}
 
 		[Fact]
@@ -1248,15 +1262,15 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryKey = Guid.NewGuid().ToString();
 			var entryValue = 14.3;
 			var incBy = 9.7;
-			Assert.True(Sut.Database.HashSet(hashKey, entryKey, entryValue));
+			Assert.True(Sut.GetDbFromConfiguration().Database.HashSet(hashKey, entryKey, entryValue));
 
 			// act
-			var result = Sut.HashIncerementBy(hashKey, entryKey, incBy);
+			var result = Sut.GetDbFromConfiguration().HashIncerementBy(hashKey, entryKey, incBy);
 
 			// assert
 			var expected = entryValue + incBy;
 			Assert.Equal(expected, result);
-			Assert.Equal(expected, Sut.Database.HashGet(hashKey, entryKey));
+			Assert.Equal(expected, Sut.GetDbFromConfiguration().Database.HashGet(hashKey, entryKey));
 		}
 
 		[Fact]
@@ -1264,9 +1278,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			// arrange
 			var hashKey = Guid.NewGuid().ToString();
-			Assert.True(Sut.Database.HashLength(hashKey) == 0);
+			Assert.True(Sut.GetDbFromConfiguration().Database.HashLength(hashKey) == 0);
 			// act
-			var result = Sut.HashScan<string>(hashKey, "*");
+			var result = Sut.GetDbFromConfiguration().HashScan<string>(hashKey, "*");
 			// assert
 			Assert.Empty(result);
 		}
@@ -1281,11 +1295,11 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
 					.ToDictionary(x => x.Key);
 
-			Sut.Database.HashSet(hashKey,
-				values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+			Sut.GetDbFromConfiguration().Database.HashSet(hashKey,
+				values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 
 			// act
-			var result = Sut.HashScan<TestClass<DateTime>>(hashKey, "*");
+			var result = Sut.GetDbFromConfiguration().HashScan<TestClass<DateTime>>(hashKey, "*");
 
 			// assert
 			Assert.NotNull(result);
@@ -1308,11 +1322,11 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
 					.ToDictionary(x => x.Key);
 
-			Sut.Database.HashSet(hashKey,
-				values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+			Sut.GetDbFromConfiguration().Database.HashSet(hashKey,
+				values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 
 			// act
-			var result = Sut.HashScan<TestClass<DateTime>>(hashKey, "2*");
+			var result = Sut.GetDbFromConfiguration().HashScan<TestClass<DateTime>>(hashKey, "2*");
 
 			// assert
 			Assert.NotNull(result);
@@ -1338,11 +1352,11 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryValue = new TestClass<DateTime>("test", DateTime.UtcNow);
 
 			// act
-			var res = await Sut.HashSetAsync(hashKey, entryKey, entryValue, nx: true);
+			var res = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, entryValue, nx: true);
 
 			// assert
 			Assert.True(res);
-			var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.Database.HashGet(hashKey, entryKey));
+			var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.GetDbFromConfiguration().Database.HashGet(hashKey, entryKey));
 			Assert.Equal(entryValue, data);
 		}
 
@@ -1354,15 +1368,15 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryKey = Guid.NewGuid().ToString();
 			var entryValue = new TestClass<DateTime>("test1", DateTime.UtcNow);
 			var initialValue = new TestClass<DateTime>("test2", DateTime.UtcNow);
-			var initRes = await Sut.HashSetAsync(hashKey, entryKey, initialValue);
+			var initRes = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, initialValue);
 
 			// act
-			var res = await Sut.HashSetAsync(hashKey, entryKey, entryValue, nx: true);
+			var res = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, entryValue, nx: true);
 
 			// assert
 			Assert.True(initRes);
 			Assert.False(res);
-			var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.Database.HashGet(hashKey, entryKey));
+			var data = Serializer.Deserialize<TestClass<DateTime>>(Sut.GetDbFromConfiguration().Database.HashGet(hashKey, entryKey));
 			Assert.Equal(initialValue, data);
 		}
 
@@ -1374,15 +1388,15 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryKey = Guid.NewGuid().ToString();
 			var entryValue = new TestClass<DateTime>("test1", DateTime.UtcNow);
 			var initialValue = new TestClass<DateTime>("test2", DateTime.UtcNow);
-			var initRes = await Sut.Database.HashSetAsync(hashKey, entryKey, Serializer.Serialize(initialValue));
+			var initRes = await Sut.GetDbFromConfiguration().Database.HashSetAsync(hashKey, entryKey, Serializer.Serialize(initialValue));
 
 			// act
-			var res = await Sut.HashSetAsync(hashKey, entryKey, entryValue, nx: false);
+			var res = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, entryValue, nx: false);
 
 			// assert
 			Assert.True(initRes);
 			Assert.False(res); // NOTE: HSET returns: 1 if new field was created and value set, or 0 if field existed and value set. reference: http://redis.io/commands/HSET
-			var data = Serializer.Deserialize<TestClass<DateTime>>(await Sut.Database.HashGetAsync(hashKey, entryKey));
+			var data = Serializer.Deserialize<TestClass<DateTime>>(await Sut.GetDbFromConfiguration().Database.HashGetAsync(hashKey, entryKey));
 			Assert.Equal(entryValue, data);
 		}
 
@@ -1395,10 +1409,10 @@ namespace StackExchange.Redis.Extensions.Tests
 			var map = values.ToDictionary(val => Guid.NewGuid().ToString());
 
 			// act
-			await Sut.HashSetAsync(hashKey, map);
+			await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, map);
 
 			// assert
-			var data = (await Sut.Database
+			var data = (await Sut.GetDbFromConfiguration().Database
 						.HashGetAsync(hashKey, map.Keys.Select(x => (RedisValue)x).ToArray())).ToList()
 						.Select(x => Serializer.Deserialize<TestClass<DateTime>>(x))
 						.ToList();
@@ -1417,14 +1431,14 @@ namespace StackExchange.Redis.Extensions.Tests
 			var hashKey = Guid.NewGuid().ToString();
 			var entryKey = Guid.NewGuid().ToString();
 			var entryValue = new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow);
-			Assert.True(await Sut.Database.HashSetAsync(hashKey, entryKey, Sut.Serializer.Serialize(entryValue)), "Failed setting test value into redis");
+			Assert.True(await Sut.GetDbFromConfiguration().Database.HashSetAsync(hashKey, entryKey, Sut.GetDbFromConfiguration().Serializer.Serialize(entryValue)), "Failed setting test value into redis");
 			// act
 
-			var result = await Sut.HashDeleteAsync(hashKey, entryKey);
+			var result = await Sut.GetDbFromConfiguration().HashDeleteAsync(hashKey, entryKey);
 
 			// assert
 			Assert.True(result);
-			Assert.True((await Sut.Database.HashGetAsync(hashKey, entryKey)).IsNull);
+			Assert.True((await Sut.GetDbFromConfiguration().Database.HashGetAsync(hashKey, entryKey)).IsNull);
 		}
 
 		[Fact]
@@ -1435,11 +1449,11 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryKey = Guid.NewGuid().ToString();
 			// act
 
-			var result = await Sut.HashDeleteAsync(hashKey, entryKey);
+			var result = await Sut.GetDbFromConfiguration().HashDeleteAsync(hashKey, entryKey);
 
 			// assert
 			Assert.False(result);
-			Assert.True((await Sut.Database.HashGetAsync(hashKey, entryKey)).IsNull);
+			Assert.True((await Sut.GetDbFromConfiguration().Database.HashGetAsync(hashKey, entryKey)).IsNull);
 		}
 
 		[Fact]
@@ -1452,19 +1466,19 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
 					.ToDictionary(x => x.Key);
 
-			await Sut.Database.HashSetAsync(hashKey,
-				values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+			await Sut.GetDbFromConfiguration().Database.HashSetAsync(hashKey,
+				values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 
 			// act
 
-			var result = await Sut.HashDeleteAsync(hashKey, values.Keys);
+			var result = await Sut.GetDbFromConfiguration().HashDeleteAsync(hashKey, values.Keys);
 
 			// assert
 			Assert.Equal(values.Count, result);
-			var dbValues = await Sut.Database.HashGetAsync(hashKey, values.Select(x => (RedisValue)x.Key).ToArray());
+			var dbValues = await Sut.GetDbFromConfiguration().Database.HashGetAsync(hashKey, values.Select(x => (RedisValue)x.Key).ToArray());
 			Assert.NotNull(dbValues);
-			Assert.False(dbValues.Any(x => !x.IsNull));
-			Assert.Equal(0, await Sut.Database.HashLengthAsync(hashKey));
+			Assert.DoesNotContain(dbValues, x => !x.IsNull);
+			Assert.Equal(0, await Sut.GetDbFromConfiguration().Database.HashLengthAsync(hashKey));
 		}
 
 		[Fact]
@@ -1481,26 +1495,26 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
 					.ToDictionary(x => x.Key);
 
-			await Sut.Database.HashSetAsync(hashKey,
-				valuesDelete.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
-			await Sut.Database.HashSetAsync(hashKey,
-			   valuesKeep.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+			await Sut.GetDbFromConfiguration().Database.HashSetAsync(hashKey,
+				valuesDelete.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
+			await Sut.GetDbFromConfiguration().Database.HashSetAsync(hashKey,
+			   valuesKeep.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 
 			// act
 
-			var result = await Sut.HashDeleteAsync(hashKey, valuesDelete.Keys);
+			var result = await Sut.GetDbFromConfiguration().HashDeleteAsync(hashKey, valuesDelete.Keys);
 
 			// assert
 			Assert.Equal(valuesDelete.Count, result);
-			var dbDeletedValues = await Sut.Database.HashGetAsync(hashKey, valuesDelete.Select(x => (RedisValue)x.Key).ToArray());
+			var dbDeletedValues = await Sut.GetDbFromConfiguration().Database.HashGetAsync(hashKey, valuesDelete.Select(x => (RedisValue)x.Key).ToArray());
 			Assert.NotNull(dbDeletedValues);
-			Assert.False(dbDeletedValues.Any(x => !x.IsNull));
-			var dbValues = await Sut.Database.HashGetAsync(hashKey, valuesKeep.Select(x => (RedisValue)x.Key).ToArray());
+			Assert.DoesNotContain(dbDeletedValues, x => !x.IsNull);
+			var dbValues = await Sut.GetDbFromConfiguration().Database.HashGetAsync(hashKey, valuesKeep.Select(x => (RedisValue)x.Key).ToArray());
 			Assert.NotNull(dbValues);
-			Assert.False(dbValues.Any(x => x.IsNull));
-			Assert.Equal(1000, await Sut.Database.HashLengthAsync(hashKey));
+			Assert.DoesNotContain(dbValues, x => x.IsNull);
+			Assert.Equal(1000, await Sut.GetDbFromConfiguration().Database.HashLengthAsync(hashKey));
 			Assert.Equal(1000, dbValues.Length);
-			Assert.All(dbValues, x => Assert.True(valuesKeep.ContainsKey(Sut.Serializer.Deserialize<TestClass<int>>(x).Key)));
+			Assert.All(dbValues, x => Assert.True(valuesKeep.ContainsKey(Sut.GetDbFromConfiguration().Serializer.Deserialize<TestClass<int>>(x).Key)));
 		}
 
 		[Fact]
@@ -1510,9 +1524,9 @@ namespace StackExchange.Redis.Extensions.Tests
 			var hashKey = Guid.NewGuid().ToString();
 			var entryKey = Guid.NewGuid().ToString();
 			var entryValue = new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow);
-			Assert.True(await Sut.Database.HashSetAsync(hashKey, entryKey, Sut.Serializer.Serialize(entryValue)), "Failed setting test value into redis");
+			Assert.True(await Sut.GetDbFromConfiguration().Database.HashSetAsync(hashKey, entryKey, Sut.GetDbFromConfiguration().Serializer.Serialize(entryValue)), "Failed setting test value into redis");
 			// act
-			var result = await Sut.HashExistsAsync(hashKey, entryKey);
+			var result = await Sut.GetDbFromConfiguration().HashExistsAsync(hashKey, entryKey);
 
 			// assert
 			Assert.True(result, "Entry doesn't exist in hash, but it should");
@@ -1525,7 +1539,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			var hashKey = Guid.NewGuid().ToString();
 			var entryKey = Guid.NewGuid().ToString();
 			// act
-			var result = await Sut.HashExistsAsync(hashKey, entryKey);
+			var result = await Sut.GetDbFromConfiguration().HashExistsAsync(hashKey, entryKey);
 			// assert
 			Assert.False(result, "Entry doesn't exist in hash, but call returned true");
 		}
@@ -1536,7 +1550,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			// arrange
 			var hashKey = Guid.NewGuid().ToString();
 			// act
-			var result = await Sut.HashKeysAsync(hashKey);
+			var result = await Sut.GetDbFromConfiguration().HashKeysAsync(hashKey);
 			// assert
 			Assert.NotNull(result);
 			Assert.Empty(result);
@@ -1552,10 +1566,10 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
 					.ToDictionary(x => x.Key);
 
-			await Sut.Database.HashSetAsync(hashKey,
-				values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+			await Sut.GetDbFromConfiguration().Database.HashSetAsync(hashKey,
+				values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 			// act
-			var result = await Sut.HashKeysAsync(hashKey);
+			var result = await Sut.GetDbFromConfiguration().HashKeysAsync(hashKey);
 			// assert
 			Assert.NotNull(result);
 			var collection = result as IList<string> ?? result.ToList();
@@ -1573,7 +1587,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			// arrange
 			var hashKey = Guid.NewGuid().ToString();
 			// act
-			var result = await Sut.HashValuesAsync<string>(hashKey);
+			var result = await Sut.GetDbFromConfiguration().HashValuesAsync<string>(hashKey);
 			// assert
 			Assert.NotNull(result);
 			Assert.Empty(result);
@@ -1589,10 +1603,10 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
 					.ToDictionary(x => x.Key);
 
-			await Sut.Database.HashSetAsync(hashKey,
-				values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+			await Sut.GetDbFromConfiguration().Database.HashSetAsync(hashKey,
+				values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 			// act
-			var result = await Sut.HashValuesAsync<TestClass<DateTime>>(hashKey);
+			var result = await Sut.GetDbFromConfiguration().HashValuesAsync<TestClass<DateTime>>(hashKey);
 			// assert
 			Assert.NotNull(result);
 			var collection = result as IList<TestClass<DateTime>> ?? result.ToList();
@@ -1600,7 +1614,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.Equal(values.Count, collection.Count());
 			foreach (var key in collection)
 			{
-				Assert.True(values.Values.Contains(key));
+				Assert.Contains(key, values.Values);
 			}
 		}
 
@@ -1611,7 +1625,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			var hashKey = Guid.NewGuid().ToString();
 
 			// act
-			var result = await Sut.HashLengthAsync(hashKey);
+			var result = await Sut.GetDbFromConfiguration().HashLengthAsync(hashKey);
 
 			// assert
 			Assert.Equal(0, result);
@@ -1627,10 +1641,10 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
 					.ToDictionary(x => x.Key);
 
-			await Sut.Database.HashSetAsync(hashKey,
-				values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+			await Sut.GetDbFromConfiguration().Database.HashSetAsync(hashKey,
+				values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 			// act
-			var result = await Sut.HashLengthAsync(hashKey);
+			var result = await Sut.GetDbFromConfiguration().HashLengthAsync(hashKey);
 
 			// assert
 			Assert.Equal(1000, result);
@@ -1644,12 +1658,12 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryKey = Guid.NewGuid().ToString();
 			var incBy = 1;
 			// act
-			Assert.False(await Sut.Database.HashExistsAsync(hashKey, entryKey));
-			var result = await Sut.HashIncerementByAsync(hashKey, entryKey, incBy);
+			Assert.False(await Sut.GetDbFromConfiguration().Database.HashExistsAsync(hashKey, entryKey));
+			var result = await Sut.GetDbFromConfiguration().HashIncerementByAsync(hashKey, entryKey, incBy);
 			// assert
 			Assert.Equal(incBy, result);
-			Assert.True(await Sut.HashExistsAsync(hashKey, entryKey));
-			Assert.Equal(incBy, await Sut.Database.HashGetAsync(hashKey, entryKey));
+			Assert.True(await Sut.GetDbFromConfiguration().HashExistsAsync(hashKey, entryKey));
+			Assert.Equal(incBy, await Sut.GetDbFromConfiguration().Database.HashGetAsync(hashKey, entryKey));
 		}
 
 		[Fact]
@@ -1660,15 +1674,15 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryKey = Guid.NewGuid().ToString();
 			var entryValue = 15;
 			var incBy = 1;
-			Assert.True(await Sut.Database.HashSetAsync(hashKey, entryKey, entryValue));
+			Assert.True(await Sut.GetDbFromConfiguration().Database.HashSetAsync(hashKey, entryKey, entryValue));
 
 			// act
-			var result = await Sut.HashIncerementByAsync(hashKey, entryKey, incBy);
+			var result = await Sut.GetDbFromConfiguration().HashIncerementByAsync(hashKey, entryKey, incBy);
 
 			// assert
 			var expected = entryValue + incBy;
 			Assert.Equal(expected, result);
-			Assert.Equal(expected, await Sut.Database.HashGetAsync(hashKey, entryKey));
+			Assert.Equal(expected, await Sut.GetDbFromConfiguration().Database.HashGetAsync(hashKey, entryKey));
 		}
 
 		[Fact]
@@ -1679,12 +1693,12 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryKey = Guid.NewGuid().ToString();
 			var incBy = 0.9;
 			// act
-			Assert.False(await Sut.Database.HashExistsAsync(hashKey, entryKey));
-			var result = await Sut.HashIncerementByAsync(hashKey, entryKey, incBy);
+			Assert.False(await Sut.GetDbFromConfiguration().Database.HashExistsAsync(hashKey, entryKey));
+			var result = await Sut.GetDbFromConfiguration().HashIncerementByAsync(hashKey, entryKey, incBy);
 			// assert
 			Assert.Equal(incBy, result);
-			Assert.True(await Sut.HashExistsAsync(hashKey, entryKey));
-			Assert.Equal(incBy, (double)await Sut.Database.HashGetAsync(hashKey, entryKey), 6); // have to provide epsilon due to double error
+			Assert.True(await Sut.GetDbFromConfiguration().HashExistsAsync(hashKey, entryKey));
+			Assert.Equal(incBy, (double)await Sut.GetDbFromConfiguration().Database.HashGetAsync(hashKey, entryKey), 6); // have to provide epsilon due to double error
 		}
 
 		[Fact]
@@ -1695,15 +1709,15 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryKey = Guid.NewGuid().ToString();
 			var entryValue = 14.3;
 			var incBy = 9.7;
-			Assert.True(await Sut.Database.HashSetAsync(hashKey, entryKey, entryValue));
+			Assert.True(await Sut.GetDbFromConfiguration().Database.HashSetAsync(hashKey, entryKey, entryValue));
 
 			// act
-			var result = await Sut.HashIncerementByAsync(hashKey, entryKey, incBy);
+			var result = await Sut.GetDbFromConfiguration().HashIncerementByAsync(hashKey, entryKey, incBy);
 
 			// assert
 			var expected = entryValue + incBy;
 			Assert.Equal(expected, result);
-			Assert.Equal(expected, await Sut.Database.HashGetAsync(hashKey, entryKey));
+			Assert.Equal(expected, await Sut.GetDbFromConfiguration().Database.HashGetAsync(hashKey, entryKey));
 		}
 
 		[Fact]
@@ -1711,9 +1725,9 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			// arrange
 			var hashKey = Guid.NewGuid().ToString();
-			Assert.True(await Sut.Database.HashLengthAsync(hashKey) == 0);
+			Assert.True(await Sut.GetDbFromConfiguration().Database.HashLengthAsync(hashKey) == 0);
 			// act
-			var result = await Sut.HashScanAsync<string>(hashKey, "*");
+			var result = await Sut.GetDbFromConfiguration().HashScanAsync<string>(hashKey, "*");
 			// assert
 			Assert.Empty(result);
 		}
@@ -1728,11 +1742,11 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
 					.ToDictionary(x => x.Key);
 
-			await Sut.Database.HashSetAsync(hashKey,
-				values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+			await Sut.GetDbFromConfiguration().Database.HashSetAsync(hashKey,
+				values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 
 			// act
-			var result = await Sut.HashScanAsync<TestClass<DateTime>>(hashKey, "*");
+			var result = await Sut.GetDbFromConfiguration().HashScanAsync<TestClass<DateTime>>(hashKey, "*");
 
 			// assert
 			Assert.NotNull(result);
@@ -1755,11 +1769,11 @@ namespace StackExchange.Redis.Extensions.Tests
 					.Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
 					.ToDictionary(x => x.Key);
 
-			await Sut.Database.HashSetAsync(hashKey,
-				values.Select(x => new HashEntry(x.Key, Sut.Serializer.Serialize(x.Value))).ToArray());
+			await Sut.GetDbFromConfiguration().Database.HashSetAsync(hashKey,
+				values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 
 			// act
-			var result = await Sut.HashScanAsync<TestClass<DateTime>>(hashKey, "2*");
+			var result = await Sut.GetDbFromConfiguration().HashScanAsync<TestClass<DateTime>>(hashKey, "2*");
 
 			// assert
 			Assert.NotNull(result);
@@ -1781,12 +1795,11 @@ namespace StackExchange.Redis.Extensions.Tests
 		{
 			var testobject = new TestClass<DateTime>();
 	
-			var added = await Sut.SortedSetAddAsync("my Key", testobject, 0);
+			var added = await Sut.GetDbFromConfiguration().SortedSetAddAsync("my Key", testobject, 0);
 	  
 			var result = Db.SortedSetScan("my Key").First();
 	  
 			Assert.True(added);
-			Assert.NotNull(result);
 	  
 			var obj = Serializer.Deserialize<TestClass<DateTime>>(result.Element);
 	  
@@ -1802,8 +1815,8 @@ namespace StackExchange.Redis.Extensions.Tests
 			var entryValueFirst = new TestClass<DateTime>("test_first", utcNow);
 			var entryValueLast = new TestClass<DateTime>("test_last", utcNow);
 	  
-			await Sut.SortedSetAddAsync("my Key", entryValueFirst, 1);
-			await Sut.SortedSetAddAsync("my Key", entryValueLast, 2);
+			await Sut.GetDbFromConfiguration().SortedSetAddAsync("my Key", entryValueFirst, 1);
+			await Sut.GetDbFromConfiguration().SortedSetAddAsync("my Key", entryValueLast, 2);
 	  
 			var result = Db.SortedSetScan("my Key").ToList();
 	  
@@ -1812,8 +1825,8 @@ namespace StackExchange.Redis.Extensions.Tests
 			var dataFirst = Serializer.Deserialize<TestClass<DateTime>>(result[0].Element);
 			var dataLast = Serializer.Deserialize<TestClass<DateTime>>(result[1].Element);
 	  
-			Assert.Equal(entryValueFirst, dataFirst);
-			Assert.Equal(entryValueLast, dataLast);
+			Assert.Equal(entryValueFirst.Value, dataFirst.Value);
+			Assert.Equal(entryValueLast.Value, dataLast.Value);
 		}
 	
 		[Fact]
@@ -1823,7 +1836,7 @@ namespace StackExchange.Redis.Extensions.Tests
 	  
 			await Db.SortedSetAddAsync("my Key", Serializer.Serialize(testobject), 0);
 	  
-			var removed = await Sut.SortedSetRemoveAsync("my Key", testobject);
+			var removed = await Sut.GetDbFromConfiguration().SortedSetRemoveAsync("my Key", testobject);
 	  
 			Assert.True(removed);
 	  
@@ -1842,12 +1855,12 @@ namespace StackExchange.Redis.Extensions.Tests
 			await Db.SortedSetAddAsync("my Key", Serializer.Serialize(testobject2), 2);
 			await Db.SortedSetAddAsync("my Key", Serializer.Serialize(testobject3), 3);
 	  
-			var descendingList = (await Sut.SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key")).ToList();
+			var descendingList = (await Sut.GetDbFromConfiguration().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key")).ToList();
 	  
 			Assert.Equal(descendingList[0], testobject1);
 			Assert.Equal(descendingList[1], testobject2);
 			Assert.Equal(descendingList[2], testobject3);
-			Assert.Equal(descendingList.Count, 3);
+			Assert.Equal(3, descendingList.Count);
 		}
 	
 		[Fact]
@@ -1861,12 +1874,12 @@ namespace StackExchange.Redis.Extensions.Tests
 			await Db.SortedSetAddAsync("my Key", Serializer.Serialize(testobject2), 2);
 			await Db.SortedSetAddAsync("my Key", Serializer.Serialize(testobject3), 1);
 	  
-			var descendingList = (await Sut.SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", order: Order.Ascending)).ToList();
+			var descendingList = (await Sut.GetDbFromConfiguration().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", order: Order.Ascending)).ToList();
 	  
 			Assert.Equal(descendingList[0], testobject3);
 			Assert.Equal(descendingList[1], testobject2);
 			Assert.Equal(descendingList[2], testobject1);
-			Assert.Equal(descendingList.Count, 3);
+			Assert.Equal(3, descendingList.Count);
 		}
 	
 		[Fact]
@@ -1882,11 +1895,11 @@ namespace StackExchange.Redis.Extensions.Tests
 			await Db.SortedSetAddAsync("my Key", Serializer.Serialize(testobject3), 3);
 			await Db.SortedSetAddAsync("my Key", Serializer.Serialize(testobject4), 4);
 	  
-			var descendingList = (await Sut.SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", start: 1, stop: 2)).ToList();
+			var descendingList = (await Sut.GetDbFromConfiguration().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", start: 1, stop: 2)).ToList();
 	  
 			Assert.Equal(descendingList[0], testobject1);
 			Assert.Equal(descendingList[1], testobject2);
-		  	Assert.Equal(descendingList.Count, 2);
+		  	Assert.Equal(2, descendingList.Count);
 		}
 	
 		[Fact]
@@ -1902,11 +1915,11 @@ namespace StackExchange.Redis.Extensions.Tests
 			await Db.SortedSetAddAsync("my Key", Serializer.Serialize(testobject3), 3);
 			await Db.SortedSetAddAsync("my Key", Serializer.Serialize(testobject4), 4);
 	  
-			var descendingList = (await Sut.SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", skip: 1, take: 2)).ToList();
+			var descendingList = (await Sut.GetDbFromConfiguration().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", skip: 1, take: 2)).ToList();
 	  
 			Assert.Equal(descendingList[0], testobject2);
 			Assert.Equal(descendingList[1], testobject3);
-			Assert.Equal(descendingList.Count, 2);
+			Assert.Equal(2, descendingList.Count);
 		}
 	
 		[Fact]
@@ -1922,11 +1935,11 @@ namespace StackExchange.Redis.Extensions.Tests
 			await Db.SortedSetAddAsync("my Key", Serializer.Serialize(testobject3), 3);
 			await Db.SortedSetAddAsync("my Key", Serializer.Serialize(testobject4), 4);
 	  
-			var descendingList = (await Sut.SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", start: 1, stop: 4, exclude: Exclude.Both)).ToList();
+			var descendingList = (await Sut.GetDbFromConfiguration().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", start: 1, stop: 4, exclude: Exclude.Both)).ToList();
 	  
 			Assert.Equal(descendingList[0], testobject2);
 			Assert.Equal(descendingList[1], testobject3);
-			Assert.Equal(descendingList.Count, 2);
+			Assert.Equal(2, descendingList.Count);
 		}
 	
 		#endregion // Sorted tests
