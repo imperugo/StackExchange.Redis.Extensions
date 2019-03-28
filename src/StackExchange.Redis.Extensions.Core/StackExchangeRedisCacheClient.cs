@@ -897,6 +897,90 @@ namespace StackExchange.Redis.Extensions.Core
 		}
 
 		/// <summary>
+		///     Run SPOP command see http://redis.io/commands/SPOP
+		///     Deserializes the results to T
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object in the set</typeparam>
+		/// <param name="key">The key</param>
+		/// <returns>An object in the set</returns>
+		public IEnumerable<T> SetPop<T>(string key)
+		{
+			if (string.IsNullOrEmpty(key))
+			{
+				throw new ArgumentException("key cannot be empty.", nameof(key));
+			}
+			
+			var item = Database.SetPop(key);
+			
+			if (item == RedisValue.Null)
+			{
+				return default(T);
+			}
+			return Serializer.Deserialize<T>(item);
+		}
+
+		/// <summary>
+		///     Run SPOP command see http://redis.io/commands/SPOP
+		///     Deserializes the results to T
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object in the set</typeparam>
+		/// <param name="key">The key</param>
+		/// <returns>An array of objects in the set</returns>
+		public async Task<IEnumerable<T>> SetPopAsync<T>(string key)
+		{
+			if (string.IsNullOrEmpty(key))
+			{
+				throw new ArgumentException("key cannot be empty.", nameof(key));
+			}
+			
+			var items = await Database.SetPopAsync(key);
+
+			if (item == RedisValue.Null)
+			{
+				return default(T);
+			}
+			return Serializer.Deserialize<T>(item);
+		}
+
+		/// <summary>
+		///     Run SPOP command see http://redis.io/commands/SPOP
+		///     Deserializes the results to T
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object in the set</typeparam>
+		/// <param name="key">The key</param>
+		/// <returns>An object in the set</returns>
+		public IEnumerable<T> SetPop<T>(string key, long count)
+		{
+			if (string.IsNullOrEmpty(key))
+			{
+				throw new ArgumentException("key cannot be empty.", nameof(key));
+			}
+			
+			var items = Database.SetPop(key, count);
+			
+			return items.Select(m => m == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(m));
+		}
+
+		/// <summary>
+		///     Run SPOP command see http://redis.io/commands/SPOP
+		///     Deserializes the results to T
+		/// </summary>
+		/// <typeparam name="T">The type of the expected object in the set</typeparam>
+		/// <param name="key">The key</param>
+		/// <returns>An array of objects in the set</returns>
+		public async Task<IEnumerable<T>> SetPopAsync<T>(string key, long count)
+		{
+			if (string.IsNullOrEmpty(key))
+			{
+				throw new ArgumentException("key cannot be empty.", nameof(key));
+			}
+			
+			var items = await Database.SetPopAsync(key);
+			
+			return items.Select(m => m == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(m));
+		}
+
+		/// <summary>
 		///     Run SREM command http://redis.io/commands/srem
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
