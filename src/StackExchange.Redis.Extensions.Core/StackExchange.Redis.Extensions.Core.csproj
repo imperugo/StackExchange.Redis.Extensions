@@ -14,8 +14,8 @@ To store complex data It requires one of the following implementations:
 - StackExchange.Redis.Extensions.Protobuf
 - StackExchange.Redis.Extensions.Utf8Json
 - StackExchange.Redis.Extensions.Binary</Description>
-		<VersionPrefix>5.0.1</VersionPrefix>
-		<VersionSuffix>pre</VersionSuffix>
+		<VersionPrefix>5.0.0</VersionPrefix>
+		<!--<VersionSuffix>pre</VersionSuffix>-->
 		<IncludeSource>false</IncludeSource>
 		<IncludeSymbols>true</IncludeSymbols>
 		<Authors>Ugo Lattanzi</Authors>
