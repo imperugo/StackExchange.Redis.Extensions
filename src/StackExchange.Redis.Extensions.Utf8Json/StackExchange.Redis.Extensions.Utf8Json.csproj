@@ -19,7 +19,6 @@ This implementation is based on UTF8Json serializer.</Description>
 		<SignAssembly>true</SignAssembly>
 		<PackageId>StackExchange.Redis.Extensions.Utf8Json</PackageId>
 		<PackageProjectUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</PackageProjectUrl>
-		<PackageLicenseUrl>https://github.com/imperugo/StackExchange.Redis.Extensions/blob/master/LICENSE</PackageLicenseUrl>
 		<LangVersion>latest</LangVersion>
 		<RepositoryUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</RepositoryUrl>
 		<RepositoryType>Git</RepositoryType>
@@ -48,9 +47,16 @@ This implementation is based on UTF8Json serializer.</Description>
 - Support for Keyspace isolation;</PackageReleaseNotes>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+
   <ItemGroup>
     <PackageReference Include="Utf8Json" Version="1.3.7" />
   </ItemGroup>
+	
 	<ItemGroup>
 		<ProjectReference Include="..\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
 	</ItemGroup>

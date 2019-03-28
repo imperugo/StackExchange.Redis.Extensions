@@ -15,11 +15,14 @@
 		<SignAssembly>true</SignAssembly>
 		<PackageId>StackExchange.Redis.Extensions.AspNetCore</PackageId>
 		<PackageProjectUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</PackageProjectUrl>
-		<PackageLicenseUrl>https://github.com/imperugo/StackExchange.Redis.Extensions/blob/master/LICENSE</PackageLicenseUrl>
 		<LangVersion>latest</LangVersion>
 		<RepositoryUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</RepositoryUrl>
 		<RepositoryType>Git</RepositoryType>
 		<PackageTags>Async Redis NoSQL Client Distributed Cache PubSub Messaging AspNet AspNetCore</PackageTags>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -19,7 +19,6 @@ This implementation is based on Microsoft's BinarySerializer</Description>
 		<SignAssembly>true</SignAssembly>
 		<PackageId>StackExchange.Redis.Extensions.Binary</PackageId>
 		<PackageProjectUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</PackageProjectUrl>
-		<PackageLicenseUrl>https://github.com/imperugo/StackExchange.Redis.Extensions/blob/master/LICENSE</PackageLicenseUrl>
 		<LangVersion>latest</LangVersion>
 		<RepositoryUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</RepositoryUrl>
 		<RepositoryType>Git</RepositoryType>
@@ -48,6 +47,11 @@ This implementation is based on Microsoft's BinarySerializer</Description>
 - Support for Keyspace isolation;</PackageReleaseNotes>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
 	<ItemGroup>
 	  <ProjectReference Include="..\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
 	</ItemGroup>

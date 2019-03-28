@@ -17,7 +17,6 @@ This implementation is based on Jil serializer.</Description>
 		<AssemblyName>StackExchange.Redis.Extensions.Jil</AssemblyName>
 		<PackageId>StackExchange.Redis.Extensions.Jil</PackageId>
 		<PackageProjectUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</PackageProjectUrl>
-		<PackageLicenseUrl>https://github.com/imperugo/StackExchange.Redis.Extensions/blob/master/LICENSE</PackageLicenseUrl>
 		<LangVersion>latest</LangVersion>
 		<RepositoryUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</RepositoryUrl>
 		<RepositoryType>Git</RepositoryType>
@@ -46,9 +45,15 @@ This implementation is based on Jil serializer.</Description>
 - Support for Keyspace isolation;</PackageReleaseNotes>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Jil" Version="2.17.0" />
 	</ItemGroup>
+	
 	<ItemGroup>
 		<ProjectReference Include="..\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
 	</ItemGroup>

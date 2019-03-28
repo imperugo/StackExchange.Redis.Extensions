@@ -26,7 +26,6 @@ To store complex data It requires one of the following implementations:
 		<SignAssembly>true</SignAssembly>
 		<PackageId>StackExchange.Redis.Extensions.Core</PackageId>
 		<PackageProjectUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</PackageProjectUrl>
-		<PackageLicenseUrl>https://github.com/imperugo/StackExchange.Redis.Extensions/blob/master/LICENSE</PackageLicenseUrl>
 		<LangVersion>latest</LangVersion>
 		<RepositoryUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</RepositoryUrl>
 		<RepositoryType>Git</RepositoryType>
@@ -55,6 +54,12 @@ To store complex data It requires one of the following implementations:
 - Support for Keyspace isolation;</PackageReleaseNotes>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+
 	<ItemGroup>
 	  <PackageReference Include="StackExchange.Redis" Version="2.0.571" />
 	</ItemGroup>
