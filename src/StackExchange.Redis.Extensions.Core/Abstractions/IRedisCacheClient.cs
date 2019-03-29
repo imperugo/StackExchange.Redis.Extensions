@@ -1,6 +1,6 @@
 ﻿namespace StackExchange.Redis.Extensions.Core.Abstractions
 {
-	public interface IRedisCacheClient
+    public interface IRedisCacheClient
     {
         IRedisDatabase Db0 { get; }
 
@@ -38,9 +38,9 @@
 
         ISerializer Serializer { get; }
 
-        IRedisDatabase GetDb(int dbNumber);
+        IRedisDatabase GetDb(int dbNumber, string keyPrefix = null);
 
-		IRedisDatabase GetDbFromConfiguration();
-	}
+        IRedisDatabase GetDbFromConfiguration();
+    }
 }
 
