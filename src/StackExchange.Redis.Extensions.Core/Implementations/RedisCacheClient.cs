@@ -55,7 +55,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
 
         public ISerializer Serializer { get; }
 
-        public IRedisDatabase GetDb(int dbNumber)
+        public IRedisDatabase GetDb(int dbNumber, string keyPrefix = null)
         {
             var connection = connectionPoolManager.GetConnection();
             var db = connection.GetDatabase(dbNumber);
@@ -65,12 +65,12 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
                 Serializer,
                 redisConfiguration.ServerEnumerationStrategy,
                 db,
-                string.Empty);
+                keyPrefix);
         }
 
-		public IRedisDatabase GetDbFromConfiguration()
-		{
-			return GetDb(redisConfiguration.Database);
-		}
+        public IRedisDatabase GetDbFromConfiguration()
+        {
+            return GetDb(redisConfiguration.Database, redisConfiguration.KeyPrefix);
+        }
 	}
 }
