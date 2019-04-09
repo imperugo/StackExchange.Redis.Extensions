@@ -16,6 +16,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         private int database = 0;
         private RedisHost[] hosts;
         private ServerEnumerationStrategy serverEnumerationStrategy;
+        private int poolSize = 10;
 
         /// <summary>
         /// The key separation prefix used for all cache entries
@@ -155,6 +156,19 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
             set
             {
                 serverEnumerationStrategy = value;
+                ResetConfigurationOptions();
+            }
+        }
+
+        /// <summary>
+        /// Redis connections pool size
+        /// </summary>
+        public int PoolSize
+        {
+            get => poolSize;
+            set
+            {
+                poolSize = value;
                 ResetConfigurationOptions();
             }
         }
