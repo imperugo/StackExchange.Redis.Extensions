@@ -8,7 +8,6 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 {
 	public class RedisCacheConnectionPoolManager : IRedisCacheConnectionPoolManager
 	{
-		private const int POOL_SIZE = 10;
 		private static ConcurrentBag<Lazy<ConnectionMultiplexer>> connections;
 		private readonly RedisConfiguration redisConfiguration;
 
@@ -53,7 +52,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 		{
 			connections = new ConcurrentBag<Lazy<ConnectionMultiplexer>>();
 
-			for (int i = 0; i < POOL_SIZE; i++)
+			for (int i = 0; i < redisConfiguration.PoolSize; i++)
 			{
 				connections.Add(new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions)));
 			}
