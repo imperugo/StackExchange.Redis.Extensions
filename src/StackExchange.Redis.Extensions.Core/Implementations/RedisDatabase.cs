@@ -88,7 +88,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 			var result = Get<T>(key, flag);
 
 			if (!Equals(result, default(T)))
-				Database.KeyExpire(key, expiresAt.Subtract(DateTime.Now));
+				Database.KeyExpire(key, expiresAt.UtcDateTime.Subtract(DateTime.UtcNow));
 
 			return result;
 		}
@@ -118,7 +118,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 			var result = await GetAsync<T>(key, flag);
 
 			if (!Equals(result, default(T)))
-				await Database.KeyExpireAsync(key, expiresAt.Subtract(DateTime.Now));
+				await Database.KeyExpireAsync(key, expiresAt.UtcDateTime.Subtract(DateTime.UtcNow));
 
 			return default;
 		}
@@ -160,7 +160,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 		public bool Add<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
 		{
 			var entryBytes = Serializer.Serialize(value);
-			var expiration = expiresAt.Subtract(DateTimeOffset.Now);
+			var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
 
 			return Database.StringSet(key, entryBytes, expiration,when, flag);
 		}
@@ -168,7 +168,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 		public async Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
 		{
 			var entryBytes = await Serializer.SerializeAsync(value);
-			var expiration = expiresAt.Subtract(DateTimeOffset.Now);
+			var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
 
 			return await Database.StringSetAsync(key, entryBytes, expiration, when, flag);
 		}
@@ -291,7 +291,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 			var result = Database.StringSet(values, when, flag);
 
 			foreach (var value in values)
-				Database.KeyExpire(value.Key, expiresAt.DateTime, flag);
+				Database.KeyExpire(value.Key, expiresAt.UtcDateTime, flag);
 
 			return result;
 		}
@@ -304,7 +304,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
 			var result = await Database.StringSetAsync(values, when, flag);
 
-			Parallel.ForEach(values, async value => await Database.KeyExpireAsync(value.Key, expiresAt.DateTime, flag));
+			Parallel.ForEach(values, async value => await Database.KeyExpireAsync(value.Key, expiresAt.UtcDateTime, flag));
 
 			return result;
 		}
@@ -824,7 +824,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 		public bool UpdateExpiry(string key, DateTimeOffset expiresAt, CommandFlags flags = CommandFlags.None)
 		{
 			if (Database.KeyExists(key))
-				return Database.KeyExpire(key, expiresAt.Subtract(DateTime.Now), flags);
+				return Database.KeyExpire(key, expiresAt.UtcDateTime.Subtract(DateTime.UtcNow), flags);
 
 			return false;
 		}
@@ -840,7 +840,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 		public async Task<bool> UpdateExpiryAsync(string key, DateTimeOffset expiresAt, CommandFlags flags = CommandFlags.None)
 		{
 			if (await Database.KeyExistsAsync(key))
-				return await Database.KeyExpireAsync(key, expiresAt.Subtract(DateTime.Now), flags);
+				return await Database.KeyExpireAsync(key, expiresAt.UtcDateTime.Subtract(DateTime.UtcNow), flags);
 
 			return false;
 		}
@@ -858,7 +858,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 			var results = new Dictionary<string, bool>(StringComparer.Ordinal);
 			
 			for (var i = 0; i < keys.Length; i++)
-				results.Add(keys[i], UpdateExpiry(keys[i], expiresAt, flags));
+				results.Add(keys[i], UpdateExpiry(keys[i], expiresAt.UtcDateTime, flags));
 			
 			return results;
 		}
@@ -878,7 +878,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 			var results = new Dictionary<string, bool>(StringComparer.Ordinal);
 			
 			for (var i = 0; i < keys.Length; i++)
-				results.Add(keys[i], await UpdateExpiryAsync(keys[i], expiresAt, flags));
+				results.Add(keys[i], await UpdateExpiryAsync(keys[i], expiresAt.UtcDateTime, flags));
 			
 			return results;
 		}

@@ -192,7 +192,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 						Password = Password,
 						ConnectTimeout = ConnectTimeout,
 						SyncTimeout = SyncTimeout,
-						AbortOnConnectFail = AbortOnConnectFail
+						AbortOnConnectFail = AbortOnConnectFail,
 					};
 
 					foreach (var redisHost in Hosts)

@@ -751,7 +751,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 			var result = await Database.StringSetAsync(values);
 
-			Parallel.ForEach(values, async value => await Database.KeyExpireAsync(value.Key, expiresAt.DateTime));
+			Parallel.ForEach(values, async value => await Database.KeyExpireAsync(value.Key, expiresAt.DateTime.ToUniversalTime()));
 
 			return result;
 		}
