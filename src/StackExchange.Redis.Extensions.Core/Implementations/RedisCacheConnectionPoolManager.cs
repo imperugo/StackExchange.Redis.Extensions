@@ -30,23 +30,19 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 		}
 
 		public IConnectionMultiplexer GetConnection()
-		{
-			Lazy<ConnectionMultiplexer> response;
-
-			var loadedLazys = connections.Where(lazy => lazy.IsValueCreated);
-
-			if (loadedLazys.Count() == connections.Count)
-			{
-				var minValue = connections.Min(lazy => lazy.Value.GetCounters().TotalOutstanding);
-				response = connections.First(lazy => lazy.Value.GetCounters().TotalOutstanding == minValue);
-			}
-			else
-			{
-				response = connections.First(lazy => !lazy.IsValueCreated);
-			}
-
-			return response.Value;
-		}
+        {
+	        Lazy<ConnectionMultiplexer> response;
+	        var loadedLazys = connections.Where(lazy => lazy.IsValueCreated);
+	        
+            if (loadedLazys.Count() == connections.Count) {
+		        response = connections.OrderBy(x=>x.Value.GetCounters().TotalOutstanding).First();
+	        }
+	        else {
+		        response = connections.First(lazy => !lazy.IsValueCreated);
+	        }
+	        
+            return response.Value;
+        }
 
 		private void Initialize()
 		{

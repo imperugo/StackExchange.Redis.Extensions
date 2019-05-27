@@ -1,5 +1,4 @@
-﻿
-using StackExchange.Redis.Extensions.Core.Configuration;
+﻿using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Implementations;
 
 namespace StackExchange.Redis.Extensions.Core.Abstractions

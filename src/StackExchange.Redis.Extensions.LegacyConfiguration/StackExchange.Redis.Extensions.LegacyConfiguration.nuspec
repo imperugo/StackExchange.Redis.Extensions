@@ -3,7 +3,7 @@
 	<metadata>
 		<id>StackExchange.Redis.Extensions.LegacyConfiguration</id>
 		<title>StackExchange.Redis.Extensions.LegacyConfiguration</title>
-		<version>5.0.2</version>
+		<version>5.0.3</version>
 		<authors>Ugo Lattanzi</authors>
 		<owners>Ugo Lattanzi</owners>
 		<licenseUrl>https://github.com/imperugo/StackExchange.Redis.Extensions/blob/master/LICENSE</licenseUrl>
