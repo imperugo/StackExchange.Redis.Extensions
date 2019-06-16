@@ -1,4 +1,5 @@
-﻿using System.Net.Security;
+﻿using System.Collections.Generic;
+using System.Net.Security;
 
 namespace StackExchange.Redis.Extensions.Core.Configuration
 {
@@ -17,6 +18,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         private RedisHost[] hosts;
         private ServerEnumerationStrategy serverEnumerationStrategy;
         private int poolSize = 10;
+	private string[] excludeCommands;
 
         /// <summary>
         /// The key separation prefix used for all cache entries
@@ -172,6 +174,19 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
                 ResetConfigurationOptions();
             }
         }
+		
+        /// <summary>
+        /// Exclude commands
+        /// </summary>
+        public string[] ExcludeCommands
+        {
+            get => excludeCommands;
+            set
+            {
+                excludeCommands = value;
+                ResetConfigurationOptions();
+            }
+        }
 
         /// <summary>
         /// A RemoteCertificateValidationCallback delegate responsible for validating the certificate supplied by the remote party; note
@@ -194,6 +209,15 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 						SyncTimeout = SyncTimeout,
 						AbortOnConnectFail = AbortOnConnectFail,
 					};
+					
+					// EXCLUDE commands if any requested
+					if (ExcludeCommands != null)
+					{
+						options.CommandMap = CommandMap.Create(
+							new HashSet<string>(ExcludeCommands),
+							available: false
+						);
+					}
 
 					foreach (var redisHost in Hosts)
 						options.EndPoints.Add(redisHost.Host, redisHost.Port);
