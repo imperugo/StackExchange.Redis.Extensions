@@ -58,7 +58,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
 		public Task<bool> RemoveAsync(string key, CommandFlags flags = CommandFlags.None)
 		{
-			return Database.KeyDeleteAsync(key, flags);
+            return Database.KeyDeleteAsync(key, flags);
 		}
 
 		public void RemoveAll(IEnumerable<string> keys, CommandFlags flags = CommandFlags.None)
@@ -110,7 +110,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 			if (!valueBytes.HasValue)
 				return default;
 
-			return await Serializer.DeserializeAsync<T>(valueBytes);
+            return await Serializer.DeserializeAsync<T>(valueBytes);
 		}
 
 		public async Task<T> GetAsync<T>(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)

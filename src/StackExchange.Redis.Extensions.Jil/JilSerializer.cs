@@ -26,12 +26,12 @@ namespace StackExchange.Redis.Extensions.Jil
         /// </summary>
         /// This constructor uses default serialization options.
         public JilSerializer()
-            : this(new Options(prettyPrint: true, 
-                excludeNulls: false, 
-                jsonp: false, 
-                dateFormat: 
-                DateTimeFormat.ISO8601, 
-                includeInherited: true, 
+            : this(new Options(prettyPrint: true,
+                excludeNulls: false,
+                jsonp: false,
+                dateFormat:
+                DateTimeFormat.ISO8601,
+                includeInherited: true,
                 unspecifiedDateTimeKindBehavior: UnspecifiedDateTimeKindBehavior.IsLocal))
         {
 

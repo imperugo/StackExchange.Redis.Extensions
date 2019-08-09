@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 
@@ -8,7 +9,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 {
 	public class RedisCacheConnectionPoolManager : IRedisCacheConnectionPoolManager
 	{
-		private static ConcurrentBag<Lazy<ConnectionMultiplexer>> connections;
+		private static ConcurrentBag<Lazy<Task<ConnectionMultiplexer>>> connections;
 		private readonly RedisConfiguration redisConfiguration;
 
 		public RedisCacheConnectionPoolManager(RedisConfiguration redisConfiguration)
@@ -31,26 +32,26 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
 		public IConnectionMultiplexer GetConnection()
         {
-	        Lazy<ConnectionMultiplexer> response;
+            Lazy<Task<ConnectionMultiplexer>> response;
 	        var loadedLazys = connections.Where(lazy => lazy.IsValueCreated);
 	        
             if (loadedLazys.Count() == connections.Count) {
-		        response = connections.OrderBy(x=>x.Value.GetCounters().TotalOutstanding).First();
+		        response = connections.OrderBy(x=>x.Value.Result.GetCounters().TotalOutstanding).First();
 	        }
 	        else {
 		        response = connections.First(lazy => !lazy.IsValueCreated);
 	        }
 	        
-            return response.Value;
+            return response.Value.Result;
         }
 
 		private void Initialize()
 		{
-			connections = new ConcurrentBag<Lazy<ConnectionMultiplexer>>();
+			connections = new ConcurrentBag<Lazy<Task<ConnectionMultiplexer>>>();
 
 			for (int i = 0; i < redisConfiguration.PoolSize; i++)
 			{
-				connections.Add(new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions)));
+				connections.Add(new Lazy<Task<ConnectionMultiplexer>>(async () => await ConnectionMultiplexer.ConnectAsync(redisConfiguration.ConfigurationOptions)));
 			}
 		}
 

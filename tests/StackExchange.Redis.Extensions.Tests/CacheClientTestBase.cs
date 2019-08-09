@@ -34,7 +34,7 @@ namespace StackExchange.Redis.Extensions.Tests
 				KeyPrefix = "MyPrefix__",
 				Hosts = new RedisHost[]
 				{
-					new RedisHost(){Host = "localhost", Port = 6379}
+					new RedisHost(){Host = "redishost", Port = 6379}
 				},
 				AllowAdmin = true,
 				ConnectTimeout = 3000,
@@ -68,7 +68,6 @@ namespace StackExchange.Redis.Extensions.Tests
 
 			Assert.NotNull(response);
 			Assert.True(response.Any());
-			Assert.Equal("Windows", response["os"]); // TODO: are you sure this will hold on linux/unix machines?
 			Assert.Equal("6379", response["tcp_port"]);
 		}
 
