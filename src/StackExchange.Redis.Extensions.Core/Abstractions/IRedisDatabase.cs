@@ -23,6 +23,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="key">The cache key.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <returns>True if the key is present into Redis. Othwerwise False</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool Exists(string key, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -39,6 +40,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="key">The key.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <returns>True if the key has removed. Othwerwise False</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool Remove(string key, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -54,6 +56,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// </summary>
         /// <param name="keys">The key.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         void RemoveAll(IEnumerable<string> keys, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -70,6 +73,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="key">The cache key.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <returns>Null if not present, otherwise the instance of T.</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         T Get<T>(string key, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -80,6 +84,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="expiresAt">Expiration time.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <returns>Null if not present, otherwise the instance of T.</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         T Get<T>(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -92,6 +97,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <returns>
         ///     Null if not present, otherwise the instance of T.
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         T Get<T>(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -131,6 +137,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="value">The instance of T.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <returns>True if the object has been added. Otherwise false</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool Add<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -153,6 +160,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <returns>
         ///     True if the object has been added. Otherwise false
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool Replace<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -178,6 +186,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <returns>
         ///     True if the object has been added. Otherwise false
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool Add<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -204,6 +213,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <returns>
         ///     True if the object has been added. Otherwise false
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool Replace<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -230,6 +240,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <returns>
         ///     True if the object has been added. Otherwise false
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool Add<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -256,6 +267,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <returns>
         ///     True if the object has been added. Otherwise false
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool Replace<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -280,6 +292,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         ///     Empty list if there are no results, otherwise the instance of T.
         ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         IDictionary<string, T> GetAll<T>(IEnumerable<string> keys);
 
         /// <summary>
@@ -292,6 +305,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         ///     Empty list if there are no results, otherwise the instance of T.
         ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         IDictionary<string, T> GetAll<T>(IEnumerable<string> keys, DateTimeOffset expiresAt);
 
         /// <summary>
@@ -304,6 +318,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         ///     Empty list if there are no results, otherwise the instance of T.
         ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         IDictionary<string, T> GetAll<T>(IEnumerable<string> keys, TimeSpan expiresIn);
 
         /// <summary>
@@ -346,6 +361,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// </summary>
         /// <typeparam name="T">The type of the expected object</typeparam>
         /// <param name="items">The items.</param>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool AddAll<T>(IList<Tuple<string, T>> items, When when = When.Always, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -361,6 +377,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <typeparam name="T">The type of the expected object</typeparam>
         /// <param name="items">The items.</param>
         /// <param name="expiresAt"></param>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool AddAll<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -377,6 +394,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <typeparam name="T">The type of the expected object</typeparam>
         /// <param name="items">The items.</param>
         /// <param name="expiresIn"></param>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool AddAll<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn, When when = When.Always, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -392,6 +410,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// </summary>
         /// <param name="item">Name of the member.</param>
         /// <param name="key">The key.</param>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool SetAdd<T>(string key, T item, CommandFlags flag = CommandFlags.None) where T : class;
 
         /// <summary>
@@ -406,6 +425,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// </summary>
         /// <param name="items">Name of the member.</param>
         /// <param name="key">The key.</param>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         long SetAddAll<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items) where T : class;
 
         /// <summary>
@@ -421,6 +441,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="item"></param>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool SetRemove<T>(string key, T item, CommandFlags flag = CommandFlags.None) where T : class;
 
         /// <summary>
@@ -437,6 +458,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="items"></param>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         long SetRemoveAll<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items) where T : class;
 
         /// <summary>
@@ -451,6 +473,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         ///     Run SMEMBERS command http://redis.io/commands/SMEMBERS
         /// </summary>
         /// <param name="memberName">Name of the member.</param>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         string[] SetMember(string memberName, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -466,6 +489,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <typeparam name="T">The type of the expected objects in the set</typeparam>
         /// <param name="key">The key</param>
         /// <returns>An array of objects in the set</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         IEnumerable<T> SetMembers<T>(string key, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -490,6 +514,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         ///     if you want to return all keys that end with "myCacheKey" uses "*myCacheKey"
         /// </example>
         /// <returns>A list of cache keys retrieved from Redis database</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         IEnumerable<string> SearchKeys(string pattern);
 
         /// <summary>
@@ -510,6 +535,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Flushes the database.
         /// </summary>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         void FlushDb();
 
         /// <summary>
@@ -521,6 +547,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Save the DB in background.
         /// </summary>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         void Save(SaveType saveType, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -532,6 +559,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         ///     Gets the information about redis.
         ///     More info see http://redis.io/commands/INFO
         /// </summary>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         Dictionary<string, string> GetInfo();
 
         /// <summary>
@@ -543,6 +571,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Publishes a message to a channel.
         /// </summary>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         long Publish<T>(RedisChannel channel, T message, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -553,6 +582,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Registers a callback handler to process messages published to a channel.
         /// </summary>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         void Subscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -563,6 +593,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Unregisters a callback handler to process messages published to a channel.
         /// </summary>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         void Unsubscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -573,6 +604,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Unregisters all callback handlers on a channel.
         /// </summary>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         void UnsubscribeAll(CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -592,6 +624,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <remarks>
         ///     http://redis.io/commands/lpush
         /// </remarks>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         long ListAddToLeft<T>(string key, T item, When when = When.Always, CommandFlags flag = CommandFlags.None) where T : class;
 
         /// <summary>
@@ -612,6 +645,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <remarks>
         ///     http://redis.io/commands/rpop
         /// </remarks>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         T ListGetFromRight<T>(string key, CommandFlags flag = CommandFlags.None) where T : class;
 
         /// <summary>
@@ -639,6 +673,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         ///     If key is deleted returns true.
         ///     If key does not exist, it is treated as an empty hash and this command returns false.
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool HashDelete(string hashKey, string key, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -653,6 +688,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="keys"></param>
         /// <param name="flag">Command execution flag</param>
         /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         long HashDelete(string hashKey, IEnumerable<string> keys, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -665,6 +701,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="key">The key of the field in the hash</param>
         /// <param name="flag">Command execution flag</param>
         /// <returns>Returns if field is an existing field in the hash stored at key.</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool HashExists(string hashKey, string key, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -678,6 +715,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="key">Key of the entry</param>
         /// <param name="flag">Command execution flag</param>
         /// <returns>the value associated with field, or nil when field is not present in the hash or key does not exist.</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         T HashGet<T>(string hashKey, string key, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -693,6 +731,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="keys"></param>
         /// <param name="flag">Command execution flag</param>
         /// <returns>list of values associated with the given fields, in the same order as they are requested.</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         Dictionary<string, T> HashGet<T>(string hashKey, IEnumerable<string> keys, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -705,6 +744,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="flag">Command execution flag</param>
         /// <returns>list of fields and their values stored in the hash, or an empty list when key does not exist.</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         Dictionary<string, T> HashGetAll<T>(string hashKey, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -719,6 +759,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="key">Key of the entry</param>
         /// <param name="flag">Command execution flag</param>
         /// <param name="value">the value at field after the increment operation</param>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         long HashIncerementBy(string hashKey, string key, long value, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -739,6 +780,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="key">Key of the entry</param>
         /// <param name="flag">Command execution flag</param>
         /// <param name="value">the value at field after the increment operation</param>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         double HashIncerementBy(string hashKey, string key, double value, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -750,6 +792,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="flag">Command execution flag</param>
         /// <returns>list of fields in the hash, or an empty list when key does not exist.</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         IEnumerable<string> HashKeys(string hashKey, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -761,6 +804,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="flag">Command execution flag</param>
         /// <returns>number of fields in the hash, or 0 when key does not exist.</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         long HashLength(string hashKey, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -776,6 +820,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         ///     <c>true</c> if field is a new field in the hash and value was set.
         ///     <c>false</c> if field already exists in the hash and no operation was performed.
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool HashSet<T>(string hashKey, string key, T value, bool nx = false, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -788,6 +833,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="values"></param>
         /// <param name="flag">Command execution flag</param>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         void HashSet<T>(string hashKey, Dictionary<string, T> values, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -800,6 +846,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="flag">Command execution flag</param>
         /// <returns>list of values in the hash, or an empty list when key does not exist.</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         IEnumerable<T> HashValues<T>(string hashKey, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -815,6 +862,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="pageSize">Number of elements to retrieve from the redis server in the cursor</param>
         /// <param name="flag">Command execution flag</param>
         /// <returns></returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         Dictionary<string, T> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -1020,6 +1068,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="key">The key of the object</param>
         /// <param name="expiresAt">The new expiry time of the object</param>
         /// <returns>True if the object is updated, false if the object does not exist</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool UpdateExpiry(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -1028,6 +1077,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="key">The key of the object</param>
         /// <param name="expiresIn">Time until the object will expire</param>
         /// <returns>True if the object is updated, false if the object does not exist</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool UpdateExpiry(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -1052,6 +1102,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="keys">An array of keys to be updated</param>
         /// <param name="expiresAt">The new expiry time of the object</param>
         /// <returns>An array of type bool, where true if the object is updated and false if the object does not exist at the same index as the input keys</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         IDictionary<string, bool> UpdateExpiryAll(string[] keys, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -1060,6 +1111,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="keys">An array of keys to be updated</param>
         /// <param name="expiresIn">Time until the object will expire</param>
         /// <returns>An IDictionary object that contains the origional key and the result of the operation</returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         IDictionary<string, bool> UpdateExpiryAll(string[] keys, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -1091,6 +1143,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <returns>
         ///     True if the object has been added. Otherwise false
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool SortedSetAdd<T>(string key, T value, double score, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -1120,6 +1173,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <returns>
         ///     True if the object has been removed. Otherwise false
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         bool SortedSetRemove<T>(string key, T value, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -1153,6 +1207,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <returns>
         ///     True if the object has been removed. Otherwise false
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         IEnumerable<T> SortedSetRangeByScore<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending, long skip = 0L, long take = -1L, CommandFlags flag = CommandFlags.None);
 
         /// <summary>

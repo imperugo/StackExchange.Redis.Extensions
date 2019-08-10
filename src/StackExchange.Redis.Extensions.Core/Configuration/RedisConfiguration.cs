@@ -18,7 +18,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         private RedisHost[] hosts;
         private ServerEnumerationStrategy serverEnumerationStrategy;
         private int poolSize = 10;
-	private string[] excludeCommands;
+	    private string[] excludeCommands;
 
         /// <summary>
         /// The key separation prefix used for all cache entries
@@ -210,7 +210,6 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 						AbortOnConnectFail = AbortOnConnectFail,
 					};
 					
-					// EXCLUDE commands if any requested
 					if (ExcludeCommands != null)
 					{
 						options.CommandMap = CommandMap.Create(

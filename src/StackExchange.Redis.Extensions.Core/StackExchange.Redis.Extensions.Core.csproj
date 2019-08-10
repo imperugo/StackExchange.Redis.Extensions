@@ -13,13 +13,13 @@ To store complex data It requires one of the following implementations:
 - StackExchange.Redis.Extensions.Protobuf
 - StackExchange.Redis.Extensions.Utf8Json
 - StackExchange.Redis.Extensions.Binary</Description>
-		<VersionPrefix>5.1.0</VersionPrefix>
+		<VersionPrefix>5.1.1</VersionPrefix>
 		<!--<VersionSuffix>pre</VersionSuffix>-->
 		<IncludeSource>false</IncludeSource>
 		<IncludeSymbols>true</IncludeSymbols>
 		<Authors>Ugo Lattanzi</Authors>
 		<Copyright>Ugo Lattanzi</Copyright>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 		<AssemblyName>StackExchange.Redis.Extensions.Core</AssemblyName>
 		<AssemblyOriginatorKeyFile>..\..\StackExchange.Redis.Extensions.Core.snk</AssemblyOriginatorKeyFile>
 		<SignAssembly>true</SignAssembly>
