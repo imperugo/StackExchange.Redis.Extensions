@@ -51,7 +51,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
 			for (int i = 0; i < redisConfiguration.PoolSize; i++)
 			{
-				connections.Add(new Lazy<Task<ConnectionMultiplexer>>(async () => await ConnectionMultiplexer.ConnectAsync(redisConfiguration.ConfigurationOptions)));
+				connections.Add(new Lazy<Task<ConnectionMultiplexer>>(async () => await ConnectionMultiplexer.ConnectAsync(redisConfiguration.ConfigurationOptions).ConfigureAwait(false)));
 			}
 		}
 
