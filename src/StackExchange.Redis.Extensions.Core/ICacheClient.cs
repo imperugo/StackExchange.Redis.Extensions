@@ -1168,5 +1168,35 @@ namespace StackExchange.Redis.Extensions.Core
 		Task<IEnumerable<T>> SortedSetRangeByScoreAsync<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending,
 			long skip = 0L,
 			long take = -1L, CommandFlags commandFlags = CommandFlags.None);
-	}
+        
+        /// <summary>
+        ///     Add  the entry to a sorted set with  an increment score 
+        /// </summary>
+        /// <remarks>
+        ///     Time complexity: O(1)
+        /// </remarks>
+        /// <param name="key">Key of the set</param>
+        /// <param name="value">The instance of T.</param>
+        /// <param name="score">Score of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
+        /// <returns>
+        ///      if the object has been added return previous score. Otherwise return 0.0 when first add
+        /// </returns>
+        double SortedSetAddIncrement<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None);
+
+        /// <summary>
+        ///     Add the entry to a sorted set with  an increment score 
+        /// </summary>
+        /// <remarks>
+        ///     Time complexity: O(1)
+        /// </remarks>
+        /// <param name="key">Key of the set</param>
+        /// <param name="value">The instance of T.</param>
+        /// <param name="score">Score of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
+        /// <returns>
+        ///      if the object has been added return previous score. Otherwise return 0.0 when first add
+        /// </returns>
+        Task<double> SortedSetAddIncrementAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None);
+    }
 }
