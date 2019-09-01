@@ -1340,6 +1340,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.Equal(descendingList[1], testobject3);
 			Assert.Equal(2, descendingList.Count);
 		}
+
         [Fact]
         public async Task Add_IncrementItemt_To_Sorted_Set()
         {
@@ -1357,7 +1358,7 @@ namespace StackExchange.Redis.Extensions.Tests
             Assert.NotNull(obj);
             Assert.Equal(testobject.Value.ToUniversalTime(), obj.Value.ToUniversalTime());
         }
+
         #endregion 
-        // Sorted tests
     }
 }

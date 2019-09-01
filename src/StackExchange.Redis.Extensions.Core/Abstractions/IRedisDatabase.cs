@@ -1242,6 +1242,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <returns>
         ///      if the object has been added return previous score. Otherwise return 0.0 when first add
         /// </returns>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
         double SortedSetAddIncrement<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
