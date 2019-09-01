@@ -579,5 +579,15 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             return cacheClient.GetDbFromConfiguration().SortedSetRangeByScoreAsync<T>(key, start, stop, exclude, order, skip, take, flag);
         }
+
+        public double SortedSetAddIncrement<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        {
+            return cacheClient.GetDbFromConfiguration().SortedSetAddIncrement(key, value, score, commandFlags);
+        }
+
+        public Task<double> SortedSetAddIncrementAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        {
+            return cacheClient.GetDbFromConfiguration().SortedSetAddIncrementAsync(key, value, score, commandFlags);
+        }
     }
 }
