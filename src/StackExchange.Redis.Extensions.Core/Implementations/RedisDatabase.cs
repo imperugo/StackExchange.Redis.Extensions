@@ -35,7 +35,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 			}
 
 			keyprefix = keyPrefix;
-		}
+        }
 
 		public IDatabase Database { get; }
 
@@ -110,7 +110,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 			if (!valueBytes.HasValue)
 				return default;
 
-            return await Serializer.DeserializeAsync<T>(valueBytes);
+            return Serializer.Deserialize<T>(valueBytes);
 		}
 
 		public async Task<T> GetAsync<T>(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)
@@ -142,7 +142,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
 		public async Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None)
 		{
-			var entryBytes = await Serializer.SerializeAsync(value);
+			var entryBytes = Serializer.Serialize(value);
 
 			return await Database.StringSetAsync(key, entryBytes, null, when, flag);
 		}
@@ -167,7 +167,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
 		public async Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
 		{
-			var entryBytes = await Serializer.SerializeAsync(value);
+			var entryBytes = Serializer.Serialize(value);
 			var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
 
 			return await Database.StringSetAsync(key, entryBytes, expiration, when, flag);
@@ -192,7 +192,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
 		public async Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None)
 		{
-			var entryBytes = await Serializer.SerializeAsync(value);
+			var entryBytes = Serializer.Serialize(value);
 
 			return await Database.StringSetAsync(key, entryBytes, expiresIn, when, flag);
 		}
@@ -355,7 +355,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
 			if (item == null) throw new ArgumentNullException(nameof(item), "item cannot be null.");
 
-			var serializedObject = await Serializer.SerializeAsync(item);
+			var serializedObject = Serializer.Serialize(item);
 
 			return await Database.SetAddAsync(key, serializedObject, flag);
 		}
@@ -402,7 +402,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
 			if (item == null) throw new ArgumentNullException(nameof(item), "item cannot be null.");
 
-			var serializedObject = await Serializer.SerializeAsync(item);
+			var serializedObject = Serializer.Serialize(item);
 
 			return await Database.SetRemoveAsync(key, serializedObject, flag);
 		}
@@ -554,7 +554,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 		public async Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
 		{
 			var sub = connectionMultiplexer.GetSubscriber();
-			return await sub.PublishAsync(channel, await Serializer.SerializeAsync(message), flags);
+			return await sub.PublishAsync(channel, Serializer.Serialize(message), flags);
 		}
 
 		public void Subscribe<T>(RedisChannel channel, Action<T> handler, CommandFlags flags = CommandFlags.None)
@@ -627,7 +627,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 			if (item == null)
 				throw new ArgumentNullException(nameof(item), "item cannot be null.");
 
-			var serializedItem = await Serializer.SerializeAsync(item);
+			var serializedItem = Serializer.Serialize(item);
 
 			return await Database.ListLeftPushAsync(key, serializedItem, when, flags);
 		}
@@ -650,7 +650,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
 			if (item == RedisValue.Null) return null;
 
-			return item == RedisValue.Null ? null : await Serializer.DeserializeAsync<T>(item);
+			return item == RedisValue.Null ? null : Serializer.Deserialize<T>(item);
 		}
 
 		public bool HashDelete(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)

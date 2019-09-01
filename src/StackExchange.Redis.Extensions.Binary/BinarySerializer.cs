@@ -7,13 +7,13 @@ namespace StackExchange.Redis.Extensions.Binary
 {
     public class BinarySerializer : ISerializer
     {
-        private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
+        private readonly BinaryFormatter binaryFormatter = new BinaryFormatter();
 
         public object Deserialize(byte[] serializedObject)
         {
             using (var ms = new MemoryStream(serializedObject))
             {
-                return _binaryFormatter.Deserialize(ms);
+                return binaryFormatter.Deserialize(ms);
             }
         }
 
@@ -21,32 +21,18 @@ namespace StackExchange.Redis.Extensions.Binary
         {
             using (var ms = new MemoryStream(serializedObject))
             {
-                return (T)_binaryFormatter.Deserialize(ms);
+                return (T)binaryFormatter.Deserialize(ms);
             }
         }
 
-        public Task<object> DeserializeAsync(byte[] serializedObject)
-        {
-            return Task.Factory.StartNew(() => Deserialize(serializedObject));
-        }
-
-        public Task<T> DeserializeAsync<T>(byte[] serializedObject)
-        {
-            return Task.Factory.StartNew(() => Deserialize<T>(serializedObject));
-        }
 
         public byte[] Serialize(object item)
         {
             using (var ms = new MemoryStream())
             {
-                _binaryFormatter.Serialize(ms, item);
+                binaryFormatter.Serialize(ms, item);
                 return ms.ToArray();
             }
-        }
-
-        public Task<byte[]> SerializeAsync(object item)
-        {
-            return Task.Factory.StartNew(() => Serialize(item));
         }
     }
 }

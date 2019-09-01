@@ -16,19 +16,9 @@ namespace StackExchange.Redis.Extensions.Protobuf
             }
         }
 
-        public Task<byte[]> SerializeAsync(object item)
-        {
-            return Task.Factory.StartNew(() => Serialize(item));
-        }
-
         public object Deserialize(byte[] serializedObject)
         {
             return Deserialize<object>(serializedObject);
-        }
-
-        public Task<object> DeserializeAsync(byte[] serializedObject)
-        {
-            return Task.Factory.StartNew(() => Deserialize(serializedObject));
         }
 
         public T Deserialize<T>(byte[] serializedObject)
@@ -37,11 +27,6 @@ namespace StackExchange.Redis.Extensions.Protobuf
             {
                 return Serializer.Deserialize<T>(ms);
             }
-        }
-
-        public Task<T> DeserializeAsync<T>(byte[] serializedObject)
-        {
-            return Task.Factory.StartNew(() => Deserialize<T>(serializedObject));
         }
     }
 }

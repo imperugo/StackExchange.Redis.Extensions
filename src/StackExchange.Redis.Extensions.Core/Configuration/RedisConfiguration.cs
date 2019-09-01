@@ -17,7 +17,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         private int database = 0;
         private RedisHost[] hosts;
         private ServerEnumerationStrategy serverEnumerationStrategy;
-        private int poolSize = 10;
+        private int poolSize = 5;
 	    private string[] excludeCommands;
 
         /// <summary>

@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StackExchange.Redis.Extensions.Core;
 
@@ -50,19 +49,6 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
             return encoding.GetBytes(jsonString);
         }
 
-        /// <summary>
-        /// Serializes the asynchronous.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns></returns>
-        public Task<byte[]> SerializeAsync(object item)
-        {
-            var type = item?.GetType();
-
-	        var jsonString = JsonConvert.SerializeObject(item, type, settings);
-
-			return Task.FromResult(encoding.GetBytes(jsonString));
-        }
 
         /// <summary>
         /// Deserializes the specified serialized object.
@@ -75,15 +61,6 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
             return JsonConvert.DeserializeObject(jsonString, typeof(object));
         }
 
-        /// <summary>
-        /// Deserializes the asynchronous.
-        /// </summary>
-        /// <param name="serializedObject">The serialized object.</param>
-        /// <returns></returns>
-        public Task<object> DeserializeAsync(byte[] serializedObject)
-        {
-	        return Task.FromResult(Deserialize(serializedObject));
-        }
 
         /// <summary>
         /// Deserializes the specified serialized object.
@@ -95,17 +72,6 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
         {
             var jsonString = encoding.GetString(serializedObject);
             return JsonConvert.DeserializeObject<T>(jsonString, settings);
-        }
-
-        /// <summary>
-        /// Deserializes the asynchronous.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="serializedObject">The serialized object.</param>
-        /// <returns></returns>
-        public Task<T> DeserializeAsync<T>(byte[] serializedObject)
-        {
-	        return Task.FromResult(Deserialize<T>(serializedObject));
         }
     }
 }

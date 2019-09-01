@@ -27,16 +27,6 @@ namespace StackExchange.Redis.Extensions.Utf8Json
         }
 
         /// <summary>
-        /// Serializes the asynchronous.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns></returns>
-        public Task<byte[]> SerializeAsync(object item)
-        {
-	        return Task.FromResult(global::Utf8Json.JsonSerializer.Serialize(item));
-        }
-
-        /// <summary>
         /// Deserializes the specified serialized object.
         /// </summary>
         /// <param name="serializedObject">The serialized object.</param>
@@ -44,16 +34,6 @@ namespace StackExchange.Redis.Extensions.Utf8Json
         public object Deserialize(byte[] serializedObject)
         {
 	        return global::Utf8Json.JsonSerializer.Deserialize<object>(serializedObject);
-        }
-
-        /// <summary>
-        /// Deserializes the asynchronous.
-        /// </summary>
-        /// <param name="serializedObject">The serialized object.</param>
-        /// <returns></returns>
-        public Task<object> DeserializeAsync(byte[] serializedObject)
-        {
-	        return Task.FromResult(global::Utf8Json.JsonSerializer.Deserialize<object>(serializedObject));
         }
 
         /// <summary>
@@ -66,16 +46,5 @@ namespace StackExchange.Redis.Extensions.Utf8Json
         {
 	        return global::Utf8Json.JsonSerializer.Deserialize<T>(serializedObject);
         }
-
-        /// <summary>
-        /// Deserializes the asynchronous.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="serializedObject">The serialized object.</param>
-        /// <returns></returns>
-        public Task<T> DeserializeAsync<T>(byte[] serializedObject)
-        {
-	        return Task.FromResult(global::Utf8Json.JsonSerializer.Deserialize<T>(serializedObject));
-		}
     }
 }
