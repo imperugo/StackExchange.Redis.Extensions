@@ -963,5 +963,43 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
 			return data;
 		}
-	}
+        /// <summary>
+        ///     Add  the entry to a sorted set with  an incremen score 
+        /// </summary>
+        /// <remarks>
+        ///     Time complexity: O(1)
+        /// </remarks>
+        /// <param name="key">Key of the set</param>
+        /// <param name="value">The instance of T.</param>
+        /// <param name="score">Score of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
+        /// <returns>
+        ///      if the object has been added return previous score. Otherwise return 0.0 when first add
+        /// </returns>
+        public double SortedSetAddIncrement<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var entryBytes = Serializer.Serialize(value);
+            return Database.SortedSetIncrement(key, entryBytes, score, commandFlags);
+        }
+
+        /// <summary>
+        ///     Add  the entry to a sorted set with  an incremen score 
+        /// </summary>
+        /// <remarks>
+        ///     Time complexity: O(1)
+        /// </remarks>
+        /// <param name="key">Key of the set</param>
+        /// <param name="value">The instance of T.</param>
+        /// <param name="score">Score of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
+        /// <returns>
+        ///      if the object has been added return previous score. Otherwise return 0.0 when first add
+        /// </returns>
+        /// 
+        public async Task<double> SortedSetAddIncrementAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var entryBytes = Serializer.Serialize(value);
+            return await Database.SortedSetIncrementAsync(key, entryBytes, score, commandFlags);
+        }
+    }
 }

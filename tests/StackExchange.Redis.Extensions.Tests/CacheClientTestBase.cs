@@ -1340,7 +1340,24 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.Equal(descendingList[1], testobject3);
 			Assert.Equal(2, descendingList.Count);
 		}
-	
-		#endregion // Sorted tests
-	}
+        [Fact]
+        public async Task Add_IncrementItemt_To_Sorted_Set()
+        {
+            var testobject = new TestClass<DateTime>();
+            var defaultscore = 1;
+            var nextscore = 2;
+            var added =  await Sut.GetDbFromConfiguration().SortedSetAddIncrementAsync("my Key", testobject, defaultscore);
+            var added2 = await Sut.GetDbFromConfiguration().SortedSetAddIncrementAsync("my Key", testobject, nextscore);
+            var result = Db.SortedSetScan("my Key").First();
+         
+            Assert.Equal(defaultscore, added);
+            Assert.Equal(defaultscore+ nextscore, result.Score);
+            var obj = Serializer.Deserialize<TestClass<DateTime>>(result.Element);
+
+            Assert.NotNull(obj);
+            Assert.Equal(testobject.Value.ToUniversalTime(), obj.Value.ToUniversalTime());
+        }
+        #endregion 
+        // Sorted tests
+    }
 }
