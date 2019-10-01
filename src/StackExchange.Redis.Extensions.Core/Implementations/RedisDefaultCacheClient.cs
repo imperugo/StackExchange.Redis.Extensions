@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core.Abstractions;
+using StackExchange.Redis.Extensions.Core.Models;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations
 {
@@ -304,6 +305,16 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         public Task<Dictionary<string, string>> GetInfoAsync()
         {
             return cacheClient.GetDbFromConfiguration().GetInfoAsync();
+        }
+
+        public List<InfoDetail> GetInfoCategorized()
+        {
+            return cacheClient.GetDbFromConfiguration().GetInfoCategorized();
+        }
+
+        public Task<List<InfoDetail>> GetInfoCategorizedAsync()
+        {
+            return cacheClient.GetDbFromConfiguration().GetInfoCategorizedAsync();
         }
 
         public long Publish<T>(RedisChannel channel, T message, CommandFlags flag = CommandFlags.None)

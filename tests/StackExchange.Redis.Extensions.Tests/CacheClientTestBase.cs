@@ -70,7 +70,17 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.Equal("6379", response["tcp_port"]);
 		}
 
-		[Fact]
+        [Fact]
+        public async Task Info_Category_Should_Return_Valid_Information()
+        {
+            var response = await Sut.GetDbFromConfiguration().GetInfoCategorizedAsync();
+
+            Assert.NotNull(response);
+            Assert.True(response.Any());
+            Assert.Equal("6379", response.SingleOrDefault(x=> x.Key == "tcp_port").InfoValue);
+        }
+
+        [Fact]
 		public async Task Add_Item_To_Redis_Database()
 		{
 			var added = await Sut.GetDbFromConfiguration().AddAsync("my Key", "my value");
