@@ -19,6 +19,20 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         private ServerEnumerationStrategy serverEnumerationStrategy;
         private int poolSize = 5;
 	    private string[] excludeCommands;
+        private string configurationChannel = null;
+
+        /// <summary>
+        /// The key separation prefix used for all cache entries
+        /// </summary>
+        public string ConfigurationChannel
+        {
+            get => configurationChannel;
+            set
+            {
+                configurationChannel = value;
+                ResetConfigurationOptions();
+            }
+        }
 
         /// <summary>
         /// The key separation prefix used for all cache entries
@@ -208,6 +222,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 						ConnectTimeout = ConnectTimeout,
 						SyncTimeout = SyncTimeout,
 						AbortOnConnectFail = AbortOnConnectFail,
+                        ConfigurationChannel = ConfigurationChannel
 					};
 					
 					if (ExcludeCommands != null)

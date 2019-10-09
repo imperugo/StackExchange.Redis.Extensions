@@ -121,7 +121,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 			if (!Equals(result, default(T)))
 				await Database.KeyExpireAsync(key, expiresAt.UtcDateTime.Subtract(DateTime.UtcNow));
 
-			return default;
+			return result;
 		}
 
 		public async Task<T> GetAsync<T>(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None)
@@ -131,7 +131,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 			if (!Equals(result, default(T)))
 				await Database.KeyExpireAsync(key, expiresIn);
 
-			return default;
+			return result;
 		}
 
 		public bool Add<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None)

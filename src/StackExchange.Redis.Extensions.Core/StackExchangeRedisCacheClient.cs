@@ -356,7 +356,7 @@ namespace StackExchange.Redis.Extensions.Core
 				await Database.KeyExpireAsync(key, expiresAt.Subtract(DateTime.Now));
 			}
 
-			return default(T);
+			return result;
 		}
 
 		/// <summary>
@@ -378,7 +378,7 @@ namespace StackExchange.Redis.Extensions.Core
 				await Database.KeyExpireAsync(key, expiresIn);
 			}
 
-			return default(T);
+			return result;
 		}
 
 		/// <summary>
