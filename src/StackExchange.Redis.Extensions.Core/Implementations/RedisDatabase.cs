@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using StackExchange.Redis;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.Core.Models;
 using StackExchange.Redis.Extensions.Core.ServerIteration;
 using StackExchange.Redis.KeyspaceIsolation;
 
@@ -542,8 +543,22 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 		{
 			var info = (await Database.ScriptEvaluateAsync("return redis.call('INFO')")).ToString();
 
-			return ParseInfo(info);
-		}
+            return ParseInfo(info);
+        }
+
+        public List<InfoDetail> GetInfoCategorized()
+        {
+            var info = Database.ScriptEvaluate("return redis.call('INFO')").ToString();
+
+            return ParseCategorizedInfo(info);
+        }
+
+        public async Task<List<InfoDetail>> GetInfoCategorizedAsync()
+        {
+            var info = (await Database.ScriptEvaluateAsync("return redis.call('INFO')")).ToString();
+
+            return ParseCategorizedInfo(info);
+        }
 
 		public long Publish<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
 		{
@@ -943,26 +958,42 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 			connectionMultiplexer?.Dispose();
 		}
 
-		private Dictionary<string, string> ParseInfo(string info)
-		{
-			var lines = info.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-			var data = new Dictionary<string, string>();
-			foreach (var line in lines)
-			{
-				if (string.IsNullOrEmpty(line) || line[0] == '#') continue;
+        private Dictionary<string, string> ParseInfo(string info)
+        {
+            // Call Parse Categorized Info to cut back on duplicated code.
+            var data = ParseCategorizedInfo(info);
+            // Return a dictionary of the Info Key and Info value 
+            return data.ToDictionary(x => x.Key, x => x.InfoValue);
+        }
 
-				var idx = line.IndexOf(':');
-				if (idx > 0) // double check this line looks about right
-				{
-					var key = line.Substring(0, idx);
-					var infoValue = line.Substring(idx + 1).Trim();
+        private List<InfoDetail> ParseCategorizedInfo(string info)
+        {
+            var data = new List<InfoDetail>();
+            string category = string.Empty;
+            if (!string.IsNullOrWhiteSpace(info))
+            {
+                var lines = info.Split(new[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-					data.Add(key, infoValue);
-				}
-			}
+                foreach (var line in lines.Where(x=> !string.IsNullOrWhiteSpace(x)))
+                {
+                    if (line[0] == '#')
+                    {
+                        category = line.Replace("#", string.Empty).Trim();
+                        continue;
+                    }
 
-			return data;
-		}
+                    var idx = line.IndexOf(':');
+                    if (idx > 0) // double check this line looks about right
+                    {
+                        var key = line.Substring(0, idx);
+                        var infoValue = line.Substring(idx + 1).Trim();
+
+                        data.Add(new InfoDetail { Category = category, Key = key, InfoValue = infoValue});
+                    }
+                }
+            }
+            return data;
+        }
         /// <summary>
         ///     Add  the entry to a sorted set with  an incremen score 
         /// </summary>

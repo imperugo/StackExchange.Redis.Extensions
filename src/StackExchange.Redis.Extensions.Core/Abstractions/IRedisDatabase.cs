@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using StackExchange.Redis;
+using StackExchange.Redis.Extensions.Core.Models;
 
 namespace StackExchange.Redis.Extensions.Core.Abstractions
 {
@@ -567,6 +568,19 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         ///     More info see http://redis.io/commands/INFO
         /// </summary>
         Task<Dictionary<string, string>> GetInfoAsync();
+
+        /// <summary>
+        ///     Gets the information about redis with category.
+        ///     More info see http://redis.io/commands/INFO
+        /// </summary>
+        [Obsolete("The sync method will be removed with the next version. Please use the Async version.")]
+        List<InfoDetail> GetInfoCategorized();
+
+        /// <summary>
+        ///     Gets the information about redis with category.
+        ///     More info see http://redis.io/commands/INFO
+        /// </summary>
+        Task<List<InfoDetail>> GetInfoCategorizedAsync();
 
         /// <summary>
         ///     Publishes a message to a channel.
