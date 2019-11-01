@@ -50,7 +50,15 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
 			for (int i = 0; i < redisConfiguration.PoolSize; i++)
 			{
-				connections.Add(new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions)));
+				connections.Add(new Lazy<ConnectionMultiplexer>(() =>
+                {
+                    var multiplexer = ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions);
+                    if (redisConfiguration.ProfilingSessionProvider != null)
+                    {
+                        multiplexer.RegisterProfiler(redisConfiguration.ProfilingSessionProvider);
+                    }
+                    return multiplexer;
+                }));
 			}
 		}
 	}

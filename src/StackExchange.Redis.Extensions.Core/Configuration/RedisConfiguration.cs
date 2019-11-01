@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Security;
+using StackExchange.Redis.Profiling;
 
 namespace StackExchange.Redis.Extensions.Core.Configuration
 {
@@ -20,6 +22,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         private int poolSize = 5;
 	    private string[] excludeCommands;
         private string configurationChannel = null;
+        private Func<ProfilingSession> profilingSessionProvider;
 
         /// <summary>
         /// The key separation prefix used for all cache entries
@@ -198,6 +201,19 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
             set
             {
                 excludeCommands = value;
+                ResetConfigurationOptions();
+            }
+        }
+
+        /// <summary>
+        /// Redis Profiler to attach to ConnectionMultiplexer
+        /// </summary>
+        public Func<ProfilingSession> ProfilingSessionProvider
+        {
+            get => profilingSessionProvider;
+            set
+            {
+                profilingSessionProvider = value;
                 ResetConfigurationOptions();
             }
         }
