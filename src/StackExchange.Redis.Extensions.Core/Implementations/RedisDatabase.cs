@@ -16,13 +16,15 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 		private readonly IConnectionMultiplexer connectionMultiplexer;
 		private readonly ServerEnumerationStrategy serverEnumerationStrategy = new ServerEnumerationStrategy();
 		private readonly string keyprefix;
+        private readonly int maxValueLength;
 
 		public RedisDatabase(
 				IConnectionMultiplexer connectionMultiplexer,
 				ISerializer serializer,
 				ServerEnumerationStrategy serverEnumerationStrategy,
 				IDatabase database,
-				string keyPrefix = null)
+                int maxvalueLength,
+                string keyPrefix = null)
 		{
 			this.serverEnumerationStrategy = serverEnumerationStrategy ?? new ServerEnumerationStrategy();
 			this.Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
@@ -36,6 +38,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 			}
 
 			keyprefix = keyPrefix;
+            maxValueLength = maxvalueLength;
         }
 
 		public IDatabase Database { get; }
@@ -137,15 +140,23 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 		public bool Add<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None)
 		{
 			var entryBytes = Serializer.Serialize(value);
+            if (maxValueLength > 0 && entryBytes.Length > maxValueLength)
+            {
+                return false;
+            }
 
-			return Database.StringSet(key, entryBytes, null, when, flag);
+            return Database.StringSet(key, entryBytes, null, when, flag);
 		}
 
 		public async Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None)
 		{
 			var entryBytes = Serializer.Serialize(value);
+            if (maxValueLength > 0 && entryBytes.Length > maxValueLength)
+            {
+                return false;
+            }
 
-			return await Database.StringSetAsync(key, entryBytes, null, when, flag);
+            return await Database.StringSetAsync(key, entryBytes, null, when, flag);
 		}
 
 		public bool Replace<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None)
@@ -161,6 +172,11 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 		public bool Add<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
 		{
 			var entryBytes = Serializer.Serialize(value);
+            if(maxValueLength > 0 && entryBytes.Length > maxValueLength)
+            {
+                return false;
+            }
+
 			var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
 
 			return Database.StringSet(key, entryBytes, expiration,when, flag);
@@ -169,7 +185,12 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 		public async Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
 		{
 			var entryBytes = Serializer.Serialize(value);
-			var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
+            if (maxValueLength > 0 && entryBytes.Length > maxValueLength)
+            {
+                return false;
+            }
+
+            var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
 
 			return await Database.StringSetAsync(key, entryBytes, expiration, when, flag);
 		}
@@ -187,15 +208,23 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 		public bool Add<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None)
 		{
 			var entryBytes = Serializer.Serialize(value);
+            if (maxValueLength > 0 && entryBytes.Length > maxValueLength)
+            {
+                return false;
+            }
 
-			return Database.StringSet(key, entryBytes, expiresIn, when, flag);
+            return Database.StringSet(key, entryBytes, expiresIn, when, flag);
 		}
 
 		public async Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None)
 		{
 			var entryBytes = Serializer.Serialize(value);
+            if (maxValueLength > 0 && entryBytes.Length > maxValueLength)
+            {
+                return false;
+            }
 
-			return await Database.StringSetAsync(key, entryBytes, expiresIn, when, flag);
+            return await Database.StringSetAsync(key, entryBytes, expiresIn, when, flag);
 		}
 
 		public bool Replace<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None)
