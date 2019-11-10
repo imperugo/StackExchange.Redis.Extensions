@@ -17,7 +17,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         private int database = 0;
         private RedisHost[] hosts;
         private ServerEnumerationStrategy serverEnumerationStrategy;
-        private int maxValueLength;
+        private uint maxValueLength;
         private int poolSize = 5;
 	    private string[] excludeCommands;
         private string configurationChannel = null;
@@ -180,7 +180,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         /// <summary>
         /// Maximal value length
         /// </summary>
-        public int MaxValueLength
+        public uint MaxValueLength
         {
             get => maxValueLength;
             set
