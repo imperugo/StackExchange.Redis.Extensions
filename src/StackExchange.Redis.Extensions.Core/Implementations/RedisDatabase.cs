@@ -141,7 +141,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             var entryBytes = Serializer.Serialize(value);
             if (maxValueLength > 0 && entryBytes.Length > maxValueLength)
-                return false;
+                throw new ArgumentException("value cannot be longer than the MaxValueLength", nameof(value));
 
             return Database.StringSet(key, entryBytes, null, when, flag);
         }
@@ -150,7 +150,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             var entryBytes = Serializer.Serialize(value);
             if (maxValueLength > 0 && entryBytes.Length > maxValueLength)
-                return false;
+                throw new ArgumentException("value cannot be longer than the MaxValueLength", nameof(value));
 
             return await Database.StringSetAsync(key, entryBytes, null, when, flag);
         }
@@ -169,7 +169,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             var entryBytes = Serializer.Serialize(value);
             if (maxValueLength > 0 && entryBytes.Length > maxValueLength)
-                return false;
+                throw new ArgumentException("value cannot be longer than the MaxValueLength", nameof(value));
 
             var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
 
@@ -180,7 +180,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             var entryBytes = Serializer.Serialize(value);
             if (maxValueLength > 0 && entryBytes.Length > maxValueLength)
-                return false;
+                throw new ArgumentException("value cannot be longer than the MaxValueLength", nameof(value));
 
             var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
 
@@ -201,7 +201,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             var entryBytes = Serializer.Serialize(value);
             if (maxValueLength > 0 && entryBytes.Length > maxValueLength)
-                return false;
+                throw new ArgumentException("value cannot be longer than the MaxValueLength", nameof(value));
 
             return Database.StringSet(key, entryBytes, expiresIn, when, flag);
         }
@@ -210,7 +210,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             var entryBytes = Serializer.Serialize(value);
             if (maxValueLength > 0 && entryBytes.Length > maxValueLength)
-                return false;
+                throw new ArgumentException("value cannot be longer than the MaxValueLength", nameof(value));
 
             return await Database.StringSetAsync(key, entryBytes, expiresIn, when, flag);
         }
@@ -978,16 +978,18 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                     .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
                     .ToArray();
 
-            return GetValuesInLengthLimit2(values).ToArray();
+            return GetValuesInLengthLimitIterator(values).ToArray();
         }
 
-        private IEnumerable<KeyValuePair<RedisKey, RedisValue>> GetValuesInLengthLimit2<T>(IList<Tuple<string, T>> values)
+        private IEnumerable<KeyValuePair<RedisKey, RedisValue>> GetValuesInLengthLimitIterator<T>(IList<Tuple<string, T>> values)
         {
             foreach (var item in values)
             {
                 var itemSerialized = Serializer.Serialize(item.Item2);
                 if (itemSerialized.Length <= maxValueLength)
                     yield return new KeyValuePair<RedisKey, RedisValue>(item.Item1, itemSerialized);
+                else
+                    throw new ArgumentException("value cannot be longer than the MaxValueLength", nameof(item.Item2));
             }
         }
 

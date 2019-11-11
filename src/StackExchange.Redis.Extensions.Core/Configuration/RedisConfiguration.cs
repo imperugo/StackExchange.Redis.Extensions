@@ -178,7 +178,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// Maximal value length
+        /// Maximal value length which can be set in database
         /// </summary>
         public uint MaxValueLength
         {
