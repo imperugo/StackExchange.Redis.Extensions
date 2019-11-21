@@ -64,6 +64,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
                 Serializer,
                 redisConfiguration.ServerEnumerationStrategy,
                 db,
+                redisConfiguration.MaxValueLength,
                 keyPrefix);
         }
 
