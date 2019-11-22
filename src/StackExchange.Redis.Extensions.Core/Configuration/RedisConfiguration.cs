@@ -19,6 +19,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         private int database = 0;
         private RedisHost[] hosts;
         private ServerEnumerationStrategy serverEnumerationStrategy;
+        private uint maxValueLength;
         private int poolSize = 5;
 	    private string[] excludeCommands;
         private string configurationChannel = null;
@@ -175,6 +176,19 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
             set
             {
                 serverEnumerationStrategy = value;
+                ResetConfigurationOptions();
+            }
+        }
+
+        /// <summary>
+        /// Maximal value length which can be set in database
+        /// </summary>
+        public uint MaxValueLength
+        {
+            get => maxValueLength;
+            set
+            {
+                maxValueLength = value;
                 ResetConfigurationOptions();
             }
         }
