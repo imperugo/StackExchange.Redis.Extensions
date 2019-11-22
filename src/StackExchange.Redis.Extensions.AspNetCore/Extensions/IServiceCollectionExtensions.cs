@@ -1,4 +1,5 @@
-﻿using StackExchange.Redis;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using StackExchange.Redis;
 using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
@@ -42,10 +43,12 @@ namespace Microsoft.Extensions.DependencyInjection
 			services.AddSingleton<IRedisCacheConnectionPoolManager, RedisCacheConnectionPoolManager>();
             services.AddSingleton<IRedisDefaultCacheClient, RedisDefaultCacheClient>();
 			services.AddSingleton<ISerializer, T>();
+            
+            services.AddSingleton<ICacheClient>( new StackExchangeRedisCacheClient(new T(), redisConfiguration));
 
-			services.AddSingleton<ICacheClient>( new StackExchangeRedisCacheClient(new T(), redisConfiguration));
+            services.AddSingleton(redisConfiguration);
 
-			return services;
+            return services;
 		}
 	}
 }
