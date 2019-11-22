@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core;
@@ -65,7 +66,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			await PopulateDbAsync(filter, totalItemsToAdd);
 			List<string> schemas = new List<string>();
 
-			System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+			var sw = new Stopwatch();
 
 			#region With SCAN and MATCH
 			sw.Start();
@@ -91,8 +92,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.Equal(schemas1.Count(), totalItemsToAdd);
 		}
 
-        //[Fact(Skip = "Is a performance test, must be run manually")]
-        [Fact]
+        [Fact(Skip = "Is a performance test, must be run manually")]
         public async Task Open_Tons_of_concurrent_connections()
         {
             var sut = new RedisCacheConnectionPoolManager(new RedisConfiguration()

@@ -11,7 +11,7 @@ using StackExchange.Redis.KeyspaceIsolation;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations
 {
-	internal class RedisDatabase : IRedisDatabase
+    public class RedisDatabase : IRedisDatabase
 	{
 		private readonly IConnectionMultiplexer connectionMultiplexer;
 		private readonly ServerEnumerationStrategy serverEnumerationStrategy = new ServerEnumerationStrategy();

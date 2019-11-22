@@ -12,6 +12,8 @@ dotnet pack src\StackExchange.Redis.Extensions.Protobuf\ -o ..\..\packages\ -c R
 
 dotnet pack src\StackExchange.Redis.Extensions.Utf8Json\ -o ..\..\packages\ -c Release
 
+dotnet pack src\StackExchange.Redis.Extensions.System.Text.Json\ -o ..\..\packages\ -c Release
+
 dotnet pack src\StackExchange.Redis.Extensions.AspNetCore\ -o ..\..\packages\ -c Release
 
 .\.nuget\NuGet.exe pack .\src\StackExchange.Redis.Extensions.LegacyConfiguration\StackExchange.Redis.Extensions.LegacyConfiguration.csproj -Prop Configuration=Release -OutputDirectory .\packages\
