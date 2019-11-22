@@ -5,7 +5,7 @@
 		<Title>StackExchange.Redis.Extensions.AspNetCore is a library that has a set of extensions method fpr ASP.NET Core.</Title>
 		<Summary>StackExchange.Redis.Extensions.AspNetCore is a library that has a set of extensions method fpr ASP.NET Core with the scope to simply the library configuration into the dependency injection</Summary>
 		<Description>StackExchange.Redis.Extensions.AspNetCore is a library that has a set of extensions method fpr ASP.NET Core</Description>
-    <VersionPrefix>5.4.0</VersionPrefix>
+    <VersionPrefix>5.5.0</VersionPrefix>
 		<!--<VersionSuffix>pre</VersionSuffix>-->
 		<Authors>Ugo Lattanzi</Authors>
 		<Copyright>Ugo Lattanzi</Copyright>
