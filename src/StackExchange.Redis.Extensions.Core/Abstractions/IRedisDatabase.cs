@@ -422,6 +422,16 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None) where T : class;
 
         /// <summary>
+        ///     Returns if member is a member of the set stored at key.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="item">Name of the member.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="flag">The flags to use for this operation.</param>
+        /// <returns></returns>
+        Task<bool> SetContainsAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None) where T : class;
+
+        /// <summary>
         ///     Run SADD command http://redis.io/commands/sadd
         /// </summary>
         /// <param name="items">Name of the member.</param>

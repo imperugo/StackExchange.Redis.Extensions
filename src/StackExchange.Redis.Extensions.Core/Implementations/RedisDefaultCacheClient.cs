@@ -211,6 +211,12 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return cacheClient.GetDbFromConfiguration().SetAddAsync(key, item, flag);
         }
 
+        public Task<bool> SetContainsAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None) 
+            where T : class
+        {
+            return cacheClient.GetDbFromConfiguration().SetContainsAsync(key, item, flag);
+        }
+
         public long SetAddAll<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items)
             where T : class
         {
