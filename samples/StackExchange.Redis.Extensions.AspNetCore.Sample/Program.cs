@@ -13,7 +13,7 @@ namespace StackExchange.Redis.Extensions.AspNetCore.Sample
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-				.ConfigureStackExchangeRedisExtensions<NewtonsoftSerializer>()
+				//.ConfigureStackExchangeRedisExtensions<NewtonsoftSerializer>()
                 .UseStartup<Startup>();
     }
 }

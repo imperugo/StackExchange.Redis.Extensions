@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-        <!--<TargetFrameworks>netstandard2.0;net461;net472</TargetFrameworks>-->
-        <TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;net461;net472</TargetFrameworks>
 
 		<Title>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis with different implementation, this is one of them.</Title>
 		<Summary>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis with different implementation, this is one of them.</Summary>
@@ -9,7 +8,7 @@
 		<Description>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis allowing you a set of functionality needed by common applications.
 
 This implementation is based on Jil serializer.</Description>
-		<VersionPrefix>5.0.0</VersionPrefix>
+    <VersionPrefix>5.5.0</VersionPrefix>
 		<!--<VersionSuffix>pre</VersionSuffix>-->
 		<Authors>Ugo Lattanzi</Authors>
 		<Copyright>Ugo Lattanzi</Copyright>
@@ -53,7 +52,7 @@ This implementation is based on Jil serializer.</Description>
 	<ItemGroup>
 		<PackageReference Include="Jil" Version="2.17.0" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<ProjectReference Include="..\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
 	</ItemGroup>

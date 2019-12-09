@@ -15,8 +15,27 @@ namespace StackExchange.Redis.Extensions.AspNetCore.Sample
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-			//services.AddSingleton<ISerializer, NewtonsoftSerializer>();
-			services.AddStackExchangeRedisExtensions<NewtonsoftSerializer>(new RedisConfiguration());
+            services.AddStackExchangeRedisExtensions<NewtonsoftSerializer>(new RedisConfiguration
+            {
+                AbortOnConnectFail = false,
+                AllowAdmin = false,
+                Database = 0,
+                Hosts = new RedisHost[]
+                    {
+                        new RedisHost
+                        {
+                            Host = "localhost",
+                            Port =6379
+                        }
+                    },
+                ConnectTimeout = 3000,
+                ServerEnumerationStrategy = new ServerEnumerationStrategy
+                {
+                    Mode = ServerEnumerationStrategy.ModeOptions.All,
+                    TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
+                    UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
+                }
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

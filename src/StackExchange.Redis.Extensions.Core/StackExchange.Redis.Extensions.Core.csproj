@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<!--<TargetFrameworks>netstandard2.0;net461;net472</TargetFrameworks>-->
-        <TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;net461;net472</TargetFrameworks>
 		<Title>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis</Title>
 		<Summary>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis</Summary>
 		<Description>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis allowing you a set of functionality needed by common applications.
@@ -14,13 +13,13 @@ To store complex data It requires one of the following implementations:
 - StackExchange.Redis.Extensions.Protobuf
 - StackExchange.Redis.Extensions.Utf8Json
 - StackExchange.Redis.Extensions.Binary</Description>
-		<VersionPrefix>5.0.0</VersionPrefix>
+    <VersionPrefix>5.5.0</VersionPrefix>
 		<!--<VersionSuffix>pre</VersionSuffix>-->
 		<IncludeSource>false</IncludeSource>
 		<IncludeSymbols>true</IncludeSymbols>
 		<Authors>Ugo Lattanzi</Authors>
 		<Copyright>Ugo Lattanzi</Copyright>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 		<AssemblyName>StackExchange.Redis.Extensions.Core</AssemblyName>
 		<AssemblyOriginatorKeyFile>..\..\StackExchange.Redis.Extensions.Core.snk</AssemblyOriginatorKeyFile>
 		<SignAssembly>true</SignAssembly>
@@ -61,6 +60,6 @@ To store complex data It requires one of the following implementations:
 
 
 	<ItemGroup>
-	  <PackageReference Include="StackExchange.Redis" Version="2.0.571" />
+		<PackageReference Include="StackExchange.Redis" Version="2.0.601" />
 	</ItemGroup>
 </Project>

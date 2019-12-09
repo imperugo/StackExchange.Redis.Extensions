@@ -26,12 +26,12 @@ namespace StackExchange.Redis.Extensions.Jil
         /// </summary>
         /// This constructor uses default serialization options.
         public JilSerializer()
-            : this(new Options(prettyPrint: true, 
-                excludeNulls: false, 
-                jsonp: false, 
-                dateFormat: 
-                DateTimeFormat.ISO8601, 
-                includeInherited: true, 
+            : this(new Options(prettyPrint: true,
+                excludeNulls: false,
+                jsonp: false,
+                dateFormat:
+                DateTimeFormat.ISO8601,
+                includeInherited: true,
                 unspecifiedDateTimeKindBehavior: UnspecifiedDateTimeKindBehavior.IsLocal))
         {
 
@@ -58,16 +58,6 @@ namespace StackExchange.Redis.Extensions.Jil
         }
 
         /// <summary>
-        /// Serializes the asynchronous.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns></returns>
-        public Task<byte[]> SerializeAsync(object item)
-        {
-            return Task.Factory.StartNew(() => Serialize(item));
-        }
-
-        /// <summary>
         /// Deserializes the specified serialized object.
         /// </summary>
         /// <param name="serializedObject">The serialized object.</param>
@@ -76,16 +66,6 @@ namespace StackExchange.Redis.Extensions.Jil
         {
             var jsonString = encoding.GetString(serializedObject);
             return JSON.Deserialize(jsonString, typeof(object));
-        }
-
-        /// <summary>
-        /// Deserializes the asynchronous.
-        /// </summary>
-        /// <param name="serializedObject">The serialized object.</param>
-        /// <returns></returns>
-        public Task<object> DeserializeAsync(byte[] serializedObject)
-        {
-            return Task.Factory.StartNew(() => Deserialize(serializedObject));
         }
 
         /// <summary>
@@ -100,15 +80,5 @@ namespace StackExchange.Redis.Extensions.Jil
             return JSON.Deserialize<T>(jsonString);
         }
 
-        /// <summary>
-        /// Deserializes the asynchronous.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="serializedObject">The serialized object.</param>
-        /// <returns></returns>
-        public Task<T> DeserializeAsync<T>(byte[] serializedObject)
-        {
-            return Task.Factory.StartNew(() => Deserialize<T>(serializedObject));
-        }
     }
 }

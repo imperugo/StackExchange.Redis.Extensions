@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-      <!--<TargetFrameworks>netstandard2.0;net461;net472</TargetFrameworks>-->
-      <TargetFramework>netstandard2.0</TargetFramework>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net461;net472</TargetFrameworks>
 
 		<Title>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis with different implementation, this is one of them.</Title>
 		<Summary>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis with different implementation, this is one of them.</Summary>
@@ -9,8 +8,8 @@
 		<Description>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis allowing you a set of functionality needed by common applications.
 
 This implementation is based on UTF8Json serializer.</Description>
-	  <VersionPrefix>5.0.0</VersionPrefix>
-	  <!--<VersionSuffix>pre</VersionSuffix>-->
+    <VersionPrefix>5.5.0</VersionPrefix>
+		<!--<VersionSuffix>pre</VersionSuffix>-->
 		<Authors>Ugo Lattanzi</Authors>
 		<Copyright>Ugo Lattanzi</Copyright>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -53,10 +52,10 @@ This implementation is based on UTF8Json serializer.</Description>
 	</PropertyGroup>
 
 
-  <ItemGroup>
-    <PackageReference Include="Utf8Json" Version="1.3.7" />
-  </ItemGroup>
-	
+	<ItemGroup>
+		<PackageReference Include="Utf8Json" Version="1.3.7" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
 	</ItemGroup>

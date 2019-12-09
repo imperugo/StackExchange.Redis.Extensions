@@ -334,7 +334,7 @@ namespace StackExchange.Redis.Extensions.Core
 				return default(T);
 			}
 
-			return await Serializer.DeserializeAsync<T>(valueBytes);
+			return Serializer.Deserialize<T>(valueBytes);
 		}
 
 		/// <summary>
@@ -356,7 +356,7 @@ namespace StackExchange.Redis.Extensions.Core
 				await Database.KeyExpireAsync(key, expiresAt.Subtract(DateTime.Now));
 			}
 
-			return default(T);
+			return result;
 		}
 
 		/// <summary>
@@ -378,7 +378,7 @@ namespace StackExchange.Redis.Extensions.Core
 				await Database.KeyExpireAsync(key, expiresIn);
 			}
 
-			return default(T);
+			return result;
 		}
 
 		/// <summary>
@@ -408,7 +408,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </returns>
 		public async Task<bool> AddAsync<T>(string key, T value)
 		{
-			var entryBytes = await Serializer.SerializeAsync(value);
+			var entryBytes = Serializer.Serialize(value);
 
 			return await Database.StringSetAsync(key, entryBytes);
 		}
@@ -471,7 +471,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </returns>
 		public async Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt)
 		{
-			var entryBytes = await Serializer.SerializeAsync(value);
+			var entryBytes = Serializer.Serialize(value);
 			var expiration = expiresAt.Subtract(DateTimeOffset.Now);
 
 			return await Database.StringSetAsync(key, entryBytes, expiration);
@@ -536,7 +536,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// </returns>
 		public async Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn)
 		{
-			var entryBytes = await Serializer.SerializeAsync(value);
+			var entryBytes = Serializer.Serialize(value);
 
 			return await Database.StringSetAsync(key, entryBytes, expiresIn);
 		}
@@ -751,7 +751,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 			var result = await Database.StringSetAsync(values);
 
-			Parallel.ForEach(values, async value => await Database.KeyExpireAsync(value.Key, expiresAt.DateTime));
+			Parallel.ForEach(values, async value => await Database.KeyExpireAsync(value.Key, expiresAt.DateTime.ToUniversalTime()));
 
 			return result;
 		}
@@ -841,7 +841,7 @@ namespace StackExchange.Redis.Extensions.Core
 				throw new ArgumentNullException(nameof(item), "item cannot be null.");
 			}
 
-			var serializedObject = await Serializer.SerializeAsync(item);
+			var serializedObject = Serializer.Serialize(item);
 
 			return await Database.SetAddAsync(key, serializedObject);
 		}
@@ -939,7 +939,7 @@ namespace StackExchange.Redis.Extensions.Core
 				throw new ArgumentNullException(nameof(item), "item cannot be null.");
 			}
 
-			var serializedObject = await Serializer.SerializeAsync(item);
+			var serializedObject = Serializer.Serialize(item);
 
 			return await Database.SetRemoveAsync(key, serializedObject);
 		}
@@ -1221,7 +1221,7 @@ namespace StackExchange.Redis.Extensions.Core
 		public async Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
 		{
 			var sub = connectionMultiplexer.GetSubscriber();
-			return await sub.PublishAsync(channel, await Serializer.SerializeAsync(message), flags);
+			return await sub.PublishAsync(channel, Serializer.Serialize(message), flags);
 		}
 
 		/// <summary>
@@ -1371,7 +1371,7 @@ namespace StackExchange.Redis.Extensions.Core
 				throw new ArgumentNullException(nameof(item), "item cannot be null.");
 			}
 
-			var serializedItem = await Serializer.SerializeAsync(item);
+			var serializedItem = Serializer.Serialize(item);
 
 			return await Database.ListLeftPushAsync(key, serializedItem);
 		}
@@ -1419,7 +1419,7 @@ namespace StackExchange.Redis.Extensions.Core
 
 			if (item == RedisValue.Null) return null;
 
-			return item == RedisValue.Null ? null : await Serializer.DeserializeAsync<T>(item);
+			return item == RedisValue.Null ? null : Serializer.Deserialize<T>(item);
 		}
 
 		private Dictionary<string, string> ParseInfo(string info)
@@ -2203,5 +2203,46 @@ namespace StackExchange.Redis.Extensions.Core
 
 			return result.Select(m => m == RedisValue.Null ? default(T) : Serializer.Deserialize<T>(m));
 		}
-	}
+
+        /// <summary>
+		///     Add  the entry to a sorted set with  an increment score 
+		/// </summary>
+		/// <remarks>
+		///     Time complexity: O(1)
+		/// </remarks>
+		/// <param name="key">Key of the set</param>
+		/// <param name="value">The instance of T.</param>
+		/// <param name="score">Score of the entry</param>
+		/// <param name="commandFlags">Command execution flags</param>
+		/// <returns>
+		///      if the object has been added return previous score. Otherwise return 0.0 when first add
+		/// </returns>
+		public double SortedSetAddIncrement<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var entryBytes = Serializer.Serialize(value);
+
+            return Database.SortedSetIncrement(key, entryBytes, score, commandFlags);
+        }
+
+        /// <summary>
+        ///     Add  the entry to a sorted set with  an increment score 
+        /// </summary>
+        /// <remarks>
+        ///     Time complexity: O(1)
+        /// </remarks>
+        /// <param name="key">Key of the set</param>
+        /// <param name="value">The instance of T.</param>
+        /// <param name="score">Score of the entry</param>
+        /// <param name="commandFlags">Command execution flags</param>
+        /// <returns>
+        ///      if the object has been added return previous score. Otherwise return 0.0 when first add
+        /// </returns>
+        /// 
+        public async Task<double> SortedSetAddIncrementAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var entryBytes = Serializer.Serialize(value);
+
+            return await Database.SortedSetIncrementAsync(key, entryBytes, score, commandFlags);
+        }
+    }
 }

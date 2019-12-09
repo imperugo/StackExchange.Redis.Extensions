@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core;
+using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.Core.Implementations;
 using StackExchange.Redis.Extensions.Newtonsoft;
 using StackExchange.Redis.Extensions.Tests.Extensions;
 using Xunit;
@@ -21,7 +24,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			mux = ConnectionMultiplexer.Connect(new ConfigurationOptions
 			{
 				DefaultVersion = new Version(3, 0, 500),
-				EndPoints = { { "redishost", 6379 } },
+				EndPoints = { { "localhost", 6379 } },
 				AllowAdmin = true,
 				ConnectTimeout = 5000
 			});
@@ -30,10 +33,13 @@ namespace StackExchange.Redis.Extensions.Tests
 
 		public void Dispose()
 		{
-			sut.Database.FlushDatabase();
-			sut.Database.Multiplexer.GetSubscriber().UnsubscribeAll();
-			sut.Database.Multiplexer.Dispose();
-			sut.Dispose();
+            if(sut != null)
+            {
+                sut.Database.FlushDatabase();
+			    sut.Database.Multiplexer.GetSubscriber().UnsubscribeAll();
+			    sut.Database.Multiplexer.Dispose();
+			    sut.Dispose();
+            }
 		}
 
 		private async Task PopulateDbAsync(string prefix, int numberOfItems)
@@ -60,7 +66,7 @@ namespace StackExchange.Redis.Extensions.Tests
 			await PopulateDbAsync(filter, totalItemsToAdd);
 			List<string> schemas = new List<string>();
 
-			System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+			var sw = new Stopwatch();
 
 			#region With SCAN and MATCH
 			sw.Start();
@@ -86,5 +92,44 @@ namespace StackExchange.Redis.Extensions.Tests
 			Assert.Equal(schemas1.Count(), totalItemsToAdd);
 		}
 
+        [Fact(Skip = "Is a performance test, must be run manually")]
+        public async Task Open_Tons_of_concurrent_connections()
+        {
+            var sut = new RedisCacheConnectionPoolManager(new RedisConfiguration()
+			{
+				AbortOnConnectFail = false,
+				Hosts = new RedisHost[]
+				{
+					new RedisHost() { Host = "localhost", Port = 6379 }
+				},
+				AllowAdmin = true,
+				ConnectTimeout = 5000,
+				Database = 8,
+                PoolSize = 10,
+                ServerEnumerationStrategy = new ServerEnumerationStrategy()
+				{
+					Mode = ServerEnumerationStrategy.ModeOptions.All,
+					TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
+					UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
+				}
+			});
+
+            await sut.GetConnection().GetDatabase().StringSetAsync("key","value");
+
+            var conn = sut.GetConnection();
+
+            Parallel.For(0,1000, x => 
+            {
+                try
+                {
+                    sut.GetConnection().GetDatabase().StringGet("key"); 
+                } 
+                catch (Exception exc)
+                { 
+                    output.WriteLine($"Index: {x} - Exception {exc.ToString()}");
+                    throw;
+                }
+            });
+        }
 	}
 }

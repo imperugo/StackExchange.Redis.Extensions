@@ -38,6 +38,7 @@ Nuget (MsgPack) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.R
 Nuget (Protobuf) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Protobuf.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Protobuf/)
 Nuget (UTF8Json) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Utf8Json.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Utf8Json/)
 Nuget (Binary) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Binary.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Binary/)
+Nuget (System.Text.Json) | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.System.Text.Json.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.System.Text.Json/)
 
 
 ## How to install it
@@ -84,6 +85,12 @@ PM> Install-Package StackExchange.Redis.Extensions.Binary
 
 ```
 PM> Install-Package StackExchange.Redis.Extensions.Utf8Json 
+```
+
+## Install System.Text.Json Formatter implementation 
+
+```
+PM> Install-Package StackExchange.Redis.Extensions.System.Text.Json
 ```
 
 ## How to configure it

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core.Abstractions;
+using StackExchange.Redis.Extensions.Core.Models;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations
 {
@@ -306,6 +307,16 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return cacheClient.GetDbFromConfiguration().GetInfoAsync();
         }
 
+        public List<InfoDetail> GetInfoCategorized()
+        {
+            return cacheClient.GetDbFromConfiguration().GetInfoCategorized();
+        }
+
+        public Task<List<InfoDetail>> GetInfoCategorizedAsync()
+        {
+            return cacheClient.GetDbFromConfiguration().GetInfoCategorizedAsync();
+        }
+
         public long Publish<T>(RedisChannel channel, T message, CommandFlags flag = CommandFlags.None)
         {
             return cacheClient.GetDbFromConfiguration().Publish(channel, message, flag);
@@ -578,6 +589,16 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         public Task<IEnumerable<T>> SortedSetRangeByScoreAsync<T>(string key, double start = Double.NegativeInfinity, double stop = Double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending, long skip = 0, long take = -1, CommandFlags flag = CommandFlags.None)
         {
             return cacheClient.GetDbFromConfiguration().SortedSetRangeByScoreAsync<T>(key, start, stop, exclude, order, skip, take, flag);
+        }
+
+        public double SortedSetAddIncrement<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        {
+            return cacheClient.GetDbFromConfiguration().SortedSetAddIncrement(key, value, score, commandFlags);
+        }
+
+        public Task<double> SortedSetAddIncrementAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        {
+            return cacheClient.GetDbFromConfiguration().SortedSetAddIncrementAsync(key, value, score, commandFlags);
         }
     }
 }

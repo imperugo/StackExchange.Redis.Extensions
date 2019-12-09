@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
   
 	<ItemGroup>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-		<PackageReference Include="StackExchange.Redis" Version="2.0.571" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+		<PackageReference Include="StackExchange.Redis" Version="2.0.601" />
 		<PackageReference Include="xunit" Version="2.4.1" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
 		  <PrivateAssets>all</PrivateAssets>
@@ -14,8 +14,8 @@
 		</PackageReference>
 		<PackageReference Include="Jil" Version="2.17.0" />
 		<PackageReference Include="MsgPack.Cli" Version="1.0.1" />
-		<PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-		<PackageReference Include="protobuf-net" Version="2.4.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<PackageReference Include="protobuf-net" Version="2.4.4" />
 		<PackageReference Include="Utf8Json" Version="1.3.7" />
 		<DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
 	</ItemGroup>
@@ -27,6 +27,7 @@
 		<ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.MsgPack\StackExchange.Redis.Extensions.MsgPack.csproj" />
 		<ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.Newtonsoft\StackExchange.Redis.Extensions.Newtonsoft.csproj" />
 		<ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.Protobuf\StackExchange.Redis.Extensions.Protobuf.csproj" />
+		<ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.System.Text.Json\StackExchange.Redis.Extensions.System.Text.Json.csproj" />
 		<ProjectReference Include="..\..\src\StackExchange.Redis.Extensions.Utf8Json\StackExchange.Redis.Extensions.Utf8Json.csproj" />
 	</ItemGroup>
 	

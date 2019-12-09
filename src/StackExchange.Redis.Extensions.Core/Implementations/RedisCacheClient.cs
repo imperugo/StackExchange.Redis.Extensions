@@ -1,5 +1,4 @@
-﻿
-using StackExchange.Redis.Extensions.Core.Configuration;
+﻿using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Implementations;
 
 namespace StackExchange.Redis.Extensions.Core.Abstractions
@@ -65,6 +64,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
                 Serializer,
                 redisConfiguration.ServerEnumerationStrategy,
                 db,
+                redisConfiguration.MaxValueLength,
                 keyPrefix);
         }
 
