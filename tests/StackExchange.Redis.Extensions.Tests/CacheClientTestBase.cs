@@ -496,6 +496,59 @@ namespace StackExchange.Redis.Extensions.Tests
         }
 
 		[Fact]
+		public async Task SetContainsAsyncShouldThrowExceptionWhenKeyIsEmpty()
+		{
+			await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDbFromConfiguration().SetContainsAsync(string.Empty, string.Empty));
+		}
+
+		[Fact]
+		public async Task SetContainsAsyncShouldReturnTrue()
+		{
+			var key = "MySet";
+			var item = "MyItem";
+
+			await Sut.GetDbFromConfiguration().SetAddAsync(key, item);
+
+			var result = await Sut.GetDbFromConfiguration().SetContainsAsync(key, item);
+
+			Assert.True(result);
+		}
+
+		[Fact]
+		public async Task SetContainsAsyncShouldReturnFalseWhenItemIsWrong()
+		{
+			var key = "MySet";
+			var item = "MyItem";
+			var unknownItem = "MyUnknownItem";
+
+			await Sut.GetDbFromConfiguration().SetAddAsync(key, item);
+
+			var result = await Sut.GetDbFromConfiguration().SetContainsAsync(key, unknownItem);
+
+			Assert.False(result);
+		}
+
+		[Fact]
+		public async Task SetContainsAsyncShouldReturnFalseWhenKeyIsWrong()
+		{
+			var key = "MySet";
+			var item = "MyItem";
+			var unknownKey = "MyUnknownKey";
+
+			await Sut.GetDbFromConfiguration().SetAddAsync(key, item);
+
+			var result = await Sut.GetDbFromConfiguration().SetContainsAsync(unknownKey, item);
+
+			Assert.False(result);
+		}
+
+		[Fact]
+		public async Task SetContainsAsyncShouldThrowExceptionWhenItemIsNull()
+		{
+			await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDbFromConfiguration().SetContainsAsync<string>("MySet", null));
+		}
+
+		[Fact]
 		public async Task SetAddAllGenericShouldThrowExceptionWhenItemsIsNull()
 		{
             await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDbFromConfiguration().SetAddAllAsync("MySet", CommandFlags.None, (string[])null));
