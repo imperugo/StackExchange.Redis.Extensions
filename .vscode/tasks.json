@@ -34,22 +34,6 @@
         "kind": "build",
         "isDefault": true
       }
-    }
-        {
-      "label": "publish",
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-        "publish",
-        "${workspaceFolder}/src/Technogym.MwCloud.Agenda/Technogym.MwCloud.Agenda.csproj",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary"
-      ],
-      "problemMatcher": "$msCompile",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
     },
     {
       "label": "clean",
