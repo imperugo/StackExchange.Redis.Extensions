@@ -13,7 +13,7 @@ internal class Program
         Target(
             "build",
             Directory.EnumerateFiles("./", "*.sln", SearchOption.AllDirectories),
-            solution => Run(sdk.GetDotnetCliPath(), $"build \"{solution}\" --configuration Release -f:netstandard2.0"));
+            solution => Run(sdk.GetDotnetCliPath(), $"build \"{solution}\" --configuration Release -f:netcoreapp3.1"));
 
         Target(
             "test",

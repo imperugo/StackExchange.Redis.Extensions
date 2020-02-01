@@ -252,7 +252,7 @@ namespace StackExchange.Redis.Extensions.Tests
 
             Assert.True(result.Count == 10);
 
-            for (int i = 0; i < result.Count; i++)
+            for (var i = 0; i < result.Count; i++)
             {
                 Assert.Equal(result[i], values[i].Key);
             }

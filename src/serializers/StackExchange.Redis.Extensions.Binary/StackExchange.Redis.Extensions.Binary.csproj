@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461;net472</TargetFrameworks>
-
     <Title>Use the binary serialization with StackExchange.Redis.</Title>
     <Summary>Use the binary serialization with StackExchange.Redis.</Summary>
   </PropertyGroup>
