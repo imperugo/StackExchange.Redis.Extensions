@@ -32,14 +32,5 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         ///     http://redis.io/commands/rpop
         /// </remarks>
         Task<T> ListGetFromRightAsync<T>(string key, CommandFlags flag = CommandFlags.None) where T : class;
-
-        /// <summary>
-        ///     Updates the expiry time of a redis cache object
-        /// </summary>
-        /// <param name="key">The key of the object</param>
-        /// <param name="expiresAt">The new expiry time of the object</param>
-        /// <param name="flag">Behaviour markers associated with a given command</param>
-        /// <returns>True if the object is updated, false if the object does not exist</returns>
-        Task<bool> UpdateExpiryAsync(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None);
     }
 }

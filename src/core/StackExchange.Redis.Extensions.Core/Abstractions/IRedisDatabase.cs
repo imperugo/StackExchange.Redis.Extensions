@@ -309,6 +309,15 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         ///     Updates the expiry time of a redis cache object
         /// </summary>
         /// <param name="key">The key of the object</param>
+        /// <param name="expiresAt">The new expiry time of the object</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
+        /// <returns>True if the object is updated, false if the object does not exist</returns>
+        Task<bool> UpdateExpiryAsync(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None);
+
+        /// <summary>
+        ///     Updates the expiry time of a redis cache object
+        /// </summary>
+        /// <param name="key">The key of the object</param>
         /// <param name="expiresIn">Time until the object will expire</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <returns>True if the object is updated, false if the object does not exist</returns>
