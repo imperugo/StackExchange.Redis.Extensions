@@ -29,7 +29,13 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         private Func<ProfilingSession> profilingSessionProvider;
 
         /// <summary>
-        /// The key separation prefix used for all cache entries
+        /// A RemoteCertificateValidationCallback delegate responsible for validating the certificate supplied by the remote party; note
+        /// that this cannot be specified in the configuration-string.
+        /// </summary>
+        public event RemoteCertificateValidationCallback CertificateValidation;
+
+        /// <summary>
+        /// Gets or sets the channel to use for broadcasting and listening for configuration change notification.
         /// </summary>
         public string ConfigurationChannel
         {
@@ -42,7 +48,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// The key separation prefix used for all cache entries
+        /// Gets or sets the key separation prefix used for all cache entries.
         /// </summary>
         public string KeyPrefix
         {
@@ -55,7 +61,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// The password or access key
+        /// Gets or sets the redis password.
         /// </summary>
         public string Password
         {
@@ -68,11 +74,8 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// Specify if the connection can use Admin commands like flush database
+        /// Gets or sets a value indicating whether gets or sets whether admin operations should be allowed.
         /// </summary>
-        /// <value>
-        ///   <c>true</c> if can use admin commands; otherwise, <c>false</c>.
-        /// </value>
         public bool AllowAdmin
         {
             get => allowAdmin;
@@ -84,11 +87,8 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// Specify if the connection is a secure connection or not.
+        /// Gets or sets a value indicating whether specify if whether the connection should be encrypted.
         /// </summary>
-        /// <value>
-        ///   <c>true</c> if is secure; otherwise, <c>false</c>.
-        /// </value>
         public bool Ssl
         {
             get => ssl;
@@ -100,7 +100,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// The connection timeout
+        /// Gets or sets the time in milliseconds that should be allowed for connection (defaults to 5 seconds unless SyncTimeout is higher).
         /// </summary>
         public int ConnectTimeout
         {
@@ -113,7 +113,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// Time (ms) to allow for synchronous operations
+        /// Gets or sets the time in milliseconds that the system should allow for synchronous operations (defaults to 5 seconds).
         /// </summary>
         public int SyncTimeout
         {
@@ -126,7 +126,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// If true, Connect will not create a connection while no servers are available
+        /// Gets or sets a value indicating whether gets or sets whether connect/configuration timeouts should be explicitly notified via a TimeoutException.
         /// </summary>
         public bool AbortOnConnectFail
         {
@@ -139,11 +139,8 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// Database Id
+        /// Gets or sets database Id.
         /// </summary>
-        /// <value>
-        /// The database id, the default value is 0
-        /// </value>
         public int Database
         {
             get => database;
@@ -155,11 +152,8 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// The host of Redis Servers
+        /// Gets or sets the host of Redis Servers (The ips or names).
         /// </summary>
-        /// <value>
-        /// The ips or names
-        /// </value>
         public RedisHost[] Hosts
         {
             get => hosts;
@@ -171,7 +165,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// The strategy to use when executing server wide commands
+        /// Gets or sets the strategy to use when executing server wide commands.
         /// </summary>
         public ServerEnumerationStrategy ServerEnumerationStrategy
         {
@@ -184,7 +178,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// Maximal value length which can be set in database
+        /// Gets or sets maximal value length which can be set in database.
         /// </summary>
         public uint MaxValueLength
         {
@@ -197,7 +191,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// Redis connections pool size
+        /// Gets or sets redis connections pool size.
         /// </summary>
         public int PoolSize
         {
@@ -210,7 +204,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// Exclude commands
+        /// Gets or sets exclude commands.
         /// </summary>
         public string[] ExcludeCommands
         {
@@ -223,7 +217,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// Redis Profiler to attach to ConnectionMultiplexer
+        /// Gets or sets redis Profiler to attach to ConnectionMultiplexer.
         /// </summary>
         public Func<ProfilingSession> ProfilingSessionProvider
         {
@@ -236,13 +230,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// A RemoteCertificateValidationCallback delegate responsible for validating the certificate supplied by the remote party; note
-        /// that this cannot be specified in the configuration-string.
-        /// </summary>
-        public event RemoteCertificateValidationCallback CertificateValidation;
-
-        /// <summary>
-        /// The Redis configuration options
+        /// Gets the Redis configuration options
         /// </summary>
         /// <value>An instanfe of <see cref="ConfigurationOptions" />.</value>
         public ConfigurationOptions ConfigurationOptions
@@ -266,8 +254,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
                     {
                         options.CommandMap = CommandMap.Create(
                             new HashSet<string>(ExcludeCommands),
-                            available: false
-                        );
+                            available: false);
                     }
 
                     foreach (var redisHost in Hosts)
@@ -281,7 +268,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
-        /// The connection multiplex
+        /// Gets the connection multiplex
         /// </summary>
         /// <value>An instanfe of <see cref="ConnectionMultiplexer" />.</value>
         public ConnectionMultiplexer Connection

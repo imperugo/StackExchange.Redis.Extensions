@@ -11,13 +11,13 @@ namespace StackExchange.Redis.Extensions.Core
         /// Serializes the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <returns></returns>
+        /// <returns>Return the serialized object</returns>
         byte[] Serialize(object item);
 
         /// <summary>
         /// Deserializes the specified bytes.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
         /// <param name="serializedObject">The serialized object.</param>
         /// <returns>
         /// The instance of the specified Item

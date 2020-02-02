@@ -16,12 +16,12 @@ namespace StackExchange.Redis.Extensions.Core.ServerIteration
         private readonly ServerEnumerationStrategy.UnreachableServerActionOptions unreachableServerAction;
 
         /// <summary>
-        /// Create an instance of <see cref="ServerEnumerable" />.
+        /// Initializes a new instance of the <see cref="ServerEnumerable"/> class.
         /// </summary>
         /// <param name="multiplexer">The redis connection.</param>
         /// <param name="targetRole">The target role.</param>
         /// <param name="unreachableServerAction">The unreachable server strategy.</param>
-		public ServerEnumerable(
+        public ServerEnumerable(
             IConnectionMultiplexer multiplexer,
             ServerEnumerationStrategy.TargetRoleOptions targetRole,
             ServerEnumerationStrategy.UnreachableServerActionOptions unreachableServerAction)
@@ -34,7 +34,6 @@ namespace StackExchange.Redis.Extensions.Core.ServerIteration
         /// <summary>
         /// Return the enumerator of the Redis servers
         /// </summary>
-        /// <returns></returns>
         public IEnumerator<IServer> GetEnumerator()
         {
             foreach (var endPoint in multiplexer.GetEndPoints())
@@ -45,6 +44,7 @@ namespace StackExchange.Redis.Extensions.Core.ServerIteration
                     if (!server.IsSlave)
                         continue;
                 }
+
                 if (unreachableServerAction == ServerEnumerationStrategy.UnreachableServerActionOptions.IgnoreIfOtherAvailable)
                 {
                     if (!server.IsConnected || !server.Features.Scan)

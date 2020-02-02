@@ -1,6 +1,6 @@
 ﻿using StackExchange.Redis.Extensions.Binary;
 
-namespace StackExchange.Redis.Extensions.Tests
+namespace StackExchange.Redis.Extensions.Core.Tests.Serializers
 {
     public class BinarySerializeTest : CacheClientTestBase
     {

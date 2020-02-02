@@ -11,12 +11,12 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
     public partial interface IRedisDatabase
     {
         /// <summary>
-        ///     Return the instance of <see cref="StackExchange.Redis.IDatabase" /> used be ICacheClient implementation
+        ///     Gets the instance of <see cref="IDatabase" /> used be ICacheClient implementation
         /// </summary>
         IDatabase Database { get; }
 
         /// <summary>
-        ///     Return the instance of <see cref="ISerializer" />
+        ///     Gets the instance of <see cref="ISerializer" />
         /// </summary>
         ISerializer Serializer { get; }
 
@@ -31,7 +31,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Removes the specified key from Redis Database
         /// </summary>
-        /// <param name="key">The key.</param>
+        /// <param name="key">The cache key.</param>
         /// <returns>True if the key has removed. Othwerwise False</returns>
         /// <param name="flag">Behaviour markers associated with a given command</param>
         Task<bool> RemoveAsync(string key, CommandFlags flag = CommandFlags.None);
@@ -39,21 +39,21 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Removes all specified keys from Redis Database
         /// </summary>
-        /// <param name="keys">The key.</param>
+        /// <param name="keys">The cache keys.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
         Task RemoveAllAsync(IEnumerable<string> keys, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
         ///     Get the object with the specified key from Redis database
         /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
         /// <param name="key">The cache key.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <returns>Null if not present, otherwise the instance of T.</returns>
         Task<T> GetAsync<T>(string key, CommandFlags flag = CommandFlags.None);
 
         /// <summary>Get the object with the specified key from Redis database and update the expiry time</summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
         /// <param name="key">The cache key.</param>
         /// <param name="expiresAt">Expiration time.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
@@ -63,7 +63,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Get the object with the specified key from Redis database and update the expiry time
         /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
         /// <param name="key">The cache key.</param>
         /// <param name="expiresIn">Time till the object expires.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
@@ -86,8 +86,8 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Replaces the object with specified key into Redis database.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key">The key.</param>
+        /// <typeparam name="T">The type of the object to serialize.</typeparam>
+        /// <param name="key">The cache key.</param>
         /// <param name="value">The instance of T</param>
         /// <param name="when">The condition (Always is the default value).</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
@@ -113,8 +113,8 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Replaces the object with specified key into Redis database.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key">The key.</param>
+        /// <typeparam name="T">The type of the object to serialize.</typeparam>
+        /// <param name="key">The cache key.</param>
         /// <param name="value">The instance of T</param>
         /// <param name="expiresAt">Expiration time.</param>
         /// <param name="when">The condition (Always is the default value).</param>
@@ -141,8 +141,8 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Replaces the object with specified key into Redis database.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key">The key.</param>
+        /// <typeparam name="T">The type of the object to serialize.</typeparam>
+        /// <param name="key">The cache key.</param>
         /// <param name="value">The instance of T</param>
         /// <param name="expiresIn">The duration of the cache using Timespan.</param>
         /// <param name="when">The condition (Always is the default value).</param>
@@ -155,8 +155,8 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Get the objects with the specified keys from Redis database with a single roundtrip
         /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="keys">The keys.</param>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
+        /// <param name="keys">The cache keys.</param>
         /// <returns>
         ///     Empty list if there are no results, otherwise the instance of T.
         ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
@@ -166,8 +166,8 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Get the objects with the specified keys from Redis database with one roundtrip
         /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="keys">The keys.</param>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
+        /// <param name="keys">The cache keys.</param>
         /// <param name="expiresAt">Expiration time.</param>
         /// <returns>
         ///     Empty list if there are no results, otherwise the instance of T.
@@ -178,8 +178,8 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Get the objects with the specified keys from Redis database with one roundtrip
         /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
-        /// <param name="keys">The keys.</param>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
+        /// <param name="keys">The cache keys.</param>
         /// <param name="expiresIn">Time until expiration.</param>
         /// <returns>
         ///     Empty list if there are no results, otherwise the instance of T.
@@ -190,7 +190,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Add the objects with the specified keys to Redis database with a single roundtrip
         /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
         /// <param name="items">The items.</param>
         /// <param name="expiresAt">Expiration time.</param>
         /// <param name="when">The condition (Always is the default value).</param>
@@ -200,7 +200,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Add the objects with the specified keys to Redis database with a single roundtrip
         /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
         /// <param name="items">The items.</param>
         /// <param name="when">The condition (Always is the default value).</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
@@ -209,46 +209,52 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Add the objects with the specified keys to Redis database with a single roundtrip
         /// </summary>
-        /// <typeparam name="T">The type of the expected object</typeparam>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
         /// <param name="items">The items.</param>
-        /// <param name="when">The condition (Always is the default value).</param>
         /// <param name="expiresIn">Time until expiration.</param>
+        /// <param name="when">The condition (Always is the default value).</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
         Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
         ///     Run SADD command http://redis.io/commands/sadd
         /// </summary>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
+        /// <param name="key">The cache key.</param>
         /// <param name="item">Name of the member.</param>
-        /// <param name="key">The key.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
-        Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None) where T : class;
+        Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
+            where T : class;
 
         /// <summary>
         ///     Run SADD command http://redis.io/commands/sadd
         /// </summary>
-        /// <param name="items">Name of the member.</param>
-        /// <param name="key">The key.</param>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
+        /// <param name="key">The cache key.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
-        Task<long> SetAddAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items) where T : class;
+        /// <param name="items">Name of the member.</param>
+        Task<long> SetAddAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items)
+            where T : class;
 
         /// <summary>
         ///     Run SREM command http://redis.io/commands/srem"
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <param name="item"></param>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
+        /// <param name="key">The cache key.</param>
+        /// <param name="item">The object to store into redis</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
-        Task<bool> SetRemoveAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None) where T : class;
+        Task<bool> SetRemoveAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
+            where T : class;
 
         /// <summary>
         ///     Run SREM command http://redis.io/commands/srem
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <param name="items"></param>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
+        /// <param name="key">The cache key.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
-        Task<long> SetRemoveAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items) where T : class;
+        /// <param name="items">The items to store into Redis.</param>
+        Task<long> SetRemoveAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items)
+            where T : class;
 
         /// <summary>
         ///     Run SMEMBERS command see http://redis.io/commands/SMEMBERS
@@ -285,7 +291,6 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Flushes the database asynchronous.
         /// </summary>
-        /// <returns></returns>
         Task FlushDbAsync();
 
         /// <summary>

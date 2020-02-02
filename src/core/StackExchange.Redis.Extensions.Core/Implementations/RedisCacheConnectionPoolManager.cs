@@ -6,16 +6,14 @@ using StackExchange.Redis.Extensions.Core.Configuration;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations
 {
-    /// <summary>
-    /// The service who handles the Redis connection pool.
-    /// </summary>
+    /// <inheritdoc/>
     public class RedisCacheConnectionPoolManager : IRedisCacheConnectionPoolManager
     {
         private static ConcurrentBag<Lazy<ConnectionMultiplexer>> connections;
         private readonly RedisConfiguration redisConfiguration;
 
         /// <summary>
-        /// Create an instance of <see cref="RedisCacheConnectionPoolManager" />.
+        /// Initializes a new instance of the <see cref="RedisCacheConnectionPoolManager"/> class.
         /// </summary>
         /// <param name="redisConfiguration">The redis configurartion.</param>
         public RedisCacheConnectionPoolManager(RedisConfiguration redisConfiguration)
@@ -24,10 +22,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             Initialize();
         }
 
-        /// <summary>
-        /// Get the Redis connection
-        /// </summary>
-        /// <returns>Returns an instance of<see cref="IConnectionMultiplexer"/>.</returns>
+        /// <inheritdoc/>
         public IConnectionMultiplexer GetConnection()
         {
             Lazy<ConnectionMultiplexer> response;
@@ -45,9 +40,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return response.Value;
         }
 
-        /// <summary>
-        /// Dispose all the opened redis connections.
-        /// </summary>
+        /// <inheritdoc/>
         public void Dispose()
         {
             var activeConnections = connections.Where(lazy => lazy.IsValueCreated).ToList();
@@ -67,10 +60,10 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 connections.Add(new Lazy<ConnectionMultiplexer>(() =>
                 {
                     var multiplexer = ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions);
+
                     if (redisConfiguration.ProfilingSessionProvider != null)
-                    {
                         multiplexer.RegisterProfiler(redisConfiguration.ProfilingSessionProvider);
-                    }
+
                     return multiplexer;
                 }));
             }

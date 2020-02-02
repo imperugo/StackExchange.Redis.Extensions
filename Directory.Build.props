@@ -13,6 +13,7 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory).ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <!-- Packages stuff -->
@@ -76,5 +77,23 @@
     <Features>strict</Features>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.SuppressMessage">
+      <_Parameter1>Style</_Parameter1>
+      <_Parameter2>IDE0017:Simplify object initialization</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.SuppressMessage">
+      <_Parameter1>Style</_Parameter1>
+      <_Parameter2>IDE0066:Use 'switch' expression</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
 
 </Project>

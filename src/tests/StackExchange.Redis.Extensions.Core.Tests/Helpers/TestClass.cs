@@ -25,6 +25,16 @@ namespace StackExchange.Redis.Extensions.Tests.Helpers
         [DataMember(Order = 2)]
         public T Value { get; set; }
 
+        public static bool operator ==(TestClass<T> left, TestClass<T> right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(TestClass<T> left, TestClass<T> right)
+        {
+            return !Equals(left, right);
+        }
+
         public override bool Equals(object obj)
         {
             return Equals(obj as TestClass<T>);
@@ -32,8 +42,12 @@ namespace StackExchange.Redis.Extensions.Tests.Helpers
 
         public bool Equals(TestClass<T> other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (other is null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
             return string.Equals(Key, other.Key) && EqualityComparer<T>.Default.Equals(Value, other.Value);
         }
 
@@ -43,16 +57,6 @@ namespace StackExchange.Redis.Extensions.Tests.Helpers
             {
                 return ((Key?.GetHashCode() ?? 0) * 397) ^ EqualityComparer<T>.Default.GetHashCode(Value);
             }
-        }
-
-        public static bool operator ==(TestClass<T> left, TestClass<T> right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(TestClass<T> left, TestClass<T> right)
-        {
-            return !Equals(left, right);
         }
     }
 }

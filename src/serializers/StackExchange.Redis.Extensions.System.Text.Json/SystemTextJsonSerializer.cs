@@ -1,6 +1,5 @@
-﻿using StackExchange.Redis.Extensions.Core;
-using System;
-using System.Text.Json;
+﻿using System.Text.Json;
+using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.System.Text.Json
 {
@@ -9,23 +8,13 @@ namespace StackExchange.Redis.Extensions.System.Text.Json
     /// </summary>
     public class SystemTextJsonSerializer : ISerializer
     {
-        /// <summary>
-        /// Deserializes the specified bytes.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="serializedObject">The serialized object.</param>
-        /// <returns>
-        /// The instance of the specified Item
-        /// </returns>
+        /// <inheritdoc/>
         public T Deserialize<T>(byte[] serializedObject)
         {
             return JsonSerializer.Deserialize<T>(serializedObject, SerializationOptions.Flexible);
         }
 
-        /// <summary>
-        /// Serializes the specified item.
-        /// </summary>
-        /// <param name="item">The item.</param>
+        /// <inheritdoc/>
         public byte[] Serialize(object item)
         {
             return JsonSerializer.SerializeToUtf8Bytes(item, SerializationOptions.Flexible);

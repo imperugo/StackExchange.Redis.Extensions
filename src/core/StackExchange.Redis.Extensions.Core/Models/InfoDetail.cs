@@ -10,19 +10,18 @@ namespace StackExchange.Redis.Extensions.Core.Models
     public class InfoDetail
     {
         /// <summary>
-        /// The category name
+        /// Gets or sets the category name
         /// </summary>
         public string Category { get; set; }
 
         /// <summary>
-        /// The redis key.
+        /// Gets or sets the redis key.
         /// </summary>
         public string Key { get; set; }
 
         /// <summary>
-        /// The informations.
+        /// Gets or sets the informations.
         /// </summary>
-        /// <value></value>
         public string InfoValue { get; set; }
     }
 }

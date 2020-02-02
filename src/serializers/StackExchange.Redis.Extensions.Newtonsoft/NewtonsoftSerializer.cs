@@ -23,7 +23,8 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
         /// <summary>
         /// Initializes a new instance of the <see cref="NewtonsoftSerializer"/> class.
         /// </summary>
-        public NewtonsoftSerializer() : this(null)
+        public NewtonsoftSerializer()
+            : this(null)
         {
         }
 
@@ -36,11 +37,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
             this.settings = settings ?? new JsonSerializerSettings();
         }
 
-        /// <summary>
-        /// Serializes the specified item.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public byte[] Serialize(object item)
         {
             var type = item?.GetType();
@@ -48,13 +45,7 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
             return encoding.GetBytes(jsonString);
         }
 
-
-        /// <summary>
-        /// Deserializes the specified serialized object.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="serializedObject">The serialized object.</param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public T Deserialize<T>(byte[] serializedObject)
         {
             var jsonString = encoding.GetString(serializedObject);

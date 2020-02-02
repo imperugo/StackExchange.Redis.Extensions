@@ -5,7 +5,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
     /// <summary>
     /// The service who handles the Redis connection pool.
     /// </summary>
-	public interface IRedisCacheConnectionPoolManager : IDisposable
+    public interface IRedisCacheConnectionPoolManager : IDisposable
     {
         /// <summary>
         /// Get the Redis connection

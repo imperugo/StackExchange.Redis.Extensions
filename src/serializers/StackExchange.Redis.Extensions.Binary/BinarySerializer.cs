@@ -1,7 +1,6 @@
-﻿using StackExchange.Redis.Extensions.Core;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading.Tasks;
+using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.Binary
 {
@@ -12,14 +11,7 @@ namespace StackExchange.Redis.Extensions.Binary
     {
         private readonly BinaryFormatter binaryFormatter = new BinaryFormatter();
 
-        /// <summary>
-        /// Deserializes the specified bytes.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="serializedObject">The serialized object.</param>
-        /// <returns>
-        /// The instance of the specified Item
-        /// </returns>
+        /// <inheritdoc/>
         public T Deserialize<T>(byte[] serializedObject)
         {
             using var ms = new MemoryStream(serializedObject);
@@ -27,11 +19,7 @@ namespace StackExchange.Redis.Extensions.Binary
             return (T)binaryFormatter.Deserialize(ms);
         }
 
-        /// <summary>
-        /// Serializes the specified item.
-        /// </summary>
-        /// <param name="item">The item.</param>
-
+        /// <inheritdoc/>
         public byte[] Serialize(object item)
         {
             using var ms = new MemoryStream();

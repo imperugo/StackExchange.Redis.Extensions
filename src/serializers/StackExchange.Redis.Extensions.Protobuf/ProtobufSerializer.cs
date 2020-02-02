@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Threading.Tasks;
 using ProtoBuf;
 using StackExchange.Redis.Extensions.Core;
 
@@ -10,10 +9,7 @@ namespace StackExchange.Redis.Extensions.Protobuf
     /// </summary>
     public class ProtobufSerializer : ISerializer
     {
-        /// <summary>
-        /// Serializes the specified item.
-        /// </summary>
-        /// <param name="item">The item.</param>
+        /// <inheritdoc/>
         public byte[] Serialize(object item)
         {
             using var ms = new MemoryStream();
@@ -23,14 +19,7 @@ namespace StackExchange.Redis.Extensions.Protobuf
             return ms.ToArray();
         }
 
-        /// <summary>
-        /// Deserializes the specified bytes.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="serializedObject">The serialized object.</param>
-        /// <returns>
-        /// The instance of the specified Item
-        /// </returns>
+        /// <inheritdoc/>
         public T Deserialize<T>(byte[] serializedObject)
         {
             using var ms = new MemoryStream(serializedObject);

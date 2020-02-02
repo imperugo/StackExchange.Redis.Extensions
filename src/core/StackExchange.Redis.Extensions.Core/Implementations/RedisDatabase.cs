@@ -202,19 +202,22 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return result;
         }
 
-        public Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None) where T : class
+        public Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
+            where T : class
         {
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentException("key cannot be empty.", nameof(key));
 
-            if (item == null) throw new ArgumentNullException(nameof(item), "item cannot be null.");
+            if (item == null)
+                throw new ArgumentNullException(nameof(item), "item cannot be null.");
 
             var serializedObject = Serializer.Serialize(item);
 
             return Database.SetAddAsync(key, serializedObject, flag);
         }
 
-        public Task<long> SetAddAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items) where T : class
+        public Task<long> SetAddAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items)
+            where T : class
         {
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentException("key cannot be empty.", nameof(key));
@@ -225,21 +228,29 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             if (items.Any(item => item == null))
                 throw new ArgumentException("items cannot contains any null item.", nameof(items));
 
-            return Database.SetAddAsync(key, items.Select(item => Serializer.Serialize(item)).Select(x => (RedisValue)x).ToArray(), flag);
+            return Database
+                .SetAddAsync(
+                    key,
+                    items.Select(item => Serializer.Serialize(item)).Select(x => (RedisValue)x).ToArray(),
+                    flag);
         }
 
-        public Task<bool> SetRemoveAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None) where T : class
+        public Task<bool> SetRemoveAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
+            where T : class
         {
-            if (string.IsNullOrEmpty(key)) throw new ArgumentException("key cannot be empty.", nameof(key));
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentException("key cannot be empty.", nameof(key));
 
-            if (item == null) throw new ArgumentNullException(nameof(item), "item cannot be null.");
+            if (item == null)
+                throw new ArgumentNullException(nameof(item), "item cannot be null.");
 
             var serializedObject = Serializer.Serialize(item);
 
             return Database.SetRemoveAsync(key, serializedObject, flag);
         }
 
-        public Task<long> SetRemoveAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items) where T : class
+        public Task<long> SetRemoveAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items)
+            where T : class
         {
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentException("key cannot be empty.", nameof(key));
@@ -291,10 +302,10 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
                     nextCursor = int.Parse((string)innerResult[0]);
 
-                    var resultLines = ((string[])innerResult[1]).ToList();
-
+                    var resultLines = ((string[])innerResult[1]).ToArray();
                     keys.UnionWith(resultLines);
-                } while (nextCursor != 0);
+                }
+                while (nextCursor != 0);
             }
 
             return !string.IsNullOrEmpty(keyprefix) ? keys.Select(k => k.Substring(keyprefix.Length)) : keys;
@@ -335,6 +346,18 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return ParseCategorizedInfo(info);
         }
 
+        public double SortedSetAddIncrement<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var entryBytes = Serializer.Serialize(value);
+            return Database.SortedSetIncrement(key, entryBytes, score, commandFlags);
+        }
+
+        public Task<double> SortedSetAddIncrementAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var entryBytes = Serializer.Serialize(value);
+            return Database.SortedSetIncrementAsync(key, entryBytes, score, commandFlags);
+        }
+
         private Dictionary<string, string> ParseInfo(string info)
         {
             // Call Parse Categorized Info to cut back on duplicated code.
@@ -347,9 +370,11 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         private KeyValuePair<RedisKey, RedisValue>[] GetItemsInMaxLengthLimit<T>(IList<Tuple<string, T>> values)
         {
             if (maxValueLength == default)
+            {
                 return values
                     .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
                     .ToArray();
+            }
 
             return GetValuesInLengthLimitIterator(values).ToArray();
         }
@@ -383,7 +408,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                     }
 
                     var idx = line.IndexOf(':');
-                    if (idx > 0) // double check this line looks about right
+                    if (idx > 0)
                     {
                         var key = line.Substring(0, idx);
                         var infoValue = line.Substring(idx + 1).Trim();
@@ -392,45 +417,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                     }
                 }
             }
-            return data;
-        }
-        /// <summary>
-        ///     Add  the entry to a sorted set with  an incremen score 
-        /// </summary>
-        /// <remarks>
-        ///     Time complexity: O(1)
-        /// </remarks>
-        /// <param name="key">Key of the set</param>
-        /// <param name="value">The instance of T.</param>
-        /// <param name="score">Score of the entry</param>
-        /// <param name="commandFlags">Command execution flags</param>
-        /// <returns>
-        ///      if the object has been added return previous score. Otherwise return 0.0 when first add
-        /// </returns>
-        public double SortedSetAddIncrement<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
-        {
-            var entryBytes = Serializer.Serialize(value);
-            return Database.SortedSetIncrement(key, entryBytes, score, commandFlags);
-        }
 
-        /// <summary>
-        ///     Add  the entry to a sorted set with  an incremen score 
-        /// </summary>
-        /// <remarks>
-        ///     Time complexity: O(1)
-        /// </remarks>
-        /// <param name="key">Key of the set</param>
-        /// <param name="value">The instance of T.</param>
-        /// <param name="score">Score of the entry</param>
-        /// <param name="commandFlags">Command execution flags</param>
-        /// <returns>
-        ///      if the object has been added return previous score. Otherwise return 0.0 when first add
-        /// </returns>
-        /// 
-        public async Task<double> SortedSetAddIncrementAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
-        {
-            var entryBytes = Serializer.Serialize(value);
-            return await Database.SortedSetIncrementAsync(key, entryBytes, score, commandFlags);
+            return data;
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿namespace StackExchange.Redis.Extensions.Core.Configuration
 {
     /// <summary>
-    /// This class represent the Server enumeration strategy used in the operations 
+    /// This class represent the Server enumeration strategy used in the operations
     /// that require to iterate all the redis servers
     /// </summary>
-	public partial class ServerEnumerationStrategy
+    public partial class ServerEnumerationStrategy
     {
         /// <summary>
         /// The iteration mode.
@@ -42,10 +42,8 @@
             IgnoreIfOtherAvailable
         }
 
-        //[ConfigurationProperty("mode", IsRequired = false, DefaultValue = "All")]
-
         /// <summary>
-        /// Specify the strategy mode
+        /// Gets or sets the strategy mode
         /// </summary>
         /// <value>
         ///   Default value All.
@@ -53,7 +51,7 @@
         public ModeOptions Mode { get; set; }
 
         /// <summary>
-        /// Specify the target role
+        /// Gets or sets specify the target role
         /// </summary>
         /// <value>
         ///   Default value Any.
@@ -61,7 +59,7 @@
         public TargetRoleOptions TargetRole { get; set; }
 
         /// <summary>
-        /// Specify the unreachable server action
+        /// Gets or sets the unreachable server action
         /// </summary>
         /// <value>
         ///   Default value Throw.

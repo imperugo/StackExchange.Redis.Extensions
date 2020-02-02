@@ -14,14 +14,16 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Publishes a message to a channel.
         /// </summary>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
         /// <param name="channel">The pub/sub channel name</param>
-        /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <param name="message">The messange to send.</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
         Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
         ///     Registers a callback handler to process messages published to a channel.
         /// </summary>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
         /// <param name="channel">The pub/sub channel name</param>
         /// <param name="handler">The function to run when a message has received.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
@@ -30,6 +32,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <summary>
         ///     Unregisters a callback handler to process messages published to a channel.
         /// </summary>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
         /// <param name="channel">The pub/sub channel name</param>
         /// <param name="handler">The function to run when a message has received.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>

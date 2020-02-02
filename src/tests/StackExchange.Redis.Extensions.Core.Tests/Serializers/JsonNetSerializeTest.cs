@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using StackExchange.Redis.Extensions.Newtonsoft;
-using Xunit;
+﻿using StackExchange.Redis.Extensions.Newtonsoft;
 
-namespace StackExchange.Redis.Extensions.Tests
+namespace StackExchange.Redis.Extensions.Core.Tests.Serializers
 {
     public class JsonNetSerializeTest : CacheClientTestBase
     {

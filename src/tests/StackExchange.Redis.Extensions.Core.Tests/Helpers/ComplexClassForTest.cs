@@ -25,6 +25,16 @@ namespace StackExchange.Redis.Extensions.Tests.Helpers
         [DataMember(Order = 2)]
         public TK Item2 { get; set; }
 
+        public static bool operator ==(ComplexClassForTest<T, TK> left, ComplexClassForTest<T, TK> right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(ComplexClassForTest<T, TK> left, ComplexClassForTest<T, TK> right)
+        {
+            return !Equals(left, right);
+        }
+
         public override bool Equals(object obj)
         {
             return Equals(obj as ComplexClassForTest<T, TK>);
@@ -32,8 +42,12 @@ namespace StackExchange.Redis.Extensions.Tests.Helpers
 
         public bool Equals(ComplexClassForTest<T, TK> other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (other is null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
             return EqualityComparer<T>.Default.Equals(Item1, other.Item1) && EqualityComparer<TK>.Default.Equals(Item2, other.Item2);
         }
 
@@ -43,16 +57,6 @@ namespace StackExchange.Redis.Extensions.Tests.Helpers
             {
                 return (EqualityComparer<T>.Default.GetHashCode(Item1) * 397) ^ EqualityComparer<TK>.Default.GetHashCode(Item2);
             }
-        }
-
-        public static bool operator ==(ComplexClassForTest<T, TK> left, ComplexClassForTest<T, TK> right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(ComplexClassForTest<T, TK> left, ComplexClassForTest<T, TK> right)
-        {
-            return !Equals(left, right);
         }
     }
 }

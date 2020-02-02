@@ -50,7 +50,6 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="hashKey">The key of the hash in redis</param>
         /// <param name="key">The key of the field in the hash</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
-        /// <returns>Returns if field is an existing field in the hash stored at key.</returns>
         Task<bool> HashExistsAsync(string hashKey, string key, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -105,8 +104,8 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// </remarks>
         /// <param name="hashKey">Key of the hash</param>
         /// <param name="key">Key of the entry</param>
-        /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <param name="value">the value at field after the increment operation</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
         Task<long> HashIncerementByAsync(string hashKey, string key, long value, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
@@ -158,8 +157,8 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <typeparam name="T">Type of the returned value</typeparam>
         /// <param name="hashKey">The key of the hash in redis</param>
         /// <param name="key">The key of the field in the hash</param>
-        /// <param name="nx">Behave like hsetnx - set only if not exists</param>
         /// <param name="value">The value to be inserted</param>
+        /// <param name="nx">Behave like hsetnx - set only if not exists</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <returns>
         ///     <c>true</c> if field is a new field in the hash and value was set.
@@ -205,8 +204,6 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="pattern">GLOB search pattern</param>
         /// <param name="pageSize">Number of elements to retrieve from the redis server in the cursor</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
-        /// <returns></returns>
         Task<Dictionary<string, T>> HashScanAsync<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags flag = CommandFlags.None);
-
     }
 }

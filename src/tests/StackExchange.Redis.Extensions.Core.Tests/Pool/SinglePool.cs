@@ -3,7 +3,7 @@ using StackExchange.Redis.Extensions.Core.Configuration;
 
 namespace StackExchange.Redis.Extensions.Tests.Pool
 {
-	internal class SinglePool : IRedisCacheConnectionPoolManager
+    internal class SinglePool : IRedisCacheConnectionPoolManager
     {
         private readonly RedisConfiguration redisConfiguration;
 
@@ -12,12 +12,12 @@ namespace StackExchange.Redis.Extensions.Tests.Pool
             this.redisConfiguration = redisConfiguration;
         }
 
-		public void Dispose()
-		{
-			redisConfiguration.Connection.Dispose();
-		}
+        public void Dispose()
+        {
+            redisConfiguration.Connection.Dispose();
+        }
 
-		public IConnectionMultiplexer GetConnection()
+        public IConnectionMultiplexer GetConnection()
         {
             return redisConfiguration.Connection;
         }

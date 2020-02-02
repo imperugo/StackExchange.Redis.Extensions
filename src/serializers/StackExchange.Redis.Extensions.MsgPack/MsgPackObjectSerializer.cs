@@ -13,29 +13,17 @@ namespace StackExchange.Redis.Extensions.MsgPack
         private readonly System.Text.Encoding encoding;
 
         /// <summary>
-        /// Create an insta of <see cref="MsgPackObjectSerializer" />.
+        /// Initializes a new instance of the <see cref="MsgPackObjectSerializer"/> class.
         /// </summary>
-        /// <param name="customSerializerRegistrar"></param>
-        /// <param name="encoding"></param>
         public MsgPackObjectSerializer(Action<SerializerRepository> customSerializerRegistrar = null, System.Text.Encoding encoding = null)
         {
             customSerializerRegistrar?.Invoke(SerializationContext.Default.Serializers);
 
             if (encoding == null)
-            {
                 this.encoding = System.Text.Encoding.UTF8;
-            }
         }
 
-        /// <summary>
-        /// Deserializes the specified bytes.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="serializedObject">The serialized object.</param>
-        /// <returns>
-        /// The instance of the specified Item
-        /// </returns>
-
+        /// <inheritdoc/>
         public T Deserialize<T>(byte[] serializedObject)
         {
             if (typeof(T) == typeof(string))
@@ -50,16 +38,11 @@ namespace StackExchange.Redis.Extensions.MsgPack
             return serializer.Unpack(byteStream);
         }
 
-        /// <summary>
-        /// Serializes the specified item.
-        /// </summary>
-        /// <param name="item">The item.</param>
+        /// <inheritdoc/>
         public byte[] Serialize(object item)
         {
             if (item is string)
-            {
                 return encoding.GetBytes(item.ToString());
-            }
 
             var serializer = MessagePackSerializer.Get(item.GetType());
 
