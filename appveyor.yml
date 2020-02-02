@@ -16,3 +16,5 @@ before_build:
 build:
   project: StackExchange.Redis.Extensions.sln
   verbosity: minimal
+test_script:
+  - cmd: build.bat
