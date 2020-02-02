@@ -30,3 +30,6 @@ Latest release is available on NuGet.
 
 For questions or issues do not hesitate to [raise an issue](https://github.com/imperugo/StackExchange.Redis.Extensions/issues/new/choose) or [get in touch](https://twitter.com/imperugo).
 
+
+### License
+StackExchange.Redis is Copyright © 2015 [Ugo Lattanzi](https://www.linkedin.com/in/imperugo/) and other contributors under the MIT license.
