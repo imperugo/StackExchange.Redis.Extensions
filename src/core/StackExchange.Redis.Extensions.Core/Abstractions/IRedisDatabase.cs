@@ -222,8 +222,18 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <typeparam name="T">The type of the expected object.</typeparam>
         /// <param name="key">The cache key.</param>
         /// <param name="item">Name of the member.</param>
-        /// <param name="flag">Behaviour markers associated with a given command</param>
+        /// <param name="flag">Behaviour markers associated with a given command.</param>
         Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
+            where T : class;
+
+        /// <summary>
+        ///     Returns if member is a member of the set stored at key.
+        /// </summary>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
+        /// <param name="key">The cache key.</param>
+        /// <param name="item">The item to store into redis.</param>
+        /// <param name="flag">Behaviour markers associated with a given command.</param>
+        Task<bool> SetContainsAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
             where T : class;
 
         /// <summary>

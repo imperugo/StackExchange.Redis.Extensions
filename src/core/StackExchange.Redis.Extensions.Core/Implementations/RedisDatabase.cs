@@ -216,6 +216,20 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return Database.SetAddAsync(key, serializedObject, flag);
         }
 
+        public Task<bool> SetContainsAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
+            where T : class
+        {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentException("key cannot be empty.", nameof(key));
+
+            if (item == null)
+                throw new ArgumentNullException(nameof(item), "item cannot be null.");
+
+            var serializedObject = Serializer.Serialize(item);
+
+            return Database.SetContainsAsync(key, serializedObject, flag);
+        }
+
         public Task<long> SetAddAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items)
             where T : class
         {
