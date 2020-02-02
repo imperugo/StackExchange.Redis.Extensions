@@ -12,6 +12,8 @@ The idea of this library is to make easier your live when you need to send / rec
 
 ### Release
 
+![.NET Core](https://github.com/imperugo/StackExchange.Redis.Extensions/workflows/.NET%20Core/badge.svg?branch=v6)
+
 Latest release is available on NuGet.
 
 | Channel                  | Status                                                       |
