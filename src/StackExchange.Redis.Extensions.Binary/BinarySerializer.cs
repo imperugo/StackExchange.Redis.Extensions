@@ -5,10 +5,14 @@ using System.Threading.Tasks;
 
 namespace StackExchange.Redis.Extensions.Binary
 {
+    /// <summary>
+    /// <see cref="BinaryFormatter"/> implementation of <see cref="ISerializer"/>
+    /// </summary>
     public class BinarySerializer : ISerializer
     {
         private readonly BinaryFormatter binaryFormatter = new BinaryFormatter();
 
+        /// <inheritdoc/>
         public object Deserialize(byte[] serializedObject)
         {
             using (var ms = new MemoryStream(serializedObject))
@@ -17,6 +21,7 @@ namespace StackExchange.Redis.Extensions.Binary
             }
         }
 
+        /// <inheritdoc/>
         public T Deserialize<T>(byte[] serializedObject)
         {
             using (var ms = new MemoryStream(serializedObject))
@@ -26,6 +31,7 @@ namespace StackExchange.Redis.Extensions.Binary
         }
 
 
+        /// <inheritdoc/>
         public byte[] Serialize(object item)
         {
             using (var ms = new MemoryStream())

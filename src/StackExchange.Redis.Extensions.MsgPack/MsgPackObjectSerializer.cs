@@ -5,10 +5,19 @@ using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.MsgPack
 {
+    /// <summary>
+    /// <see cref="SerializerRepository"/> implementation of <see cref="ISerializer"/>
+    /// </summary>
     public class MsgPackObjectSerializer : ISerializer
     {
         private readonly System.Text.Encoding encoding;
 
+        
+        /// <summary>
+		/// Initializes a new instance of the <see cref="MsgPackObjectSerializer"/> class with the provided setup. 
+		/// </summary>
+        /// <param name="customSerializerRegistrar">Setup actions to perform on the created <see cref="SerializerRepository"/>.</param>
+        /// <param name="encoding">Text encoding to override default <see cref="System.Text.Encoding.UTF8"/></param>
         public MsgPackObjectSerializer(Action<SerializerRepository> customSerializerRegistrar = null, System.Text.Encoding encoding = null)
         {
             customSerializerRegistrar?.Invoke(SerializationContext.Default.Serializers);
@@ -19,6 +28,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
             }
         }
 
+        /// <inheritdoc/>
         public T Deserialize<T>(byte[] serializedObject)
         {
             if (typeof(T) == typeof(string))
@@ -34,6 +44,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
             }
         }
 
+        /// <inheritdoc/>
         public byte[] Serialize(object item)
         {
             if (item is string)
@@ -51,6 +62,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
             }
         }
 
+        /// <inheritdoc/>
         public object Deserialize(byte[] serializedObject)
         {
             return Deserialize<object>(serializedObject);

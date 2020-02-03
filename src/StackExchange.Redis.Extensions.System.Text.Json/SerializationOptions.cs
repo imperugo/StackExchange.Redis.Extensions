@@ -4,6 +4,9 @@ using System.Text.Json;
 
 namespace StackExchange.Redis.Extensions.System.Text.Json
 {
+    /// <summary>
+    /// Singleton bag for serialization options utilized by <see cref="SystemTextJsonSerializer"/>.
+    /// </summary>
     public static class SerializationOptions
     {
         static SerializationOptions()
@@ -23,6 +26,9 @@ namespace StackExchange.Redis.Extensions.System.Text.Json
             Flexible.Converters.Add(new TimeSpanConverter());
         }
 
+        /// <summary>
+        /// Serialization options used by <see cref="SystemTextJsonSerializer"/>
+        /// </summary>
         public static JsonSerializerOptions Flexible { get; private set; }
     }
 }

@@ -6,8 +6,10 @@ using System.Text.Json.Serialization;
 
 namespace StackExchange.Redis.Extensions.System.Text.Json.Converters
 {
+    /// <inheritdoc/>
     public class StringToIntCustomConverter : JsonConverter<int?>
     {
+        /// <inheritdoc/>
         public override int? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType == JsonTokenType.String)
@@ -26,6 +28,7 @@ namespace StackExchange.Redis.Extensions.System.Text.Json.Converters
             return reader.GetInt32();
         }
 
+        /// <inheritdoc/>
         public override void Write(Utf8JsonWriter writer, int? value, JsonSerializerOptions options)
         {
             if (value.HasValue)

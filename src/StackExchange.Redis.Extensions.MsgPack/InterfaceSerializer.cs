@@ -5,15 +5,18 @@ using MsgPack.Serialization;
 
 namespace StackExchange.Redis.Extensions.MsgPack
 {
+    /// <inheritdoc/>
 	public class InterfaceSerializer<T> : MessagePackSerializer<T>
 	{
 		private readonly Dictionary<string, MessagePackSerializer> serializers;
 
+        /// <inheritdoc/>
 		public InterfaceSerializer()
 			: this(SerializationContext.Default)
 		{
 		}
 
+        /// <inheritdoc/>
 		public InterfaceSerializer(SerializationContext context)
 			: base(context)
 		{
@@ -34,6 +37,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
 			}
 		}
 
+        /// <inheritdoc/>
 		protected override void PackToCore(Packer packer, T objectTree)
 		{
 			MessagePackSerializer serializer;
@@ -50,6 +54,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
 			serializer.PackTo(packer, objectTree); //  1: Packed object
 		}
 
+        /// <inheritdoc/>
 		protected override T UnpackFromCore(Unpacker unpacker)
 		{
 			MessagePackSerializer serializer;
