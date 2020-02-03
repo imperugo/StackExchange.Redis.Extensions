@@ -19,6 +19,8 @@
 		<RepositoryUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</RepositoryUrl>
 		<RepositoryType>Git</RepositoryType>
 		<PackageTags>Async Redis NoSQL Client Distributed Cache PubSub Messaging AspNet AspNetCore</PackageTags>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup>
