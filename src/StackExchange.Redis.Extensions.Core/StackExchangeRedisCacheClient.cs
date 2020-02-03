@@ -301,6 +301,7 @@ namespace StackExchange.Redis.Extensions.Core
 		/// <typeparam name="T">The type of the expected object</typeparam>
 		/// <param name="key">The cache key.</param>
 		/// <param name="expiresIn">Time till the object expires.</param>
+		/// <param name="flag">Behaviour markers associated with a given command</param>
 		/// <returns>
 		///     Null if not present, otherwise the instance of T.
 		/// </returns>

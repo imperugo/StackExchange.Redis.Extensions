@@ -6,8 +6,18 @@ using System.IO;
 
 namespace Microsoft.AspNetCore.Hosting
 {
+	/// <summary>
+	/// Extensions for adding an <see cref="ISerializer"/> implementation to an AspNetCore application.
+	/// </summary>
 	public static class IWebHostBuilderExtensions
 	{
+		/// <summary>
+		/// Add <typeparamref name="T"/> serializer to an AspNetCore application.
+		/// </summary>
+		/// <typeparam name="T">Type of <see cref="ISerializer"/> to add.</typeparam>
+		/// <param name="hostBuilder">Application to configure.</param>
+		/// <param name="jsonBasePath">Relative path to "redis.json" and redis.{environment.EnvironmentName}.json" file.</param>
+		/// <returns>Application builder.</returns>
 		public static IWebHostBuilder ConfigureStackExchangeRedisExtensions<T>(this IWebHostBuilder hostBuilder, string jsonBasePath = "Configurations") where T : class, ISerializer, new()
 		{
 			hostBuilder.ConfigureServices(services =>
@@ -20,13 +30,14 @@ namespace Microsoft.AspNetCore.Hosting
 
 				   var exists = File.Exists(path);
 
+				   if (!exists) throw new FileNotFoundException("redis.json configure file must be included");
 
 				   var builder = new ConfigurationBuilder();
 
 				   IConfigurationRoot cfg = builder
 						.SetBasePath(environment.ContentRootPath)
-						.AddJsonFile("Configurations/redis.json", false, true)
-						.AddJsonFile($"Configurations/redis.{environment.EnvironmentName}.json", true)
+						.AddJsonFile($"{jsonBasePath}/redis.json", false, true)
+						.AddJsonFile($"{jsonBasePath}/redis.{environment.EnvironmentName}.json", true)
 						.AddEnvironmentVariables()
 						.Build();
 

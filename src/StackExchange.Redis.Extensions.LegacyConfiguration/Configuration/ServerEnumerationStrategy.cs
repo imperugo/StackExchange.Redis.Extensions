@@ -2,6 +2,7 @@
 
 namespace StackExchange.Redis.Extensions.LegacyConfiguration.Configuration
 {
+	/// <inheritdoc/>
 	public class ServerEnumerationStrategyConfiguration : ConfigurationElement
 	{
 
