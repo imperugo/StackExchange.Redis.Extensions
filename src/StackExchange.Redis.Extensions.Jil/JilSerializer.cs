@@ -7,7 +7,7 @@ using System;
 namespace StackExchange.Redis.Extensions.Jil
 {
     /// <summary>
-    /// Jil implementation of <see cref="ISerializer"/>
+    ///  Jil <see cref="JSON"/> implementation of <see cref="ISerializer"/>
     /// </summary>
     public class JilSerializer : ISerializer
     {

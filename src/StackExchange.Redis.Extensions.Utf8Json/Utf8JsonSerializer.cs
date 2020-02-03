@@ -5,7 +5,7 @@ using StackExchange.Redis.Extensions.Core;
 namespace StackExchange.Redis.Extensions.Utf8Json
 {
     /// <summary>
-    /// JSon.Net implementation of <see cref="ISerializer"/>
+    /// <see cref="global::Utf8Json.JsonSerializer"/> implementation of <see cref="ISerializer"/>
     /// </summary>
     public class Utf8JsonSerializer : ISerializer
     {

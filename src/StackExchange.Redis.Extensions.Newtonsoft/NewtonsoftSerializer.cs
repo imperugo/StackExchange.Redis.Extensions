@@ -5,7 +5,7 @@ using StackExchange.Redis.Extensions.Core;
 namespace StackExchange.Redis.Extensions.Newtonsoft
 {
     /// <summary>
-    /// JSon.Net implementation of <see cref="ISerializer"/>
+    /// <see cref="JsonConvert"/> implementation of <see cref="ISerializer"/>
     /// </summary>
     public class NewtonsoftSerializer : ISerializer
     {
