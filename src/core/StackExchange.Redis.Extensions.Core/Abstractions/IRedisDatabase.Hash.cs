@@ -204,6 +204,6 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="pattern">GLOB search pattern</param>
         /// <param name="pageSize">Number of elements to retrieve from the redis server in the cursor</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
-        Task<Dictionary<string, T>> HashScanAsync<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags flag = CommandFlags.None);
+        Dictionary<string, T> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags flag = CommandFlags.None);
     }
 }

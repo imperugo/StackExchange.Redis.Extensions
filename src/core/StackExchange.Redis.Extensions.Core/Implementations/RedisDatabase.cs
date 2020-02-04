@@ -184,22 +184,30 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             var values = GetItemsInMaxLengthLimit(items);
 
-            var result = await Database.StringSetAsync(values, when, flag);
+            var tasks = new Task[values.Length + 1];
+            tasks[0] = Database.StringSetAsync(values, when, flag);
 
-            Parallel.ForEach(values, async value => await Database.KeyExpireAsync(value.Key, expiresAt.UtcDateTime, flag));
+            for (var i = 1; i < values.Length + 1; i++)
+                tasks[i] = Database.KeyExpireAsync(values[i - 1].Key, expiresAt.UtcDateTime, flag);
 
-            return result;
+            await Task.WhenAll(tasks);
+
+            return ((Task<bool>)tasks[0]).Result;
         }
 
         public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             var values = GetItemsInMaxLengthLimit(items);
 
-            var result = await Database.StringSetAsync(values, when, flag);
+            var tasks = new Task[values.Length + 1];
+            tasks[0] = Database.StringSetAsync(values, when, flag);
 
-            Parallel.ForEach(values, async value => await Database.KeyExpireAsync(value.Key, expiresOn, flag));
+            for (var i = 1; i < values.Length + 1; i++)
+                tasks[i] = Database.KeyExpireAsync(values[i - 1].Key, expiresOn, flag);
 
-            return result;
+            await Task.WhenAll(tasks);
+
+            return ((Task<bool>)tasks[0]).Result;
         }
 
         public Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
@@ -290,12 +298,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return members.Select(m => m == RedisValue.Null ? default : Serializer.Deserialize<T>(m));
         }
 
-        public Task<IEnumerable<string>> SearchKeysAsync(string pattern)
-        {
-            return Task.Factory.StartNew(() => SearchKeys(pattern));
-        }
-
-        public IEnumerable<string> SearchKeys(string pattern)
+        public async Task<IEnumerable<string>> SearchKeysAsync(string pattern)
         {
             pattern = $"{keyprefix}{pattern}";
             var keys = new HashSet<string>();
@@ -311,7 +314,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 var nextCursor = 0;
                 do
                 {
-                    var redisResult = Database.Execute("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000");
+                    var redisResult = await Database.ExecuteAsync("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000");
                     var innerResult = (RedisResult[])redisResult;
 
                     nextCursor = int.Parse((string)innerResult[0]);

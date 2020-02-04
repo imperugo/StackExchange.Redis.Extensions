@@ -23,14 +23,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
-    <ProjectReference Include="..\..\serializers\StackExchange.Redis.Extensions.Binary\StackExchange.Redis.Extensions.Binary.csproj" />
-    <ProjectReference Include="..\..\serializers\StackExchange.Redis.Extensions.Jil\StackExchange.Redis.Extensions.Jil.csproj" />
-    <ProjectReference Include="..\..\serializers\StackExchange.Redis.Extensions.MsgPack\StackExchange.Redis.Extensions.MsgPack.csproj" />
-    <ProjectReference Include="..\..\serializers\StackExchange.Redis.Extensions.Newtonsoft\StackExchange.Redis.Extensions.Newtonsoft.csproj" />
-    <ProjectReference Include="..\..\serializers\StackExchange.Redis.Extensions.Protobuf\StackExchange.Redis.Extensions.Protobuf.csproj" />
-    <ProjectReference Include="..\..\serializers\StackExchange.Redis.Extensions.System.Text.Json\StackExchange.Redis.Extensions.System.Text.Json.csproj" />
-    <ProjectReference Include="..\..\serializers\StackExchange.Redis.Extensions.Utf8Json\StackExchange.Redis.Extensions.Utf8Json.csproj" />
+    <ProjectReference Include="..\..\src\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
+    <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.Binary\StackExchange.Redis.Extensions.Binary.csproj" />
+    <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.Jil\StackExchange.Redis.Extensions.Jil.csproj" />
+    <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.MsgPack\StackExchange.Redis.Extensions.MsgPack.csproj" />
+    <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.Newtonsoft\StackExchange.Redis.Extensions.Newtonsoft.csproj" />
+    <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.Protobuf\StackExchange.Redis.Extensions.Protobuf.csproj" />
+    <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.System.Text.Json\StackExchange.Redis.Extensions.System.Text.Json.csproj" />
+    <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.Utf8Json\StackExchange.Redis.Extensions.Utf8Json.csproj" />
   </ItemGroup>
 
   <ItemGroup>

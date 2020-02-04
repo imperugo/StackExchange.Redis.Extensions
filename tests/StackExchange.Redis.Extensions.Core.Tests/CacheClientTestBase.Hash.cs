@@ -407,14 +407,14 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         }
 
         [Fact]
-        public async Task HashScan_EmptyHash_ReturnEmptyCursor()
+        public void HashScan_EmptyHash_ReturnEmptyCursor()
         {
             // arrange
             var hashKey = Guid.NewGuid().ToString();
             Assert.True(db.HashLength(hashKey) == 0);
 
             // act
-            var result = await Sut.GetDbFromConfiguration().HashScanAsync<string>(hashKey, "*");
+            var result = Sut.GetDbFromConfiguration().HashScan<string>(hashKey, "*");
 
             // assert
             Assert.Empty(result);
@@ -433,7 +433,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 
             // act
-            var result = await Sut.GetDbFromConfiguration().HashScanAsync<TestClass<DateTime>>(hashKey, "*");
+            var result = Sut.GetDbFromConfiguration().HashScan<TestClass<DateTime>>(hashKey, "*");
 
             // assert
             Assert.NotNull(result);
@@ -460,7 +460,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray());
 
             // act
-            var result = await Sut.GetDbFromConfiguration().HashScanAsync<TestClass<DateTime>>(hashKey, "2*");
+            var result = Sut.GetDbFromConfiguration().HashScan<TestClass<DateTime>>(hashKey, "2*");
 
             // assert
             Assert.NotNull(result);
