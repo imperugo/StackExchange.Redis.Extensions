@@ -1,12 +1,12 @@
-﻿namespace StackExchange.Redis.Extensions.Core.Implementations
-{
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Abstractions;
-    using Configuration;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using StackExchange.Redis.Extensions.Core.Abstractions;
+using StackExchange.Redis.Extensions.Core.Configuration;
 
+namespace StackExchange.Redis.Extensions.Core.Implementations
+{
     public class RedisCacheConnectionPoolManager : IRedisCacheConnectionPoolManager
     {
         private readonly ConcurrentBag<Lazy<StateAwareConnection>> connections;
