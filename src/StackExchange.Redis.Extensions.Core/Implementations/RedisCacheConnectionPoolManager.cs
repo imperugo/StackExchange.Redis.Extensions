@@ -59,15 +59,18 @@
             this.InvalidateDisconnectedConnections();
 
             int poolSize = this.redisConfiguration.PoolSize;
-            int requiredNumOfConnections = poolSize - this.connections.Count(lazy => lazy.IsValueCreated && (lazy.Value.IsValid() == false || lazy.Value.IsConnected() == false));
-            if (requiredNumOfConnections > 0)
-                for (var i = 0; i < requiredNumOfConnections; i++)
-                    this.EmitConnection();
+
+            static bool IsInvalidOrDisconnectedConnection(Lazy<StateAwareConnection> lazy) => lazy.IsValueCreated && (lazy.Value.IsValid() == false || lazy.Value.IsConnected() == false);
+            int requiredNumOfConnections = poolSize - this.connections.Count(IsInvalidOrDisconnectedConnection);
+            if (requiredNumOfConnections <= 0) return;
+            for (var i = 0; i < requiredNumOfConnections; i++)
+                this.EmitConnection();
         }
 
         private void InvalidateDisconnectedConnections()
         {
-            List<Lazy<StateAwareConnection>> disconnected = this.connections.Where(lazy => lazy.IsValueCreated && lazy.Value.IsConnected() == false).ToList();
+            static bool IsDisconnectedConnection(Lazy<StateAwareConnection> lazy) => lazy.IsValueCreated && lazy.Value.IsConnected() == false;
+            List<Lazy<StateAwareConnection>> disconnected = this.connections.Where(IsDisconnectedConnection).ToList();
             disconnected.ForEach(lazy => lazy.Value.Invalidate());
         }
 
