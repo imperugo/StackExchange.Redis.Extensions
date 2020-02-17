@@ -30,6 +30,8 @@
 
         public IConnectionMultiplexer GetConnection()
         {
+            this.EmitConnections();
+
             Lazy<StateAwareConnection> response;
             IEnumerable<Lazy<StateAwareConnection>> loadedLazies = this.connections.Where(lazy => lazy.IsValueCreated);
 
@@ -42,19 +44,31 @@
             return connectionMultiplexer;
         }
 
-        private void Initialize()
+        private void EmitConnection()
         {
-            void AddConnection()
-            {
-                ConfigurationOptions configurationOptions = this.redisConfiguration.ConfigurationOptions;
-                ConnectionMultiplexer multiplexer = ConnectionMultiplexer.Connect(configurationOptions);
-                if (this.redisConfiguration.ProfilingSessionProvider != null) multiplexer.RegisterProfiler(this.redisConfiguration.ProfilingSessionProvider);
+            ConfigurationOptions configurationOptions = this.redisConfiguration.ConfigurationOptions;
+            ConnectionMultiplexer multiplexer = ConnectionMultiplexer.Connect(configurationOptions);
+            if (this.redisConfiguration.ProfilingSessionProvider != null) multiplexer.RegisterProfiler(this.redisConfiguration.ProfilingSessionProvider);
 
-                StateAwareConnection InitializeConnection() => new StateAwareConnection(multiplexer, AddConnection);
-                this.connections.Add(new Lazy<StateAwareConnection>(InitializeConnection));
-            }
+            StateAwareConnection InitializeConnection() => new StateAwareConnection(multiplexer, this.EmitConnection);
+            this.connections.Add(new Lazy<StateAwareConnection>(InitializeConnection));
+        }
 
-            for (var i = 0; i < this.redisConfiguration.PoolSize; i++) AddConnection();
+        private void EmitConnections()
+        {
+            this.InvalidateDisconnectedConnections();
+
+            int poolSize = this.redisConfiguration.PoolSize;
+            int requiredNumOfConnections = poolSize - this.connections.Count(lazy => lazy.IsValueCreated && (lazy.Value.IsValid() == false || lazy.Value.IsConnected() == false));
+            if (requiredNumOfConnections > 0)
+                for (var i = 0; i < requiredNumOfConnections; i++)
+                    this.EmitConnection();
+        }
+
+        private void InvalidateDisconnectedConnections()
+        {
+            List<Lazy<StateAwareConnection>> disconnected = this.connections.Where(lazy => lazy.IsValueCreated && lazy.Value.IsConnected() == false).ToList();
+            disconnected.ForEach(lazy => lazy.Value.Invalidate());
         }
 
         /// <summary>
@@ -113,6 +127,9 @@
                 this.multiplexer.ConnectionFailed -= this.ConnectionFailed;
                 this.multiplexer?.Dispose();
             }
+
+            public bool IsConnected() => this.multiplexer.IsConnecting == false;
+            public bool IsValid() => this.invalidated == false;
         }
     }
 }
