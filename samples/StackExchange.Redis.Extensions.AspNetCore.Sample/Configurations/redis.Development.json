@@ -1,0 +1,13 @@
+﻿{
+	"redisConfiguration": {
+		"password": "",
+		"allowAdmin": true,
+		"ssl": false,
+		"hosts": [
+			{
+				"Host": "localhost",
+				"Port": "6379"
+			}
+		]
+	}
+}
