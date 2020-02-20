@@ -55,8 +55,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         private void EmitConnection()
         {
-            var configurationOptions = this.redisConfiguration.ConfigurationOptions;
-            var multiplexer = ConnectionMultiplexer.Connect(configurationOptions);
+            var multiplexer = ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions);
 
             if (this.redisConfiguration.ProfilingSessionProvider != null)
                 multiplexer.RegisterProfiler(this.redisConfiguration.ProfilingSessionProvider);
