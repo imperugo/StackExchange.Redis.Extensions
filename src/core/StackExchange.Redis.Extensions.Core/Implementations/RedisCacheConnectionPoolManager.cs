@@ -22,6 +22,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             this.redisConfiguration = redisConfiguration ?? throw new ArgumentNullException(nameof(redisConfiguration));
 
             this.connections = new ConcurrentBag<Lazy<StateAwareConnection>>();
+
+            this.EmitConnections();
         }
 
         /// <inheritdoc/>
@@ -39,8 +41,6 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public IConnectionMultiplexer GetConnection()
         {
-            this.EmitConnections();
-
             Lazy<StateAwareConnection> response;
             var loadedLazies = this.connections.Where(lazy => lazy.IsValueCreated);
 
@@ -55,13 +55,15 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         private void EmitConnection()
         {
-            var multiplexer = ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions);
+            this.connections.Add(new Lazy<StateAwareConnection>(() =>
+            {
+                var multiplexer = ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions);
 
-            if (this.redisConfiguration.ProfilingSessionProvider != null)
-                multiplexer.RegisterProfiler(this.redisConfiguration.ProfilingSessionProvider);
+                if (this.redisConfiguration.ProfilingSessionProvider != null)
+                    multiplexer.RegisterProfiler(this.redisConfiguration.ProfilingSessionProvider);
 
-            StateAwareConnection InitializeConnection() => new StateAwareConnection(multiplexer, this.EmitConnection);
-            this.connections.Add(new Lazy<StateAwareConnection>(InitializeConnection));
+                return new StateAwareConnection(multiplexer, this.EmitConnection);
+            }));
         }
 
         private void EmitConnections()
@@ -71,7 +73,10 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             var poolSize = this.redisConfiguration.PoolSize;
 
             static bool IsInvalidOrDisconnectedConnection(Lazy<StateAwareConnection> lazy) => lazy.IsValueCreated && (lazy.Value.IsValid() == false || lazy.Value.IsConnected() == false);
-            var requiredNumOfConnections = poolSize - this.connections.Count(IsInvalidOrDisconnectedConnection);
+
+            var invalidOrDisconnectedConnections = this.connections.Count(IsInvalidOrDisconnectedConnection);
+
+            var requiredNumOfConnections = poolSize - invalidOrDisconnectedConnections;
 
             if (requiredNumOfConnections <= 0)
                 return;

@@ -35,6 +35,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
                 AllowAdmin = true,
                 ConnectTimeout = 3000,
                 Database = 0,
+                PoolSize = 1,
                 ServerEnumerationStrategy = new ServerEnumerationStrategy()
                 {
                     Mode = ServerEnumerationStrategy.ModeOptions.All,
