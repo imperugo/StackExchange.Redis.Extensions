@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
@@ -22,8 +21,6 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             this.redisConfiguration = redisConfiguration ?? throw new ArgumentNullException(nameof(redisConfiguration));
 
             this.connections = new ConcurrentBag<Lazy<StateAwareConnection>>();
-
-            this.EmitConnections();
         }
 
         /// <inheritdoc/>
@@ -41,6 +38,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public IConnectionMultiplexer GetConnection()
         {
+            this.EmitConnections();
+
             Lazy<StateAwareConnection> response;
             var loadedLazies = this.connections.Where(lazy => lazy.IsValueCreated);
 
@@ -72,9 +71,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
             var poolSize = this.redisConfiguration.PoolSize;
 
-            static bool IsInvalidOrDisconnectedConnection(Lazy<StateAwareConnection> lazy) => lazy.IsValueCreated && (lazy.Value.IsValid() == false || lazy.Value.IsConnected() == false);
-
-            var invalidOrDisconnectedConnections = this.connections.Count(IsInvalidOrDisconnectedConnection);
+            var invalidOrDisconnectedConnections = this.connections.Count(lazy => lazy.IsValueCreated && (lazy.Value.IsValid() == false || lazy.Value.IsConnected() == false));
 
             var requiredNumOfConnections = poolSize - invalidOrDisconnectedConnections;
 
@@ -87,8 +84,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         private void InvalidateDisconnectedConnections()
         {
-            static bool IsDisconnectedConnection(Lazy<StateAwareConnection> lazy) => lazy.IsValueCreated && lazy.Value.IsConnected() == false;
-            var disconnected = this.connections.Where(IsDisconnectedConnection).ToList();
+            var disconnected = this.connections.Where(lazy => lazy.IsValueCreated && lazy.Value.IsConnected() == false).ToList();
 
             disconnected.ForEach(lazy => lazy.Value.Invalidate());
         }
