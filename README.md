@@ -224,7 +224,7 @@ services.AddSingleton<IRedisDefaultCacheClient, RedisDefaultCacheClient>();
 services.AddSingleton<ISerializer,NewtonsoftSerializer>();
 ```
 
-of you can create your own instance
+or you can create your own instance
 
 ```csharp
 var serializer = new NewtonsoftSerializer();
