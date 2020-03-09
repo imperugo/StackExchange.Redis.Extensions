@@ -49,6 +49,9 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 response = this.connections.First(lazy => !lazy.IsValueCreated);
 
             ConnectionMultiplexer connectionMultiplexer = response.Value;
+
+            Console.WriteLine(this.connections.Count);
+
             return connectionMultiplexer;
         }
 
@@ -75,7 +78,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
             var requiredNumOfConnections = poolSize - invalidOrDisconnectedConnections;
 
-            if (requiredNumOfConnections <= 0)
+            if (invalidOrDisconnectedConnections <= 0 && this.connections.Count > 0)
                 return;
 
             for (var i = 0; i < requiredNumOfConnections; i++)
@@ -86,7 +89,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             var disconnected = this.connections.Where(lazy => lazy.IsValueCreated && lazy.Value.IsConnected() == false).ToList();
 
-            disconnected.ForEach(lazy => lazy.Value.Invalidate());
+            if (disconnected.Count > 0)
+                disconnected.ForEach(lazy => lazy.Value.Invalidate());
         }
 
         /// <summary>
