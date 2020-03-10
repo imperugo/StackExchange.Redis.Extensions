@@ -6,9 +6,11 @@
     <Authors>Ugo Lattanzi</Authors>
     <VersionPrefix>6.0.1</VersionPrefix>
     <VersionSuffix>pre</VersionSuffix>
-    <TargetFrameworks>netstandard2.0;net461;net472;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+    <!-- <TargetFrameworks>netstandard2.0;net461;net472;netcoreapp3.0;netcoreapp3.1</TargetFrameworks> -->
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Copyright>Ugo Lattanzi</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
