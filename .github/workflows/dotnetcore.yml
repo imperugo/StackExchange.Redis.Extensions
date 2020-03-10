@@ -24,7 +24,7 @@ jobs:
         if: matrix.os == 'windows-latest'
 
       - name: Install Dependencies (macOS)
-        run: brew install redis && launchctl load ~/Library/LaunchAgents/homebrew.mxcl.redis.plist
+        run: brew install redis && brew services start redis
         if: matrix.os == 'macos-latest'
 
       - uses: actions/checkout@v2
@@ -38,4 +38,4 @@ jobs:
         run: ./build.sh
 
       - if: matrix.os == 'windows-latest'
-        run: ./build.cmd
+        run: ./build.bat
