@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest", "windows-latest", "macos-latest"]
-    name: ${{ matrix.runs-on }}
+    name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dependencies (Ubuntu)
@@ -20,11 +20,11 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
 
       - name: Install Dependencies (Windows)
-        run: choco install redis
+        run: choco install redis-64
         if: matrix.os == 'windows-latest'
 
       - name: Install Dependencies (macOS)
-        run: brew install redis
+        run: brew install redis && launchctl load ~/Library/LaunchAgents/homebrew.mxcl.redis.plist
         if: matrix.os == 'macos-latest'
 
       - uses: actions/checkout@v2
