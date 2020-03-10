@@ -24,7 +24,7 @@ jobs:
 
       - name: Install Dependencies (macOS)
         run: brew install redis
-        if: matrix.os == 'macos'
+        if: matrix.runs-on == 'macOS'
 
       - uses: actions/checkout@v2
       - name: Setup .NET Core
