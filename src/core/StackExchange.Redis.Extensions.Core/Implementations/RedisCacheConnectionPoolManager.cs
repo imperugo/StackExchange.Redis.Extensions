@@ -50,8 +50,6 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
             ConnectionMultiplexer connectionMultiplexer = response.Value;
 
-            Console.WriteLine(this.connections.Count);
-
             return connectionMultiplexer;
         }
 

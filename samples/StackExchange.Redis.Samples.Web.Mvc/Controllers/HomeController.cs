@@ -21,9 +21,10 @@ namespace StackExchange.Redis.Samples.Web.Mvc.Controllers
             this.redisDatabase = redisDatabase;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var redisInfo = await redisDatabase.GetInfoAsync();
+            return Ok(redisInfo);
         }
 
         public IActionResult Privacy()
