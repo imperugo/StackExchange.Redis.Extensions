@@ -1,19 +1,8 @@
-dotnet pack src\StackExchange.Redis.Extensions.Core\ -o .\packages\ -c Release
-
-dotnet pack src\StackExchange.Redis.Extensions.Binary\ -o .\packages\ -c Release
-
-dotnet pack src\StackExchange.Redis.Extensions.Jil\ -o .\packages\ -c Release
-
-dotnet pack src\StackExchange.Redis.Extensions.MsgPack\ -o .\packages\ -c Release
-
-dotnet pack src\StackExchange.Redis.Extensions.Newtonsoft\ -o .\packages\ -c Release
-
-dotnet pack src\StackExchange.Redis.Extensions.Protobuf\ -o .\packages\ -c Release
-
-dotnet pack src\StackExchange.Redis.Extensions.Utf8Json\ -o .\packages\ -c Release
-
-dotnet pack src\StackExchange.Redis.Extensions.System.Text.Json\ -o .\packages\ -c Release
-
-dotnet pack src\StackExchange.Redis.Extensions.AspNetCore\ -o .\packages\ -c Release
-
-.\.nuget\NuGet.exe pack .\src\StackExchange.Redis.Extensions.LegacyConfiguration\StackExchange.Redis.Extensions.LegacyConfiguration.csproj -Prop Configuration=Release -OutputDirectory .\packages\
+dotnet pack src\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj -o .\packages\ -c Release
+dotnet pack src\serializers\StackExchange.Redis.Extensions.Binary\StackExchange.Redis.Extensions.Binary.csproj -o .\packages\ -c Release
+dotnet pack src\serializers\StackExchange.Redis.Extensions.Jil\StackExchange.Redis.Extensions.Jil.csproj -o .\packages\ -c Release
+dotnet pack src\serializers\StackExchange.Redis.Extensions.MsgPack\StackExchange.Redis.Extensions.MsgPack.csproj -o .\packages\ -c Release
+dotnet pack src\serializers\StackExchange.Redis.Extensions.Newtonsoft\StackExchange.Redis.Extensions.Newtonsoft.csproj -o .\packages\ -c Release
+dotnet pack src\serializers\StackExchange.Redis.Extensions.Protobuf\StackExchange.Redis.Extensions.Protobuf.csproj -o .\packages\ -c Release
+dotnet pack src\serializers\StackExchange.Redis.Extensions.Utf8Json\StackExchange.Redis.Extensions.Utf8Json.csproj -o .\packages\ -c Release
+dotnet pack src\serializers\StackExchange.Redis.Extensions.System.Text.Json\StackExchange.Redis.Extensions.System.Text.Json.csproj -o .\packages\ -c Release
