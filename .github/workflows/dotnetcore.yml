@@ -34,8 +34,8 @@ jobs:
           dotnet-version: 3.1.101
 
       - run: dotnet --info
-      - if: contains(matrix.runs-on, 'macOS') || contains(matrix.runs-on, 'ubuntu')
+      - if: matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest')
         run: ./build.sh
 
-      - if: contains(matrix.runs-on, 'windows')
+      - if: matrix.os == 'windows-latest'
         run: ./build.cmd
