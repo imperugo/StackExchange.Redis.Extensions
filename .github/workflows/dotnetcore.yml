@@ -10,12 +10,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [macOS-latest, ubuntu-latest]
+        runs-on: [macOS-latest, ubuntu-latest, windows-latest]
     name: ${{ matrix.runs-on }}
     runs-on: ${{ matrix.runs-on }}
     steps:
       - name: Setup Redis
         uses: zhulik/redis-action@1.1.0
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Install Dependencies (Windows)
+        run: choco install redis
+        if: matrix.os == 'windows-latest'
+
+      - name: Install Dependencies (macOS)
+        run: brew install redis
+        if: matrix.os == 'macos-latest'
+
       - uses: actions/checkout@v2
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
@@ -25,5 +35,6 @@ jobs:
       - run: dotnet --info
       - if: contains(matrix.runs-on, 'macOS') || contains(matrix.runs-on, 'ubuntu')
         run: ./build.sh
-        #       - if: contains(matrix.runs-on, 'windows')
-        # run: ./build.cmd
+
+      - if: contains(matrix.runs-on, 'macOS') || contains(matrix.runs-on, 'ubuntu')
+        run: ./build.sh
