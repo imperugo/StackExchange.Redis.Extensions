@@ -10,12 +10,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [macOS-latest, ubuntu-latest, windows-latest]
+        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
     name: ${{ matrix.runs-on }}
-    runs-on: ${{ matrix.runs-on }}
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dependencies (Ubuntu)
-        uses: zhulik/redis-action@1.1.0
+        #uses: zhulik/redis-action@1.1.0
+        run: sudo apt install redis-server
         if: matrix.os == 'ubuntu-latest'
 
       - name: Install Dependencies (Windows)
