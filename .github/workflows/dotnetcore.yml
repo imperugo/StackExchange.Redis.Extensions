@@ -15,7 +15,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Dependencies (Ubuntu)
-        #uses: zhulik/redis-action@1.1.0
         run: sudo apt install redis-server
         if: matrix.os == 'ubuntu-latest'
 
@@ -34,7 +33,7 @@ jobs:
         run: ./build.sh
 
   publish:
-    name: list on nuget
+    name: Publish Nuget Packages
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -43,9 +42,5 @@ jobs:
         run: ./NuGetPack.bat
         shell: bash
       - name: Publish nuget
-        run: |
-          for f in ./packages/*.nupkg
-          do
-            curl -vX PUT -u "imperugo:${{ secrets.GHPackagesToken }}" -F package=@$f https://nuget.pkg.github.com/imperugo/
-          done
+        run: dotnet nuget push ./packages/*.nupkg --api-key ${{ secrets.NuGetApiKey}} --source https://api.nuget.org/v3/index.json
         shell: bash
