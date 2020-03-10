@@ -43,5 +43,9 @@ jobs:
         run: ./NuGetPack.bat
         shell: bash
       - name: Publish nuget
-        run: dotnet nuget push @$f --api-key ${{ secrets.NuGetApiKey}} --source https://api.nuget.org/v3/index.json
+        run: |
+          for f in ./packages/*.nupkg
+          do
+            dotnet nuget push @$f --api-key ${{ secrets.NuGetApiKey}} --source https://api.nuget.org/v3/index.json
+          done
         shell: bash
