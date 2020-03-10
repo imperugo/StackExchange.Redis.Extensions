@@ -14,17 +14,17 @@ jobs:
     name: ${{ matrix.runs-on }}
     runs-on: ${{ matrix.runs-on }}
     steps:
-      - name: Setup Redis
+      - name: Install Dependencies (Ubuntu)
         uses: zhulik/redis-action@1.1.0
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.runs-on == 'ubuntu'
 
       - name: Install Dependencies (Windows)
         run: choco install redis
-        if: matrix.os == 'windows-latest'
+        if: matrix.runs-on == 'windows'
 
       - name: Install Dependencies (macOS)
         run: brew install redis
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos'
 
       - uses: actions/checkout@v2
       - name: Setup .NET Core
@@ -36,5 +36,5 @@ jobs:
       - if: contains(matrix.runs-on, 'macOS') || contains(matrix.runs-on, 'ubuntu')
         run: ./build.sh
 
-      - if: contains(matrix.runs-on, 'macOS') || contains(matrix.runs-on, 'ubuntu')
-        run: ./build.sh
+      - if: contains(matrix.runs-on, 'windows')
+        run: ./build.cmd
