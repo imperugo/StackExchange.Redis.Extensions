@@ -1,9 +1,7 @@
 on:
   push:
     branches:
-      - master
-      - release-*
-      - "!release-1.6"
+      - v6
     tags:
       - "*.*.*"
   pull_request:
