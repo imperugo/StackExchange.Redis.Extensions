@@ -20,7 +20,9 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
 
       - name: Install Dependencies (Windows)
-        run: choco install redis-64
+        run: |
+          choco install redis-64
+          redis-server --service-start
         if: matrix.os == 'windows-latest'
 
       - name: Install Dependencies (macOS)
