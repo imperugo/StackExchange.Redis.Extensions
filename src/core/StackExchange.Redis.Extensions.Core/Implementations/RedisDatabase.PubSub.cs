@@ -40,7 +40,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         public async Task<bool> UpdateExpiryAsync(string key, DateTimeOffset expiresAt, CommandFlags flags = CommandFlags.None)
         {
-            if (await Database.KeyExistsAsync(key).ConfigureAwait(false)
+            if (await Database.KeyExistsAsync(key).ConfigureAwait(false))
                 return await Database.KeyExpireAsync(key, expiresAt.UtcDateTime.Subtract(DateTime.UtcNow), flags).ConfigureAwait(false);
 
             return false;

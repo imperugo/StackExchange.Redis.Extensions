@@ -78,7 +78,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="keys">Keys to retrieve from the hash</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
         /// <returns>list of values associated with the given fields, in the same order as they are requested.</returns>
-        Task<Dictionary<string, T>> HashGetAsync<T>(string hashKey, IEnumerable<string> keys, CommandFlags flag = CommandFlags.None);
+        Task<Dictionary<string, T>> HashGetAsync<T>(string hashKey, IList<string> keys, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
         ///     Returns all fields and values of the hash stored at key. In the returned value,
