@@ -48,8 +48,4 @@ jobs:
           do
             dotnet nuget push $f --api-key ${{ secrets.NuGetApiKey}} --source https://api.nuget.org/v3/index.json
           done
-          for f in ./packages/*.snupkg
-          do
-            dotnet nuget push $f --api-key ${{ secrets.NuGetApiKey}} --source https://api.nuget.org/v3/index.json
-          done
         shell: bash

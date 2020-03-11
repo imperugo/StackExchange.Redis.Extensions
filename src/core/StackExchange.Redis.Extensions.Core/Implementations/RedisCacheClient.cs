@@ -82,6 +82,9 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <inheritdoc/>
         public IRedisDatabase GetDb(int dbNumber, string keyPrefix = null)
         {
+            if (string.IsNullOrEmpty(keyPrefix))
+                keyPrefix = redisConfiguration.KeyPrefix;
+
             var connection = connectionPoolManager.GetConnection();
             var db = connection.GetDatabase(dbNumber);
 
