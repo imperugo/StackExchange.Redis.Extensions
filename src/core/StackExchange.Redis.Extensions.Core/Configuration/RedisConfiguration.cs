@@ -247,7 +247,8 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
                         ConnectTimeout = ConnectTimeout,
                         SyncTimeout = SyncTimeout,
                         AbortOnConnectFail = AbortOnConnectFail,
-                        ConfigurationChannel = ConfigurationChannel
+                        ConfigurationChannel = ConfigurationChannel,
+                        ChannelPrefix = KeyPrefix
                     };
 
                     if (ExcludeCommands != null)
