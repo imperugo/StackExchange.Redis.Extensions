@@ -54,7 +54,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                                     long take = -1L,
                                     CommandFlags commandFlags = CommandFlags.None)
         {
-            var result = await Database.SortedSetRangeByScoreAsync(key, start, stop, exclude, order, skip, take, commandFlags);
+            var result = await Database.SortedSetRangeByScoreAsync(key, start, stop, exclude, order, skip, take, commandFlags).ConfigureAwait(false);
 
             return result.Select(m => m == RedisValue.Null ? default : Serializer.Deserialize<T>(m));
         }

@@ -26,7 +26,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentException("key cannot be empty.", nameof(key));
 
-            var item = await Database.ListRightPopAsync(key, flags);
+            var item = await Database.ListRightPopAsync(key, flags).ConfigureAwait(false);
 
             if (item == RedisValue.Null)
                 return null;

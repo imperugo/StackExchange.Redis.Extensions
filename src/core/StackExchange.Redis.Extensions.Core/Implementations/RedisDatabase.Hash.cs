@@ -26,28 +26,31 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         public async Task<T> HashGetAsync<T>(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
         {
-            var redisValue = await Database.HashGetAsync(hashKey, key, commandFlags);
+            var redisValue = await Database.HashGetAsync(hashKey, key, commandFlags).ConfigureAwait(false);
 
             return redisValue.HasValue ? Serializer.Deserialize<T>(redisValue) : default;
         }
 
-        public async Task<Dictionary<string, T>> HashGetAsync<T>(string hashKey, IEnumerable<string> keys, CommandFlags commandFlags = CommandFlags.None)
+        public async Task<Dictionary<string, T>> HashGetAsync<T>(string hashKey, IList<string> keys, CommandFlags commandFlags = CommandFlags.None)
         {
+            var tasks = new Task<T>[keys.Count];
+
+            for (var i = 0; i < keys.Count; i++)
+                tasks[i] = HashGetAsync<T>(hashKey, keys[i], commandFlags);
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+
             var result = new Dictionary<string, T>();
 
-            foreach (var key in keys)
-            {
-                var value = await HashGetAsync<T>(hashKey, key, commandFlags);
-
-                result.Add(key, value);
-            }
+            for (var i = 0; i < tasks.Length; i++)
+                result.Add(keys[i], tasks[i].Result);
 
             return result;
         }
 
         public async Task<Dictionary<string, T>> HashGetAllAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
         {
-            return (await Database.HashGetAllAsync(hashKey, commandFlags))
+            return (await Database.HashGetAllAsync(hashKey, commandFlags).ConfigureAwait(false))
                 .ToDictionary(
                     x => x.Name.ToString(),
                     x => Serializer.Deserialize<T>(x.Value),
@@ -66,7 +69,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         public async Task<IEnumerable<string>> HashKeysAsync(string hashKey, CommandFlags commandFlags = CommandFlags.None)
         {
-            return (await Database.HashKeysAsync(hashKey, commandFlags)).Select(x => x.ToString());
+            return (await Database.HashKeysAsync(hashKey, commandFlags).ConfigureAwait(false)).Select(x => x.ToString());
         }
 
         public Task<long> HashLengthAsync(string hashKey, CommandFlags commandFlags = CommandFlags.None)
@@ -88,7 +91,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         public async Task<IEnumerable<T>> HashValuesAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
         {
-            return (await Database.HashValuesAsync(hashKey, commandFlags)).Select(x => Serializer.Deserialize<T>(x));
+            return (await Database.HashValuesAsync(hashKey, commandFlags).ConfigureAwait(false)).Select(x => Serializer.Deserialize<T>(x));
         }
 
         public Dictionary<string, T> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags commandFlags = CommandFlags.None)

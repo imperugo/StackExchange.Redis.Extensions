@@ -20,7 +20,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
             var sub = connectionMultiplexer.GetSubscriber();
 
-            return sub.SubscribeAsync(channel, async (redisChannel, value) => await handler(Serializer.Deserialize<T>(value)), flags);
+            return sub.SubscribeAsync(channel, async (redisChannel, value) => await handler(Serializer.Deserialize<T>(value)).ConfigureAwait(false), flags);
         }
 
         public Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
@@ -40,16 +40,16 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         public async Task<bool> UpdateExpiryAsync(string key, DateTimeOffset expiresAt, CommandFlags flags = CommandFlags.None)
         {
-            if (await Database.KeyExistsAsync(key))
-                return await Database.KeyExpireAsync(key, expiresAt.UtcDateTime.Subtract(DateTime.UtcNow), flags);
+            if (await Database.KeyExistsAsync(key).ConfigureAwait(false)
+                return await Database.KeyExpireAsync(key, expiresAt.UtcDateTime.Subtract(DateTime.UtcNow), flags).ConfigureAwait(false);
 
             return false;
         }
 
         public async Task<bool> UpdateExpiryAsync(string key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.None)
         {
-            if (await Database.KeyExistsAsync(key))
-                return await Database.KeyExpireAsync(key, expiresIn, flags);
+            if (await Database.KeyExistsAsync(key).ConfigureAwait(false))
+                return await Database.KeyExpireAsync(key, expiresIn, flags).ConfigureAwait(false);
 
             return false;
         }
@@ -61,7 +61,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             for (var i = 0; i < keys.Length; i++)
                 tasks[i] = UpdateExpiryAsync(keys[i], expiresAt.UtcDateTime, flags);
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
 
             var results = new Dictionary<string, bool>(keys.Length, StringComparer.Ordinal);
 
@@ -78,7 +78,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             for (var i = 0; i < keys.Length; i++)
                 tasks[i] = UpdateExpiryAsync(keys[i], expiresIn, flags);
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
 
             var results = new Dictionary<string, bool>(keys.Length, StringComparer.Ordinal);
 

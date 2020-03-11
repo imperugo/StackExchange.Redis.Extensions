@@ -62,7 +62,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task Info_Should_Return_Valid_Information()
         {
-            var response = await Sut.GetDbFromConfiguration().GetInfoAsync();
+            var response = await Sut.GetDbFromConfiguration().GetInfoAsync().ConfigureAwait(false);
 
             Assert.NotNull(response);
             Assert.True(response.Any());
@@ -72,7 +72,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task Info_Category_Should_Return_Valid_Information()
         {
-            var response = await Sut.GetDbFromConfiguration().GetInfoCategorizedAsync();
+            var response = await Sut.GetDbFromConfiguration().GetInfoCategorizedAsync().ConfigureAwait(false);
 
             Assert.NotNull(response);
             Assert.True(response.Any());

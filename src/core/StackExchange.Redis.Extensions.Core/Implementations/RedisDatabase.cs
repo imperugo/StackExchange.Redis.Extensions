@@ -63,7 +63,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         public async Task<T> GetAsync<T>(string key, CommandFlags flag = CommandFlags.None)
         {
-            var valueBytes = await Database.StringGetAsync(key, flag);
+            var valueBytes = await Database.StringGetAsync(key, flag).ConfigureAwait(false);
 
             if (!valueBytes.HasValue)
                 return default;
@@ -73,20 +73,20 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         public async Task<T> GetAsync<T>(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)
         {
-            var result = await GetAsync<T>(key, flag);
+            var result = await GetAsync<T>(key, flag).ConfigureAwait(false);
 
             if (!Equals(result, default(T)))
-                await Database.KeyExpireAsync(key, expiresAt.UtcDateTime.Subtract(DateTime.UtcNow));
+                await Database.KeyExpireAsync(key, expiresAt.UtcDateTime.Subtract(DateTime.UtcNow)).ConfigureAwait(false);
 
             return result;
         }
 
         public async Task<T> GetAsync<T>(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None)
         {
-            var result = await GetAsync<T>(key, flag);
+            var result = await GetAsync<T>(key, flag).ConfigureAwait(false);
 
             if (!Equals(result, default(T)))
-                await Database.KeyExpireAsync(key, expiresIn);
+                await Database.KeyExpireAsync(key, expiresIn).ConfigureAwait(false);
 
             return result;
         }
@@ -141,7 +141,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys)
         {
             var redisKeys = keys.Select(x => (RedisKey)x).ToArray();
-            var result = await Database.StringGetAsync(redisKeys);
+            var result = await Database.StringGetAsync(redisKeys).ConfigureAwait(false);
             var dict = new Dictionary<string, T>(redisKeys.Length, StringComparer.Ordinal);
 
             for (var index = 0; index < redisKeys.Length; index++)
@@ -158,7 +158,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             var tsk1 = GetAllAsync<T>(keys);
             var tsk2 = UpdateExpiryAllAsync(keys.ToArray(), expiresAt);
 
-            await Task.WhenAll(tsk1, tsk2);
+            await Task.WhenAll(tsk1, tsk2).ConfigureAwait(false);
 
             return tsk1.Result;
         }
@@ -168,7 +168,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             var tsk1 = GetAllAsync<T>(keys);
             var tsk2 = UpdateExpiryAllAsync(keys.ToArray(), expiresIn);
 
-            await Task.WhenAll(tsk1, tsk2);
+            await Task.WhenAll(tsk1, tsk2).ConfigureAwait(false);
 
             return tsk1.Result;
         }
@@ -190,7 +190,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             for (var i = 1; i < values.Length + 1; i++)
                 tasks[i] = Database.KeyExpireAsync(values[i - 1].Key, expiresAt.UtcDateTime, flag);
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
 
             return ((Task<bool>)tasks[0]).Result;
         }
@@ -205,7 +205,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             for (var i = 1; i < values.Length + 1; i++)
                 tasks[i] = Database.KeyExpireAsync(values[i - 1].Key, expiresOn, flag);
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
 
             return ((Task<bool>)tasks[0]).Result;
         }
@@ -288,12 +288,13 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         public async Task<string[]> SetMemberAsync(string memberName, CommandFlags flag = CommandFlags.None)
         {
-            return (await Database.SetMembersAsync(memberName, flag)).Select(x => x.ToString()).ToArray();
+            var members = await Database.SetMembersAsync(memberName, flag).ConfigureAwait(false);
+            return members.Select(x => x.ToString()).ToArray();
         }
 
         public async Task<IEnumerable<T>> SetMembersAsync<T>(string key, CommandFlags flag = CommandFlags.None)
         {
-            var members = await Database.SetMembersAsync(key, flag);
+            var members = await Database.SetMembersAsync(key, flag).ConfigureAwait(false);
 
             return members.Select(m => m == RedisValue.Null ? default : Serializer.Deserialize<T>(m));
         }
@@ -314,7 +315,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 var nextCursor = 0;
                 do
                 {
-                    var redisResult = await Database.ExecuteAsync("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000");
+                    var redisResult = await Database.ExecuteAsync("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000").ConfigureAwait(false);
                     var innerResult = (RedisResult[])redisResult;
 
                     nextCursor = int.Parse((string)innerResult[0]);
@@ -328,45 +329,47 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return !string.IsNullOrEmpty(keyprefix) ? keys.Select(k => k.Substring(keyprefix.Length)) : keys;
         }
 
-        public async Task FlushDbAsync()
+        public Task FlushDbAsync()
         {
             var endPoints = Database.Multiplexer.GetEndPoints();
 
-            foreach (var endpoint in endPoints)
+            var tasks = new List<Task>(endPoints.Length);
+
+            for (var i = 0; i < endPoints.Length; i++)
             {
-                var server = Database.Multiplexer.GetServer(endpoint);
+                var server = Database.Multiplexer.GetServer(endPoints[i]);
 
                 if (!server.IsSlave)
-                    await server.FlushDatabaseAsync(Database.Database);
+                    tasks.Add(server.FlushDatabaseAsync(Database.Database));
             }
+
+            return Task.WhenAll(tasks);
         }
 
-        public async Task SaveAsync(SaveType saveType, CommandFlags flags = CommandFlags.None)
+        public Task SaveAsync(SaveType saveType, CommandFlags flags = CommandFlags.None)
         {
             var endPoints = Database.Multiplexer.GetEndPoints();
 
-            foreach (var endpoint in endPoints)
-                await Database.Multiplexer.GetServer(endpoint).SaveAsync(saveType, flags);
+            var tasks = new Task[endPoints.Length];
+
+            for (var i = 0; i < endPoints.Length; i++)
+                tasks[i] = Database.Multiplexer.GetServer(endPoints[i]).SaveAsync(saveType, flags);
+
+            return Task.WhenAll(tasks);
         }
 
         public async Task<Dictionary<string, string>> GetInfoAsync()
         {
-            var info = (await Database.ScriptEvaluateAsync("return redis.call('INFO')")).ToString();
+            var info = (await Database.ScriptEvaluateAsync("return redis.call('INFO')").ConfigureAwait(false)).ToString();
 
             return ParseInfo(info);
         }
 
         public async Task<List<InfoDetail>> GetInfoCategorizedAsync()
         {
-            var info = (await Database.ScriptEvaluateAsync("return redis.call('INFO')")).ToString();
+            var info = (await Database.ScriptEvaluateAsync("return redis.call('INFO')").ConfigureAwait(false)).ToString();
 
             return ParseCategorizedInfo(info);
-        }
-
-        public double SortedSetAddIncrement<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
-        {
-            var entryBytes = Serializer.Serialize(value);
-            return Database.SortedSetIncrement(key, entryBytes, score, commandFlags);
         }
 
         public Task<double> SortedSetAddIncrementAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
@@ -414,7 +417,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             var category = string.Empty;
             if (!string.IsNullOrWhiteSpace(info))
             {
-                var lines = info.Split(new[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                var lines = info.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (var line in lines.Where(x => !string.IsNullOrWhiteSpace(x)))
                 {
