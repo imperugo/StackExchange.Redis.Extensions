@@ -28,8 +28,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             var activeConnections = this.connections.Where(lazy => lazy.IsValueCreated).ToList();
 
-            foreach (var connection in activeConnections)
-                connection.Value.Invalidate();
+            for (var i = 0; i < activeConnections.Count; i++)
+                activeConnections[i].Value.Invalidate();
 
             while (this.connections.IsEmpty == false)
                 this.connections.TryTake(out var taken);
@@ -40,17 +40,12 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             this.EmitConnections();
 
-            Lazy<StateAwareConnection> response;
             var loadedLazies = this.connections.Where(lazy => lazy.IsValueCreated);
 
             if (loadedLazies.Count() == this.connections.Count)
-                response = this.connections.OrderBy(x => x.Value.TotalOutstanding()).First();
-            else
-                response = this.connections.First(lazy => !lazy.IsValueCreated);
+                return (ConnectionMultiplexer)this.connections.OrderBy(x => x.Value.TotalOutstanding()).First().Value;
 
-            ConnectionMultiplexer connectionMultiplexer = response.Value;
-
-            return connectionMultiplexer;
+            return (ConnectionMultiplexer)this.connections.First(lazy => !lazy.IsValueCreated).Value;
         }
 
         private void EmitConnection()
@@ -72,7 +67,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
             var poolSize = this.redisConfiguration.PoolSize;
 
-            var invalidOrDisconnectedConnections = this.connections.Count(lazy => lazy.IsValueCreated && (lazy.Value.IsValid() == false || lazy.Value.IsConnected() == false));
+            var invalidOrDisconnectedConnections = this.connections.Count(lazy => lazy.IsValueCreated && (!lazy.Value.IsValid() || !lazy.Value.IsConnected()));
 
             var requiredNumOfConnections = poolSize - invalidOrDisconnectedConnections;
 
@@ -85,10 +80,11 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         private void InvalidateDisconnectedConnections()
         {
-            var disconnected = this.connections.Where(lazy => lazy.IsValueCreated && lazy.Value.IsConnected() == false).ToList();
-
-            if (disconnected.Count > 0)
-                disconnected.ForEach(lazy => lazy.Value.Invalidate());
+            foreach (var lazy in connections)
+            {
+                if (lazy.IsValueCreated && !lazy.Value.IsConnected())
+                    lazy.Value.Invalidate();
+            }
         }
 
         /// <summary>
