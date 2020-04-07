@@ -1076,6 +1076,12 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <returns></returns>
         Task<Dictionary<string, T>> HashScanAsync<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags flag = CommandFlags.None);
 
+        Task HashSetFromModelAsync<T>(string hashKey, T entity, CommandFlags commandFlags = CommandFlags.None);
+
+
+        Task<T> HashGetToModelAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None);
+
+
         /// <summary>
         ///     Updates the expiry time of a redis cache object
         /// </summary>
