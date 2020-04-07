@@ -915,49 +915,49 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return results;
         }
 
-        public bool SortedSetAdd<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        public bool SortedSetAdd(string key, string member, double score, CommandFlags commandFlags = CommandFlags.None)
         {
-            var entryBytes = Serializer.Serialize(value);
+            var entryBytes = encoding.GetBytes(member);
 
             return Database.SortedSetAdd(key, entryBytes, score, commandFlags);
         }
 
-        public async Task<bool> SortedSetAddAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        public async Task<bool> SortedSetAddAsync(string key, string member, double score, CommandFlags commandFlags = CommandFlags.None)
         {
-            var entryBytes = Serializer.Serialize(value);
+            var entryBytes = encoding.GetBytes(member);
 
             return await Database.SortedSetAddAsync(key, entryBytes, score, commandFlags);
         }
 
-        public bool SortedSetRemove<T>(string key, T value, CommandFlags commandFlags = CommandFlags.None)
+        public bool SortedSetRemove(string key, string member, CommandFlags commandFlags = CommandFlags.None)
         {
-            var entryBytes = Serializer.Serialize(value);
+            var entryBytes = encoding.GetBytes(member);
 
             return Database.SortedSetRemove(key, entryBytes, commandFlags);
         }
 
-        public async Task<bool> SortedSetRemoveAsync<T>(string key, T value, CommandFlags commandFlags = CommandFlags.None)
+        public async Task<bool> SortedSetRemoveAsync(string key, string member, CommandFlags commandFlags = CommandFlags.None)
         {
-            var entryBytes = Serializer.Serialize(value);
+            var entryBytes = encoding.GetBytes(member);
 
             return await Database.SortedSetRemoveAsync(key, entryBytes, commandFlags);
         }
 
-        public IEnumerable<T> SortedSetRangeByScore<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending, long skip = 0L,
+        public IEnumerable<string> SortedSetRangeByScore(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending, long skip = 0L,
             long take = -1L, CommandFlags commandFlags = CommandFlags.None)
         {
             var result = Database.SortedSetRangeByScore(key, start, stop, exclude, order, skip, take, commandFlags);
 
-            return result.Select(m => m == RedisValue.Null ? default : Serializer.Deserialize<T>(m));
+            return result.Select(m => m == RedisValue.Null ? string.Empty : (string)m);
         }
 
-        public async Task<IEnumerable<T>> SortedSetRangeByScoreAsync<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending,
+        public async Task<IEnumerable<string>> SortedSetRangeByScoreAsync(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending,
             long skip = 0L,
             long take = -1L, CommandFlags commandFlags = CommandFlags.None)
         {
             var result = await Database.SortedSetRangeByScoreAsync(key, start, stop, exclude, order, skip, take, commandFlags);
 
-            return result.Select(m => m == RedisValue.Null ? default : Serializer.Deserialize<T>(m));
+            return result.Select(m => m == RedisValue.Null ? string.Empty : (string)m);
         }
 
         public void Dispose()
