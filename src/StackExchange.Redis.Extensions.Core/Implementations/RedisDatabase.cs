@@ -960,6 +960,13 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return result.Select(m => m == RedisValue.Null ? string.Empty : (string)m);
         }
 
+        public async Task<IEnumerable<string>> SortedSetRangeByRankAsync(string key, int start, int stop, Order order = Order.Ascending, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var result = await Database.SortedSetRangeByRankAsync(key, start, stop, order, commandFlags);
+            
+            return result.Select(m => m == RedisValue.Null ? string.Empty : (string)m);
+        }
+
         public void Dispose()
         {
             connectionMultiplexer?.Dispose();
