@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using StackExchange.Redis;
@@ -841,6 +842,41 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             return (await Task.Run(() => Database.HashScan(hashKey, pattern, pageSize, commandFlags)))
                 .ToDictionary(x => x.Name.ToString(), x => Serializer.Deserialize<T>(x.Value), StringComparer.Ordinal);
+        }
+
+        public async Task HashSetFromModelAsync<T>(string hashKey, T entity, CommandFlags commandFlags = CommandFlags.None)
+        {
+            PropertyInfo[] properties = entity.GetType().GetProperties();
+            var entries = properties.Where(c => c.CanRead && c.CanWrite && c.PropertyType.IsPublic)
+                .Select(property => new HashEntry(property.Name, Serializer.Serialize(property.GetValue(entity))));
+            await Database.HashSetAsync(hashKey, entries.ToArray(), commandFlags);
+        }
+
+        public async Task<T> HashGetToModelAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var items = (await Database.HashGetAllAsync(hashKey, commandFlags))
+                .ToDictionary(x => x.Name.ToString(), x => x.Value, StringComparer.Ordinal);
+
+            PropertyInfo[] properties = typeof(T).GetProperties();
+            var obj = Activator.CreateInstance(typeof(T));
+            foreach (var prop in properties)
+            {
+                if (prop.CanWrite == false || prop.PropertyType.IsPublic == false) continue;
+
+                if (items.TryGetValue(prop.Name, out RedisValue value)) {
+
+                    if (prop.PropertyType.IsClass == true)
+                    {
+                        prop.SetValue(obj, Convert.ChangeType(Serializer.Deserialize(value, prop.GetType()), prop.PropertyType));
+                    }
+                    else
+                    {
+                        prop.SetValue(obj, Convert.ChangeType(Serializer.Deserialize(value), prop.PropertyType));
+                    }
+                }
+            }
+
+            return (T)obj;
         }
 
         public bool UpdateExpiry(string key, DateTimeOffset expiresAt, CommandFlags flags = CommandFlags.None)
