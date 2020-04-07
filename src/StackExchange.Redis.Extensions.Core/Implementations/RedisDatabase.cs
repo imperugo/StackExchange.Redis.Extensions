@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using StackExchange.Redis;
 using StackExchange.Redis.Extensions.Core.Abstractions;
@@ -13,6 +14,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 {
     internal class RedisDatabase : IRedisDatabase
     {
+        private static readonly Encoding encoding = Encoding.UTF8;
         private readonly IConnectionMultiplexer connectionMultiplexer;
         private readonly ServerEnumerationStrategy serverEnumerationStrategy = new ServerEnumerationStrategy();
         private readonly string keyprefix;
