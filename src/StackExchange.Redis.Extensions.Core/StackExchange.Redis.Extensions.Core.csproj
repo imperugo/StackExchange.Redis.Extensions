@@ -58,6 +58,10 @@ To store complex data It requires one of the following implementations:
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <Compile Remove="Implementations\RedisDefaultCacheClient.cs" />
+	</ItemGroup>
+
 
 	<ItemGroup>
 		<PackageReference Include="StackExchange.Redis" Version="2.0.601" />

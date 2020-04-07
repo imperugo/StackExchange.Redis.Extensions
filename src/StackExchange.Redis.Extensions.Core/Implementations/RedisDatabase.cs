@@ -960,7 +960,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return result.Select(m => m == RedisValue.Null ? string.Empty : (string)m);
         }
 
-        public async Task<IEnumerable<string>> SortedSetRangeByRankAsync(string key, int start, int stop, Order order = Order.Ascending, CommandFlags commandFlags = CommandFlags.None)
+        public async Task<IEnumerable<string>> SortedSetRangeByRankAsync(string key, long start, long stop, Order order = Order.Ascending, CommandFlags commandFlags = CommandFlags.None)
         {
             var result = await Database.SortedSetRangeByRankAsync(key, start, stop, order, commandFlags);
             
@@ -1037,15 +1037,15 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         ///     Time complexity: O(1)
         /// </remarks>
         /// <param name="key">Key of the set</param>
-        /// <param name="value">The instance of T.</param>
+        /// <param name="member">The instance of T.</param>
         /// <param name="score">Score of the entry</param>
         /// <param name="commandFlags">Command execution flags</param>
         /// <returns>
         ///      if the object has been added return previous score. Otherwise return 0.0 when first add
         /// </returns>
-        public double SortedSetAddIncrement<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        public double SortedSetAddIncrement(string key, string member, double score, CommandFlags commandFlags = CommandFlags.None)
         {
-            var entryBytes = Serializer.Serialize(value);
+            var entryBytes = encoding.GetBytes(member);
             return Database.SortedSetIncrement(key, entryBytes, score, commandFlags);
         }
 
@@ -1056,17 +1056,45 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         ///     Time complexity: O(1)
         /// </remarks>
         /// <param name="key">Key of the set</param>
-        /// <param name="value">The instance of T.</param>
+        /// <param name="member">The instance of T.</param>
         /// <param name="score">Score of the entry</param>
         /// <param name="commandFlags">Command execution flags</param>
         /// <returns>
         ///      if the object has been added return previous score. Otherwise return 0.0 when first add
         /// </returns>
         /// 
-        public async Task<double> SortedSetAddIncrementAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
+        public async Task<double> SortedSetAddIncrementAsync(string key, string member, double score, CommandFlags commandFlags = CommandFlags.None)
         {
-            var entryBytes = Serializer.Serialize(value);
+            var entryBytes = encoding.GetBytes(member);
             return await Database.SortedSetIncrementAsync(key, entryBytes, score, commandFlags);
         }
+
+        //public async Task RemoveKey(string key)
+        //{
+        //    if (await Database.KeyExistsAsync(key))
+        //    {
+        //        await Database.KeyExpireAsync(key, new TimeSpan(0, 0, 0), CommandFlags.FireAndForget);
+        //    }
+        //}
+
+        public async Task<long> StringIncrementAsync(string key, long value, CommandFlags commandFlags = CommandFlags.None)
+        {
+            return await Database.StringIncrementAsync(key, value, commandFlags);
+        }
+
+        public async Task<double> StringIncrementAsync(string key, double value, CommandFlags commandFlags = CommandFlags.None)
+        {
+            return await Database.StringIncrementAsync(key, value, commandFlags);
+        }
+
+        #region Script
+        public async Task<LoadedLuaScript> ScriptLoadAsync(string script, System.Net.EndPoint endPoint = null)
+        {
+            if (endPoint == null) endPoint = Database.Multiplexer.GetEndPoints().FirstOrDefault();
+            var server = Database.Multiplexer.GetServer(endPoint);
+            LuaScript luaScript = LuaScript.Prepare(script);
+            return await luaScript.LoadAsync(server);
+        }
+        #endregion
     }
 }
