@@ -844,11 +844,19 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 .ToDictionary(x => x.Name.ToString(), x => Serializer.Deserialize<T>(x.Value), StringComparer.Ordinal);
         }
 
+        //public async Task HashSetFromModelAsync<T>(string hashKey, T entity, CommandFlags commandFlags = CommandFlags.None)
+        //{
+        //    PropertyInfo[] properties = entity.GetType().GetProperties();
+        //    var entries = properties.Where(c => c.CanRead && c.CanWrite && c.PropertyType.IsPublic)
+        //        .Select(property => new HashEntry(property.Name, Serializer.Serialize(property.GetValue(entity))));
+        //    await Database.HashSetAsync(hashKey, entries.ToArray(), commandFlags);
+        //}
+
         public async Task HashSetFromModelAsync<T>(string hashKey, T entity, CommandFlags commandFlags = CommandFlags.None)
         {
             PropertyInfo[] properties = entity.GetType().GetProperties();
             var entries = properties.Where(c => c.CanRead && c.CanWrite && c.PropertyType.IsPublic)
-                .Select(property => new HashEntry(property.Name, Serializer.Serialize(property.GetValue(entity))));
+                .Select(prop => new HashEntry(prop.Name, Serializer.Serialize(prop.GetValue(entity))));
             await Database.HashSetAsync(hashKey, entries.ToArray(), commandFlags);
         }
 
@@ -864,15 +872,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 if (prop.CanWrite == false || prop.PropertyType.IsPublic == false) continue;
 
                 if (items.TryGetValue(prop.Name, out RedisValue value)) {
-
-                    if (prop.PropertyType.IsClass == true)
-                    {
-                        prop.SetValue(obj, Convert.ChangeType(Serializer.Deserialize(value, prop.GetType()), prop.PropertyType));
-                    }
-                    else
-                    {
-                        prop.SetValue(obj, Convert.ChangeType(Serializer.Deserialize(value), prop.PropertyType));
-                    }
+                    prop.SetValue(obj, Convert.ChangeType(Serializer.Deserialize(value, prop.PropertyType), prop.PropertyType));
                 }
             }
 
