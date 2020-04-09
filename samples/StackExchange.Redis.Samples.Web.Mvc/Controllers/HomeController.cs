@@ -12,30 +12,23 @@ namespace StackExchange.Redis.Samples.Web.Mvc.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<HomeController> logger;
         private readonly IRedisDatabase redisDatabase;
+        private readonly IRedisCacheConnectionPoolManager connectionPoolManager;
 
-        public HomeController(ILogger<HomeController> logger, IRedisDatabase redisDatabase)
+        public HomeController(ILogger<HomeController> logger, IRedisDatabase redisDatabase, IRedisCacheConnectionPoolManager connectionPoolManager)
         {
-            _logger = logger;
+            this.logger = logger;
             this.redisDatabase = redisDatabase;
+            this.connectionPoolManager = connectionPoolManager;
         }
+
 
         public async Task<IActionResult> Index()
         {
             var redisInfo = await redisDatabase.GetInfoAsync();
-            return Ok(redisInfo);
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var connectionInfo = connectionPoolManager.GetConnectionInformations();
+            return Ok(new { RedisInfo = redisInfo, ConnectionInfo = connectionInfo });
         }
     }
 }

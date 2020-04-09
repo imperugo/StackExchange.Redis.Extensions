@@ -50,7 +50,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             this.EmitConnections();
 
-            var loadedLazies = this.connections.Where(lazy => lazy.IsValueCreated);
+            var loadedLazies = this.connections.Where(lazy => lazy.IsValueCreated && lazy.Value.IsValid() && lazy.Value.IsConnected());
 
             if (loadedLazies.Count() == this.connections.Count)
                 return (ConnectionMultiplexer)this.connections.OrderBy(x => x.Value.TotalOutstanding()).First().Value;
