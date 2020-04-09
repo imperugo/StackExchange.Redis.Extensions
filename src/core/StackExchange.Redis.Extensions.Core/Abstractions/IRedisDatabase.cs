@@ -41,7 +41,8 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// </summary>
         /// <param name="keys">The cache keys.</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
-        Task RemoveAllAsync(IEnumerable<string> keys, CommandFlags flag = CommandFlags.None);
+        /// <returns>The numnber of items removed.</returns>
+        Task<long> RemoveAllAsync(IEnumerable<string> keys, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
         ///     Get the object with the specified key from Redis database

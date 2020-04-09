@@ -1,4 +1,5 @@
 ﻿using System;
+using StackExchange.Redis.Extensions.Core.Models;
 
 namespace StackExchange.Redis.Extensions.Core.Abstractions
 {
@@ -12,5 +13,10 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// </summary>
         /// <returns>Returns an instance of<see cref="IConnectionMultiplexer"/>.</returns>
         IConnectionMultiplexer GetConnection();
+
+        /// <summary>
+        ///     Gets the information about the connection pool
+        /// </summary>
+        ConnectionPoolInformation GetConnectionInformations();
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Moq;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Implementations;
@@ -44,8 +46,10 @@ namespace StackExchange.Redis.Extensions.Core.Tests
                 }
             };
 
+            var moqLogger = new Mock<ILogger<RedisCacheConnectionPoolManager>>();
+
             this.serializer = serializer;
-            connectionPoolManager = new RedisCacheConnectionPoolManager(redisConfiguration);
+            connectionPoolManager = new RedisCacheConnectionPoolManager(redisConfiguration, moqLogger.Object);
             sut = new RedisCacheClient(connectionPoolManager, this.serializer, redisConfiguration);
             db = sut.GetDbFromConfiguration().Database;
         }

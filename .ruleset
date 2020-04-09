@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Rules for Technogym.MwCloud.Commons" Description="Code analysis rules for Technogym.MwCloud.Commons.csproj." ToolsVersion="15.0">
+<RuleSet Name="StackExchange.Redis.Extensions rules" Description="Code analysis rules for StackExchange.Redis.Extensions projects." ToolsVersion="15.0">
   <Rules AnalyzerId="AsyncUsageAnalyzers" RuleNamespace="AsyncUsageAnalyzers">
     <Rule Id="UseConfigureAwait" Action="Error" />
   </Rules>

@@ -5,14 +5,16 @@ using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations
 {
-    internal partial class RedisDatabase : IRedisDatabase
+    public partial class RedisDatabase : IRedisDatabase
     {
+        /// <inheritdoc/>
         public Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
         {
             var sub = connectionMultiplexer.GetSubscriber();
             return sub.PublishAsync(channel, Serializer.Serialize(message), flags);
         }
 
+        /// <inheritdoc/>
         public Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
         {
             if (handler == null)
@@ -23,6 +25,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return sub.SubscribeAsync(channel, async (redisChannel, value) => await handler(Serializer.Deserialize<T>(value)).ConfigureAwait(false), flags);
         }
 
+        /// <inheritdoc/>
         public Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
         {
             if (handler == null)
@@ -32,12 +35,14 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return sub.UnsubscribeAsync(channel, (redisChannel, value) => handler(Serializer.Deserialize<T>(value)), flags);
         }
 
+        /// <inheritdoc/>
         public Task UnsubscribeAllAsync(CommandFlags flags = CommandFlags.None)
         {
             var sub = connectionMultiplexer.GetSubscriber();
             return sub.UnsubscribeAllAsync(flags);
         }
 
+        /// <inheritdoc/>
         public async Task<bool> UpdateExpiryAsync(string key, DateTimeOffset expiresAt, CommandFlags flags = CommandFlags.None)
         {
             if (await Database.KeyExistsAsync(key).ConfigureAwait(false))
@@ -46,6 +51,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return false;
         }
 
+        /// <inheritdoc/>
         public async Task<bool> UpdateExpiryAsync(string key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.None)
         {
             if (await Database.KeyExistsAsync(key).ConfigureAwait(false))
@@ -54,6 +60,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return false;
         }
 
+        /// <inheritdoc/>
         public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, DateTimeOffset expiresAt, CommandFlags flags = CommandFlags.None)
         {
             var tasks = new Task<bool>[keys.Length];
@@ -71,6 +78,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return results;
         }
 
+        /// <inheritdoc/>
         public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, TimeSpan expiresIn, CommandFlags flags = CommandFlags.None)
         {
             var tasks = new Task<bool>[keys.Length];

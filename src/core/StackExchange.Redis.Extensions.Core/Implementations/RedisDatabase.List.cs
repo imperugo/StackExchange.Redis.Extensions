@@ -4,8 +4,9 @@ using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations
 {
-    internal partial class RedisDatabase : IRedisDatabase
+    public partial class RedisDatabase : IRedisDatabase
     {
+        /// <inheritdoc/>
         public Task<long> ListAddToLeftAsync<T>(string key, T item, When when = When.Always, CommandFlags flags = CommandFlags.None)
             where T : class
         {
@@ -20,6 +21,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return Database.ListLeftPushAsync(key, serializedItem, when, flags);
         }
 
+        /// <inheritdoc/>
         public async Task<T> ListGetFromRightAsync<T>(string key, CommandFlags flags = CommandFlags.None)
             where T : class
         {

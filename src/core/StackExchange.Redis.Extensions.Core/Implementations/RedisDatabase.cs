@@ -11,6 +11,7 @@ using StackExchange.Redis.KeyspaceIsolation;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations
 {
+    /// <inheritdoc/>
     public partial class RedisDatabase : IRedisDatabase
     {
         private readonly IConnectionMultiplexer connectionMultiplexer;
@@ -18,6 +19,15 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         private readonly string keyprefix;
         private readonly uint maxValueLength;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RedisDatabase"/> class.
+        /// </summary>
+        /// <param name="connectionMultiplexer">The connection.</param>
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="serverEnumerationStrategy">The server enumeration strategy.</param>
+        /// <param name="database">The StackExchange.Redis.Database.</param>
+        /// <param name="maxvalueLength">The max lenght of the cache object.</param>
+        /// <param name="keyPrefix">The key prefix.</param>
         public RedisDatabase(
                 IConnectionMultiplexer connectionMultiplexer,
                 ISerializer serializer,
@@ -41,26 +51,32 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             maxValueLength = maxvalueLength;
         }
 
+        /// <inheritdoc/>
         public IDatabase Database { get; }
 
+        /// <inheritdoc/>
         public ISerializer Serializer { get; }
 
+        /// <inheritdoc/>
         public Task<bool> ExistsAsync(string key, CommandFlags flags = CommandFlags.None)
         {
             return Database.KeyExistsAsync(key, flags);
         }
 
+        /// <inheritdoc/>
         public Task<bool> RemoveAsync(string key, CommandFlags flags = CommandFlags.None)
         {
             return Database.KeyDeleteAsync(key, flags);
         }
 
-        public Task RemoveAllAsync(IEnumerable<string> keys, CommandFlags flags = CommandFlags.None)
+        /// <inheritdoc/>
+        public Task<long> RemoveAllAsync(IEnumerable<string> keys, CommandFlags flags = CommandFlags.None)
         {
             var redisKeys = keys.Select(x => (RedisKey)x).ToArray();
             return Database.KeyDeleteAsync(redisKeys, flags);
         }
 
+        /// <inheritdoc/>
         public async Task<T> GetAsync<T>(string key, CommandFlags flag = CommandFlags.None)
         {
             var valueBytes = await Database.StringGetAsync(key, flag).ConfigureAwait(false);
@@ -71,6 +87,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return Serializer.Deserialize<T>(valueBytes);
         }
 
+        /// <inheritdoc/>
         public async Task<T> GetAsync<T>(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)
         {
             var result = await GetAsync<T>(key, flag).ConfigureAwait(false);
@@ -81,6 +98,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return result;
         }
 
+        /// <inheritdoc/>
         public async Task<T> GetAsync<T>(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None)
         {
             var result = await GetAsync<T>(key, flag).ConfigureAwait(false);
@@ -91,6 +109,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return result;
         }
 
+        /// <inheritdoc/>
         public Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             var entryBytes = Serializer.Serialize(value);
@@ -101,11 +120,13 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return Database.StringSetAsync(key, entryBytes, null, when, flag);
         }
 
+        /// <inheritdoc/>
         public Task<bool> ReplaceAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             return AddAsync(key, value, when, flag);
         }
 
+        /// <inheritdoc/>
         public Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             var entryBytes = Serializer.Serialize(value);
@@ -118,11 +139,13 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return Database.StringSetAsync(key, entryBytes, expiration, when, flag);
         }
 
+        /// <inheritdoc/>
         public Task<bool> ReplaceAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             return AddAsync(key, value, expiresAt, when, flag);
         }
 
+        /// <inheritdoc/>
         public Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             var entryBytes = Serializer.Serialize(value);
@@ -133,11 +156,13 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return Database.StringSetAsync(key, entryBytes, expiresIn, when, flag);
         }
 
+        /// <inheritdoc/>
         public Task<bool> ReplaceAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             return AddAsync(key, value, expiresIn, when, flag);
         }
 
+        /// <inheritdoc/>
         public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys)
         {
             var redisKeys = keys.Select(x => (RedisKey)x).ToArray();
@@ -153,6 +178,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return dict;
         }
 
+        /// <inheritdoc/>
         public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys, DateTimeOffset expiresAt)
         {
             var tsk1 = GetAllAsync<T>(keys);
@@ -163,6 +189,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return tsk1.Result;
         }
 
+        /// <inheritdoc/>
         public async Task<IDictionary<string, T>> GetAllAsync<T>(IEnumerable<string> keys, TimeSpan expiresIn)
         {
             var tsk1 = GetAllAsync<T>(keys);
@@ -173,6 +200,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return tsk1.Result;
         }
 
+        /// <inheritdoc/>
         public Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             var values = GetItemsInMaxLengthLimit(items);
@@ -180,6 +208,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return Database.StringSetAsync(values, when, flag);
         }
 
+        /// <inheritdoc/>
         public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             var values = GetItemsInMaxLengthLimit(items);
@@ -195,6 +224,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return ((Task<bool>)tasks[0]).Result;
         }
 
+        /// <inheritdoc/>
         public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             var values = GetItemsInMaxLengthLimit(items);
@@ -210,6 +240,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return ((Task<bool>)tasks[0]).Result;
         }
 
+        /// <inheritdoc/>
         public Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
             where T : class
         {
@@ -224,6 +255,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return Database.SetAddAsync(key, serializedObject, flag);
         }
 
+        /// <inheritdoc/>
         public Task<bool> SetContainsAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
             where T : class
         {
@@ -238,6 +270,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return Database.SetContainsAsync(key, serializedObject, flag);
         }
 
+        /// <inheritdoc/>
         public Task<long> SetAddAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items)
             where T : class
         {
@@ -257,6 +290,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                     flag);
         }
 
+        /// <inheritdoc/>
         public Task<bool> SetRemoveAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
             where T : class
         {
@@ -271,6 +305,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return Database.SetRemoveAsync(key, serializedObject, flag);
         }
 
+        /// <inheritdoc/>
         public Task<long> SetRemoveAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items)
             where T : class
         {
@@ -286,12 +321,14 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return Database.SetRemoveAsync(key, items.Select(item => Serializer.Serialize(item)).Select(x => (RedisValue)x).ToArray(), flag);
         }
 
+        /// <inheritdoc/>
         public async Task<string[]> SetMemberAsync(string memberName, CommandFlags flag = CommandFlags.None)
         {
             var members = await Database.SetMembersAsync(memberName, flag).ConfigureAwait(false);
             return members.Select(x => x.ToString()).ToArray();
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<T>> SetMembersAsync<T>(string key, CommandFlags flag = CommandFlags.None)
         {
             var members = await Database.SetMembersAsync(key, flag).ConfigureAwait(false);
@@ -299,6 +336,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return members.Select(m => m == RedisValue.Null ? default : Serializer.Deserialize<T>(m));
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<string>> SearchKeysAsync(string pattern)
         {
             pattern = $"{keyprefix}{pattern}";
@@ -329,6 +367,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return !string.IsNullOrEmpty(keyprefix) ? keys.Select(k => k.Substring(keyprefix.Length)) : keys;
         }
 
+        /// <inheritdoc/>
         public Task FlushDbAsync()
         {
             var endPoints = Database.Multiplexer.GetEndPoints();
@@ -346,6 +385,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return Task.WhenAll(tasks);
         }
 
+        /// <inheritdoc/>
         public Task SaveAsync(SaveType saveType, CommandFlags flags = CommandFlags.None)
         {
             var endPoints = Database.Multiplexer.GetEndPoints();
@@ -358,6 +398,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return Task.WhenAll(tasks);
         }
 
+        /// <inheritdoc/>
         public async Task<Dictionary<string, string>> GetInfoAsync()
         {
             var info = (await Database.ScriptEvaluateAsync("return redis.call('INFO')").ConfigureAwait(false)).ToString();
@@ -365,6 +406,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return ParseInfo(info);
         }
 
+        /// <inheritdoc/>
         public async Task<List<InfoDetail>> GetInfoCategorizedAsync()
         {
             var info = (await Database.ScriptEvaluateAsync("return redis.call('INFO')").ConfigureAwait(false)).ToString();
@@ -372,6 +414,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return ParseCategorizedInfo(info);
         }
 
+        /// <inheritdoc/>
         public Task<double> SortedSetAddIncrementAsync<T>(string key, T value, double score, CommandFlags commandFlags = CommandFlags.None)
         {
             var entryBytes = Serializer.Serialize(value);
