@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using StackExchange.Redis;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.Core.Extensions;
 using StackExchange.Redis.Extensions.Core.Models;
 using StackExchange.Redis.Extensions.Core.ServerIteration;
 using StackExchange.Redis.KeyspaceIsolation;
@@ -112,10 +113,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
-            var entryBytes = Serializer.Serialize(value);
-
-            if (maxValueLength > 0 && entryBytes.Length > maxValueLength)
-                throw new ArgumentException("value cannot be longer than the MaxValueLength", nameof(value));
+            var entryBytes = value.OfValueSize(Serializer, maxValueLength, key);
 
             return Database.StringSetAsync(key, entryBytes, null, when, flag);
         }
@@ -129,10 +127,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
-            var entryBytes = Serializer.Serialize(value);
-
-            if (maxValueLength > 0 && entryBytes.Length > maxValueLength)
-                throw new ArgumentException("value cannot be longer than the MaxValueLength", nameof(value));
+            var entryBytes = value.OfValueSize(Serializer, maxValueLength, key);
 
             var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
 
@@ -148,10 +143,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
-            var entryBytes = Serializer.Serialize(value);
-
-            if (maxValueLength > 0 && entryBytes.Length > maxValueLength)
-                throw new ArgumentException("value cannot be longer than the MaxValueLength", nameof(value));
+            var entryBytes = value.OfValueSize(Serializer, maxValueLength, key);
 
             return Database.StringSetAsync(key, entryBytes, expiresIn, when, flag);
         }
@@ -203,7 +195,10 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
-            var values = GetItemsInMaxLengthLimit(items);
+            var values = items
+                        .OfValueInListSize(Serializer, maxValueLength)
+                        .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
+                        .ToArray();
 
             return Database.StringSetAsync(values, when, flag);
         }
@@ -211,7 +206,10 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
-            var values = GetItemsInMaxLengthLimit(items);
+            var values = items
+                        .OfValueInListSize(Serializer, maxValueLength)
+                        .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
+                        .ToArray();
 
             var tasks = new Task[values.Length + 1];
             tasks[0] = Database.StringSetAsync(values, when, flag);
@@ -227,7 +225,10 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
-            var values = GetItemsInMaxLengthLimit(items);
+            var values = items
+                        .OfValueInListSize(Serializer, maxValueLength)
+                        .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
+                        .ToArray();
 
             var tasks = new Task[values.Length + 1];
             tasks[0] = Database.StringSetAsync(values, when, flag);
@@ -428,30 +429,6 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
             // Return a dictionary of the Info Key and Info value
             return data.ToDictionary(x => x.Key, x => x.InfoValue);
-        }
-
-        private KeyValuePair<RedisKey, RedisValue>[] GetItemsInMaxLengthLimit<T>(IList<Tuple<string, T>> values)
-        {
-            if (maxValueLength == default)
-            {
-                return values
-                    .Select(item => new KeyValuePair<RedisKey, RedisValue>(item.Item1, Serializer.Serialize(item.Item2)))
-                    .ToArray();
-            }
-
-            return GetValuesInLengthLimitIterator(values).ToArray();
-        }
-
-        private IEnumerable<KeyValuePair<RedisKey, RedisValue>> GetValuesInLengthLimitIterator<T>(IList<Tuple<string, T>> values)
-        {
-            foreach (var item in values)
-            {
-                var itemSerialized = Serializer.Serialize(item.Item2);
-                if (itemSerialized.Length <= maxValueLength)
-                    yield return new KeyValuePair<RedisKey, RedisValue>(item.Item1, itemSerialized);
-                else
-                    throw new ArgumentException("value cannot be longer than the MaxValueLength", nameof(item.Item2));
-            }
         }
 
         private List<InfoDetail> ParseCategorizedInfo(string info)
