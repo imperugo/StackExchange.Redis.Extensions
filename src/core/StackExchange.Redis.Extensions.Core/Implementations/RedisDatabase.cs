@@ -263,7 +263,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentException("key cannot be empty.", nameof(key));
 
-            var item = await Database.SetPopAsync(key, flag);
+            var item = await Database.SetPopAsync(key, flag).ConfigureAwait(false);
 
             if (item == RedisValue.Null)
                 return default;
@@ -278,7 +278,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentException("key cannot be empty.", nameof(key));
 
-            var items = await Database.SetPopAsync(key, count, flag);
+            var items = await Database.SetPopAsync(key, count, flag).ConfigureAwait(false);
 
             return items.Select(item => item == RedisValue.Null ? default : Serializer.Deserialize<T>(item));
         }
