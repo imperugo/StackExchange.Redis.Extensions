@@ -302,6 +302,79 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         }
 
         [Fact]
+        public async Task SetPop_With_An_Existing_Key_Should_Return_Valid_Data()
+        {
+            var values = Range(0, 5)
+                .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
+                .ToArray();
+
+            foreach (var value in values)
+            {
+                await db.SetAddAsync("MySet", serializer.Serialize(value.Value));
+            }
+
+            var result = await Sut.GetDbFromConfiguration().SetPopAsync<string>("MySet");
+            Assert.NotNull(result);
+            Assert.Contains(values, v => v.Value == result);
+
+            var members = await db.SetMembersAsync("MySet");
+            var itemsLeft = members.Select(m => serializer.Deserialize<string>(m)).ToArray();
+            Assert.True(itemsLeft.Length == 4);
+            Assert.DoesNotContain(itemsLeft, l => l == result);
+        }
+
+        [Fact]
+        public async Task SetPop_With_A_Non_Existing_Key_Should_Return_Null()
+        {
+            var result = await Sut.GetDbFromConfiguration().SetPopAsync<string>("MySet");
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task SetPop_With_An_Empty_Key_Should_Throw_Exception()
+        {
+            await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDbFromConfiguration().SetPopAsync<string>(string.Empty));
+        }
+
+        [Fact]
+        public async Task SetPop_Count_With_An_Existing_Key_Should_Return_Valid_Data()
+        {
+            var values = Range(0, 5)
+                .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
+                .ToArray();
+
+            foreach (var value in values)
+            {
+                await db.SetAddAsync("MySet", serializer.Serialize(value.Value));
+            }
+
+            var result = await Sut.GetDbFromConfiguration().SetPopAsync<string>("MySet", 3);
+            Assert.NotNull(result);
+            Assert.Equal(3, result.Count());
+            foreach (var r in result)
+                Assert.Contains(values, v => v.Value == r);
+
+            var members = await db.SetMembersAsync("MySet");
+            var itemsLeft = members.Select(m => serializer.Deserialize<string>(m)).ToArray();
+            Assert.True(itemsLeft.Length == 2);
+            foreach (var r in result)
+                Assert.DoesNotContain(itemsLeft, l => l == r);
+        }
+
+        [Fact]
+        public async Task SetPop_Count_With_A_Non_Existing_Key_Should_Return_Null()
+        {
+            var result = await Sut.GetDbFromConfiguration().SetPopAsync<string>("MySet", 0);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task SetPop_Count_With_An_Empty_Key_Should_Throw_Exception()
+        {
+            await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDbFromConfiguration().SetPopAsync<string>(string.Empty, 0));
+        }
+
+        [Fact]
         public async Task SetMembers_With_Valid_Data_Should_Return_Correct_Keys()
         {
             var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();

@@ -228,6 +228,25 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
             where T : class;
 
         /// <summary>
+        ///     Run SPOP command https://redis.io/commands/spop
+        /// </summary>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
+        /// <param name="key">The key of the set</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
+        Task<T> SetPopAsync<T>(string key, CommandFlags flag = CommandFlags.None)
+            where T : class;
+
+        /// <summary>
+        ///     Run SPOP command https://redis.io/commands/spop
+        /// </summary>
+        /// <typeparam name="T">The type of the expected object.</typeparam>
+        /// <param name="key">The key of the set</param>
+        /// <param name="count">The number of elements to return</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
+        Task<IEnumerable<T>> SetPopAsync<T>(string key, long count, CommandFlags flag = CommandFlags.None)
+            where T : class;
+
+        /// <summary>
         ///     Returns if member is a member of the set stored at key.
         /// </summary>
         /// <typeparam name="T">The type of the expected object.</typeparam>
