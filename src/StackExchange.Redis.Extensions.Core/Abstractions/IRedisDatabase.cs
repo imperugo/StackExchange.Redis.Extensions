@@ -422,6 +422,21 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None) where T : class;
 
         /// <summary>
+        ///     Run SPOP command https://redis.io/commands/spop
+        /// </summary>
+        /// <param name="key">The key of the set</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
+        Task<T> SetPopAsync<T>(string key, CommandFlags flag = CommandFlags.None) where T : class;
+
+        /// <summary>
+        ///     Run SPOP command https://redis.io/commands/spop
+        /// </summary>
+        /// <param name="key">The key of the set</param>
+        /// <param name="count">The number of elements to return</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
+        Task<IEnumerable<T>> SetPopAsync<T>(string key, long count, CommandFlags flag = CommandFlags.None) where T : class;
+
+        /// <summary>
         ///     Run SADD command http://redis.io/commands/sadd
         /// </summary>
         /// <param name="items">Name of the member.</param>

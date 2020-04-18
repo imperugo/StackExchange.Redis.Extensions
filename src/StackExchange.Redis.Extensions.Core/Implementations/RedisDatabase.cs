@@ -366,6 +366,29 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return await Database.SetAddAsync(key, serializedObject, flag);
         }
 
+        public async Task<T> SetPopAsync<T>(string key, CommandFlags flag = CommandFlags.None) where T : class
+        {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentException("key cannot be empty.", nameof(key));
+
+            var item = await Database.SetPopAsync(key, flag);
+
+            if (item == RedisValue.Null)
+                return default;
+
+            return Serializer.Deserialize<T>(item);
+        }
+
+        public async Task<IEnumerable<T>> SetPopAsync<T>(string key, long count, CommandFlags flag = CommandFlags.None) where T : class
+        {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentException("key cannot be empty.", nameof(key));
+
+            var items = await Database.SetPopAsync(key, count, flag);
+
+            return items.Select(item => item == RedisValue.Null ? default : Serializer.Deserialize<T>(item));
+        }
+
         public long SetAddAll<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items) where T : class
         {
             if (string.IsNullOrEmpty(key)) throw new ArgumentException("key cannot be empty.", nameof(key));

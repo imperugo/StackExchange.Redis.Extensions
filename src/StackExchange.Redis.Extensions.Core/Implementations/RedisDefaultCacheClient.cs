@@ -211,6 +211,18 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return cacheClient.GetDbFromConfiguration().SetAddAsync(key, item, flag);
         }
 
+        public Task<T> SetPopAsync<T>(string key, CommandFlags flag = CommandFlags.None) 
+            where T : class
+        {
+            return cacheClient.GetDbFromConfiguration().SetPopAsync<T>(key, flag);
+        }
+
+        public Task<IEnumerable<T>> SetPopAsync<T>(string key, long count, CommandFlags flag = CommandFlags.None)
+            where T : class
+        {
+            return cacheClient.GetDbFromConfiguration().SetPopAsync<T>(key, count, flag);
+        }
+
         public long SetAddAll<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items)
             where T : class
         {
