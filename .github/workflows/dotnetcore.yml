@@ -1,21 +1,51 @@
-name: .NET Core
-
-on: [push]
-
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "*.*.*"
+  pull_request:
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest", "macos-latest"]
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     steps:
-    - name: Setup Redis
-      uses: zhulik/redis-action@1.1.0
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.101
-    - name: Build with dotnet
-      run: dotnet build --configuration Release
-    - name: run tests
-      run: dotnet test -f:netcoreapp3.1
+      - name: Install Dependencies (Ubuntu)
+        run: sudo apt install redis-server
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Install Dependencies (macOS)
+        run: brew install redis && brew services start redis
+        if: matrix.os == 'macos-latest'
+
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.101
+
+      - run: dotnet --info
+      - if: matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest'
+        run: ./build.sh
+
+  publish:
+    needs: build
+    name: Publish Nuget Packages
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+      - name: Build with dotnet
+        run: ./NuGetPack.bat
+        shell: bash
+      - name: Publish nuget
+        run: |
+          for f in ./packages/*.nupkg
+          do
+            dotnet nuget push $f --api-key ${{ secrets.NuGetApiKey}} --source https://api.nuget.org/v3/index.json
+          done
+        shell: bash

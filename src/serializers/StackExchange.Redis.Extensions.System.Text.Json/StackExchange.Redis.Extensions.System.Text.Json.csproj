@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Title>Use the System.Text.Json serialization with StackExchange.Redis.</Title>
+    <Summary>Use the System.Text.Json serialization with StackExchange.Redis.</Summary>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="4.7.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
+  </ItemGroup>
+</Project>
