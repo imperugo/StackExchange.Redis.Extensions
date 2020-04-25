@@ -118,7 +118,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             var expectedItems = Enumerable.Range(0, 10).Select(x => new TestClass
             {
                 IntValue = x,
-                StrigValue = $"{Guid.NewGuid():N}",
+                StringValue = $"{Guid.NewGuid():N}",
                 BoolValue = x % 2 == 0
             }).ToArray();
 
@@ -144,9 +144,20 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Serializable]
         public class TestClass
         {
+            public TestClass()
+            {
+            }
+
+            public TestClass(int intValue, string stringValue, bool boolValue)
+            {
+                IntValue = intValue;
+                StringValue = stringValue;
+                BoolValue = boolValue;
+            }
+
             public int IntValue { get; set; }
 
-            public string StrigValue { get; set; }
+            public string StringValue { get; set; }
 
             public bool BoolValue { get; set; }
 
@@ -169,13 +180,13 @@ namespace StackExchange.Redis.Extensions.Core.Tests
 
                 return other.BoolValue == this.BoolValue
                     && other.IntValue == this.IntValue
-                    && other.StrigValue == this.StrigValue;
+                    && other.StringValue == this.StringValue;
             }
 
             public override int GetHashCode() => base.GetHashCode()
                     ^ this.BoolValue.GetHashCode()
                     ^ this.IntValue.GetHashCode()
-                    ^ this.StrigValue.GetHashCode();
+                    ^ this.StringValue.GetHashCode();
         }
     }
 }
