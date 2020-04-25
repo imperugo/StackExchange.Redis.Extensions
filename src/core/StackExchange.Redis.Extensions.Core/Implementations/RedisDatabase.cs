@@ -65,7 +65,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <param name="tag">The requested tag to set</param>
         /// <param name="type">The type of the tagged object</param>
         /// <returns>Tag string</returns>
-        public static string GetTagKey(string tag, Type type) => $"tag_{type.Name.GetHashCode()}:{tag}";
+        public static string GetTagKey(string tag, Type type) => $"tag:{type.Name.GetHashCode()}:{tag}";
 
         /// <inheritdoc/>
         public Task<bool> ExistsAsync(string key, CommandFlags flags = CommandFlags.None)
