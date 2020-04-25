@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using StackExchange.Redis;
 using StackExchange.Redis.Extensions.Core.Abstractions;
@@ -57,6 +58,14 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         /// <inheritdoc/>
         public ISerializer Serializer { get; }
+
+        /// <summary>
+        /// Utility method for creation of tags
+        /// </summary>
+        /// <param name="tag">The requested tag to set</param>
+        /// <param name="type">The type of the tagged object</param>
+        /// <returns>Tag string</returns>
+        public static string GetTagKey(string tag, Type type) => $"tag_{type.Name.GetHashCode()}:{tag}";
 
         /// <inheritdoc/>
         public Task<bool> ExistsAsync(string key, CommandFlags flags = CommandFlags.None)
@@ -117,17 +126,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
             if (tags?.Any() == true)
             {
-                var trx = Database.CreateTransaction();
-
-                foreach (var tag in tags)
-                {
-                    var tagKey = $"tag:{tag}";
-                    trx.SetAddAsync(tagKey, key.OfValueSize(Serializer, maxValueLength, tagKey));
-                }
-
-                trx.StringSetAsync(key, entryBytes, null, when, flag);
-
-                return trx.ExecuteAsync(flag);
+                return ExecuteAddWithTags(key, value, tags, db => db.StringSetAsync(key, entryBytes, null, when, flag), null, when, flag);
             }
 
             return Database.StringSetAsync(key, entryBytes, null, when, flag);
@@ -140,11 +139,16 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         }
 
         /// <inheritdoc/>
-        public Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
+        public Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null)
         {
             var entryBytes = value.OfValueSize(Serializer, maxValueLength, key);
 
             var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
+
+            if (tags?.Any() == true)
+            {
+                return ExecuteAddWithTags(key, value, tags, db => db.StringSetAsync(key, entryBytes, expiration, when, flag), expiration, when, flag);
+            }
 
             return Database.StringSetAsync(key, entryBytes, expiration, when, flag);
         }
@@ -156,7 +160,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         }
 
         /// <inheritdoc/>
-        public Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None)
+        public Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null)
         {
             var entryBytes = value.OfValueSize(Serializer, maxValueLength, key);
 
@@ -501,6 +505,38 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             }
 
             return data;
+        }
+
+        private Task<bool> ExecuteAddWithTags<TValue>(
+            string key,
+            TValue value,
+            HashSet<string> tags,
+            Func<IDatabaseAsync, Task<bool>> action,
+            TimeSpan? expiration = null,
+            When when = When.Always,
+            CommandFlags commandFlags = CommandFlags.None)
+        {
+            var trx = Database.CreateTransaction();
+
+            switch (when)
+            {
+                case When.NotExists:
+                    trx.AddCondition(Condition.KeyNotExists(key));
+                    break;
+                case When.Exists:
+                    trx.AddCondition(Condition.KeyExists(key));
+                    break;
+            }
+
+            foreach (var tag in tags)
+            {
+                var tagKey = GetTagKey(tag, value.GetType());
+                trx.SetAddAsync(tagKey, key.OfValueSize(Serializer, maxValueLength, tagKey), commandFlags);
+            }
+
+            action(trx);
+
+            return trx.ExecuteAsync(commandFlags);
         }
     }
 }
