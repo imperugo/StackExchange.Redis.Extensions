@@ -12,7 +12,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public async Task<IEnumerable<T>> GetByTag<T>(string tag)
         {
-            var tagKey = GetTagKey(tag, typeof(T));
+            var tagKey = GenerateTagKey(tag, typeof(T));
 
             var memberKeys = await SetMembersAsync<string>(tagKey);
 
