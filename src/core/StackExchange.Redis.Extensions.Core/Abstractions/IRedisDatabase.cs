@@ -81,8 +81,9 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="value">The instance of T.</param>
         /// <param name="when">The condition (Always is the default value).</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
+        /// <param name="tags">Tags for reverse indexing the key</param>
         /// <returns>True if the object has been added. Otherwise false</returns>
-        Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None);
+        Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null);
 
         /// <summary>
         ///     Replaces the object with specified key into Redis database.

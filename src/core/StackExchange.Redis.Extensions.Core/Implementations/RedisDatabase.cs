@@ -111,9 +111,24 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         }
 
         /// <inheritdoc/>
-        public Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None)
+        public Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null)
         {
             var entryBytes = value.OfValueSize(Serializer, maxValueLength, key);
+
+            if (tags?.Any() == true)
+            {
+                var trx = Database.CreateTransaction();
+
+                foreach (var tag in tags)
+                {
+                    var tagKey = $"tag:{tag}";
+                    trx.SetAddAsync(tagKey, key.OfValueSize(Serializer, maxValueLength, tagKey));
+                }
+
+                trx.StringSetAsync(key, entryBytes, null, when, flag);
+
+                return trx.ExecuteAsync(flag);
+            }
 
             return Database.StringSetAsync(key, entryBytes, null, when, flag);
         }
