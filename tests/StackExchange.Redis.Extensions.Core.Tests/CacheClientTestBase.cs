@@ -56,13 +56,6 @@ namespace StackExchange.Redis.Extensions.Core.Tests
 
         protected IRedisCacheClient Sut => sut;
 
-        public void Dispose()
-        {
-            db.FlushDatabase();
-            db.Multiplexer.GetSubscriber().UnsubscribeAll();
-            connectionPoolManager.Dispose();
-        }
-
         [Fact]
         public async Task Info_Should_Return_Valid_Information()
         {

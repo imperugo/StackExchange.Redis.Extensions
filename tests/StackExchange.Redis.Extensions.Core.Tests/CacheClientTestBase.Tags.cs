@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core.Implementations;
 using Xunit;
@@ -155,10 +156,15 @@ namespace StackExchange.Redis.Extensions.Core.Tests
                 BoolValue = boolValue;
             }
 
+            [DataMember(Name = "intValue", EmitDefaultValue = false)]
             public int IntValue { get; set; }
 
+            [DataMember(Name = "stringValue", EmitDefaultValue = false)]
+#pragma warning disable CA2235 // Mark all non-serializable fields: string is serializeable by attribute
             public string StringValue { get; set; }
+#pragma warning restore CA2235 // Mark all non-serializable fields
 
+            [DataMember(Name = "boolValue", EmitDefaultValue = false)]
             public bool BoolValue { get; set; }
 
             public override bool Equals(object obj)
