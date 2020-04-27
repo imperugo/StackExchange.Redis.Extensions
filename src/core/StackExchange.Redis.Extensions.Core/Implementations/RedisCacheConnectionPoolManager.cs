@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Models;
@@ -20,12 +21,12 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// </summary>
         /// <param name="redisConfiguration">The redis configuration.</param>
         /// <param name="logger">The logger.</param>
-        public RedisCacheConnectionPoolManager(RedisConfiguration redisConfiguration, ILogger<RedisCacheConnectionPoolManager> logger)
+        public RedisCacheConnectionPoolManager(RedisConfiguration redisConfiguration, ILogger<RedisCacheConnectionPoolManager> logger = null)
         {
             this.redisConfiguration = redisConfiguration ?? throw new ArgumentNullException(nameof(redisConfiguration));
 
             this.connections = new ConcurrentBag<Lazy<StateAwareConnection>>();
-            this.logger = logger;
+            this.logger = logger ?? NullLogger<RedisCacheConnectionPoolManager>.Instance;
         }
 
         /// <inheritdoc/>
