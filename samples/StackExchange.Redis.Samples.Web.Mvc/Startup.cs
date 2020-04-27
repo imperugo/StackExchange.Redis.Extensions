@@ -28,24 +28,26 @@ namespace StackExchange.Redis.Samples.Web.Mvc
         {
             services.AddControllersWithViews();
 
-            var conf = new RedisConfiguration()
-            {
-                AbortOnConnectFail = true,
-                KeyPrefix = "MyPrefix__",
-                Hosts = new RedisHost[]
-                {
-                    new RedisHost { Host = "localhost", Port = 6379 }
-                },
-                AllowAdmin = true,
-                ConnectTimeout = 3000,
-                Database = 0,
-                ServerEnumerationStrategy = new ServerEnumerationStrategy()
-                {
-                    Mode = ServerEnumerationStrategy.ModeOptions.All,
-                    TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
-                    UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
-                }
-            };
+            // var conf = new RedisConfiguration()
+            // {
+            //     AbortOnConnectFail = true,
+            //     KeyPrefix = "MyPrefix__",
+            //     Hosts = new RedisHost[]
+            //     {
+            //         new RedisHost { Host = "localhost", Port = 6379 }
+            //     },
+            //     AllowAdmin = true,
+            //     ConnectTimeout = 3000,
+            //     Database = 0,
+            //     ServerEnumerationStrategy = new ServerEnumerationStrategy()
+            //     {
+            //         Mode = ServerEnumerationStrategy.ModeOptions.All,
+            //         TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
+            //         UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
+            //     }
+            // };
+            var conf = new RedisConfiguration();
+            conf.ConnectionString = "localhost:6379,ConnectTimeout=5000,allowAdmin=true";
 
             services.AddStackExchangeRedisExtensions<NewtonsoftSerializer>(conf);
         }
