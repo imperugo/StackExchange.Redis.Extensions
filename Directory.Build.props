@@ -4,8 +4,8 @@
   <!-- General information -->
   <PropertyGroup>
     <Authors>Ugo Lattanzi</Authors>
-    <VersionPrefix>6.1.1</VersionPrefix>
-    <!-- <VersionSuffix>pre</VersionSuffix> -->
+    <VersionPrefix>7.0.0</VersionPrefix>
+    <VersionSuffix>pre</VersionSuffix>
     <TargetFrameworks>netstandard2.0;net461;net472;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
@@ -31,13 +31,16 @@
         - StackExchange.Redis.Extensions.Protobuf
         - StackExchange.Redis.Extensions.Utf8Json
         - StackExchange.Redis.Extensions.Binary
+        - StackExchange.Redis.Extensions.System.Text.Json
     </Description>
     <PackageReleaseNotes>
+        - Connection pool
+        - State aware connections (automatic replace of error with ConnectionMultiplex)
         - Added support to .NET Standard
         - Bugfixing
         - improving performances;
         - Add an object to Redis;
-        - Change ISerializer interface (more info here https://github.com/imperugo/StackExchange.Redis.Extensions/issues/2)
+        - Change ISerializer interface
         - Update StackExchange.Redis to latest version;
         - Changed Flush method;
         - Remove an object from Redis;
