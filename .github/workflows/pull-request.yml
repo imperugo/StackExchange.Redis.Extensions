@@ -4,6 +4,7 @@ on:
       - master
     tags:
       - "*.*.*"
+  pull_request:
 jobs:
   build:
     strategy:
@@ -30,21 +31,3 @@ jobs:
       - run: dotnet --info
       - if: matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest'
         run: ./build.sh
-
-  publish:
-    needs: build
-    name: Publish Nuget Packages
-    runs-on: windows-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v1
-      - name: Build with dotnet
-        run: ./NuGetPack.bat
-        shell: bash
-      - name: Publish nuget
-        run: |
-          for f in ./packages/*.nupkg
-          do
-            dotnet nuget push $f --api-key ${{ secrets.NuGetApiKey}} --source https://api.nuget.org/v3/index.json
-          done
-        shell: bash

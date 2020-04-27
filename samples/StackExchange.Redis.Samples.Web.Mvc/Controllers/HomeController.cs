@@ -23,7 +23,6 @@ namespace StackExchange.Redis.Samples.Web.Mvc.Controllers
             this.connectionPoolManager = connectionPoolManager;
         }
 
-
         public async Task<IActionResult> Index()
         {
             var redisInfo = await redisDatabase.GetInfoAsync();
