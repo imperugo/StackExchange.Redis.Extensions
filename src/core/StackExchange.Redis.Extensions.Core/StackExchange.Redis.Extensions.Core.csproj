@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <!--  -->
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' or  '$(TargetFramework)' == 'net461' or  '$(TargetFramework)' == 'net472'">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' or '$(TargetFramework)' == 'net461' or '$(TargetFramework)' == 'net472'">
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
   </ItemGroup>
 </Project>
