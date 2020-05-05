@@ -4,7 +4,7 @@
   <!-- General information -->
   <PropertyGroup>
     <Authors>Ugo Lattanzi</Authors>
-    <VersionPrefix>6.1.3</VersionPrefix>
+    <VersionPrefix>6.1.4</VersionPrefix>
     <!-- <VersionSuffix>pre</VersionSuffix> -->
     <TargetFrameworks>netstandard2.0;net461;net472;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <IncludeSource>True</IncludeSource>

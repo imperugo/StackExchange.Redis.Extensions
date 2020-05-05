@@ -41,7 +41,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/src/StackExchange.Redis.Extensions.Core/StackExchange.Redis.Extensions.Core.csproj",
+        "${workspaceFolder}/src/core/StackExchange.Redis.Extensions.Core/StackExchange.Redis.Extensions.Core.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary",
         "-f:netstandard2.0"
