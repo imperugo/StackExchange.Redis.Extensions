@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Models;
@@ -74,7 +76,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                     continue;
                 }
 
-                if (!lazy.Value.IsConnected())
+                if (!lazy.Value.IsValid())
                 {
                     invalidConnections++;
                     continue;
@@ -185,7 +187,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 this.multiplexer?.Dispose();
             }
 
-            public bool IsConnected() => this.multiplexer.IsConnecting == false;
+            public bool IsConnected() => this.multiplexer.IsConnecting == false && this.multiplexer.IsConnected == false;
 
             public bool IsValid() => this.invalidated == false;
 
