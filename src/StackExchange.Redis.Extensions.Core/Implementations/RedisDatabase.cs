@@ -871,8 +871,32 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             {
                 if (prop.CanWrite == false || prop.PropertyType.IsPublic == false) continue;
 
-                if (items.TryGetValue(prop.Name, out RedisValue value)) {
-                    prop.SetValue(obj, Convert.ChangeType(Serializer.Deserialize(value, prop.PropertyType), prop.PropertyType));
+                if (items.TryGetValue(prop.Name, out RedisValue value))
+                {
+                    if (value.IsNull == false)
+                    {
+                        prop.SetValue(obj, Convert.ChangeType(Serializer.Deserialize(value, prop.PropertyType), prop.PropertyType));
+                    }
+                }
+            }
+            return (T)obj;
+        }
+
+        public async Task<T> HashGetToModelAsync<T>(string hashKey, string[] fields, CommandFlags commandFlags = CommandFlags.None)
+        {
+            RedisValue[] hashFields = new RedisValue[fields.Length];
+            for (int i = 0, l = fields.Length; i < l; i++) hashFields[i] = fields[i];
+
+            var items = await Database.HashGetAsync(hashKey, hashFields, commandFlags);
+
+            PropertyInfo[] props = typeof(T).GetProperties();
+            var obj = Activator.CreateInstance(typeof(T));
+            for (int i = 0, l = fields.Length; i < l; i++)
+            {
+                var prop = props.FirstOrDefault(c => c.Name == fields[i]);
+                if (prop == null || prop.CanWrite == false || prop.PropertyType.IsPublic == false) continue;
+                if (items[i].IsNull == false) {
+                    prop.SetValue(obj, Convert.ChangeType(Serializer.Deserialize(items[i], prop.PropertyType), prop.PropertyType));
                 }
             }
 

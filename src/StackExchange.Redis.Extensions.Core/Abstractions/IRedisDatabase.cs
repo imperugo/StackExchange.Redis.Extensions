@@ -1081,6 +1081,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
 
         Task<T> HashGetToModelAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None);
 
+        Task<T> HashGetToModelAsync<T>(string hashKey, string[] fields, CommandFlags commandFlags = CommandFlags.None);
 
         /// <summary>
         ///     Updates the expiry time of a redis cache object
