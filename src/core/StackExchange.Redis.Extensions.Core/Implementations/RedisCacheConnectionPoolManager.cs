@@ -187,7 +187,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 this.multiplexer?.Dispose();
             }
 
-            public bool IsConnected() => this.multiplexer.IsConnecting == false && this.multiplexer.IsConnected == false;
+            public bool IsConnected() => this.multiplexer.IsConnected;
 
             public bool IsValid() => this.invalidated == false;
 
