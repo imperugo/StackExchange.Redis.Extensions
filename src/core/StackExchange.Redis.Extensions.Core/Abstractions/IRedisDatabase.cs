@@ -81,8 +81,9 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="value">The instance of T.</param>
         /// <param name="when">The condition (Always is the default value).</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
+        /// <param name="tags">Tags</param>
         /// <returns>True if the object has been added. Otherwise false</returns>
-        Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None);
+        Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null);
 
         /// <summary>
         ///     Replaces the object with specified key into Redis database.
@@ -106,10 +107,11 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="expiresAt">Expiration time.</param>
         /// <param name="when">The condition (Always is the default value).</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
+        /// <param name="tags">Tags</param>
         /// <returns>
         ///     True if the object has been added. Otherwise false
         /// </returns>
-        Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None);
+        Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null);
 
         /// <summary>
         ///     Replaces the object with specified key into Redis database.
@@ -134,10 +136,11 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="expiresIn">The duration of the cache using Timespan.</param>
         /// <param name="when">The condition (Always is the default value).</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
+        /// <param name="tags">Tags</param>
         /// <returns>
         ///     True if the object has been added. Otherwise false
         /// </returns>
-        Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None);
+        Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null);
 
         /// <summary>
         ///     Replaces the object with specified key into Redis database.
@@ -224,7 +227,8 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="key">The cache key.</param>
         /// <param name="item">Name of the member.</param>
         /// <param name="flag">Behaviour markers associated with a given command.</param>
-        Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
+        /// <param name="tags">Tags</param>
+        Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null)
             where T : class;
 
         /// <summary>
