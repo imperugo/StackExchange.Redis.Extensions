@@ -111,35 +111,13 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         private void EmitConnections()
         {
-            this.InvalidateDisconnectedConnections();
-
-            var poolSize = this.redisConfiguration.PoolSize;
-
-            var invalidOrDisconnectedConnections = this.connections.Count(lazy => lazy.IsValueCreated && (!lazy.Value.IsValid() || !lazy.Value.IsConnected()));
-
-            var requiredNumOfConnections = poolSize - invalidOrDisconnectedConnections;
-
-            if (invalidOrDisconnectedConnections <= 0 && this.connections.Count > 0)
-            {
-                logger.LogDebug("The pool is created and there aren't any invalid connections.");
+            if (connections.Count > 0)
                 return;
-            }
 
-            logger.LogDebug("The pool size is {0} and it requires new {1} connections.", poolSize, requiredNumOfConnections);
+            logger.LogDebug("Inizializing connection pool.");
 
-            for (var i = 0; i < requiredNumOfConnections; i++)
+            for (var i = 0; i < this.redisConfiguration.PoolSize; i++)
                 this.EmitConnection();
-        }
-
-        private void InvalidateDisconnectedConnections()
-        {
-            logger.LogDebug("Checking if there are any invalid connections...");
-
-            foreach (var lazy in connections)
-            {
-                if (lazy.IsValueCreated && !lazy.Value.IsConnected())
-                    lazy.Value.Invalidate();
-            }
         }
 
         /// <summary>
@@ -152,7 +130,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             private readonly Action invalidateConnectionCallback;
             private readonly ConnectionMultiplexer multiplexer;
             private readonly ILogger logger;
-            private bool invalidated;
+            private bool isDisposed = false;
+            private bool isAvailable = true;
 
             /// <summary>
             ///     Initializes a new instance of the <see cref="StateAwareConnection" /> class.
@@ -168,6 +147,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 this.invalidateConnectionCallback = connectionInvalidatedCallback ?? throw new ArgumentNullException(nameof(connectionInvalidatedCallback));
 
                 this.multiplexer.ConnectionFailed += this.ConnectionFailed;
+                this.multiplexer.ConnectionRestored += this.ConnectionRestored;
                 this.logger = logger;
             }
 
@@ -179,17 +159,24 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             {
                 logger.LogWarning("Invalidating redis connection...");
 
-                if (this.invalidated)
+                if (!isAvailable || isDisposed)
                     return;
 
-                this.invalidated = true;
                 this.multiplexer.ConnectionFailed -= this.ConnectionFailed;
+                this.multiplexer.ConnectionRestored -= this.ConnectionRestored;
                 this.multiplexer?.Dispose();
+                this.isDisposed = true;
+            }
+
+            public bool IsValid()
+            {
+                if (isAvailable && !isDisposed)
+                    return true;
+
+                return false;
             }
 
             public bool IsConnected() => this.multiplexer.IsConnected;
-
-            public bool IsValid() => this.invalidated == false;
 
             private void ConnectionFailed(object sender, ConnectionFailedEventArgs e)
             {
@@ -202,6 +189,32 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                     case ConnectionFailureType.UnableToConnect:
                         {
                             logger.LogError(e.Exception, "Redis connection error {0}.", e.FailureType);
+
+                            this.isAvailable = false;
+
+                            this.invalidateConnectionCallback();
+                            break;
+                        }
+                }
+            }
+
+            private void ConnectionRestored(object sender, ConnectionFailedEventArgs e)
+            {
+                logger.LogError(e.Exception, "Redis automatically reconnect on error {0}.", e.FailureType);
+
+                switch (e.FailureType)
+                {
+                    case ConnectionFailureType.None:
+                        {
+                            logger.LogDebug("Redis connection restored successfully.");
+
+                            this.isAvailable = true;
+                            break;
+                        }
+
+                    default:
+                        {
+                            logger.LogError(e.Exception, "An error connection during reconnecting `{0}`. Disposing the connection.", e.FailureType);
 
                             this.Invalidate();
                             this.invalidateConnectionCallback();

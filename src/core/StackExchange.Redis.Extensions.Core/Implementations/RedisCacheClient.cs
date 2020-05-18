@@ -85,14 +85,11 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
             if (string.IsNullOrEmpty(keyPrefix))
                 keyPrefix = redisConfiguration.KeyPrefix;
 
-            var connection = connectionPoolManager.GetConnection();
-            var db = connection.GetDatabase(dbNumber);
-
             return new RedisDatabase(
-                connection,
+                connectionPoolManager,
                 Serializer,
                 redisConfiguration.ServerEnumerationStrategy,
-                db,
+                dbNumber,
                 redisConfiguration.MaxValueLength,
                 keyPrefix);
         }

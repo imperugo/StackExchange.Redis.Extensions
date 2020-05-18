@@ -11,18 +11,13 @@ using Microsoft.Extensions.Hosting;
 using StackExchange.Redis.Extensions.Newtonsoft;
 using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.Core.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace StackExchange.Redis.Samples.Web.Mvc
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -37,7 +32,7 @@ namespace StackExchange.Redis.Samples.Web.Mvc
                     new RedisHost { Host = "localhost", Port = 6379 }
                 },
                 AllowAdmin = true,
-                ConnectTimeout = 3000,
+                ConnectTimeout = 1000,
                 Database = 0,
                 ServerEnumerationStrategy = new ServerEnumerationStrategy()
                 {
@@ -51,7 +46,7 @@ namespace StackExchange.Redis.Samples.Web.Mvc
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
             if (env.IsDevelopment())
             {
@@ -78,6 +73,17 @@ namespace StackExchange.Redis.Samples.Web.Mvc
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            var redisDb = app.ApplicationServices.GetRequiredService<IRedisDatabase>();
+
+            redisDb.SubscribeAsync<string>("MyEventName", x =>
+            {
+                logger.LogDebug("Just got this message {0}", x);
+
+                return Task.CompletedTask;
+            }).GetAwaiter().GetResult();
+
+            redisDb.PublishAsync("MyEventName", "ping").GetAwaiter().GetResult();
         }
     }
 }

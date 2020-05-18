@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using StackExchange.Redis;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
@@ -15,45 +16,50 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
     /// <inheritdoc/>
     public partial class RedisDatabase : IRedisDatabase
     {
-        private readonly IConnectionMultiplexer connectionMultiplexer;
+        private readonly IRedisCacheConnectionPoolManager connectionPoolManager;
         private readonly ServerEnumerationStrategy serverEnumerationStrategy = new ServerEnumerationStrategy();
-        private readonly string keyprefix;
+        private readonly string keyPrefix;
         private readonly uint maxValueLength;
+        private readonly int dbNumber;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RedisDatabase"/> class.
         /// </summary>
-        /// <param name="connectionMultiplexer">The connection.</param>
+        /// <param name="connectionPoolManager">The connection pool manager.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="serverEnumerationStrategy">The server enumeration strategy.</param>
-        /// <param name="database">The StackExchange.Redis.Database.</param>
+        /// <param name="dbNumber">The database to use.</param>
         /// <param name="maxvalueLength">The max lenght of the cache object.</param>
         /// <param name="keyPrefix">The key prefix.</param>
         public RedisDatabase(
-                IConnectionMultiplexer connectionMultiplexer,
+                IRedisCacheConnectionPoolManager connectionPoolManager,
                 ISerializer serializer,
                 ServerEnumerationStrategy serverEnumerationStrategy,
-                IDatabase database,
+                int dbNumber,
                 uint maxvalueLength,
                 string keyPrefix = null)
         {
             Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
             this.serverEnumerationStrategy = serverEnumerationStrategy ?? new ServerEnumerationStrategy();
-            this.connectionMultiplexer = connectionMultiplexer ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
-
-            Database = database;
-
-            if (!string.IsNullOrWhiteSpace(keyPrefix))
-            {
-                Database = Database.WithKeyPrefix(keyPrefix);
-            }
-
-            keyprefix = keyPrefix;
+            this.connectionPoolManager = connectionPoolManager ?? throw new ArgumentNullException(nameof(connectionPoolManager));
+            this.dbNumber = dbNumber;
+            this.keyPrefix = keyPrefix;
             maxValueLength = maxvalueLength;
         }
 
         /// <inheritdoc/>
-        public IDatabase Database { get; }
+        public IDatabase Database
+        {
+            get
+            {
+                var db = connectionPoolManager.GetConnection().GetDatabase(dbNumber);
+
+                if (!string.IsNullOrWhiteSpace(keyPrefix))
+                    return db.WithKeyPrefix(keyPrefix);
+
+                return db;
+            }
+        }
 
         /// <inheritdoc/>
         public ISerializer Serializer { get; }
@@ -367,11 +373,11 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public async Task<IEnumerable<string>> SearchKeysAsync(string pattern)
         {
-            pattern = $"{keyprefix}{pattern}";
+            pattern = $"{keyPrefix}{pattern}";
             var keys = new HashSet<string>();
 
             var multiplexer = Database.Multiplexer;
-            var servers = ServerIteratorFactory.GetServers(connectionMultiplexer, serverEnumerationStrategy).ToArray();
+            var servers = ServerIteratorFactory.GetServers(connectionPoolManager.GetConnection(), serverEnumerationStrategy).ToArray();
 
             if (!servers.Any())
                 throw new Exception("No server found to serve the KEYS command.");
@@ -392,7 +398,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 while (nextCursor != 0);
             }
 
-            return !string.IsNullOrEmpty(keyprefix) ? keys.Select(k => k.Substring(keyprefix.Length)) : keys;
+            return !string.IsNullOrEmpty(keyPrefix) ? keys.Select(k => k.Substring(keyPrefix.Length)) : keys;
         }
 
         /// <inheritdoc/>

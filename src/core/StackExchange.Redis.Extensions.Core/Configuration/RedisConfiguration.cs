@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Security;
+
 using StackExchange.Redis.Profiling;
 
 namespace StackExchange.Redis.Extensions.Core.Configuration
@@ -248,7 +249,8 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
                         SyncTimeout = SyncTimeout,
                         AbortOnConnectFail = AbortOnConnectFail,
                         ConfigurationChannel = ConfigurationChannel,
-                        ChannelPrefix = KeyPrefix
+                        ChannelPrefix = KeyPrefix,
+                        ConnectRetry = 0,
                     };
 
                     if (ExcludeCommands != null)
