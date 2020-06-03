@@ -59,14 +59,6 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public ISerializer Serializer { get; }
 
-        /// <summary>
-        /// Utility method for creation of tags
-        /// </summary>
-        /// <param name="tag">The requested tag to set</param>
-        /// <param name="type">The type of the tagged object</param>
-        /// <returns>Tag string</returns>
-        public static string GenerateTagKey(string tag, Type type) => $"tag:{type.Name.GetHashCode()}:{tag}";
-
         /// <inheritdoc/>
         public Task<bool> ExistsAsync(string key, CommandFlags flags = CommandFlags.None)
         {
@@ -467,6 +459,14 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             var entryBytes = Serializer.Serialize(value);
             return Database.SortedSetIncrementAsync(key, entryBytes, score, commandFlags);
         }
+
+        /// <summary>
+        /// Utility method for creation of tags
+        /// </summary>
+        /// <param name="tag">The requested tag to set</param>
+        /// <param name="type">The type of the tagged object</param>
+        /// <returns>Tag string</returns>
+        internal static string GenerateTagKey(string tag, Type type) => $"tag:{tag}";
 
         private Dictionary<string, string> ParseInfo(string info)
         {
