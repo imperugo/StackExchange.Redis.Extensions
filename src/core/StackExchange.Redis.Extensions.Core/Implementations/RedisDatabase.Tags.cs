@@ -42,6 +42,22 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return result;
         }
 
+        public async Task<IEnumerable<T>> SetMembersByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None)
+        {
+            var tagKey = TagHelper.GenerateTagSetKey(tag);
+
+            var keys = await SetMembersAsync<string>(tagKey, commandFlags).ConfigureAwait(false);
+
+            var result = new List<T>();
+            foreach (var key in keys)
+            {
+                var members = await SetMembersAsync<T>(key, commandFlags).ConfigureAwait(false);
+                result.AddRange(members);
+            }
+
+            return result;
+        }
+
         private Task<bool> ExecuteAddWithTags(
             string key,
             HashSet<string> tags,

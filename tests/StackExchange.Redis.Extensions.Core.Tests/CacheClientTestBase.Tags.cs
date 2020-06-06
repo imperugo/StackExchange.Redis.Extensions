@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Moq;
-using StackExchange.Redis.Extensions.Core.Abstractions;
-using StackExchange.Redis.Extensions.Core.Configuration;
+
 using StackExchange.Redis.Extensions.Core.Helpers;
-using StackExchange.Redis.Extensions.Core.Implementations;
 using StackExchange.Redis.Extensions.Core.Models;
-using StackExchange.Redis.Extensions.Tests.Extensions;
 using StackExchange.Redis.Extensions.Tests.Helpers;
+
 using Xunit;
-using Xunit.Categories;
-using static System.Linq.Enumerable;
 
 namespace StackExchange.Redis.Extensions.Core.Tests
 {
@@ -109,7 +102,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             await Sut.GetDbFromConfiguration().AddAsync(testKey, testClass, TimeSpan.FromSeconds(1), tags: new HashSet<string> { testTag });
 
             var tags = await db.SetMembersAsync(TagHelper.GenerateTagKey(testTag));
-            var deserialized = tags?.Length > 0 ? serializer.Deserialize<string>(tags[0]) : string.Empty;
+            var deserialized = serializer.Deserialize<string>(tags[0]);
 
             Assert.Equal(testKey, deserialized);
         }
@@ -257,6 +250,104 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             var deserialized = serializer.Deserialize<string>(tags[0]);
 
             Assert.Equal(testKey, deserialized);
+        }
+
+        [Fact]
+        [Trait("Category", "Tags")]
+        public async Task GetByTagAsync_ShouldReturnSomeValues()
+        {
+            var testKey = "test_key";
+            var testValue = "test_value";
+            var testClass = new TestClass<string>(testKey, testValue);
+            var testTag = "test_tag";
+
+            await Sut.GetDbFromConfiguration().AddAsync(testKey, testClass, tags: new HashSet<string> { testTag });
+
+            var result = await Sut.GetDbFromConfiguration().GetByTagAsync<TestClass<string>>(testTag);
+
+            Assert.Equal(1, result?.Count());
+        }
+
+        [Fact]
+        [Trait("Category", "Tags")]
+        public async Task GetByTagAsync_ShouldReturnCorrectValue()
+        {
+            var testKey = "test_key";
+            var testValue = "test_value";
+            var testClass = new TestClass<string>(testKey, testValue);
+            var testTag = "test_tag";
+
+            await Sut.GetDbFromConfiguration().AddAsync(testKey, testClass, tags: new HashSet<string> { testTag });
+
+            var result = await Sut.GetDbFromConfiguration().GetByTagAsync<TestClass<string>>(testTag);
+
+            Assert.Equal(testClass, result.First());
+        }
+
+        [Fact]
+        [Trait("Category", "Tags")]
+        public async Task HashGetByTagAsync_ShouldReturnSomeValues()
+        {
+            var testKey = "test_key";
+            var testKeyHash = "testKeyHash";
+            var testValue = "test_value";
+            var testClass = new TestClass<string>(testKey, testValue);
+            var testTag = "test_tag";
+
+            await Sut.GetDbFromConfiguration().HashSetAsync(testKey, testKeyHash, testClass, tags: new HashSet<string> { testTag });
+
+            var result = await Sut.GetDbFromConfiguration().HashGetByTagAsync<TestClass<string>>(testTag);
+
+            Assert.Equal(1, result?.Count());
+        }
+
+        [Fact]
+        [Trait("Category", "Tags")]
+        public async Task HashGetByTagAsync_ShouldReturnCorrectValue()
+        {
+            var testKey = "test_key";
+            var testKeyHash = "testKeyHash";
+            var testValue = "test_value";
+            var testClass = new TestClass<string>(testKey, testValue);
+            var testTag = "test_tag";
+
+            await Sut.GetDbFromConfiguration().HashSetAsync(testKey, testKeyHash, testClass, tags: new HashSet<string> { testTag });
+
+            var result = await Sut.GetDbFromConfiguration().HashGetByTagAsync<TestClass<string>>(testTag);
+
+            Assert.Equal(testClass, result.First());
+        }
+
+        [Fact]
+        [Trait("Category", "Tags")]
+        public async Task SetMemebersByTagAsync_ShouldReturnSomeValues()
+        {
+            var testKey = "test_key";
+            var testValue = "test_value";
+            var testClass = new TestClass<string>(testKey, testValue);
+            var testTag = "test_tag";
+
+            await Sut.GetDbFromConfiguration().SetAddAsync(testKey, testClass, tags: new HashSet<string> { testTag });
+
+            var result = await Sut.GetDbFromConfiguration().SetMembersByTagAsync<TestClass<string>>(testTag);
+
+            Assert.Equal(1, result?.Count());
+        }
+
+        [Fact]
+        [Trait("Category", "Tags")]
+        public async Task SetMemebersByTagAsync_ShouldReturnCorrectValue()
+        {
+            var testKey = "test_key";
+            var testValue = "test_value";
+            var testClass = new TestClass<string>(testKey, testValue);
+            var testTag = "test_tag";
+
+            await Sut.GetDbFromConfiguration().SetAddAsync(testKey, testClass, tags: new HashSet<string> { testTag });
+
+            var result = await Sut.GetDbFromConfiguration().SetMembersByTagAsync<TestClass<string>>(testTag);
+
+            Assert.Equal(testClass, result.First());
         }
     }
 }
