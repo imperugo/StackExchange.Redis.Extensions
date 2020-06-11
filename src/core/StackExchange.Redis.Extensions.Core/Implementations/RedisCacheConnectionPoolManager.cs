@@ -110,6 +110,9 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 if (this.redisConfiguration.ProfilingSessionProvider != null)
                     multiplexer.RegisterProfiler(this.redisConfiguration.ProfilingSessionProvider);
 
+                if (redisConfiguration.IsSentinelCluster)
+                    multiplexer = multiplexer.GetSentinelMasterConnection(redisConfiguration.ConfigurationOptions);
+
                 return new StateAwareConnection(multiplexer, this.EmitConnection, logger);
             }));
         }

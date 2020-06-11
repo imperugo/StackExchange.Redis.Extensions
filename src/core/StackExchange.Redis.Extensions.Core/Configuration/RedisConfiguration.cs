@@ -50,6 +50,11 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
+        /// Gets a value indicating whether get a boolean value that indicates if the cluster is configured for sentinel or not
+        /// </summary>
+        public bool IsSentinelCluster => !string.IsNullOrEmpty(ServiceName);
+
+        /// <summary>
         /// Gets or sets the connection string. In wins over property configuration.
         /// </summary>
         public string ConnectionString
@@ -286,8 +291,11 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
                             ConnectRetry = 0,
                         };
 
-                        if (!string.IsNullOrEmpty(ServiceName))
+                        if (IsSentinelCluster)
+                        {
                             options.ServiceName = ServiceName;
+                            options.CommandMap = CommandMap.Sentinel;
+                        }
 
                         foreach (var redisHost in Hosts)
                             options.EndPoints.Add(redisHost.Host, redisHost.Port);
