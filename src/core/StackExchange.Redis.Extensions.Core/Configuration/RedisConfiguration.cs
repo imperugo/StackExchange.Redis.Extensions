@@ -11,7 +11,6 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
     /// </summary>
     public class RedisConfiguration
     {
-        private ConnectionMultiplexer connection;
         private ConfigurationOptions options;
         private string keyPrefix;
         private string password;
@@ -27,6 +26,8 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         private int poolSize = 5;
         private string[] excludeCommands;
         private string configurationChannel = null;
+        private string connectionString = null;
+        private string serviceName = null;
         private Func<ProfilingSession> profilingSessionProvider;
 
         /// <summary>
@@ -34,6 +35,32 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         /// that this cannot be specified in the configuration-string.
         /// </summary>
         public event RemoteCertificateValidationCallback CertificateValidation;
+
+        /// <summary>
+        /// Gets or sets the servicename used in case of Sentinel.
+        /// </summary>
+        public string ServiceName
+        {
+            get => serviceName;
+            set
+            {
+                serviceName = value;
+                ResetConfigurationOptions();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the connection string. In wins over property configuration.
+        /// </summary>
+        public string ConnectionString
+        {
+            get => connectionString;
+            set
+            {
+                connectionString = value;
+                ResetConfigurationOptions();
+            }
+        }
 
         /// <summary>
         /// Gets or sets the channel to use for broadcasting and listening for configuration change notification.
@@ -240,18 +267,31 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
             {
                 if (options == null)
                 {
-                    options = new ConfigurationOptions
+                    if (!string.IsNullOrEmpty(ConnectionString))
                     {
-                        Ssl = Ssl,
-                        AllowAdmin = AllowAdmin,
-                        Password = Password,
-                        ConnectTimeout = ConnectTimeout,
-                        SyncTimeout = SyncTimeout,
-                        AbortOnConnectFail = AbortOnConnectFail,
-                        ConfigurationChannel = ConfigurationChannel,
-                        ChannelPrefix = KeyPrefix,
-                        ConnectRetry = 0,
-                    };
+                        options = ConfigurationOptions.Parse(ConnectionString);
+                    }
+                    else
+                    {
+                        options = new ConfigurationOptions
+                        {
+                            Ssl = Ssl,
+                            AllowAdmin = AllowAdmin,
+                            Password = Password,
+                            ConnectTimeout = ConnectTimeout,
+                            SyncTimeout = SyncTimeout,
+                            AbortOnConnectFail = AbortOnConnectFail,
+                            ConfigurationChannel = ConfigurationChannel,
+                            ChannelPrefix = KeyPrefix,
+                            ConnectRetry = 0,
+                        };
+
+                        if (!string.IsNullOrEmpty(ServiceName))
+                            options.ServiceName = ServiceName;
+
+                        foreach (var redisHost in Hosts)
+                            options.EndPoints.Add(redisHost.Host, redisHost.Port);
+                    }
 
                     if (ExcludeCommands != null)
                     {
@@ -260,28 +300,10 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
                             available: false);
                     }
 
-                    foreach (var redisHost in Hosts)
-                        options.EndPoints.Add(redisHost.Host, redisHost.Port);
-
                     options.CertificateValidation += CertificateValidation;
                 }
 
                 return options;
-            }
-        }
-
-        /// <summary>
-        /// Gets the connection multiplex
-        /// </summary>
-        /// <value>An instanfe of <see cref="ConnectionMultiplexer" />.</value>
-        public ConnectionMultiplexer Connection
-        {
-            get
-            {
-                if (connection == null)
-                    connection = ConnectionMultiplexer.Connect(ConfigurationOptions);
-
-                return connection;
             }
         }
 

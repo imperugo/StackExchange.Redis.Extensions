@@ -58,7 +58,12 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             if (loadedLazies.Count() == this.connections.Count)
                 return (ConnectionMultiplexer)this.connections.OrderBy(x => x.Value.TotalOutstanding()).First().Value;
 
-            return (ConnectionMultiplexer)this.connections.First(lazy => !lazy.IsValueCreated).Value;
+            var connection = this.connections.FirstOrDefault(lazy => !lazy.IsValueCreated);
+
+            if (connection != null)
+                return (ConnectionMultiplexer)connection.Value;
+
+            return (ConnectionMultiplexer)loadedLazies.First().Value;
         }
 
         /// <inheritdoc/>

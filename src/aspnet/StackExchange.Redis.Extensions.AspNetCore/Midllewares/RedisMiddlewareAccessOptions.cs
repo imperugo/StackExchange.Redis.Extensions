@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+
 using Microsoft.AspNetCore.Http;
 
 namespace StackExchange.Redis.Extensions.AspNetCore.Midllewares
@@ -19,6 +20,6 @@ namespace StackExchange.Redis.Extensions.AspNetCore.Midllewares
         /// Gets or sets the allowed IPs to show the redis servers information
         /// </summary>
         /// <value>An an array with the allowed ips</value>
-        public IPAddress[] AllowedIPs { get; set; } = new[] { IPAddress.Parse("127.0.0.1"), IPAddress.Parse("::1") };
+        public IPAddress[] AllowedIPs { get; set; }
     }
 }

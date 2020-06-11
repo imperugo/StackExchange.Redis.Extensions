@@ -1,8 +1,10 @@
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+
 using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace StackExchange.Redis.Extensions.AspNetCore.Midllewares
@@ -68,7 +70,7 @@ namespace StackExchange.Redis.Extensions.AspNetCore.Midllewares
 
         private bool IsClientAllowed(HttpContext context)
         {
-            if (options.AllowedIPs == null || options.AllowedIPs.Length < 1)
+            if (options.AllowedIPs == null)
                 return true;
 
             if (options.AllowedIPs.Any(x => x.ToString() == context.Connection.RemoteIpAddress.ToString()))

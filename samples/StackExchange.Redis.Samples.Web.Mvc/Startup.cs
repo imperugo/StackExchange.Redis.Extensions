@@ -13,6 +13,8 @@ using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using Microsoft.Extensions.Logging;
+using System.Net;
+using Microsoft.AspNetCore.Http;
 
 namespace StackExchange.Redis.Samples.Web.Mvc
 {
@@ -59,7 +61,16 @@ namespace StackExchange.Redis.Samples.Web.Mvc
                 app.UseHsts();
             }
 
-            app.UserRedisInformation();
+            app.UserRedisInformation(opt =>
+            {
+                opt.AllowedIPs = Array.Empty<IPAddress>();
+                // opt.AllowedIPs = = new[] { IPAddress.Parse("127.0.0.1"), IPAddress.Parse("::1") };
+                opt.AllowFunction = (HttpContext x) =>
+                {
+                    return false;
+                };
+            });
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
