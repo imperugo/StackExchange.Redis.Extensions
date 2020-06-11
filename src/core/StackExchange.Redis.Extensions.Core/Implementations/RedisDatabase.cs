@@ -384,13 +384,13 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
             foreach (var server in servers)
             {
-                var nextCursor = 0;
+                long nextCursor = 0;
                 do
                 {
                     var redisResult = await Database.ExecuteAsync("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000").ConfigureAwait(false);
                     var innerResult = (RedisResult[])redisResult;
 
-                    nextCursor = int.Parse((string)innerResult[0]);
+                    nextCursor = long.Parse((string)innerResult[0]);
 
                     var resultLines = ((string[])innerResult[1]).ToArray();
                     keys.UnionWith(resultLines);
