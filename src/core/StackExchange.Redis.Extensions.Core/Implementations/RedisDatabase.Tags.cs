@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 
@@ -12,7 +10,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public async Task<IEnumerable<T>> GetByTag<T>(string tag)
         {
-            var tagKey = GenerateTagKey(tag, typeof(T));
+            var tagKey = GenerateTagKey(tag);
 
             var memberKeys = await SetMembersAsync<string>(tagKey);
 

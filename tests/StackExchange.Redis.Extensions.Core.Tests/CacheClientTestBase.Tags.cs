@@ -34,12 +34,9 @@ namespace StackExchange.Redis.Extensions.Core.Tests
 
             foreach (var tag in tags)
             {
-                var tagKey = RedisDatabase.GenerateTagKey(tag, typeof(string));
-                var tagExists = await Sut.GetDbFromConfiguration().ExistsAsync(tagKey);
-                Assert.True(tagExists);
+                var values = await Sut.GetDbFromConfiguration().GetByTag<string>(tag);
 
-                var taggedValues = await Sut.GetDbFromConfiguration().SetMembersAsync<string>(tagKey);
-                Assert.Contains(key, taggedValues);
+                Assert.Contains(testValue, values);
             }
         }
 
@@ -69,9 +66,9 @@ namespace StackExchange.Redis.Extensions.Core.Tests
 
             foreach (var tag in tags)
             {
-                var tagKey = RedisDatabase.GenerateTagKey(tag, typeof(string));
-                var tagExists = await db.KeyExistsAsync(tagKey);
-                Assert.True(added ? tagExists : !tagExists);
+                var resualt = await Sut.GetDbFromConfiguration().GetByTag<string>(tag);
+
+                Assert.True(added ? resualt.Any() : !resualt.Any());
             }
         }
 
@@ -101,9 +98,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
 
             foreach (var tag in tags)
             {
-                var tagKey = RedisDatabase.GenerateTagKey(tag, typeof(string));
-                var tagExists = await db.KeyExistsAsync(tagKey);
-                Assert.True(added ? tagExists : !tagExists);
+                var result = await Sut.GetDbFromConfiguration().GetByTag<string>(tag);
+                Assert.True(added ? result.Any() : !result.Any());
             }
         }
 

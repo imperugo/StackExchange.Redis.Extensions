@@ -464,9 +464,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// Utility method for creation of tags
         /// </summary>
         /// <param name="tag">The requested tag to set</param>
-        /// <param name="type">The type of the tagged object</param>
         /// <returns>Tag string</returns>
-        internal static string GenerateTagKey(string tag, Type type) => $"tag:{tag}";
+        internal static string GenerateTagKey(string tag) => $"tag:{tag}";
 
         private Dictionary<string, string> ParseInfo(string info)
         {
@@ -530,7 +529,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
             foreach (var tag in tags)
             {
-                var tagKey = GenerateTagKey(tag, value.GetType());
+                var tagKey = GenerateTagKey(tag);
                 trx.SetAddAsync(tagKey, key.OfValueSize(Serializer, maxValueLength, tagKey), commandFlags);
             }
 
