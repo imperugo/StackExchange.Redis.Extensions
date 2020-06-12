@@ -47,9 +47,11 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [InlineData(When.Exists, false)]
         public async Task Add_Tagged_Item_With_Condition_Exists_To_Redis_Database(When condition, bool valueExists)
         {
-            var tags = new HashSet<string> { $"{Guid.NewGuid():N}", $"{Guid.NewGuid():N}", $"{Guid.NewGuid():N}" };
-            var key = Guid.NewGuid().ToString("N");
-            var initialValue = Guid.NewGuid().ToString("N");
+            var tags = Enumerable.Range(0, 3)
+                .Select(_ => GetRandomString())
+                .ToHashSet();
+            var key = GetRandomString();
+            var initialValue = GetRandomString();
 
             if (valueExists)
             {
@@ -79,22 +81,25 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [InlineData(When.NotExists, false)]
         public async Task Add_Tagged_Item_With_Condition_NotExists_To_Redis_Database(When condition, bool valueExists)
         {
-            var tags = new HashSet<string> { $"{Guid.NewGuid():N}", $"{Guid.NewGuid():N}", $"{Guid.NewGuid():N}" };
-            var key = Guid.NewGuid().ToString("N");
-            var initialValue = Guid.NewGuid().ToString("N");
+            var tags = Enumerable.Range(0, 3)
+                .Select(_ => GetRandomString())
+                .ToHashSet();
+            var key = GetRandomString();
+            var initialValue = GetRandomString();
+
+            var client = Sut.GetDbFromConfiguration();
 
             if (valueExists)
             {
-                Assert.True(await Sut.GetDbFromConfiguration().AddAsync(key, initialValue, When.Always), "Test precondition to add key");
+                Assert.True(await client.AddAsync(key, initialValue, When.Always), "Test precondition to add key");
             }
 
-            var added = await Sut.GetDbFromConfiguration()
-                .AddAsync(key, "my value", condition, tags: tags);
+            var added = await client.AddAsync(key, "my value", condition, tags: tags);
 
-            var redisValue = await db.KeyExistsAsync(key);
+            var keyExists = await db.KeyExistsAsync(key);
 
             Assert.True(valueExists ? !added : added);
-            Assert.True(redisValue);
+            Assert.True(keyExists);
 
             foreach (var tag in tags)
             {
@@ -109,19 +114,19 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Trait("Category", "get by tag")]
         public async Task Add_Multiple_Tagged_Items_To_Redis_Database_Should_GetByTag()
         {
-            var tags = new HashSet<string> { $"{Guid.NewGuid():N}" };
-            var testValue = $"{Guid.NewGuid():N}";
+            var tags = new HashSet<string> { GetRandomString() };
+            var testValue = GetRandomString();
 
             var expectedItems = Enumerable.Range(0, 10).Select(x => new TestClass
             {
                 IntValue = x,
-                StringValue = $"{Guid.NewGuid():N}",
+                StringValue = GetRandomString(),
                 BoolValue = x % 2 == 0
             }).ToArray();
 
             foreach (var expectedItem in expectedItems)
             {
-                var key = $"{Guid.NewGuid():N}";
+                var key = GetRandomString();
                 var added = await Sut.GetDbFromConfiguration().AddAsync(key, expectedItem, tags: tags);
                 var redisValue = await db.KeyExistsAsync(key);
                 Assert.True(added);
@@ -137,6 +142,9 @@ namespace StackExchange.Redis.Extensions.Core.Tests
                 Assert.Contains(expectedItem, actualItems);
             }
         }
+
+        private static string GetRandomString()
+            => $"{Guid.NewGuid():N}";
 
         [Serializable]
         public class TestClass
