@@ -6,7 +6,7 @@ The idea of this library is to make easier your live when you need to send / rec
 
 
 
-[Documentation](https://stackexchange-redis-extensinos.gitbook.io/stackexchange-redis-extensions/) is composed of articles and guidance detailing how to get the most out of StackExchange.Redis.Extensions
+[Documentation](https://app.gitbook.com/@imperugo/s/stackexchange-redis-extensions/) is composed of articles and guidance detailing how to get the most out of StackExchange.Redis.Extensions
 
 
 
