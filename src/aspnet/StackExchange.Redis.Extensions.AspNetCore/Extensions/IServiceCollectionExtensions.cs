@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return services.AddStackExchangeRedisExtensions<T>(sp => redisConfiguration);
         }
-        
+
         /// <summary>
         /// Add StackExchange.Redis with its serialization provider.
         /// </summary>
