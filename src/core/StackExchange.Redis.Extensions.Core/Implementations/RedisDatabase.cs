@@ -412,7 +412,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             {
                 var server = Database.Multiplexer.GetServer(endPoints[i]);
 
-                if (!server.IsSlave)
+                if (!server.IsReplica)
                     tasks.Add(server.FlushDatabaseAsync(Database.Database));
             }
 

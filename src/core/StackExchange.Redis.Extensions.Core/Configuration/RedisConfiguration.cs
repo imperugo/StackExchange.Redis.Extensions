@@ -288,7 +288,6 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
                             AbortOnConnectFail = AbortOnConnectFail,
                             ConfigurationChannel = ConfigurationChannel,
                             ChannelPrefix = KeyPrefix,
-                            ConnectRetry = 0,
                         };
 
                         if (IsSentinelCluster)
