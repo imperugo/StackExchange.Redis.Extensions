@@ -217,11 +217,11 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                         .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
                         .ToArray();
 
-            var tasks = new Task[values.Length + 1];
-            tasks[0] = Database.StringSetAsync(values, when, flag);
+            var tasks = new Task[values.Length];
+            await Database.StringSetAsync(values, when, flag);
 
-            for (var i = 1; i < values.Length + 1; i++)
-                tasks[i] = Database.KeyExpireAsync(values[i - 1].Key, expiresAt.UtcDateTime, flag);
+            for (var i = 0; i < values.Length; i++)
+                tasks[i] = Database.KeyExpireAsync(values[i].Key, expiresAt.UtcDateTime, flag);
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 
