@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="MsgPack.Cli" Version="1.0.1" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
