@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using Microsoft.Extensions.Logging;
+
 using Moq;
+
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Implementations;
 using StackExchange.Redis.Extensions.Tests.Extensions;
 using StackExchange.Redis.Extensions.Tests.Helpers;
+
 using Xunit;
+
 using static System.Linq.Enumerable;
 
 namespace StackExchange.Redis.Extensions.Core.Tests
@@ -437,6 +442,85 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             {
                 Assert.Equal(value.Key, cached[value.Key].Key);
                 Assert.Equal(value.Value, cached[value.Key].Value);
+            }
+        }
+
+        [Fact]
+        public async Task Massive_Add_With_Expiring_Should_Delete_Expired_Keys()
+        {
+            var values = new List<Tuple<string, string>>
+            {
+                new Tuple<string, string>("ProductOneList1", "1"),
+                new Tuple<string, string>("ProductOneList2", "2"),
+                new Tuple<string, string>("ProductOneList3", "3"),
+                new Tuple<string, string>("ProductOneList4", "4"),
+                new Tuple<string, string>("ProductOneList5", "5"),
+                new Tuple<string, string>("ProductOneList6", "6"),
+                new Tuple<string, string>("ProductOneList7", "7"),
+                new Tuple<string, string>("ProductOneList8", "8"),
+                new Tuple<string, string>("ProductOneList9", "9"),
+            };
+
+            await Sut.GetDbFromConfiguration().AddAllAsync(values, TimeSpan.FromMilliseconds(1));
+
+            await Task.Delay(TimeSpan.FromMilliseconds(2));
+
+            foreach (var value in values)
+            {
+                var exists = await Sut.GetDbFromConfiguration().ExistsAsync(value.Item1);
+                Assert.False(exists, value.Item1);
+            }
+        }
+
+        [Fact]
+        public async Task Massive_Add_With_Expiring_And_Add_List_Again_Should_Work()
+        {
+            // Issue 228
+            // https://github.com/imperugo/StackExchange.Redis.Extensions/issues/288
+            var valuesOneList = new List<Tuple<string, string>>
+            {
+                new Tuple<string, string>("ProductManyList1", "1"),
+                new Tuple<string, string>("ProductManyList2", "2"),
+                new Tuple<string, string>("ProductManyList3", "3"),
+                new Tuple<string, string>("ProductManyList4", "4"),
+                new Tuple<string, string>("ProductManyList5", "5"),
+                new Tuple<string, string>("ProductManyList6", "6"),
+                new Tuple<string, string>("ProductManyList7", "7"),
+                new Tuple<string, string>("ProductManyList8", "8"),
+                new Tuple<string, string>("ProductManyList9", "9"),
+            };
+
+            await Sut.GetDbFromConfiguration().AddAllAsync(valuesOneList, TimeSpan.FromMilliseconds(1));
+
+            await Task.Delay(TimeSpan.FromMilliseconds(2));
+
+            foreach (var value in valuesOneList)
+            {
+                var exists = await Sut.GetDbFromConfiguration().ExistsAsync(value.Item1);
+                Assert.False(exists, value.Item1);
+            }
+
+            var valuesTwoLis = new List<Tuple<string, string>>
+            {
+                new Tuple<string, string>("ProductManyList10", "1"),
+                new Tuple<string, string>("ProductManyList11", "2"),
+                new Tuple<string, string>("ProductManyList12", "3"),
+                new Tuple<string, string>("ProductManyList13", "4"),
+                new Tuple<string, string>("ProductManyList14", "5"),
+                new Tuple<string, string>("ProductManyList15", "6"),
+                new Tuple<string, string>("ProductManyList16", "7"),
+                new Tuple<string, string>("ProductManyList17", "8"),
+                new Tuple<string, string>("ProductManyList18", "9"),
+            };
+
+            await Sut.GetDbFromConfiguration().AddAllAsync(valuesTwoLis, TimeSpan.FromMilliseconds(1));
+
+            await Task.Delay(TimeSpan.FromMilliseconds(2));
+
+            foreach (var value in valuesTwoLis)
+            {
+                var exists = await Sut.GetDbFromConfiguration().ExistsAsync(value.Item1);
+                Assert.False(exists, value.Item1);
             }
         }
 
