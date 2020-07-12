@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -101,7 +102,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         private void EmitConnection()
         {
-            this.connections.Add(new Lazy<StateAwareConnection>(() =>
+            this.connections.Add(new Lazy<StateAwareConnection>(
+            () =>
             {
                 this.logger.LogDebug("Creating new Redis connection.");
 
@@ -114,7 +116,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                     multiplexer = multiplexer.GetSentinelMasterConnection(redisConfiguration.ConfigurationOptions);
 
                 return new StateAwareConnection(multiplexer, this.EmitConnection, logger);
-            }));
+            },
+            LazyThreadSafetyMode.PublicationOnly));
         }
 
         private void EmitConnections()
