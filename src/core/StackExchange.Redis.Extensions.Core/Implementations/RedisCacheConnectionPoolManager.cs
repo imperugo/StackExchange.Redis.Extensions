@@ -175,7 +175,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
                 this.multiplexer.ConnectionFailed -= this.ConnectionFailed;
                 this.multiplexer.ConnectionRestored -= this.ConnectionRestored;
-                this.multiplexer?.Dispose();
+                this.multiplexer?.Close();
                 this.isDisposed = true;
             }
 
@@ -201,6 +201,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                         {
                             logger.LogError(e.Exception, "Redis connection error {0}.", e.FailureType);
 
+                            this.Invalidate();
                             this.isAvailable = false;
 
                             this.invalidateConnectionCallback();
