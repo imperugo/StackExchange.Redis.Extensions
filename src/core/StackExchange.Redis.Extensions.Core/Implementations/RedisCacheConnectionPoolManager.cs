@@ -175,7 +175,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
                 this.multiplexer.ConnectionFailed -= this.ConnectionFailed;
                 this.multiplexer.ConnectionRestored -= this.ConnectionRestored;
-                this.multiplexer?.Close();
+                this.multiplexer?.Dispose();
                 this.isDisposed = true;
             }
 
