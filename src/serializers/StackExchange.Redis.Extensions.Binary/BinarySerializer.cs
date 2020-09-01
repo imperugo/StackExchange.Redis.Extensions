@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+
 using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.Binary

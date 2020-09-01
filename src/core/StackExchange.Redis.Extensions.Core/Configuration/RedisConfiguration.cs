@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Security;
+using System.Security.Authentication;
 
 using StackExchange.Redis.Profiling;
 
@@ -28,6 +29,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         private string configurationChannel = null;
         private string connectionString = null;
         private string serviceName = null;
+        private SslProtocols? sslProtocols = null;
         private Func<ProfilingSession> profilingSessionProvider;
 
         /// <summary>
@@ -53,6 +55,19 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         /// Gets a value indicating whether get a boolean value that indicates if the cluster is configured for sentinel or not
         /// </summary>
         public bool IsSentinelCluster => !string.IsNullOrEmpty(ServiceName);
+
+        /// <summary>
+        /// Gets or sets the connection string. In wins over property configuration.
+        /// </summary>
+        public SslProtocols? SslProtocols
+        {
+            get => sslProtocols;
+            set
+            {
+                sslProtocols = value;
+                ResetConfigurationOptions();
+            }
+        }
 
         /// <summary>
         /// Gets or sets the connection string. In wins over property configuration.
@@ -287,6 +302,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
                             SyncTimeout = SyncTimeout,
                             AbortOnConnectFail = AbortOnConnectFail,
                             ConfigurationChannel = ConfigurationChannel,
+                            SslProtocols = sslProtocols,
                             ChannelPrefix = KeyPrefix,
                         };
 

@@ -398,7 +398,9 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 while (nextCursor != 0);
             }
 
-            return !string.IsNullOrEmpty(keyPrefix) ? keys.Select(k => k.Substring(keyPrefix.Length)) : keys;
+            return !string.IsNullOrEmpty(keyPrefix)
+                        ? keys.Select(k => k.Substring(keyPrefix.Length))
+                        : keys;
         }
 
         /// <inheritdoc/>

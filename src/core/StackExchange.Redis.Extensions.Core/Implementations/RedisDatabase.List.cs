@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+
 using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations

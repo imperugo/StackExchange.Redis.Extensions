@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+
 using MsgPack.Serialization;
+
 using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.MsgPack
@@ -11,6 +13,14 @@ namespace StackExchange.Redis.Extensions.MsgPack
     public class MsgPackObjectSerializer : ISerializer
     {
         private readonly System.Text.Encoding encoding;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MsgPackObjectSerializer"/> class.
+        /// </summary>
+        public MsgPackObjectSerializer()
+        {
+            this.encoding = System.Text.Encoding.UTF8;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MsgPackObjectSerializer"/> class.
@@ -27,9 +37,7 @@ namespace StackExchange.Redis.Extensions.MsgPack
         public T Deserialize<T>(byte[] serializedObject)
         {
             if (typeof(T) == typeof(string))
-            {
                 return (T)Convert.ChangeType(encoding.GetString(serializedObject), typeof(T));
-            }
 
             var serializer = MessagePackSerializer.Get<T>();
 

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+
 using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.System.Text.Json

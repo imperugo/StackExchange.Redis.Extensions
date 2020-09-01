@@ -1,5 +1,7 @@
 ﻿using System.IO;
+
 using ProtoBuf;
+
 using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.Protobuf

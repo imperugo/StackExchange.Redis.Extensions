@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Text;
+
 using Jil;
+
 using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.Jil

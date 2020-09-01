@@ -1,5 +1,6 @@
-on:
-  pull_request:
+name: StackExchange.Redis.Extensions PR Build
+on: pull_request
+
 jobs:
   build:
     strategy:
