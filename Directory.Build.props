@@ -8,11 +8,13 @@
     <!--
     <VersionSuffix>pre</VersionSuffix>
     -->
-    <TargetFrameworks>netstandard2.0;net461;net472;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+    <!-- <TargetFrameworks>netstandard2.0;net461;net472;netcoreapp3.0;netcoreapp3.1</TargetFrameworks> -->
+    <TargetFrameworks>netstandard2.0;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
     <Copyright>Ugo Lattanzi</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
