@@ -769,9 +769,21 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         }
 
         [Fact]
+        public async Task ListAddToLeftArrayShouldThrowExceptionWhenKeyIsEmpty()
+        {
+            await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDbFromConfiguration().ListAddToLeftAsync(string.Empty, items: Array.Empty<TestClass<string>>()));
+        }
+
+        [Fact]
         public async Task ListAddToLeftGenericShouldThrowExceptionWhenItemIsNull()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDbFromConfiguration().ListAddToLeftAsync<string>("MyList", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDbFromConfiguration().ListAddToLeftAsync<string>("MyList", item: null));
+        }
+
+        [Fact]
+        public async Task ListAddToLeftGenericShouldThrowExceptionWhenItemsIsNull()
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDbFromConfiguration().ListAddToLeftAsync<string>("MyList", items: null));
         }
 
         [Fact]
@@ -792,6 +804,20 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         }
 
         [Fact]
+        public async Task ListAddToLeftArray_With_An_Existing_Key_Should_Return_Valid_Data()
+        {
+            var values = Range(0, 5000).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
+
+            const string key = "MyList";
+
+            await Sut.GetDbFromConfiguration().ListAddToLeftAsync(key, items: values);
+
+            var keys = await db.ListRangeAsync(key);
+
+            Assert.Equal(keys.Length, values.Length);
+        }
+
+        [Fact]
         public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
         {
             await Assert.ThrowsAsync<ArgumentException>(
@@ -799,10 +825,24 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         }
 
         [Fact]
+        public async Task ListAddToLeftAsyncArrayShouldThrowExceptionWhenKeyIsEmpty()
+        {
+            await Assert.ThrowsAsync<ArgumentException>(
+                () => Sut.GetDbFromConfiguration().ListAddToLeftAsync(string.Empty, items: Array.Empty<TestClass<string>>()));
+        }
+
+        [Fact]
         public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemIsNull()
         {
             await Assert.ThrowsAsync<ArgumentNullException>(
-                () => Sut.GetDbFromConfiguration().ListAddToLeftAsync<string>("MyList", null));
+                () => Sut.GetDbFromConfiguration().ListAddToLeftAsync<string>("MyList", item: null));
+        }
+
+        [Fact]
+        public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemsIsNull()
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                () => Sut.GetDbFromConfiguration().ListAddToLeftAsync<string>("MyList", items: null));
         }
 
         [Fact]
@@ -821,6 +861,20 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             var keys = await db.ListRangeAsync(key);
 
             Assert.Equal(keys.Length, values.Count);
+        }
+
+        [Fact]
+        public async Task ListAddToLeftAsyncArray_With_An_Existing_Key_Should_Return_Valid_Data()
+        {
+            var values = Range(0, 5000).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
+
+            const string key = "MyListAsync";
+
+            await Sut.GetDbFromConfiguration().ListAddToLeftAsync(key, items: values);
+
+            var keys = await db.ListRangeAsync(key);
+
+            Assert.Equal(keys.Length, values.Length);
         }
 
         [Fact]
