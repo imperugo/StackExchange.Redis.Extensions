@@ -30,6 +30,7 @@
         To store complex data It requires one of the following implementations:
 
         - StackExchange.Redis.Extensions.Newtonsoft
+        - StackExchange.Redis.Extensions.System.Text.Json
         - StackExchange.Redis.Extensions.Jil
         - StackExchange.Redis.Extensions.MsgPack
         - StackExchange.Redis.Extensions.Protobuf
