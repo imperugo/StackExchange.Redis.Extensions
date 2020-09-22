@@ -4,15 +4,17 @@
   <!-- General information -->
   <PropertyGroup>
     <Authors>Ugo Lattanzi</Authors>
-    <VersionPrefix>6.3.4</VersionPrefix>
+    <VersionPrefix>6.3.5</VersionPrefix>
     <!--
     <VersionSuffix>pre</VersionSuffix>
     -->
-    <TargetFrameworks>netstandard2.0;net461;net472;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+    <!-- <TargetFrameworks>netstandard2.0;net461;net472;netcoreapp3.0;netcoreapp3.1</TargetFrameworks> -->
+    <TargetFrameworks>netstandard2.0;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
     <Copyright>Ugo Lattanzi</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -30,6 +32,7 @@
         To store complex data It requires one of the following implementations:
 
         - StackExchange.Redis.Extensions.Newtonsoft
+        - StackExchange.Redis.Extensions.System.Text.Json
         - StackExchange.Redis.Extensions.Jil
         - StackExchange.Redis.Extensions.MsgPack
         - StackExchange.Redis.Extensions.Protobuf

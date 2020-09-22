@@ -1,20 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StackExchange.Redis.Extensions.Newtonsoft;
-using StackExchange.Redis.Extensions.Core;
-using StackExchange.Redis.Extensions.Core.Configuration;
-using StackExchange.Redis.Extensions.Core.Abstractions;
 using Microsoft.Extensions.Logging;
-using System.Net;
-using Microsoft.AspNetCore.Http;
+
+using StackExchange.Redis.Extensions.Core.Abstractions;
+using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.Newtonsoft;
 
 namespace StackExchange.Redis.Samples.Web.Mvc
 {
@@ -61,15 +58,16 @@ namespace StackExchange.Redis.Samples.Web.Mvc
                 app.UseHsts();
             }
 
-            app.UserRedisInformation(opt =>
-            {
-                opt.AllowedIPs = Array.Empty<IPAddress>();
-                // opt.AllowedIPs = = new[] { IPAddress.Parse("127.0.0.1"), IPAddress.Parse("::1") };
-                opt.AllowFunction = (HttpContext x) =>
-                {
-                    return false;
-                };
-            });
+            // app.UserRedisInformation(opt =>
+            // {
+            //     opt.AllowedIPs = Array.Empty<IPAddress>();
+            //     // opt.AllowedIPs = = new[] { IPAddress.Parse("127.0.0.1"), IPAddress.Parse("::1") };
+            //     opt.AllowFunction = (HttpContext x) =>
+            //     {
+            //         return false;
+            //     };
+            // });
+            app.UserRedisInformation();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -89,12 +87,10 @@ namespace StackExchange.Redis.Samples.Web.Mvc
 
             redisDb.SubscribeAsync<string>("MyEventName", x =>
             {
-                logger.LogDebug("Just got this message {0}", x);
+                logger.LogInformation("Just got this message {0}", x);
 
                 return Task.CompletedTask;
             }).GetAwaiter().GetResult();
-
-            redisDb.PublishAsync("MyEventName", "ping").GetAwaiter().GetResult();
         }
     }
 }

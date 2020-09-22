@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace StackExchange.Redis.Samples.Web.Mvc.Models
 {

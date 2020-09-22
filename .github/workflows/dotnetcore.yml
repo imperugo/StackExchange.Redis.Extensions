@@ -1,3 +1,4 @@
+name: StackExchange.Redis.Extensions Build
 on:
   push:
     branches:

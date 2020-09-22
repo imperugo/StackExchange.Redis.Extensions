@@ -1,5 +1,7 @@
-using System;
+﻿using System;
+
 using Microsoft.AspNetCore.Builder;
+
 using StackExchange.Redis.Extensions.AspNetCore.Midllewares;
 
 namespace Microsoft.AspNetCore.Builder
