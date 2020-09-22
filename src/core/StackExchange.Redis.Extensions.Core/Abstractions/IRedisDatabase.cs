@@ -75,6 +75,15 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         Task<T> GetAsync<T>(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
+        ///     Get the object with the specified key from Redis database
+        /// </summary>
+        /// <param name="key">The cache key.</param>
+        /// <param name="returnType">The type of the object to convert to and return.</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
+        /// <returns>Null if not present, otherwise the instance of T.</returns>
+        Task<object> GetAsync(string key, Type returnType, CommandFlags flag = CommandFlags.None);
+
+        /// <summary>
         ///     Adds the specified instance to the Redis database.
         /// </summary>
         /// <typeparam name="T">The type of the class to add to Redis</typeparam>
