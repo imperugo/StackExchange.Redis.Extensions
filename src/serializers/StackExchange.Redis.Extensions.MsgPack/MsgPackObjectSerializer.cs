@@ -39,6 +39,21 @@ namespace StackExchange.Redis.Extensions.MsgPack
         }
 
         /// <inheritdoc/>
+        public object Deserialize(byte[] serializedObject, Type returnType)
+        {
+            if (returnType == typeof(string))
+            {
+                return Convert.ChangeType(encoding.GetString(serializedObject), returnType);
+            }
+
+            var serializer = MessagePackSerializer.Get(returnType);
+
+            using var byteStream = new MemoryStream(serializedObject);
+
+            return serializer.Unpack(byteStream);
+        }
+
+        /// <inheritdoc/>
         public byte[] Serialize(object item)
         {
             if (item is string)

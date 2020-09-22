@@ -537,11 +537,41 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         }
 
         [Fact]
+        public async Task Adding_Value_Type_Should_Return_Correct_Value_Non_Generic()
+        {
+            var d = 1;
+            var added = await Sut.GetDbFromConfiguration().AddAsync("my Key", d);
+            var dbValue = await Sut.GetDbFromConfiguration().GetAsync("my Key", typeof(int));
+
+            Assert.True(added);
+            Assert.True(db.KeyExists("my Key"));
+            Assert.Equal(dbValue, d);
+        }
+
+        [Fact]
         public async Task Adding_Collection_To_Redis_Should_Work_Correctly()
         {
             var items = Range(1, 3).Select(i => new TestClass<string> { Key = $"key{i}", Value = "value{i}" }).ToArray();
             var added = await Sut.GetDbFromConfiguration().AddAsync("my Key", items);
             var dbValue = await Sut.GetDbFromConfiguration().GetAsync<TestClass<string>[]>("my Key");
+
+            Assert.True(added);
+            Assert.True(await db.KeyExistsAsync("my Key"));
+            Assert.Equal(dbValue.Length, items.Length);
+
+            for (var i = 0; i < items.Length; i++)
+            {
+                Assert.Equal(dbValue[i].Value, items[i].Value);
+                Assert.Equal(dbValue[i].Key, items[i].Key);
+            }
+        }
+
+        [Fact]
+        public async Task Adding_Collection_To_Redis_Should_Return_Correct_Value_Non_Generic()
+        {
+            var items = Range(1, 3).Select(i => new TestClass<string> { Key = $"key{i}", Value = "value{i}" }).ToArray();
+            var added = await Sut.GetDbFromConfiguration().AddAsync("my Key", items);
+            var dbValue = (TestClass<string>[])await Sut.GetDbFromConfiguration().GetAsync("my Key", typeof(TestClass<string>[]));
 
             Assert.True(added);
             Assert.True(await db.KeyExistsAsync("my Key"));

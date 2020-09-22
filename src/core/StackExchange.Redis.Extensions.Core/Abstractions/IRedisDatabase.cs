@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using StackExchange.Redis.Extensions.Core.Models;
 
 namespace StackExchange.Redis.Extensions.Core.Abstractions
@@ -72,6 +73,35 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         ///     Null if not present, otherwise the instance of T.
         /// </returns>
         Task<T> GetAsync<T>(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None);
+
+        /// <summary>
+        ///     Get the object with the specified key from Redis database
+        /// </summary>
+        /// <param name="key">The cache key.</param>
+        /// <param name="returnType">The type of the object to convert to and return.</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
+        /// <returns>Null if not present, otherwise the instance of T.</returns>
+        Task<object> GetAsync(string key, Type returnType, CommandFlags flag = CommandFlags.None);
+
+        /// <summary>
+        ///     Get the object with the specified key from Redis database
+        /// </summary>
+        /// <param name="key">The cache key.</param>
+        /// <param name="returnType">The type of the object to convert to and return.</param>
+        /// <param name="expiresAt">Expiration time.</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
+        /// <returns>Null if not present, otherwise the instance of T.</returns>
+        Task<object> GetAsync(string key, Type returnType, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None);
+
+        /// <summary>
+        ///     Get the object with the specified key from Redis database
+        /// </summary>
+        /// <param name="key">The cache key.</param>
+        /// <param name="returnType">The type of the object to convert to and return.</param>
+        /// <param name="expiresIn">Time till the object expires.</param>
+        /// <param name="flag">Behaviour markers associated with a given command</param>
+        /// <returns>Null if not present, otherwise the instance of T.</returns>
+        Task<object> GetAsync(string key, Type returnType, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
         ///     Adds the specified instance to the Redis database.

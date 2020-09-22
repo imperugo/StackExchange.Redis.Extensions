@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Text;
+
 using Jil;
+
 using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.Jil
@@ -50,6 +52,13 @@ namespace StackExchange.Redis.Extensions.Jil
         {
             var jsonString = encoding.GetString(serializedObject);
             return JSON.Deserialize<T>(jsonString);
+        }
+
+        /// <inheritdoc/>
+        public object Deserialize(byte[] serializedObject, Type returnType)
+        {
+            var jsonString = encoding.GetString(serializedObject);
+            return JSON.Deserialize(jsonString, returnType);
         }
     }
 }

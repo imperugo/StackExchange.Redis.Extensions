@@ -117,6 +117,36 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         }
 
         /// <inheritdoc/>
+        public async Task<object> GetAsync(string key, Type returnType, CommandFlags flag = CommandFlags.None)
+        {
+            var valueBytes = await Database.StringGetAsync(key, flag).ConfigureAwait(false);
+
+            if (!valueBytes.HasValue)
+                return default;
+
+            return Serializer.Deserialize(valueBytes, returnType);
+        }
+
+        /// <inheritdoc/>
+        public async Task<object> GetAsync(string key, Type returnType, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)
+        {
+            var valueBytes = await Database.StringGetAsync(key, flag).ConfigureAwait(false);
+
+            if (!valueBytes.HasValue)
+                return default;
+
+            return Serializer.Deserialize(valueBytes, returnType);
+        }
+
+        /// <inheritdoc/>
+        public async Task<object> GetAsync(string key, Type returnType, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None)
+        {
+            var valueBytes = await Database.StringGetAsync(key, flag).ConfigureAwait(false);
+
+            return Serializer.Deserialize(valueBytes, returnType);
+        }
+
+        /// <inheritdoc/>
         public Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             var entryBytes = value.OfValueSize(Serializer, maxValueLength, key);

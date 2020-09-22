@@ -1,5 +1,7 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Threading.Tasks;
+
 using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.Utf8Json
@@ -26,6 +28,12 @@ namespace StackExchange.Redis.Extensions.Utf8Json
         public T Deserialize<T>(byte[] serializedObject)
         {
             return global::Utf8Json.JsonSerializer.Deserialize<T>(serializedObject);
+        }
+
+        /// <inheritdoc/>
+        public object Deserialize(byte[] serializedObject, Type returnType)
+        {
+            return global::Utf8Json.JsonSerializer.NonGeneric.Deserialize(returnType, serializedObject);
         }
     }
 }

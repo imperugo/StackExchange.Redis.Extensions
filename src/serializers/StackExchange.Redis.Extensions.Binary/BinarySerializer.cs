@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using StackExchange.Redis.Extensions.Core;
 
@@ -17,6 +18,14 @@ namespace StackExchange.Redis.Extensions.Binary
             using var ms = new MemoryStream(serializedObject);
 
             return (T)binaryFormatter.Deserialize(ms);
+        }
+
+        /// <inheritdoc/>
+        public object Deserialize(byte[] serializedObject, Type returnType)
+        {
+            using var ms = new MemoryStream(serializedObject);
+
+            return binaryFormatter.Deserialize(ms);
         }
 
         /// <inheritdoc/>

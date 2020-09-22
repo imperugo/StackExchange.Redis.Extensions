@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
+
 using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.System.Text.Json
@@ -12,6 +14,12 @@ namespace StackExchange.Redis.Extensions.System.Text.Json
         public T Deserialize<T>(byte[] serializedObject)
         {
             return JsonSerializer.Deserialize<T>(serializedObject, SerializationOptions.Flexible);
+        }
+
+        /// <inheritdoc/>
+        public object Deserialize(byte[] serializedObject, Type returnType)
+        {
+            return JsonSerializer.Deserialize(serializedObject, returnType, SerializationOptions.Flexible);
         }
 
         /// <inheritdoc/>

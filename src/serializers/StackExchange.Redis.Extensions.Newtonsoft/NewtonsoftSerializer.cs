@@ -1,5 +1,8 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
+
 using Newtonsoft.Json;
+
 using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.Newtonsoft
@@ -50,6 +53,13 @@ namespace StackExchange.Redis.Extensions.Newtonsoft
         {
             var jsonString = encoding.GetString(serializedObject);
             return JsonConvert.DeserializeObject<T>(jsonString, settings);
+        }
+
+        /// <inheritdoc/>
+        public object Deserialize(byte[] serializedObject, Type returnType)
+        {
+            var jsonString = encoding.GetString(serializedObject);
+            return JsonConvert.DeserializeObject(jsonString, returnType, settings);
         }
     }
 }
