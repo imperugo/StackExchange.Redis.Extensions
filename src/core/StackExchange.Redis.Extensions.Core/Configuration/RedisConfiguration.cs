@@ -287,13 +287,15 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
             {
                 if (options == null)
                 {
+                    ConfigurationOptions newOptions;
+
                     if (!string.IsNullOrEmpty(ConnectionString))
                     {
-                        options = ConfigurationOptions.Parse(ConnectionString);
+                        newOptions = ConfigurationOptions.Parse(ConnectionString);
                     }
                     else
                     {
-                        options = new ConfigurationOptions
+                        newOptions = new ConfigurationOptions
                         {
                             Ssl = Ssl,
                             AllowAdmin = AllowAdmin,
@@ -308,22 +310,24 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 
                         if (IsSentinelCluster)
                         {
-                            options.ServiceName = ServiceName;
-                            options.CommandMap = CommandMap.Sentinel;
+                            newOptions.ServiceName = ServiceName;
+                            newOptions.CommandMap = CommandMap.Sentinel;
                         }
 
                         foreach (var redisHost in Hosts)
-                            options.EndPoints.Add(redisHost.Host, redisHost.Port);
+                            newOptions.EndPoints.Add(redisHost.Host, redisHost.Port);
                     }
 
                     if (ExcludeCommands != null)
                     {
-                        options.CommandMap = CommandMap.Create(
+                        newOptions.CommandMap = CommandMap.Create(
                             new HashSet<string>(ExcludeCommands),
                             available: false);
                     }
 
-                    options.CertificateValidation += CertificateValidation;
+                    newOptions.CertificateValidation += CertificateValidation;
+
+                    options = newOptions;
                 }
 
                 return options;
