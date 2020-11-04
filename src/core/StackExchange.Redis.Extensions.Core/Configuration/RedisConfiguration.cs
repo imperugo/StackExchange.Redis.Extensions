@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Net.Security;
 using System.Security.Authentication;
 
+using StackExchange.Redis.Extensions.Core.Abstractions;
+using StackExchange.Redis.Extensions.Core.Implementations;
+using StackExchange.Redis.Extensions.Core.Models;
 using StackExchange.Redis.Profiling;
 
 namespace StackExchange.Redis.Extensions.Core.Configuration
@@ -276,6 +279,16 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
                 ResetConfigurationOptions();
             }
         }
+
+        /// <summary>
+        /// Gets or sets the factory for <see cref="IStateAwareConnection"/> creation
+        /// </summary>
+        /// <returns>>If property is not set, default <see cref="IStateAwareConnection"/> will be resolved</returns>
+        /// <remarks>
+        ///     Proprerty is optional.
+        ///     Property should be assined by invocation code only once. (We are not doing additional checks in the property itself in order to prevent any possible issues during serialization)
+        /// </remarks>
+        public StateAwareConnectionResolver StateAwareConnectionFactory { get; set; } = (cm, logger) => new RedisCacheConnectionPoolManager.StateAwareConnection(cm, logger);
 
         /// <summary>
         /// Gets the Redis configuration options
