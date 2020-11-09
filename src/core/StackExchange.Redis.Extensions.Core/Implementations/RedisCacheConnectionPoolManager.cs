@@ -14,7 +14,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
     /// <inheritdoc/>
     public class RedisCacheConnectionPoolManager : IRedisCacheConnectionPoolManager
     {
-        private readonly ConcurrentBag<Lazy<StateAwareConnection>> connections;
+        private readonly ConcurrentBag<Lazy<IStateAwareConnection>> connections;
         private readonly RedisConfiguration redisConfiguration;
         private readonly ILogger<RedisCacheConnectionPoolManager> logger;
 
@@ -27,7 +27,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             this.redisConfiguration = redisConfiguration ?? throw new ArgumentNullException(nameof(redisConfiguration));
 
-            this.connections = new ConcurrentBag<Lazy<StateAwareConnection>>();
+            this.connections = new ConcurrentBag<Lazy<IStateAwareConnection>>();
             this.logger = logger ?? NullLogger<RedisCacheConnectionPoolManager>.Instance;
         }
 
@@ -37,7 +37,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             var activeConnections = this.connections.Where(lazy => lazy.IsValueCreated).ToList();
 
             foreach (var connection in activeConnections)
-                ((ConnectionMultiplexer)connection.Value).Dispose();
+                connection.Value.Dispose();
 
             while (this.connections.IsEmpty == false)
                 this.connections.TryTake(out var taken);
@@ -51,9 +51,9 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             var loadedLazies = this.connections.Where(lazy => lazy.IsValueCreated);
 
             if (loadedLazies.Count() == this.connections.Count)
-                return (ConnectionMultiplexer)this.connections.OrderBy(x => x.Value.TotalOutstanding()).First().Value;
+                return this.connections.OrderBy(x => x.Value.TotalOutstanding()).First().Value.Connection;
 
-            return (ConnectionMultiplexer)this.connections.First(lazy => !lazy.IsValueCreated).Value;
+            return this.connections.First(lazy => !lazy.IsValueCreated).Value.Connection;
         }
 
         /// <inheritdoc/>
@@ -91,7 +91,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         private void EmitConnection()
         {
-            this.connections.Add(new Lazy<StateAwareConnection>(() =>
+            this.connections.Add(new Lazy<IStateAwareConnection>(() =>
             {
                 this.logger.LogDebug("Creating new Redis connection.");
 
@@ -100,7 +100,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 if (this.redisConfiguration.ProfilingSessionProvider != null)
                     multiplexer.RegisterProfiler(this.redisConfiguration.ProfilingSessionProvider);
 
-                return new StateAwareConnection(multiplexer, logger);
+                return this.redisConfiguration.StateAwareConnectionFactory(multiplexer, logger);
             }));
         }
 
@@ -121,9 +121,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         ///     <see cref="ConnectionMultiplexer" /> object and invalidates it in case the connection transients into a state to be
         ///     considered as permanently disconnected.
         /// </summary>
-        internal sealed class StateAwareConnection
+        internal sealed class StateAwareConnection : IStateAwareConnection
         {
-            private readonly ConnectionMultiplexer multiplexer;
             private readonly ILogger logger;
 
             /// <summary>
@@ -131,20 +130,28 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             /// </summary>
             /// <param name="multiplexer">The <see cref="ConnectionMultiplexer" /> connection object to observe.</param>
             /// <param name="logger">The logger.</param>
-            public StateAwareConnection(ConnectionMultiplexer multiplexer, ILogger logger)
+            public StateAwareConnection(IConnectionMultiplexer multiplexer, ILogger logger)
             {
-                this.multiplexer = multiplexer ?? throw new ArgumentNullException(nameof(multiplexer));
+                this.Connection = multiplexer ?? throw new ArgumentNullException(nameof(multiplexer));
+                this.Connection.ConnectionFailed += this.ConnectionFailed;
+                this.Connection.ConnectionRestored += this.ConnectionRestored;
 
-                this.multiplexer.ConnectionFailed += this.ConnectionFailed;
-                this.multiplexer.ConnectionRestored += this.ConnectionRestored;
                 this.logger = logger;
             }
 
-            public static implicit operator ConnectionMultiplexer(StateAwareConnection c) => c.multiplexer;
+            public IConnectionMultiplexer Connection { get; private set; }
 
-            public long TotalOutstanding() => this.multiplexer.GetCounters().TotalOutstanding;
+            public long TotalOutstanding() => this.Connection.GetCounters().TotalOutstanding;
 
-            public bool IsConnected() => this.multiplexer.IsConnecting == false;
+            public bool IsConnected() => this.Connection.IsConnecting == false;
+
+            public void Dispose()
+            {
+                this.Connection.ConnectionFailed -= ConnectionFailed;
+                this.Connection.ConnectionRestored -= ConnectionRestored;
+
+                Connection.Dispose();
+            }
 
             private void ConnectionFailed(object sender, ConnectionFailedEventArgs e)
             {

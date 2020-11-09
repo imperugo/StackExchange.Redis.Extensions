@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Net.Security;
 using System.Security.Authentication;
 
+using StackExchange.Redis.Extensions.Core.Abstractions;
+using StackExchange.Redis.Extensions.Core.Implementations;
+using StackExchange.Redis.Extensions.Core.Models;
 using StackExchange.Redis.Profiling;
 
 namespace StackExchange.Redis.Extensions.Core.Configuration
@@ -278,6 +281,16 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         }
 
         /// <summary>
+        /// Gets or sets the factory for <see cref="IStateAwareConnection"/> creation
+        /// </summary>
+        /// <returns>>If property is not set, default <see cref="IStateAwareConnection"/> will be resolved</returns>
+        /// <remarks>
+        ///     Proprerty is optional.
+        ///     Property should be assined by invocation code only once. (We are not doing additional checks in the property itself in order to prevent any possible issues during serialization)
+        /// </remarks>
+        public StateAwareConnectionResolver StateAwareConnectionFactory { get; set; } = (cm, logger) => new RedisCacheConnectionPoolManager.StateAwareConnection(cm, logger);
+
+        /// <summary>
         /// Gets the Redis configuration options
         /// </summary>
         /// <value>An instanfe of <see cref="ConfigurationOptions" />.</value>
@@ -287,13 +300,15 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
             {
                 if (options == null)
                 {
+                    ConfigurationOptions newOptions;
+
                     if (!string.IsNullOrEmpty(ConnectionString))
                     {
-                        options = ConfigurationOptions.Parse(ConnectionString);
+                        newOptions = ConfigurationOptions.Parse(ConnectionString);
                     }
                     else
                     {
-                        options = new ConfigurationOptions
+                        newOptions = new ConfigurationOptions
                         {
                             Ssl = Ssl,
                             AllowAdmin = AllowAdmin,
@@ -308,22 +323,24 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
 
                         if (IsSentinelCluster)
                         {
-                            options.ServiceName = ServiceName;
-                            options.CommandMap = CommandMap.Sentinel;
+                            newOptions.ServiceName = ServiceName;
+                            newOptions.CommandMap = CommandMap.Sentinel;
                         }
 
                         foreach (var redisHost in Hosts)
-                            options.EndPoints.Add(redisHost.Host, redisHost.Port);
+                            newOptions.EndPoints.Add(redisHost.Host, redisHost.Port);
                     }
 
                     if (ExcludeCommands != null)
                     {
-                        options.CommandMap = CommandMap.Create(
+                        newOptions.CommandMap = CommandMap.Create(
                             new HashSet<string>(ExcludeCommands),
                             available: false);
                     }
 
-                    options.CertificateValidation += CertificateValidation;
+                    newOptions.CertificateValidation += CertificateValidation;
+
+                    options = newOptions;
                 }
 
                 return options;
