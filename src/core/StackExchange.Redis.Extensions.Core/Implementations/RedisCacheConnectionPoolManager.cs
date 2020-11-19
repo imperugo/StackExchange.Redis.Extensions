@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -14,7 +16,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
     /// <inheritdoc/>
     public class RedisCacheConnectionPoolManager : IRedisCacheConnectionPoolManager
     {
-        private readonly ConcurrentBag<Lazy<IStateAwareConnection>> connections;
+        private readonly ConcurrentBag<IStateAwareConnection> connections;
         private readonly RedisConfiguration redisConfiguration;
         private readonly ILogger<RedisCacheConnectionPoolManager> logger;
 
@@ -26,7 +28,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         public RedisCacheConnectionPoolManager(RedisConfiguration redisConfiguration, ILogger<RedisCacheConnectionPoolManager> logger = null)
         {
             this.redisConfiguration = redisConfiguration ?? throw new ArgumentNullException(nameof(redisConfiguration));
-            this.connections = new ConcurrentBag<Lazy<IStateAwareConnection>>();
+            this.connections = new ConcurrentBag<IStateAwareConnection>();
             this.logger = logger ?? NullLogger<RedisCacheConnectionPoolManager>.Instance;
             this.EmitConnections();
         }
@@ -34,10 +36,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public void Dispose()
         {
-            var activeConnections = this.connections.Where(lazy => lazy.IsValueCreated).ToList();
-
-            foreach (var connection in activeConnections)
-                connection.Value.Dispose();
+            foreach (var connection in connections)
+                connection.Dispose();
 
             while (this.connections.IsEmpty == false)
                 this.connections.TryTake(out var taken);
@@ -46,12 +46,12 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public IConnectionMultiplexer GetConnection()
         {
-            var loadedLazies = this.connections.Where(lazy => lazy.IsValueCreated);
+            if (this.connections.IsEmpty == false)
+            {
+                return this.connections.OrderBy(c => c.TotalOutstanding()).First().Connection;
+            }
 
-            if (loadedLazies.Count() == this.connections.Count)
-                return this.connections.OrderBy(x => x.Value.TotalOutstanding()).First().Value.Connection;
-
-            return this.connections.First(lazy => !lazy.IsValueCreated).Value.Connection;
+            throw new Exception("no connection available");
         }
 
         /// <inheritdoc/>
@@ -59,17 +59,10 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             var activeConnections = 0;
             var invalidConnections = 0;
-            var readyNotUsedYet = 0;
 
             foreach (var lazy in connections)
             {
-                if (!lazy.IsValueCreated)
-                {
-                    readyNotUsedYet++;
-                    continue;
-                }
-
-                if (!lazy.Value.IsConnected())
+                if (!lazy.IsConnected())
                 {
                     invalidConnections++;
                     continue;
@@ -83,35 +76,30 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 RequiredPoolSize = redisConfiguration.PoolSize,
                 ActiveConnections = activeConnections,
                 InvalidConnections = invalidConnections,
-                ReadyNotUsedYet = readyNotUsedYet
+                ReadyNotUsedYet = 0
             };
         }
 
-        private void EmitConnection()
+        private Task EmitConnection()
         {
-            this.connections.Add(new Lazy<IStateAwareConnection>(() =>
-            {
-                this.logger.LogDebug("Creating new Redis connection.");
-
-                var multiplexer = ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions);
-
-                if (this.redisConfiguration.ProfilingSessionProvider != null)
-                    multiplexer.RegisterProfiler(this.redisConfiguration.ProfilingSessionProvider);
-
-                return this.redisConfiguration.StateAwareConnectionFactory(multiplexer, logger);
-            }));
+            return Task.Run(
+                async () =>
+                {
+                    this.logger.LogDebug("Creating new Redis connection.");
+                    var multiplexer = await ConnectionMultiplexer.ConnectAsync(redisConfiguration.ConfigurationOptions);
+                    if (this.redisConfiguration.ProfilingSessionProvider != null)
+                        multiplexer.RegisterProfiler(this.redisConfiguration.ProfilingSessionProvider);
+                    this.connections.Add(this.redisConfiguration.StateAwareConnectionFactory(multiplexer, logger));
+                });
         }
 
         private void EmitConnections()
         {
-            if (connections.Count >= this.redisConfiguration.PoolSize)
-                return;
-
-            for (var i = 0; i < this.redisConfiguration.PoolSize; i++)
-            {
-                logger.LogDebug("Creating the redis connection pool with {0} connections.", this.redisConfiguration.PoolSize);
-                this.EmitConnection();
-            }
+            logger.LogDebug("Creating the redis connection pool with {0} connections.", this.redisConfiguration.PoolSize);
+            var tasks = Enumerable.Range(0, this.redisConfiguration.PoolSize)
+                .Select(_ => this.EmitConnection())
+                .ToArray();
+            Task.WaitAny(tasks);    // wait for at least 1 connection to be available
         }
 
         /// <summary>
