@@ -7,9 +7,7 @@ namespace StackExchange.Redis.Extensions.Tests.Extensions
     {
         public static void FlushDatabase(this IDatabase db)
         {
-            var endPoints = db.Multiplexer.GetEndPoints();
-
-            foreach (var endpoint in endPoints)
+            foreach (var endpoint in db.Multiplexer.GetEndPoints())
             {
                 var server = db.Multiplexer.GetServer(endpoint);
 

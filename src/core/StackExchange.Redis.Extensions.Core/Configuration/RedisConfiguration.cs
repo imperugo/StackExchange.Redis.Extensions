@@ -23,16 +23,16 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         private int connectTimeout = 5000;
         private int syncTimeout = 1000;
         private bool abortOnConnectFail;
-        private int database = 0;
+        private int database;
         private RedisHost[] hosts;
         private ServerEnumerationStrategy serverEnumerationStrategy;
         private uint maxValueLength;
         private int poolSize = 5;
         private string[] excludeCommands;
-        private string configurationChannel = null;
-        private string connectionString = null;
-        private string serviceName = null;
-        private SslProtocols? sslProtocols = null;
+        private string configurationChannel;
+        private string connectionString;
+        private string serviceName;
+        private SslProtocols? sslProtocols;
         private Func<ProfilingSession> profilingSessionProvider;
 
         /// <summary>
@@ -47,6 +47,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public string ServiceName
         {
             get => serviceName;
+
             set
             {
                 serviceName = value;
@@ -65,6 +66,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public SslProtocols? SslProtocols
         {
             get => sslProtocols;
+
             set
             {
                 sslProtocols = value;
@@ -78,6 +80,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public string ConnectionString
         {
             get => connectionString;
+
             set
             {
                 connectionString = value;
@@ -91,6 +94,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public string ConfigurationChannel
         {
             get => configurationChannel;
+
             set
             {
                 configurationChannel = value;
@@ -104,6 +108,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public string KeyPrefix
         {
             get => keyPrefix;
+
             set
             {
                 keyPrefix = value;
@@ -117,6 +122,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public string Password
         {
             get => password;
+
             set
             {
                 password = value;
@@ -130,6 +136,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public bool AllowAdmin
         {
             get => allowAdmin;
+
             set
             {
                 allowAdmin = value;
@@ -143,6 +150,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public bool Ssl
         {
             get => ssl;
+
             set
             {
                 ssl = value;
@@ -156,6 +164,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public int ConnectTimeout
         {
             get => connectTimeout;
+
             set
             {
                 connectTimeout = value;
@@ -169,6 +178,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public int SyncTimeout
         {
             get => syncTimeout;
+
             set
             {
                 syncTimeout = value;
@@ -182,6 +192,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public bool AbortOnConnectFail
         {
             get => abortOnConnectFail;
+
             set
             {
                 abortOnConnectFail = value;
@@ -195,6 +206,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public int Database
         {
             get => database;
+
             set
             {
                 database = value;
@@ -208,6 +220,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public RedisHost[] Hosts
         {
             get => hosts;
+
             set
             {
                 hosts = value;
@@ -221,6 +234,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public ServerEnumerationStrategy ServerEnumerationStrategy
         {
             get => serverEnumerationStrategy;
+
             set
             {
                 serverEnumerationStrategy = value;
@@ -234,6 +248,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public uint MaxValueLength
         {
             get => maxValueLength;
+
             set
             {
                 maxValueLength = value;
@@ -247,6 +262,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public int PoolSize
         {
             get => poolSize;
+
             set
             {
                 poolSize = value;
@@ -260,6 +276,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public string[] ExcludeCommands
         {
             get => excludeCommands;
+
             set
             {
                 excludeCommands = value;
@@ -273,6 +290,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         public Func<ProfilingSession> ProfilingSessionProvider
         {
             get => profilingSessionProvider;
+
             set
             {
                 profilingSessionProvider = value;
@@ -318,7 +336,7 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
                             AbortOnConnectFail = AbortOnConnectFail,
                             ConfigurationChannel = ConfigurationChannel,
                             SslProtocols = sslProtocols,
-                            ChannelPrefix = KeyPrefix,
+                            ChannelPrefix = KeyPrefix
                         };
 
                         if (IsSentinelCluster)

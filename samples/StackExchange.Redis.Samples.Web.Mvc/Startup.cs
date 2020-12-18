@@ -86,11 +86,13 @@ namespace StackExchange.Redis.Samples.Web.Mvc
             var redisDb = app.ApplicationServices.GetRequiredService<IRedisDatabase>();
 
             redisDb.SubscribeAsync<string>("MyEventName", x =>
-            {
-                logger.LogInformation("Just got this message {0}", x);
+                {
+                    logger.LogInformation("Just got this message {0}", x);
 
-                return Task.CompletedTask;
-            }).GetAwaiter().GetResult();
+                    return Task.CompletedTask;
+                })
+                .GetAwaiter()
+                .GetResult();
         }
     }
 }

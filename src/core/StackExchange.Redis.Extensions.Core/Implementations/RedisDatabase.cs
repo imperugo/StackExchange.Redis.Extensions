@@ -17,7 +17,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
     public partial class RedisDatabase : IRedisDatabase
     {
         private readonly IRedisCacheConnectionPoolManager connectionPoolManager;
-        private readonly ServerEnumerationStrategy serverEnumerationStrategy = new ServerEnumerationStrategy();
+        private readonly ServerEnumerationStrategy serverEnumerationStrategy = new();
         private readonly string keyPrefix;
         private readonly uint maxValueLength;
         private readonly int dbNumber;
@@ -202,9 +202,9 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         public Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             var values = items
-                        .OfValueInListSize(Serializer, maxValueLength)
-                        .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
-                        .ToArray();
+                .OfValueInListSize(Serializer, maxValueLength)
+                .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
+                .ToArray();
 
             return Database.StringSetAsync(values, when, flag);
         }
@@ -213,9 +213,9 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             var values = items
-                        .OfValueInListSize(Serializer, maxValueLength)
-                        .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
-                        .ToArray();
+                .OfValueInListSize(Serializer, maxValueLength)
+                .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
+                .ToArray();
 
             var tasks = new Task[values.Length];
             await Database.StringSetAsync(values, when, flag);
@@ -232,9 +232,9 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             var values = items
-                        .OfValueInListSize(Serializer, maxValueLength)
-                        .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
-                        .ToArray();
+                .OfValueInListSize(Serializer, maxValueLength)
+                .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
+                .ToArray();
 
             var tasks = new Task[values.Length];
             await Database.StringSetAsync(values, when, flag);
@@ -379,7 +379,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             var multiplexer = Database.Multiplexer;
             var servers = ServerIteratorFactory.GetServers(connectionPoolManager.GetConnection(), serverEnumerationStrategy).ToArray();
 
-            if (!servers.Any())
+            if (servers.Length == 0)
                 throw new Exception("No server found to serve the KEYS command.");
 
             foreach (var server in servers)

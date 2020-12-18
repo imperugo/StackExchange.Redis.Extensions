@@ -14,8 +14,12 @@ namespace StackExchange.Redis.Extensions.System.Text.Json.Converters
             {
                 var span = reader.HasValueSequence ? reader.ValueSequence.ToArray() : reader.ValueSpan;
 
-                if (Utf8Parser.TryParse(span, out int number, out var bytesConsumed) && span.Length == bytesConsumed)
+#pragma warning disable RCS1176
+
+                if (Utf8Parser.TryParse(span, out int number, out int bytesConsumed) && span.Length == bytesConsumed)
                     return number;
+
+#pragma warning restore RCS1176
 
                 if (int.TryParse(reader.GetString(), out number))
                     return number;

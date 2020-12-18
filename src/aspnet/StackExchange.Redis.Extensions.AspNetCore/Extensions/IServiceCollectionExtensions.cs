@@ -42,10 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IRedisCacheConnectionPoolManager, RedisCacheConnectionPoolManager>();
             services.AddSingleton<ISerializer, T>();
 
-            services.AddSingleton((provider) =>
-            {
-                return provider.GetRequiredService<IRedisCacheClient>().GetDbFromConfiguration();
-            });
+            services.AddSingleton((provider) => provider.GetRequiredService<IRedisCacheClient>().GetDbFromConfiguration());
 
             services.AddSingleton(redisConfigurationFactory);
 

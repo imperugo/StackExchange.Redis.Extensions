@@ -34,12 +34,15 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public void Dispose()
         {
-            var activeConnections = this.connections.Where(lazy => lazy.IsValueCreated).ToList();
+            foreach (var connection in this.connections)
+            {
+                if (!connection.IsValueCreated)
+                    continue;
 
-            foreach (var connection in activeConnections)
                 connection.Value.Dispose();
+            }
 
-            while (this.connections.IsEmpty == false)
+            while (!this.connections.IsEmpty)
                 this.connections.TryTake(out var taken);
         }
 
@@ -48,12 +51,24 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             this.EmitConnections();
 
-            var loadedLazies = this.connections.Where(lazy => lazy.IsValueCreated);
+            var loadedLazies = this.connections.Count(lazy => lazy.IsValueCreated);
 
-            if (loadedLazies.Count() == this.connections.Count)
+            if (loadedLazies == this.connections.Count)
                 return this.connections.OrderBy(x => x.Value.TotalOutstanding()).First().Value.Connection;
 
-            return this.connections.First(lazy => !lazy.IsValueCreated).Value.Connection;
+            foreach (var connection in this.connections)
+            {
+                if (!connection.IsValueCreated)
+                    return connection.Value.Connection;
+
+                // This mean there is an active connection that is not doing anything
+                if (connection.Value.TotalOutstanding() == 0)
+                    return connection.Value.Connection;
+            }
+
+            logger.LogWarning("Fall back on the first available connection");
+
+            return this.connections.First().Value.Connection;
         }
 
         /// <inheritdoc/>
@@ -139,11 +154,11 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 this.logger = logger;
             }
 
-            public IConnectionMultiplexer Connection { get; private set; }
+            public IConnectionMultiplexer Connection { get; }
 
             public long TotalOutstanding() => this.Connection.GetCounters().TotalOutstanding;
 
-            public bool IsConnected() => this.Connection.IsConnecting == false;
+            public bool IsConnected() => !this.Connection.IsConnecting;
 
             public void Dispose()
             {

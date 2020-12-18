@@ -10,7 +10,7 @@ namespace StackExchange.Redis.Extensions.Binary
     /// </summary>
     public class BinarySerializer : ISerializer
     {
-        private readonly BinaryFormatter binaryFormatter = new BinaryFormatter();
+        private readonly BinaryFormatter binaryFormatter = new();
 
         /// <inheritdoc/>
         public T Deserialize<T>(byte[] serializedObject)

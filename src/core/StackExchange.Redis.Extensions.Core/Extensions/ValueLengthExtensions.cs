@@ -17,16 +17,15 @@ namespace StackExchange.Redis.Extensions.Core.Extensions
             }
         }
 
-        public static byte[] OfValueSize<T>(this T value, ISerializer serializer, uint maxValueLength, string key)
-            => serializer.Serialize(value).CheckLength(maxValueLength, key);
+        public static byte[] OfValueSize<T>(this T value, ISerializer serializer, uint maxValueLength, string key) => serializer.Serialize(value).CheckLength(maxValueLength, key);
 
-        private static byte[] SerializeItem<T>(this T item, ISerializer serializer)
-            => serializer.Serialize(item);
+        private static byte[] SerializeItem<T>(this T item, ISerializer serializer) => serializer.Serialize(item);
 
         private static byte[] CheckLength(this byte[] byteArray, uint maxValueLength, string paramName)
         {
             if (maxValueLength > default(uint) && byteArray.Length > maxValueLength)
                 throw new ArgumentException("value cannot be longer than the MaxValueLength", paramName);
+
             return byteArray;
         }
     }

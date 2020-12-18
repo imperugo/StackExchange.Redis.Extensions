@@ -9,13 +9,14 @@ namespace StackExchange.Redis.Extensions.Core.ServerIteration
     /// <summary>
     /// The factory that allows you to enumerate all Redis servers.
     /// </summary>
-    public class ServerIteratorFactory
+    public static class ServerIteratorFactory
     {
         /// <summary>
         /// Rerturn all Redis servers
         /// </summary>
         /// <param name="multiplexer">The redis connection.</param>
         /// <param name="serverEnumerationStrategy">The iterate strategy.</param>
+        /// <exception cref="NotImplementedException">In case of wrong enum.</exception>
         public static IEnumerable<IServer> GetServers(
             IConnectionMultiplexer multiplexer,
             ServerEnumerationStrategy serverEnumerationStrategy)
@@ -23,11 +24,10 @@ namespace StackExchange.Redis.Extensions.Core.ServerIteration
             switch (serverEnumerationStrategy.Mode)
             {
                 case ServerEnumerationStrategy.ModeOptions.All:
-                    var serversAll = new ServerEnumerable(
+                    return new ServerEnumerable(
                                             multiplexer,
                                             serverEnumerationStrategy.TargetRole,
                                             serverEnumerationStrategy.UnreachableServerAction);
-                    return serversAll;
 
                 case ServerEnumerationStrategy.ModeOptions.Single:
                     var serversSingle = new ServerEnumerable(
