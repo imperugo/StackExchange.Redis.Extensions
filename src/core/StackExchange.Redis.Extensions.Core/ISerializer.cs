@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using System;
 
 namespace StackExchange.Redis.Extensions.Core
 {
@@ -23,5 +23,15 @@ namespace StackExchange.Redis.Extensions.Core
         /// The instance of the specified Item
         /// </returns>
         T Deserialize<T>(byte[] serializedObject);
+
+        /// <summary>
+        /// Deserializes the specified bytes.
+        /// </summary>
+        /// <param name="serializedObject">The serialized object.</param>
+        /// <param name="returnType">The type of the object to convert to and return.</param>
+        /// <returns>
+        /// The instance of the specified Item
+        /// </returns>
+        object Deserialize(byte[] serializedObject, Type returnType);
     }
 }

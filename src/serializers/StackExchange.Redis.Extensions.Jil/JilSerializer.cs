@@ -53,5 +53,12 @@ namespace StackExchange.Redis.Extensions.Jil
             var jsonString = encoding.GetString(serializedObject);
             return JSON.Deserialize<T>(jsonString);
         }
+
+        /// <inheritdoc/>
+        public object Deserialize(byte[] serializedObject, Type returnType)
+        {
+            var jsonString = encoding.GetString(serializedObject);
+            return JSON.Deserialize(jsonString, returnType);
+        }
     }
 }

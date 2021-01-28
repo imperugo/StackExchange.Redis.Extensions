@@ -8,9 +8,11 @@ using Microsoft.Extensions.Logging;
 
 using Moq;
 
+using StackExchange.Redis.Extensions.Binary;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Implementations;
+using StackExchange.Redis.Extensions.Protobuf;
 using StackExchange.Redis.Extensions.Tests.Extensions;
 using StackExchange.Redis.Extensions.Tests.Helpers;
 
@@ -520,6 +522,53 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             Assert.True(added);
             Assert.True(db.KeyExists("my Key"));
             Assert.Equal(dbValue, d);
+        }
+
+        [Fact]
+        public async Task Adding_Value_Type_Should_Return_Non_Generic_Correct_Value()
+        {
+            var d = new TestClass<string> { Key = $"key21", Value = "value21" };
+            var added = await Sut.GetDbFromConfiguration().AddAsync("my Key", d);
+
+            // TODO: Assuming that only the type of TestClass<string> can be obtained here.
+            var returnType = typeof(TestClass<string>);
+
+            // TODO: Use non-generic methods to get results.
+            var dbValue = await Sut.GetDbFromConfiguration().GetAsync("my Key", returnType);
+            Assert.True(added);
+            Assert.True(db.KeyExists("my Key"));
+
+            // TODO: dbValue equal.
+            Assert.Equal(dbValue, d);
+        }
+
+        [Fact]
+        public async Task Adding_Value_Type_Validate_Generic_Return_Object()
+        {
+            var d = new TestClass<string> { Key = $"key21", Value = "value21" };
+            var added = await Sut.GetDbFromConfiguration().AddAsync("my Key", d);
+            Assert.True(added);
+            Assert.True(db.KeyExists("my Key"));
+            if (Sut.GetDbFromConfiguration().Serializer is ProtobufSerializer)
+            {
+                // TODO: ProtobufSerializer generic get object throws an ArgumentNullException.
+                await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDbFromConfiguration().GetAsync<object>("my Key"));
+            }
+            else
+            {
+                // TODO: Use generic methods to get results.
+                var dbValue = await Sut.GetDbFromConfiguration().GetAsync<object>("my Key");
+                if (Sut.GetDbFromConfiguration().Serializer is BinarySerializer)
+                {
+                    // TODO: BinarySerializer dbValue equal.
+                    Assert.Equal(dbValue, d);
+                }
+                else
+                {
+                    // TODO: dbValue not equal.
+                    Assert.NotEqual(dbValue, d);
+                }
+            }
         }
 
         [Fact]
