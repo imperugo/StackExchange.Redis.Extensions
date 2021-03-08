@@ -36,7 +36,6 @@
         - StackExchange.Redis.Extensions.MsgPack
         - StackExchange.Redis.Extensions.Protobuf
         - StackExchange.Redis.Extensions.Utf8Json
-        - StackExchange.Redis.Extensions.Binary
     </Description>
     <PackageReleaseNotes>
         - Added support to .NET Standard

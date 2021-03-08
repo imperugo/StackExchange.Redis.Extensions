@@ -10,7 +10,7 @@
         "${workspaceFolder}/samples/StackExchange.Redis.Samples.Web.Mvc/StackExchange.Redis.Samples.Web.Mvc.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary",
-        "-f:netcoreapp3.1"
+        "-f:net5.0"
       ],
       "problemMatcher": "$msCompile",
       "group": {

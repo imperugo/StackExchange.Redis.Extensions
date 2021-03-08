@@ -1,5 +1,4 @@
 dotnet pack src\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj -o .\packages\ -c Release
-dotnet pack src\serializers\StackExchange.Redis.Extensions.Binary\StackExchange.Redis.Extensions.Binary.csproj -o .\packages\ -c Release
 dotnet pack src\serializers\StackExchange.Redis.Extensions.Jil\StackExchange.Redis.Extensions.Jil.csproj -o .\packages\ -c Release
 dotnet pack src\serializers\StackExchange.Redis.Extensions.MsgPack\StackExchange.Redis.Extensions.MsgPack.csproj -o .\packages\ -c Release
 dotnet pack src\serializers\StackExchange.Redis.Extensions.Newtonsoft\StackExchange.Redis.Extensions.Newtonsoft.csproj -o .\packages\ -c Release

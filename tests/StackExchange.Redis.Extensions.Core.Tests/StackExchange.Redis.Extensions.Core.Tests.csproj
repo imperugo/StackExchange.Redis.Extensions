@@ -32,7 +32,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
-    <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.Binary\StackExchange.Redis.Extensions.Binary.csproj" />
     <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.Jil\StackExchange.Redis.Extensions.Jil.csproj" />
     <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.MsgPack\StackExchange.Redis.Extensions.MsgPack.csproj" />
     <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.Newtonsoft\StackExchange.Redis.Extensions.Newtonsoft.csproj" />
