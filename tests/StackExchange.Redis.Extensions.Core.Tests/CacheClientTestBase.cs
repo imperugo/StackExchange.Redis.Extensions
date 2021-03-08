@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,6 +29,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         private readonly ISerializer serializer;
         private readonly RedisConfiguration redisConfiguration;
         private readonly IRedisCacheConnectionPoolManager connectionPoolManager;
+        private bool isDisposed;
+        private IntPtr nativeResource = Marshal.AllocHGlobal(100);
 
         internal CacheClientTestBase(ISerializer serializer)
         {
@@ -63,9 +66,32 @@ namespace StackExchange.Redis.Extensions.Core.Tests
 
         public void Dispose()
         {
-            db.FlushDatabase();
-            db.Multiplexer.GetSubscriber().UnsubscribeAll();
-            connectionPoolManager.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <inheritdoc/>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (isDisposed)
+                return;
+
+            if (disposing)
+            {
+                // free managed resources
+                db.FlushDatabase();
+                db.Multiplexer.GetSubscriber().UnsubscribeAll();
+                connectionPoolManager.Dispose();
+            }
+
+            // free native resources if there are any.
+            if (nativeResource != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(nativeResource);
+                nativeResource = IntPtr.Zero;
+            }
+
+            isDisposed = true;
         }
 
         [Fact]

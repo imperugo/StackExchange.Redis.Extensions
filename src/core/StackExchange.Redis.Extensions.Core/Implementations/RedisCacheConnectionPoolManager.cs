@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -17,6 +18,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         private readonly ConcurrentBag<Lazy<IStateAwareConnection>> connections;
         private readonly RedisConfiguration redisConfiguration;
         private readonly ILogger<RedisCacheConnectionPoolManager> logger;
+        private bool isDisposed;
+        private IntPtr nativeResource = Marshal.AllocHGlobal(100);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RedisCacheConnectionPoolManager"/> class.
@@ -26,31 +29,53 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         public RedisCacheConnectionPoolManager(RedisConfiguration redisConfiguration, ILogger<RedisCacheConnectionPoolManager> logger = null)
         {
             this.redisConfiguration = redisConfiguration ?? throw new ArgumentNullException(nameof(redisConfiguration));
+            this.logger = logger ?? NullLogger<RedisCacheConnectionPoolManager>.Instance;
 
             this.connections = new ConcurrentBag<Lazy<IStateAwareConnection>>();
-            this.logger = logger ?? NullLogger<RedisCacheConnectionPoolManager>.Instance;
+            this.EmitConnections();
         }
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            foreach (var connection in this.connections)
-            {
-                if (!connection.IsValueCreated)
-                    continue;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-                connection.Value.Dispose();
+        /// <inheritdoc/>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (isDisposed)
+                return;
+
+            if (disposing)
+            {
+                // free managed resources
+                foreach (var connection in this.connections)
+                {
+                    if (!connection.IsValueCreated)
+                        continue;
+
+                    connection.Value.Dispose();
+                }
+
+                while (!this.connections.IsEmpty)
+                    this.connections.TryTake(out var taken);
             }
 
-            while (!this.connections.IsEmpty)
-                this.connections.TryTake(out var taken);
+            // free native resources if there are any.
+            if (nativeResource != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(nativeResource);
+                nativeResource = IntPtr.Zero;
+            }
+
+            isDisposed = true;
         }
 
         /// <inheritdoc/>
         public IConnectionMultiplexer GetConnection()
         {
-            this.EmitConnections();
-
             var loadedLazies = this.connections.Count(lazy => lazy.IsValueCreated);
 
             if (loadedLazies == this.connections.Count)
@@ -121,7 +146,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
         private void EmitConnections()
         {
-            if (connections.Count >= this.redisConfiguration.PoolSize)
+            if (this.connections.Count >= this.redisConfiguration.PoolSize)
                 return;
 
             for (var i = 0; i < this.redisConfiguration.PoolSize; i++)

@@ -3,7 +3,7 @@ using System.Net;
 
 using Microsoft.AspNetCore.Http;
 
-namespace StackExchange.Redis.Extensions.AspNetCore.Midllewares
+namespace StackExchange.Redis.Extensions.AspNetCore.Middlewares
 {
     /// <summary>
     /// All the options needed to allow the client to redis information middleware

@@ -4,11 +4,11 @@
   <!-- General information -->
   <PropertyGroup>
     <Authors>Ugo Lattanzi</Authors>
-    <VersionPrefix>6.3.6</VersionPrefix>
+    <VersionPrefix>6.4.0</VersionPrefix>
     <!--
     <VersionSuffix>pre</VersionSuffix>
     -->
-    <TargetFrameworks>netstandard2.0;net461;net472;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461;net472;netcoreapp3.0;netcoreapp3.1;net5</TargetFrameworks>
     <!-- <TargetFrameworks>netstandard2.0;netcoreapp3.0;netcoreapp3.1</TargetFrameworks> -->
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
@@ -101,7 +101,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Roslynator.Analyzers" Version="3.0.0">
+    <PackageReference Include="Roslynator.Analyzers" Version="3.1.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -109,7 +109,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="1.0.0">
+    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="1.1.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>

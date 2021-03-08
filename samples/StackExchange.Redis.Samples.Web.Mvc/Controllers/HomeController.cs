@@ -1,25 +1,38 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
 
 using StackExchange.Redis.Extensions.Core.Abstractions;
+using StackExchange.Redis.Extensions.Core.Models;
 
 namespace StackExchange.Redis.Samples.Web.Mvc.Controllers
 {
     public class HomeController : Controller
     {
         private readonly IRedisDatabase redisDatabase;
+        private readonly IRedisCacheConnectionPoolManager pool;
 
-        public HomeController(IRedisDatabase redisDatabase)
+        public HomeController(IRedisDatabase redisDatabase, IRedisCacheConnectionPoolManager pool)
         {
             this.redisDatabase = redisDatabase;
+            this.pool = pool;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<string> Index()
         {
-            await redisDatabase.PublishAsync("MyEventName", "ping");
+            var before = pool.GetConnectionInformations();
+            var rng = new Random();
+            await redisDatabase.AddAsync($"key-{rng}", rng.Next());
 
-            return Ok(new { Message = "Ciao" });
+            var after = pool.GetConnectionInformations();
+
+            return BuildInfo(before) + "\t" + BuildInfo(after);
+
+            string BuildInfo(ConnectionPoolInformation info)
+            {
+                return $"\talive: {info.ActiveConnections.ToString()}, required: {info.RequiredPoolSize.ToString()}, ready: {info.ReadyNotUsedYet.ToString()}";
+            }
         }
     }
 }

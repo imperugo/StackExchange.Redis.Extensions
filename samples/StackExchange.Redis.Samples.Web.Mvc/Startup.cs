@@ -26,13 +26,11 @@ namespace StackExchange.Redis.Samples.Web.Mvc
             {
                 AbortOnConnectFail = true,
                 KeyPrefix = "MyPrefix__",
-                Hosts = new RedisHost[]
-                {
-                    new RedisHost { Host = "localhost", Port = 6379 }
-                },
+                Hosts = new[] { new RedisHost { Host = "localhost", Port = 6379 } },
                 AllowAdmin = true,
-                ConnectTimeout = 1000,
+                ConnectTimeout = 5000,
                 Database = 0,
+                PoolSize = 50,
                 ServerEnumerationStrategy = new ServerEnumerationStrategy()
                 {
                     Mode = ServerEnumerationStrategy.ModeOptions.All,
@@ -58,7 +56,7 @@ namespace StackExchange.Redis.Samples.Web.Mvc
                 app.UseHsts();
             }
 
-            // app.UserRedisInformation(opt =>
+            // app.UseRedisInformation(opt =>
             // {
             //     opt.AllowedIPs = Array.Empty<IPAddress>();
             //     // opt.AllowedIPs = = new[] { IPAddress.Parse("127.0.0.1"), IPAddress.Parse("::1") };
@@ -67,7 +65,7 @@ namespace StackExchange.Redis.Samples.Web.Mvc
             //         return false;
             //     };
             // });
-            app.UserRedisInformation();
+            app.UseRedisInformation();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -83,16 +81,16 @@ namespace StackExchange.Redis.Samples.Web.Mvc
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            var redisDb = app.ApplicationServices.GetRequiredService<IRedisDatabase>();
+            // var redisDb = app.ApplicationServices.GetRequiredService<IRedisDatabase>();
 
-            redisDb.SubscribeAsync<string>("MyEventName", x =>
-                {
-                    logger.LogInformation("Just got this message {0}", x);
+            // redisDb.SubscribeAsync<string>("MyEventName", x =>
+            //     {
+            //         logger.LogInformation("Just got this message {0}", x);
 
-                    return Task.CompletedTask;
-                })
-                .GetAwaiter()
-                .GetResult();
+            //         return Task.CompletedTask;
+            //     })
+            //     .GetAwaiter()
+            //     .GetResult();
         }
     }
 }

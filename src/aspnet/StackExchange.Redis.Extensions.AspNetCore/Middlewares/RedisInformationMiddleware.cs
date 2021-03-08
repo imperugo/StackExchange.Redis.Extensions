@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 using StackExchange.Redis.Extensions.Core.Abstractions;
 
-namespace StackExchange.Redis.Extensions.AspNetCore.Midllewares
+namespace StackExchange.Redis.Extensions.AspNetCore.Middlewares
 {
     internal class RedisInformationMiddleware
     {

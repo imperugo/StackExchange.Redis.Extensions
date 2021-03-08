@@ -19,6 +19,23 @@
       }
     },
     {
+      "label": "build solution net5",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/StackExchange.Redis.Extensions.sln",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary",
+        "-f:net5"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
       "label": "build solution netcoreapp3.1",
       "command": "dotnet",
       "type": "process",
