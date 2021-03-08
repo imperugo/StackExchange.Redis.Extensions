@@ -27,7 +27,7 @@
         "${workspaceFolder}/StackExchange.Redis.Extensions.sln",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary",
-        "-f:net5"
+        "-f:net5.0"
       ],
       "problemMatcher": "$msCompile",
       "group": {

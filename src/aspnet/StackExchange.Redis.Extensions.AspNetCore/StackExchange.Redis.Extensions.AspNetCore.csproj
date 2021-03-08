@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <Title>StackExchange.Redis.Extensions.AspNetCore is a library that has a set of extensions method fpr ASP.NET Core.</Title>
     <Summary>StackExchange.Redis.Extensions.AspNetCore is a library that has a set of extensions method fpr ASP.NET Core with the scope to simply the library configuration into the dependency injection</Summary>
     <Description>StackExchange.Redis.Extensions.AspNetCore is a library that has a set of extensions method fpr ASP.NET Core</Description>
@@ -17,22 +17,16 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' or '$(TargetFramework)' == 'netcoreapp3.1'">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.11" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.11" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.11" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net5'">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0'">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' or '$(TargetFramework)' == 'net461' or '$(TargetFramework)' == 'net472'">
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.11" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.11" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.11" />
   </ItemGroup>
 
   <ItemGroup>

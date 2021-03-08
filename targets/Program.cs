@@ -16,13 +16,13 @@ namespace Targets
             Target(
                 "build",
                 Directory.EnumerateFiles("./", "*.sln", SearchOption.AllDirectories),
-                solution => Run(sdk.GetDotnetCliPath(), $"build \"{solution}\" --configuration Release -f:net5"));
+                solution => Run(sdk.GetDotnetCliPath(), $"build \"{solution}\" --configuration Release -f:net5.0"));
 
             Target(
                 "test",
                 DependsOn("build"),
                 Directory.EnumerateFiles("tests", "*Tests.csproj", SearchOption.AllDirectories),
-                proj => Run(sdk.GetDotnetCliPath(), $"test \"{proj}\" --configuration Release --no-build -f:net5"));
+                proj => Run(sdk.GetDotnetCliPath(), $"test \"{proj}\" --configuration Release --no-build -f:net5.0"));
 
             RunTargetsAndExit(args);
         }
