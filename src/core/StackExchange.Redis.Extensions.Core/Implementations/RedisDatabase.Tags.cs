@@ -53,52 +53,6 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return transaction.ExecuteAsync(commandFlags);
         }
 
-        private Task<bool> ExecuteSetAddWithTags(
-            string key,
-            HashSet<string> tags,
-            Func<IDatabaseAsync, Task<bool>> action,
-            CommandFlags commandFlags = CommandFlags.None)
-        {
-            var transaction = Database.CreateTransaction();
-
-            foreach (var tagKey in tags.Select(t => TagHelper.GenerateTagSetKey(t)))
-            {
-                transaction.SetAddAsync(tagKey, key.OfValueSize(Serializer, maxValueLength, tagKey), commandFlags);
-            }
-
-            action(transaction);
-
-            return transaction.ExecuteAsync(commandFlags);
-        }
-
-        private Task<bool> ExecuteHashAddWithTags(
-            string hashKey,
-            string key,
-            HashSet<string> tags,
-            Func<IDatabaseAsync, Task<bool>> action,
-            When when = When.Always,
-            CommandFlags commandFlags = CommandFlags.None)
-        {
-            var transaction = Database.CreateTransaction();
-
-            TryAddCondition(transaction, when, hashKey);
-
-            var tagValue = new TagHashValue
-            {
-                HashKey = hashKey,
-                Key = key
-            };
-
-            foreach (var tagKey in tags.Select(t => TagHelper.GenerateTagHashKey(t)))
-            {
-                transaction.SetAddAsync(tagKey, tagValue.OfValueSize(Serializer, maxValueLength, tagKey), commandFlags);
-            }
-
-            action(transaction);
-
-            return transaction.ExecuteAsync(commandFlags);
-        }
-
         private static void TryAddCondition(ITransaction transaction, When when, string key)
         {
             var condition = when switch
