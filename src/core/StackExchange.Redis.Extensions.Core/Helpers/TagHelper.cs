@@ -1,12 +1,16 @@
-﻿using System.Runtime.CompilerServices;
-
-[assembly: InternalsVisibleTo("StackExchange.Redis.Extensions.Core.Tests")]
-
-namespace StackExchange.Redis.Extensions.Core.Helpers
+﻿namespace StackExchange.Redis.Extensions.Core.Helpers
 {
-    internal static class TagHelper
+    /// <summary>
+    /// Helper for generating ta key
+    /// </summary>
+    public static class TagHelper
     {
-        internal static string GenerateTagKey(string tag) =>
+        /// <summary>
+        ///     Generate key associated with tag
+        /// </summary>
+        /// <param name="tag">Tag</param>
+        /// <returns>Return key associated with tag</returns>
+        public static string GenerateTagKey(string tag) =>
             $"tag:{tag}";
     }
 }

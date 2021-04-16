@@ -185,5 +185,32 @@ namespace StackExchange.Redis.Extensions.Core.Tests
 
             Assert.Equal(testClass, result.First());
         }
+
+        [Fact]
+        [Trait("Category", "Tags")]
+        public async Task RemoveByTagAsync_ShouldReturnZero()
+        {
+            var testTag = "test_tag";
+
+            var result = await Sut.GetDbFromConfiguration().RemoveByTagAsync(testTag);
+
+            Assert.Equal(0, result);
+        }
+
+        [Fact]
+        [Trait("Category", "Tags")]
+        public async Task RemoveByTagAsync_ShouldReturnOneDeletedValue()
+        {
+            var testKey = "test_key";
+            var testValue = "test_value";
+            var testClass = new TestClass<string>(testKey, testValue);
+            var testTag = "test_tag";
+
+            await Sut.GetDbFromConfiguration().AddAsync(testKey, testClass, tags: new HashSet<string> { testTag });
+
+            var result = await Sut.GetDbFromConfiguration().RemoveByTagAsync(testTag);
+
+            Assert.Equal(1, result);
+        }
     }
 }
