@@ -1,4 +1,8 @@
-﻿namespace StackExchange.Redis.Extensions.Core.Helpers
+﻿using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("StackExchange.Redis.Extensions.Core.Tests")]
+
+namespace StackExchange.Redis.Extensions.Core.Helpers
 {
     internal static class TagHelper
     {
