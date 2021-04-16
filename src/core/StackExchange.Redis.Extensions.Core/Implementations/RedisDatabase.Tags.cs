@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Extensions;
 using StackExchange.Redis.Extensions.Core.Helpers;
-using StackExchange.Redis.Extensions.Core.Models;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations
 {
     public partial class RedisDatabase : IRedisDatabase
     {
+        /// <inheritdoc/>
         public async Task<IEnumerable<T>> GetByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None)
         {
             var tagKey = TagHelper.GenerateTagKey(tag);
@@ -22,7 +22,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return result.Values;
         }
 
-        public async Task<long> RemoveByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None)
+        /// <inheritdoc/>
+        public async Task<long> RemoveByTagAsync(string tag, CommandFlags commandFlags = CommandFlags.None)
         {
             var tagKey = TagHelper.GenerateTagKey(tag);
 
@@ -43,7 +44,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
             TryAddCondition(transaction, when, key);
 
-            foreach (var tagKey in tags.Select(t => TagHelper.GenerateTagKey(t)))
+            foreach (var tagKey in tags.Select(TagHelper.GenerateTagKey))
             {
                 transaction.SetAddAsync(tagKey, key.OfValueSize(Serializer, maxValueLength, tagKey), commandFlags);
             }
