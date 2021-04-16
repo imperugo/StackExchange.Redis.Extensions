@@ -1,26 +1,30 @@
 ﻿using System.IO;
+
 using static Bullseye.Targets;
 using static SimpleExec.Command;
 
-internal class Program
+namespace Targets
 {
-    public static void Main(string[] args)
+    internal static class Program
     {
-        var sdk = new DotnetSdkManager();
+        public static void Main(string[] args)
+        {
+            var sdk = new DotnetSdkManager();
 
-        Target("default", DependsOn("test"));
+            Target("default", DependsOn("test"));
 
-        Target(
-            "build",
-            Directory.EnumerateFiles("./", "*.sln", SearchOption.AllDirectories),
-            solution => Run(sdk.GetDotnetCliPath(), $"build \"{solution}\" --configuration Release -f:netcoreapp3.1"));
+            Target(
+                "build",
+                Directory.EnumerateFiles("./", "*.sln", SearchOption.AllDirectories),
+                solution => Run(sdk.GetDotnetCliPath(), $"build \"{solution}\" --configuration Release -f:net5.0"));
 
-        Target(
-            "test",
-            DependsOn("build"),
-            Directory.EnumerateFiles("tests", "*Tests.csproj", SearchOption.AllDirectories),
-            proj => Run(sdk.GetDotnetCliPath(), $"test \"{proj}\" --configuration Release --no-build"));
+            Target(
+                "test",
+                DependsOn("build"),
+                Directory.EnumerateFiles("tests", "*Tests.csproj", SearchOption.AllDirectories),
+                proj => Run(sdk.GetDotnetCliPath(), $"test \"{proj}\" --configuration Release --no-build -f:net5.0"));
 
-        RunTargetsAndExit(args);
+            RunTargetsAndExit(args);
+        }
     }
 }

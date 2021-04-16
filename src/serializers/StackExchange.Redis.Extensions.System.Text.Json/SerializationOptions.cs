@@ -1,5 +1,6 @@
 ﻿using System.Text.Encodings.Web;
 using System.Text.Json;
+
 using StackExchange.Redis.Extensions.System.Text.Json.Converters;
 
 namespace StackExchange.Redis.Extensions.System.Text.Json
@@ -21,8 +22,9 @@ namespace StackExchange.Redis.Extensions.System.Text.Json
             Flexible.Converters.Add(new CultureCustomConverter());
             Flexible.Converters.Add(new TimezoneCustomConverter());
             Flexible.Converters.Add(new TimeSpanConverter());
+            Flexible.Converters.Add(new TimeSpanNullableConverter());
         }
 
-        public static JsonSerializerOptions Flexible { get; private set; }
+        public static JsonSerializerOptions Flexible { get; }
     }
 }

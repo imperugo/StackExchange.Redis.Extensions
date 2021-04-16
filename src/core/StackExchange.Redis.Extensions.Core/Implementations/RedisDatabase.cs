@@ -15,45 +15,50 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
     /// <inheritdoc/>
     public partial class RedisDatabase : IRedisDatabase
     {
-        private readonly IConnectionMultiplexer connectionMultiplexer;
-        private readonly ServerEnumerationStrategy serverEnumerationStrategy = new ServerEnumerationStrategy();
-        private readonly string keyprefix;
+        private readonly IRedisCacheConnectionPoolManager connectionPoolManager;
+        private readonly ServerEnumerationStrategy serverEnumerationStrategy = new();
+        private readonly string keyPrefix;
         private readonly uint maxValueLength;
+        private readonly int dbNumber;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RedisDatabase"/> class.
         /// </summary>
-        /// <param name="connectionMultiplexer">The connection.</param>
+        /// <param name="connectionPoolManager">The connection pool manager.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="serverEnumerationStrategy">The server enumeration strategy.</param>
-        /// <param name="database">The StackExchange.Redis.Database.</param>
+        /// <param name="dbNumber">The database to use.</param>
         /// <param name="maxvalueLength">The max lenght of the cache object.</param>
         /// <param name="keyPrefix">The key prefix.</param>
         public RedisDatabase(
-                IConnectionMultiplexer connectionMultiplexer,
+                IRedisCacheConnectionPoolManager connectionPoolManager,
                 ISerializer serializer,
                 ServerEnumerationStrategy serverEnumerationStrategy,
-                IDatabase database,
+                int dbNumber,
                 uint maxvalueLength,
                 string keyPrefix = null)
         {
             Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
             this.serverEnumerationStrategy = serverEnumerationStrategy ?? new ServerEnumerationStrategy();
-            this.connectionMultiplexer = connectionMultiplexer ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
-
-            Database = database;
-
-            if (!string.IsNullOrWhiteSpace(keyPrefix))
-            {
-                Database = Database.WithKeyPrefix(keyPrefix);
-            }
-
-            keyprefix = keyPrefix;
+            this.connectionPoolManager = connectionPoolManager ?? throw new ArgumentNullException(nameof(connectionPoolManager));
+            this.dbNumber = dbNumber;
+            this.keyPrefix = keyPrefix;
             maxValueLength = maxvalueLength;
         }
 
         /// <inheritdoc/>
-        public IDatabase Database { get; }
+        public IDatabase Database
+        {
+            get
+            {
+                var db = connectionPoolManager.GetConnection().GetDatabase(dbNumber);
+
+                if (!string.IsNullOrWhiteSpace(keyPrefix))
+                    return db.WithKeyPrefix(keyPrefix);
+
+                return db;
+            }
+        }
 
         /// <inheritdoc/>
         public ISerializer Serializer { get; }
@@ -115,10 +120,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             var entryBytes = value.OfValueSize(Serializer, maxValueLength, key);
 
-            if (tags != null && tags.Count > 0)
-            {
+            if (tags?.Count > 0)
                 return ExecuteAddWithTags(key, tags, db => db.StringSetAsync(key, entryBytes, null, when, flag), when, flag);
-            }
 
             return Database.StringSetAsync(key, entryBytes, null, when, flag);
         }
@@ -136,10 +139,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
             var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
 
-            if (tags != null && tags.Count > 0)
-            {
+            if (tags?.Count > 0)
                 return ExecuteAddWithTags(key, tags, db => db.StringSetAsync(key, entryBytes, expiration, when, flag), when, flag);
-            }
 
             return Database.StringSetAsync(key, entryBytes, expiration, when, flag);
         }
@@ -155,10 +156,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             var entryBytes = value.OfValueSize(Serializer, maxValueLength, key);
 
-            if (tags != null && tags.Count > 0)
-            {
+            if (tags?.Count > 0)
                 return ExecuteAddWithTags(key, tags, db => db.StringSetAsync(key, entryBytes, expiresIn, when, flag), when, flag);
-            }
 
             return Database.StringSetAsync(key, entryBytes, expiresIn, when, flag);
         }
@@ -211,9 +210,9 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         public Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             var values = items
-                        .OfValueInListSize(Serializer, maxValueLength)
-                        .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
-                        .ToArray();
+                .OfValueInListSize(Serializer, maxValueLength)
+                .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
+                .ToArray();
 
             return Database.StringSetAsync(values, when, flag);
         }
@@ -222,15 +221,15 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             var values = items
-                        .OfValueInListSize(Serializer, maxValueLength)
-                        .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
-                        .ToArray();
+                .OfValueInListSize(Serializer, maxValueLength)
+                .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
+                .ToArray();
 
-            var tasks = new Task[values.Length + 1];
-            tasks[0] = Database.StringSetAsync(values, when, flag);
+            var tasks = new Task[values.Length];
+            await Database.StringSetAsync(values, when, flag);
 
-            for (var i = 1; i < values.Length + 1; i++)
-                tasks[i] = Database.KeyExpireAsync(values[i - 1].Key, expiresAt.UtcDateTime, flag);
+            for (var i = 0; i < values.Length; i++)
+                tasks[i] = Database.KeyExpireAsync(values[i].Key, expiresAt.UtcDateTime, flag);
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 
@@ -241,15 +240,15 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         public async Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresOn, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
             var values = items
-                        .OfValueInListSize(Serializer, maxValueLength)
-                        .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
-                        .ToArray();
+                .OfValueInListSize(Serializer, maxValueLength)
+                .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
+                .ToArray();
 
-            var tasks = new Task[values.Length + 1];
-            tasks[0] = Database.StringSetAsync(values, when, flag);
+            var tasks = new Task[values.Length];
+            await Database.StringSetAsync(values, when, flag);
 
-            for (var i = 1; i < values.Length + 1; i++)
-                tasks[i] = Database.KeyExpireAsync(values[i - 1].Key, expiresOn, flag);
+            for (var i = 0; i < values.Length; i++)
+                tasks[i] = Database.KeyExpireAsync(values[i].Key, expiresOn, flag);
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 
@@ -382,24 +381,24 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public async Task<IEnumerable<string>> SearchKeysAsync(string pattern)
         {
-            pattern = $"{keyprefix}{pattern}";
+            pattern = $"{keyPrefix}{pattern}";
             var keys = new HashSet<string>();
 
             var multiplexer = Database.Multiplexer;
-            var servers = ServerIteratorFactory.GetServers(connectionMultiplexer, serverEnumerationStrategy).ToArray();
+            var servers = ServerIteratorFactory.GetServers(connectionPoolManager.GetConnection(), serverEnumerationStrategy).ToArray();
 
-            if (!servers.Any())
+            if (servers.Length == 0)
                 throw new Exception("No server found to serve the KEYS command.");
 
             foreach (var server in servers)
             {
-                var nextCursor = 0;
+                long nextCursor = 0;
                 do
                 {
                     var redisResult = await Database.ExecuteAsync("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000").ConfigureAwait(false);
                     var innerResult = (RedisResult[])redisResult;
 
-                    nextCursor = int.Parse((string)innerResult[0]);
+                    nextCursor = long.Parse((string)innerResult[0]);
 
                     var resultLines = ((string[])innerResult[1]).ToArray();
                     keys.UnionWith(resultLines);
@@ -407,7 +406,9 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 while (nextCursor != 0);
             }
 
-            return !string.IsNullOrEmpty(keyprefix) ? keys.Select(k => k.Substring(keyprefix.Length)) : keys;
+            return !string.IsNullOrEmpty(keyPrefix)
+                        ? keys.Select(k => k.Substring(keyPrefix.Length))
+                        : keys;
         }
 
         /// <inheritdoc/>
@@ -421,7 +422,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             {
                 var server = Database.Multiplexer.GetServer(endPoints[i]);
 
-                if (!server.IsSlave)
+                if (!server.IsReplica)
                     tasks.Add(server.FlushDatabaseAsync(Database.Database));
             }
 

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+
 using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations
@@ -19,6 +21,21 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             var serializedItem = Serializer.Serialize(item);
 
             return Database.ListLeftPushAsync(key, serializedItem, when, flags);
+        }
+
+        /// <inheritdoc/>
+        public Task<long> ListAddToLeftAsync<T>(string key, T[] items, CommandFlags flags = CommandFlags.None)
+            where T : class
+        {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentException("key cannot be empty.", nameof(key));
+
+            if (items == null)
+                throw new ArgumentNullException(nameof(items), "item cannot be null.");
+
+            var serializedItems = items.Select(x => (RedisValue)Serializer.Serialize(x)).ToArray();
+
+            return Database.ListLeftPushAsync(key, serializedItems, flags);
         }
 
         /// <inheritdoc/>

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+
 using StackExchange.Redis.Extensions.Core.Configuration;
 
 namespace StackExchange.Redis.Extensions.Core.ServerIteration
@@ -41,7 +42,7 @@ namespace StackExchange.Redis.Extensions.Core.ServerIteration
                 var server = multiplexer.GetServer(endPoint);
                 if (targetRole == ServerEnumerationStrategy.TargetRoleOptions.PreferSlave)
                 {
-                    if (!server.IsSlave)
+                    if (!server.IsReplica)
                         continue;
                 }
 

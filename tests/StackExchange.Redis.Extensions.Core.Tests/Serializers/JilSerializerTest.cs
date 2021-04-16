@@ -1,4 +1,4 @@
-using StackExchange.Redis.Extensions.Jil;
+﻿using StackExchange.Redis.Extensions.Jil;
 
 namespace StackExchange.Redis.Extensions.Core.Tests.Serializers
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations
@@ -10,7 +11,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         /// <inheritdoc/>
         public Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
         {
-            var sub = connectionMultiplexer.GetSubscriber();
+            var sub = connectionPoolManager.GetConnection().GetSubscriber();
             return sub.PublishAsync(channel, Serializer.Serialize(message), flags);
         }
 
@@ -20,7 +21,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
 
-            var sub = connectionMultiplexer.GetSubscriber();
+            var sub = connectionPoolManager.GetConnection().GetSubscriber();
 
             return sub.SubscribeAsync(channel, async (redisChannel, value) => await handler(Serializer.Deserialize<T>(value)).ConfigureAwait(false), flags);
         }
@@ -31,14 +32,14 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
 
-            var sub = connectionMultiplexer.GetSubscriber();
+            var sub = connectionPoolManager.GetConnection().GetSubscriber();
             return sub.UnsubscribeAsync(channel, (redisChannel, value) => handler(Serializer.Deserialize<T>(value)), flags);
         }
 
         /// <inheritdoc/>
         public Task UnsubscribeAllAsync(CommandFlags flags = CommandFlags.None)
         {
-            var sub = connectionMultiplexer.GetSubscriber();
+            var sub = connectionPoolManager.GetConnection().GetSubscriber();
             return sub.UnsubscribeAllAsync(flags);
         }
 

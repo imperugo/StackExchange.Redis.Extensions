@@ -1,8 +1,11 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+
 using StackExchange.Redis.Extensions.Tests.Helpers;
+
 using Xunit;
+
 using static System.Linq.Enumerable;
 
 namespace StackExchange.Redis.Extensions.Core.Tests
@@ -164,10 +167,10 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         public async Task Add_IncrementItemt_To_Sorted_Set()
         {
             var testobject = new TestClass<DateTime>();
-            var defaultscore = 1;
-            var nextscore = 2;
+            const int defaultscore = 1;
+            const int nextscore = 2;
             var added = await Sut.GetDbFromConfiguration().SortedSetAddIncrementAsync("my Key", testobject, defaultscore);
-            var added2 = await Sut.GetDbFromConfiguration().SortedSetAddIncrementAsync("my Key", testobject, nextscore);
+            await Sut.GetDbFromConfiguration().SortedSetAddIncrementAsync("my Key", testobject, nextscore);
             var result = db.SortedSetScan("my Key").First();
 
             Assert.Equal(defaultscore, added);

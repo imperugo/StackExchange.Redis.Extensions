@@ -1,9 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using StackExchange.Redis.Extensions.Tests.Helpers;
+
 using Xunit;
+
 using static System.Linq.Enumerable;
 
 namespace StackExchange.Redis.Extensions.Core.Tests
@@ -85,16 +88,15 @@ namespace StackExchange.Redis.Extensions.Core.Tests
 
             // assert
             var data = db
-                        .HashGet(hashKey, map.Keys.Select(x => (RedisValue)x).ToArray()).ToList()
-                        .Select(x => serializer.Deserialize<TestClass<DateTime>>(x))
-                        .ToList();
+                .HashGet(hashKey, map.Keys.Select(x => (RedisValue)x).ToArray())
+                .ToList()
+                .ConvertAll(x => serializer.Deserialize<TestClass<DateTime>>(x))
+;
 
-            Assert.Equal(map.Count, data.Count());
+            Assert.Equal(map.Count, data.Count);
 
             foreach (var val in data)
-            {
                 Assert.True(map.ContainsValue(val), $"result map doesn't contain value: {val}");
-            }
         }
 
         [Fact]
@@ -251,12 +253,10 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             Assert.NotNull(result);
             var collection = result as IList<string> ?? result.ToList();
             Assert.NotEmpty(collection);
-            Assert.Equal(values.Count, collection.Count());
+            Assert.Equal(values.Count, collection.Count);
 
             foreach (var key in collection)
-            {
                 Assert.True(values.ContainsKey(key));
-            }
         }
 
         [Fact]
@@ -292,7 +292,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             Assert.NotNull(result);
             var collection = result as IList<TestClass<DateTime>> ?? result.ToList();
             Assert.NotEmpty(collection);
-            Assert.Equal(values.Count, collection.Count());
+            Assert.Equal(values.Count, collection.Count);
 
             foreach (var key in collection)
                 Assert.Contains(key, values.Values);
@@ -336,7 +336,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             // arrange
             var hashKey = Guid.NewGuid().ToString();
             var entryKey = Guid.NewGuid().ToString();
-            var incBy = 1;
+            const int incBy = 1;
 
             // act
             Assert.False(db.HashExists(hashKey, entryKey));
@@ -354,8 +354,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             // arrange
             var hashKey = Guid.NewGuid().ToString();
             var entryKey = Guid.NewGuid().ToString();
-            var entryValue = 15;
-            var incBy = 1;
+            const int entryValue = 15;
+            const int incBy = 1;
 
             Assert.True(db.HashSet(hashKey, entryKey, entryValue));
 
@@ -363,7 +363,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             var result = await Sut.GetDbFromConfiguration().HashIncerementByAsync(hashKey, entryKey, incBy);
 
             // assert
-            var expected = entryValue + incBy;
+            const int expected = entryValue + incBy;
             Assert.Equal(expected, result);
             Assert.Equal(expected, await db.HashGetAsync(hashKey, entryKey));
         }
@@ -374,7 +374,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             // arrange
             var hashKey = Guid.NewGuid().ToString();
             var entryKey = Guid.NewGuid().ToString();
-            var incBy = 0.9;
+            const double incBy = 0.9;
 
             // act
             Assert.False(db.HashExists(hashKey, entryKey));
@@ -392,8 +392,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             // arrange
             var hashKey = Guid.NewGuid().ToString();
             var entryKey = Guid.NewGuid().ToString();
-            var entryValue = 14.3;
-            var incBy = 9.7;
+            const double entryValue = 14.3;
+            const double incBy = 9.7;
 
             Assert.True(db.HashSet(hashKey, entryKey, entryValue));
 
@@ -401,7 +401,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             var result = await Sut.GetDbFromConfiguration().HashIncerementByAsync(hashKey, entryKey, incBy);
 
             // assert
-            var expected = entryValue + incBy;
+            const double expected = entryValue + incBy;
             Assert.Equal(expected, result);
             Assert.Equal(expected, db.HashGet(hashKey, entryKey));
         }

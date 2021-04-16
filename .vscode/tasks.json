@@ -10,6 +10,40 @@
         "${workspaceFolder}/samples/StackExchange.Redis.Samples.Web.Mvc/StackExchange.Redis.Samples.Web.Mvc.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary",
+        "-f:net5.0"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "build solution net5",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/StackExchange.Redis.Extensions.sln",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary",
+        "-f:net5.0"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "build solution netcoreapp3.1",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/StackExchange.Redis.Extensions.sln",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary",
         "-f:netcoreapp3.1"
       ],
       "problemMatcher": "$msCompile",
@@ -19,15 +53,15 @@
       }
     },
     {
-      "label": "build",
+      "label": "build netstandard2.0",
       "command": "dotnet",
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/StackExchange.Redis.Extensions.sln",
+        "${workspaceFolder}/src/core/StackExchange.Redis.Extensions.Core/StackExchange.Redis.Extensions.Core.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary",
-        "-f:netcoreapp3.1"
+        "-f:netstandard2.0"
       ],
       "problemMatcher": "$msCompile",
       "group": {
@@ -77,6 +111,35 @@
         "kind": "build",
         "isDefault": true
       }
-    }
+    },
+    {
+      "label": "update all packages",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "outdated",
+        "-u"
+      ],
+      "dependsOn": [
+        "clean nuget http cache"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "clean nuget http cache",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "nuget",
+        "locals",
+        "--clear",
+        "http-cache"
+      ],
+      "problemMatcher": "$msCompile"
+    },
   ]
 }

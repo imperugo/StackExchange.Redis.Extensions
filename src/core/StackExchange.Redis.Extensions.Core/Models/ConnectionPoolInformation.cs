@@ -1,4 +1,4 @@
-namespace StackExchange.Redis.Extensions.Core.Models
+﻿namespace StackExchange.Redis.Extensions.Core.Models
 {
     /// <summary>
     /// A class that contains redis connection pool informations.

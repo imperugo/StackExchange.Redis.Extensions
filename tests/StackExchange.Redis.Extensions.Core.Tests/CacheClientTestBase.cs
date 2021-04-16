@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+
 using Microsoft.Extensions.Logging;
+
 using Moq;
+
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Implementations;
 using StackExchange.Redis.Extensions.Tests.Extensions;
 using StackExchange.Redis.Extensions.Tests.Helpers;
+
 using Xunit;
+
 using static System.Linq.Enumerable;
 
 namespace StackExchange.Redis.Extensions.Core.Tests
@@ -23,6 +29,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         private readonly ISerializer serializer;
         private readonly RedisConfiguration redisConfiguration;
         private readonly IRedisCacheConnectionPoolManager connectionPoolManager;
+        private bool isDisposed;
+        private IntPtr nativeResource = Marshal.AllocHGlobal(100);
 
         internal CacheClientTestBase(ISerializer serializer)
         {
@@ -58,9 +66,32 @@ namespace StackExchange.Redis.Extensions.Core.Tests
 
         public void Dispose()
         {
-            db.FlushDatabase();
-            db.Multiplexer.GetSubscriber().UnsubscribeAll();
-            connectionPoolManager.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <inheritdoc/>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (isDisposed)
+                return;
+
+            if (disposing)
+            {
+                // free managed resources
+                db.FlushDatabase();
+                db.Multiplexer.GetSubscriber().UnsubscribeAll();
+                connectionPoolManager.Dispose();
+            }
+
+            // free native resources if there are any.
+            if (nativeResource != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(nativeResource);
+                nativeResource = IntPtr.Zero;
+            }
+
+            isDisposed = true;
         }
 
         [Fact]
@@ -69,7 +100,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             var response = await Sut.GetDbFromConfiguration().GetInfoAsync().ConfigureAwait(false);
 
             Assert.NotNull(response);
-            Assert.True(response.Any());
+            Assert.True(response.Count > 0);
             Assert.Equal("6379", response["tcp_port"]);
         }
 
@@ -79,8 +110,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             var response = await Sut.GetDbFromConfiguration().GetInfoCategorizedAsync().ConfigureAwait(false);
 
             Assert.NotNull(response);
-            Assert.True(response.Any());
-            Assert.Equal("6379", response.SingleOrDefault(x => x.Key == "tcp_port").InfoValue);
+            Assert.True(response.Count > 0);
+            Assert.Equal("6379", response.Single(x => x.Key == "tcp_port").InfoValue);
         }
 
         [Fact]
@@ -138,19 +169,17 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         public async Task Get_All_Should_Return_All_Database_Keys()
         {
             var values = Range(0, 5)
-                .Select(i => new TestClass<string>($"Key{i}", Guid.NewGuid().ToString()))
+                .Select(i => new TestClass<string>($"Key{i.ToString()}", Guid.NewGuid().ToString()))
                 .ToArray();
 
             foreach (var x in values)
-            {
                 await db.StringSetAsync(x.Key, serializer.Serialize(x.Value));
-            }
 
             var keys = new[] { values[0].Key, values[1].Key, values[2].Key, "notexistingkey" };
 
             var result = await Sut.GetDbFromConfiguration().GetAllAsync<string>(keys);
 
-            Assert.True(result.Count() == 4);
+            Assert.True(result.Count == 4);
             Assert.Equal(result[values[0].Key], values[0].Value);
             Assert.Equal(result[values[1].Key], values[1].Value);
             Assert.Equal(result[values[2].Key], values[2].Value);
@@ -161,8 +190,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         public async Task Get_With_Complex_Item_Should_Return_Correct_Value()
         {
             var value = Range(0, 1)
-                    .Select(i => new ComplexClassForTest<string, Guid>($"Key{i}", Guid.NewGuid()))
-                    .First();
+                .Select(i => new ComplexClassForTest<string, Guid>($"Key{i.ToString()}", Guid.NewGuid()))
+                .First();
 
             await db.StringSetAsync(value.Item1, serializer.Serialize(value));
 
@@ -177,33 +206,27 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         public async Task Remove_All_Should_Remove_All_Specified_Keys()
         {
             var values = Range(1, 5)
-                    .Select(i => new TestClass<string>($"Key{i}", Guid.NewGuid().ToString()))
-                    .ToArray();
+                .Select(i => new TestClass<string>($"Key{i.ToString()}", Guid.NewGuid().ToString()))
+                .ToArray();
 
             foreach (var x in values)
-            {
                 await db.StringSetAsync(x.Key, x.Value);
-            }
 
             await Sut.GetDbFromConfiguration().RemoveAllAsync(values.Select(x => x.Key));
 
             foreach (var value in values)
-            {
                 Assert.False(db.KeyExists(value.Key));
-            }
         }
 
         [Fact]
         public async Task Search_With_Valid_Start_With_Pattern_Should_Return_Correct_Keys()
         {
             var values = Range(1, 20)
-                    .Select(i => new TestClass<string>($"Key{i}", Guid.NewGuid().ToString()))
-                    .ToArray();
+                .Select(i => new TestClass<string>($"Key{i.ToString()}", Guid.NewGuid().ToString()))
+                .ToArray();
 
             foreach (var x in values)
-            {
                 await db.StringSetAsync(x.Key, x.Value);
-            }
 
             var key = (await Sut.GetDbFromConfiguration().SearchKeysAsync("Key1*")).ToList();
 
@@ -228,13 +251,11 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         public async Task SearchKeys_With_Start_Should_Return_All_Keys()
         {
             var values = Range(0, 10)
-                .Select(i => new TestClass<string>($"mykey{i}", Guid.NewGuid().ToString()))
+                .Select(i => new TestClass<string>($"mykey{i.ToString()}", Guid.NewGuid().ToString()))
                 .ToArray();
 
             foreach (var x in values)
-            {
                 await db.StringSetAsync(x.Key, x.Value);
-            }
 
             var result = (await Sut.GetDbFromConfiguration().SearchKeysAsync("*")).OrderBy(k => k).ToList();
 
@@ -245,7 +266,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         public async Task SearchKeys_With_Key_Prefix_Should_Return_Keys_Without_Prefix()
         {
             var values = Range(0, 10)
-                .Select(i => new TestClass<string>($"mykey{i}", Guid.NewGuid().ToString()))
+                .Select(i => new TestClass<string>($"mykey{i.ToString()}", Guid.NewGuid().ToString()))
                 .ToArray();
 
             foreach (var x in values)
@@ -263,8 +284,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         public async Task Exist_With_Valid_Object_Should_Return_The_Correct_Instance()
         {
             var values = Range(0, 2)
-                    .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
-                    .ToArray();
+                .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
+                .ToArray();
 
             foreach (var x in values)
                 await db.StringSetAsync(x.Key, x.Value);
@@ -275,9 +296,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task Exist_With_Not_Valid_Object_Should_Return_The_Correct_Instance()
         {
-            var values = Range(0, 2).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
-
-            foreach (var x in values)
+            foreach (var x in Range(0, 2).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())))
                 await db.StringSetAsync(x.Key, x.Value);
 
             Assert.False(await Sut.GetDbFromConfiguration().ExistsAsync("this key doesn not exist into redi"));
@@ -309,9 +328,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
                 .ToArray();
 
             foreach (var value in values)
-            {
                 await db.SetAddAsync("MySet", serializer.Serialize(value.Value));
-            }
 
             var result = await Sut.GetDbFromConfiguration().SetPopAsync<string>("MySet");
             Assert.NotNull(result);
@@ -319,6 +336,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
 
             var members = await db.SetMembersAsync("MySet");
             var itemsLeft = members.Select(m => serializer.Deserialize<string>(m)).ToArray();
+
             Assert.True(itemsLeft.Length == 4);
             Assert.DoesNotContain(itemsLeft, l => l == result);
         }
@@ -326,8 +344,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task SetPop_With_A_Non_Existing_Key_Should_Return_Null()
         {
-            var result = await Sut.GetDbFromConfiguration().SetPopAsync<string>("MySet");
-            Assert.Null(result);
+            Assert.Null(await Sut.GetDbFromConfiguration().SetPopAsync<string>("MySet"));
         }
 
         [Fact]
@@ -344,19 +361,19 @@ namespace StackExchange.Redis.Extensions.Core.Tests
                 .ToArray();
 
             foreach (var value in values)
-            {
                 await db.SetAddAsync("MySet", serializer.Serialize(value.Value));
-            }
 
             var result = await Sut.GetDbFromConfiguration().SetPopAsync<string>("MySet", 3);
             Assert.NotNull(result);
             Assert.Equal(3, result.Count());
+
             foreach (var r in result)
                 Assert.Contains(values, v => v.Value == r);
 
             var members = await db.SetMembersAsync("MySet");
             var itemsLeft = members.Select(m => serializer.Deserialize<string>(m)).ToArray();
             Assert.True(itemsLeft.Length == 2);
+
             foreach (var r in result)
                 Assert.DoesNotContain(itemsLeft, l => l == r);
         }
@@ -441,9 +458,88 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         }
 
         [Fact]
+        public async Task Massive_Add_With_Expiring_Should_Delete_Expired_Keys()
+        {
+            var values = new List<Tuple<string, string>>
+            {
+                new Tuple<string, string>("ProductOneList1", "1"),
+                new Tuple<string, string>("ProductOneList2", "2"),
+                new Tuple<string, string>("ProductOneList3", "3"),
+                new Tuple<string, string>("ProductOneList4", "4"),
+                new Tuple<string, string>("ProductOneList5", "5"),
+                new Tuple<string, string>("ProductOneList6", "6"),
+                new Tuple<string, string>("ProductOneList7", "7"),
+                new Tuple<string, string>("ProductOneList8", "8"),
+                new Tuple<string, string>("ProductOneList9", "9")
+            };
+
+            await Sut.GetDbFromConfiguration().AddAllAsync(values, TimeSpan.FromMilliseconds(1));
+
+            await Task.Delay(TimeSpan.FromMilliseconds(2));
+
+            foreach (var value in values)
+            {
+                var exists = await Sut.GetDbFromConfiguration().ExistsAsync(value.Item1);
+                Assert.False(exists, value.Item1);
+            }
+        }
+
+        [Fact]
+        public async Task Massive_Add_With_Expiring_And_Add_List_Again_Should_Work()
+        {
+            // Issue 228
+            // https://github.com/imperugo/StackExchange.Redis.Extensions/issues/288
+            var valuesOneList = new List<Tuple<string, string>>
+            {
+                new Tuple<string, string>("ProductManyList1", "1"),
+                new Tuple<string, string>("ProductManyList2", "2"),
+                new Tuple<string, string>("ProductManyList3", "3"),
+                new Tuple<string, string>("ProductManyList4", "4"),
+                new Tuple<string, string>("ProductManyList5", "5"),
+                new Tuple<string, string>("ProductManyList6", "6"),
+                new Tuple<string, string>("ProductManyList7", "7"),
+                new Tuple<string, string>("ProductManyList8", "8"),
+                new Tuple<string, string>("ProductManyList9", "9")
+            };
+
+            await Sut.GetDbFromConfiguration().AddAllAsync(valuesOneList, TimeSpan.FromMilliseconds(1));
+
+            await Task.Delay(TimeSpan.FromMilliseconds(2));
+
+            foreach (var value in valuesOneList)
+            {
+                var exists = await Sut.GetDbFromConfiguration().ExistsAsync(value.Item1);
+                Assert.False(exists, value.Item1);
+            }
+
+            var valuesTwoLis = new List<Tuple<string, string>>
+            {
+                new Tuple<string, string>("ProductManyList10", "1"),
+                new Tuple<string, string>("ProductManyList11", "2"),
+                new Tuple<string, string>("ProductManyList12", "3"),
+                new Tuple<string, string>("ProductManyList13", "4"),
+                new Tuple<string, string>("ProductManyList14", "5"),
+                new Tuple<string, string>("ProductManyList15", "6"),
+                new Tuple<string, string>("ProductManyList16", "7"),
+                new Tuple<string, string>("ProductManyList17", "8"),
+                new Tuple<string, string>("ProductManyList18", "9")
+            };
+
+            await Sut.GetDbFromConfiguration().AddAllAsync(valuesTwoLis, TimeSpan.FromMilliseconds(1));
+
+            await Task.Delay(TimeSpan.FromMilliseconds(2));
+
+            foreach (var value in valuesTwoLis)
+            {
+                var exists = await Sut.GetDbFromConfiguration().ExistsAsync(value.Item1);
+                Assert.False(exists, value.Item1);
+            }
+        }
+
+        [Fact]
         public async Task Adding_Value_Type_Should_Return_Correct_Value()
         {
-            var d = 1;
+            const int d = 1;
             var added = await Sut.GetDbFromConfiguration().AddAsync("my Key", d);
             var dbValue = await Sut.GetDbFromConfiguration().GetAsync<int>("my Key");
 
@@ -455,7 +551,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task Adding_Collection_To_Redis_Should_Work_Correctly()
         {
-            var items = Range(1, 3).Select(i => new TestClass<string> { Key = $"key{i}", Value = "value{i}" }).ToArray();
+            var items = Range(1, 3).Select(i => new TestClass<string> { Key = $"key{i.ToString()}", Value = $"value{i.ToString()}" }).ToArray();
             var added = await Sut.GetDbFromConfiguration().AddAsync("my Key", items);
             var dbValue = await Sut.GetDbFromConfiguration().GetAsync<TestClass<string>[]>("my Key");
 
@@ -474,7 +570,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         public async Task Adding_Collection_To_Redis_Should_Expire()
         {
             var expiresIn = new TimeSpan(0, 0, 1);
-            var items = Range(1, 3).Select(i => new Tuple<string, string>($"key{i}", "value{i}")).ToArray();
+            var items = Range(1, 3).Select(i => new Tuple<string, string>($"key{i.ToString()}", "value{i}")).ToArray();
             var added = await Sut.GetDbFromConfiguration().AddAllAsync(items, expiresIn);
 
             await Task.Delay(expiresIn.Add(new TimeSpan(0, 0, 1)));
@@ -492,7 +588,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             var subscriberNotified = false;
             IEnumerable<int> subscriberValue = null;
 
-            Func<IEnumerable<int>, Task> action = value =>
+            Task action(IEnumerable<int> value)
             {
                 {
                     subscriberNotified = true;
@@ -500,16 +596,14 @@ namespace StackExchange.Redis.Extensions.Core.Tests
                 }
 
                 return Task.CompletedTask;
-            };
+            }
 
-            await Sut.GetDbFromConfiguration().SubscribeAsync(channel, action);
+            await Sut.GetDbFromConfiguration().SubscribeAsync(channel, (Func<IEnumerable<int>, Task>)action);
 
             var result = await Sut.GetDbFromConfiguration().PublishAsync(channel, message);
 
             while (!subscriberNotified)
-            {
                 await Task.Delay(100);
-            }
 
             Assert.Equal(1, result);
             Assert.True(subscriberNotified);
@@ -565,8 +659,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task SetContainsAsyncShouldReturnTrue()
         {
-            var key = "MySet";
-            var item = "MyItem";
+            const string key = "MySet";
+            const string item = "MyItem";
 
             await Sut.GetDbFromConfiguration().SetAddAsync(key, item);
 
@@ -578,9 +672,9 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task SetContainsAsyncShouldReturnFalseWhenItemIsWrong()
         {
-            var key = "MySet";
-            var item = "MyItem";
-            var unknownItem = "MyUnknownItem";
+            const string key = "MySet";
+            const string item = "MyItem";
+            const string unknownItem = "MyUnknownItem";
 
             await Sut.GetDbFromConfiguration().SetAddAsync(key, item);
 
@@ -592,9 +686,9 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task SetContainsAsyncShouldReturnFalseWhenKeyIsWrong()
         {
-            var key = "MySet";
-            var item = "MyItem";
-            var unknownKey = "MyUnknownKey";
+            const string key = "MySet";
+            const string item = "MyItem";
+            const string unknownKey = "MyUnknownKey";
 
             await Sut.GetDbFromConfiguration().SetAddAsync(key, item);
 
@@ -685,9 +779,21 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         }
 
         [Fact]
+        public async Task ListAddToLeftArrayShouldThrowExceptionWhenKeyIsEmpty()
+        {
+            await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDbFromConfiguration().ListAddToLeftAsync(string.Empty, items: Array.Empty<TestClass<string>>()));
+        }
+
+        [Fact]
         public async Task ListAddToLeftGenericShouldThrowExceptionWhenItemIsNull()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDbFromConfiguration().ListAddToLeftAsync<string>("MyList", null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDbFromConfiguration().ListAddToLeftAsync<string>("MyList", item: null));
+        }
+
+        [Fact]
+        public async Task ListAddToLeftGenericShouldThrowExceptionWhenItemsIsNull()
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDbFromConfiguration().ListAddToLeftAsync<string>("MyList", items: null));
         }
 
         [Fact]
@@ -698,13 +804,25 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             const string key = "MyList";
 
             foreach (var x in values)
-            {
                 await Sut.GetDbFromConfiguration().ListAddToLeftAsync(key, serializer.Serialize(x));
-            }
 
             var keys = await db.ListRangeAsync(key);
 
             Assert.Equal(keys.Length, values.Count);
+        }
+
+        [Fact]
+        public async Task ListAddToLeftArray_With_An_Existing_Key_Should_Return_Valid_Data()
+        {
+            var values = Range(0, 5000).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
+
+            const string key = "MyList";
+
+            await Sut.GetDbFromConfiguration().ListAddToLeftAsync(key, items: values);
+
+            var keys = await db.ListRangeAsync(key);
+
+            Assert.Equal(keys.Length, values.Length);
         }
 
         [Fact]
@@ -715,10 +833,24 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         }
 
         [Fact]
+        public async Task ListAddToLeftAsyncArrayShouldThrowExceptionWhenKeyIsEmpty()
+        {
+            await Assert.ThrowsAsync<ArgumentException>(
+                () => Sut.GetDbFromConfiguration().ListAddToLeftAsync(string.Empty, items: Array.Empty<TestClass<string>>()));
+        }
+
+        [Fact]
         public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemIsNull()
         {
             await Assert.ThrowsAsync<ArgumentNullException>(
-                () => Sut.GetDbFromConfiguration().ListAddToLeftAsync<string>("MyList", null));
+                () => Sut.GetDbFromConfiguration().ListAddToLeftAsync<string>("MyList", item: null));
+        }
+
+        [Fact]
+        public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemsIsNull()
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                () => Sut.GetDbFromConfiguration().ListAddToLeftAsync<string>("MyList", items: null));
         }
 
         [Fact]
@@ -740,6 +872,20 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         }
 
         [Fact]
+        public async Task ListAddToLeftAsyncArray_With_An_Existing_Key_Should_Return_Valid_Data()
+        {
+            var values = Range(0, 5000).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
+
+            const string key = "MyListAsync";
+
+            await Sut.GetDbFromConfiguration().ListAddToLeftAsync(key, items: values);
+
+            var keys = await db.ListRangeAsync(key);
+
+            Assert.Equal(keys.Length, values.Length);
+        }
+
+        [Fact]
         public async Task ListGetFromRightGenericShouldThrowExceptionWhenKeyIsEmpty()
         {
             await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDbFromConfiguration().ListGetFromRightAsync<string>(string.Empty));
@@ -752,7 +898,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
                 .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
                 .ToArray();
 
-            var key = "MyList";
+            const string key = "MyList";
 
             foreach (var x in values)
                 await db.ListLeftPushAsync(key, serializer.Serialize(x));
@@ -766,7 +912,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task ListGetFromRightGeneric_With_An_Existing_Key_Should_Return_Null_If_List_Is_Empty()
         {
-            var key = "MyList";
+            const string key = "MyList";
 
             var item = await Sut.GetDbFromConfiguration().ListGetFromRightAsync<TestClass<string>>(key);
 
@@ -776,7 +922,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task ListGetFromRight_With_An_Existing_Key_Should_Return_Null_If_List_Is_Empty()
         {
-            var key = "MyList";
+            const string key = "MyList";
 
             var item = await Sut.GetDbFromConfiguration().ListGetFromRightAsync<TestClass<string>>(key);
 
@@ -786,8 +932,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task Get_Value_With_Expiry_Updates_ExpiryAt()
         {
-            var key = "TestKey";
-            var value = "TestValue";
+            const string key = "TestKey";
+            const string value = "TestValue";
             var originalTime = DateTime.UtcNow.AddSeconds(5);
             var testTime = DateTime.UtcNow.AddSeconds(20);
             var resultTimeSpan = originalTime.Subtract(DateTime.UtcNow);
@@ -802,8 +948,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task Get_Value_With_Expiry_Updates_ExpiryIn()
         {
-            var key = "TestKey";
-            var value = "TestValue";
+            const string key = "TestKey";
+            const string value = "TestValue";
             var originalTime = new TimeSpan(0, 0, 5);
             var testTime = new TimeSpan(0, 0, 20);
             var resultTimeSpan = originalTime;
@@ -818,7 +964,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task Get_All_Value_With_Expiry_Updates_Expiry()
         {
-            var key = "TestKey";
+            const string key = "TestKey";
             var value = new TestClass<string> { Key = key, Value = "Hello World!" };
             var originalTime = DateTime.UtcNow.AddSeconds(5).Subtract(DateTime.UtcNow);
             var testTime = DateTime.UtcNow.AddSeconds(20).Subtract(DateTime.UtcNow);
@@ -836,8 +982,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task Update_Expiry_ExpiresIn()
         {
-            var key = "TestKey";
-            var value = "Test Value";
+            const string key = "TestKey";
+            const string value = "Test Value";
             var originalTime = DateTime.UtcNow.AddSeconds(5).Subtract(DateTime.UtcNow);
             var testTime = DateTime.UtcNow.AddSeconds(20).Subtract(DateTime.UtcNow);
 
@@ -851,8 +997,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Fact]
         public async Task Update_Expiry_ExpiresAt_Async()
         {
-            var key = "TestKey";
-            var value = "Test Value";
+            const string key = "TestKey";
+            const string value = "Test Value";
             var originalTime = DateTime.UtcNow.AddSeconds(5);
             var testTime = DateTime.UtcNow.AddSeconds(20);
 

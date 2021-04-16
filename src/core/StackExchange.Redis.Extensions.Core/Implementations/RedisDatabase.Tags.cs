@@ -29,8 +29,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
 
             var keys = await SetMembersAsync<string>(tagKey, commandFlags).ConfigureAwait(false);
 
-            var deletedRecordsNumber = await RemoveAllAsync(keys, commandFlags).ConfigureAwait(false);
-            return deletedRecordsNumber;
+            return await RemoveAllAsync(keys, commandFlags).ConfigureAwait(false);
         }
 
         private Task<bool> ExecuteAddWithTags(
@@ -45,9 +44,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             TryAddCondition(transaction, when, key);
 
             foreach (var tagKey in tags.Select(TagHelper.GenerateTagKey))
-            {
                 transaction.SetAddAsync(tagKey, key.OfValueSize(Serializer, maxValueLength, tagKey), commandFlags);
-            }
 
             action(transaction);
 

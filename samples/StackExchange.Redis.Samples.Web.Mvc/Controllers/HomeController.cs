@@ -1,33 +1,38 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+
 using StackExchange.Redis.Extensions.Core.Abstractions;
-using StackExchange.Redis.Samples.Web.Mvc.Models;
+using StackExchange.Redis.Extensions.Core.Models;
 
 namespace StackExchange.Redis.Samples.Web.Mvc.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> logger;
         private readonly IRedisDatabase redisDatabase;
-        private readonly IRedisCacheConnectionPoolManager connectionPoolManager;
+        private readonly IRedisCacheConnectionPoolManager pool;
 
-        public HomeController(ILogger<HomeController> logger, IRedisDatabase redisDatabase, IRedisCacheConnectionPoolManager connectionPoolManager)
+        public HomeController(IRedisDatabase redisDatabase, IRedisCacheConnectionPoolManager pool)
         {
-            this.logger = logger;
             this.redisDatabase = redisDatabase;
-            this.connectionPoolManager = connectionPoolManager;
+            this.pool = pool;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<string> Index()
         {
-            var redisInfo = await redisDatabase.GetInfoAsync();
-            var connectionInfo = connectionPoolManager.GetConnectionInformations();
-            return Ok(new { RedisInfo = redisInfo, ConnectionInfo = connectionInfo });
+            var before = pool.GetConnectionInformations();
+            var rng = new Random();
+            await redisDatabase.AddAsync($"key-{rng}", rng.Next());
+
+            var after = pool.GetConnectionInformations();
+
+            return BuildInfo(before) + "\t" + BuildInfo(after);
+
+            string BuildInfo(ConnectionPoolInformation info)
+            {
+                return $"\talive: {info.ActiveConnections.ToString()}, required: {info.RequiredPoolSize.ToString()}, ready: {info.ReadyNotUsedYet.ToString()}";
+            }
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using StackExchange.Redis.Extensions.Core.Helpers;
-using StackExchange.Redis.Extensions.Core.Models;
 using StackExchange.Redis.Extensions.Tests.Helpers;
 
 using Xunit;
@@ -17,8 +16,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Trait("Category", "Tags")]
         public async Task AddAsync_WithTags_ShouldAdd()
         {
-            var testKey = "test_key";
-            var testValue = "test_value";
+            const string testKey = "test_key";
+            const string testValue = "test_value";
             var testClass = new TestClass<string>(testKey, testValue);
             var testTags = new HashSet<string> { "test_tag" };
 
@@ -31,10 +30,10 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Trait("Category", "Tags")]
         public async Task AddAsync_WithTags_TagExists()
         {
-            var testKey = "test_key";
-            var testValue = "test_value";
+            const string testKey = "test_key";
+            const string testValue = "test_value";
             var testClass = new TestClass<string>(testKey, testValue);
-            var testTag = "test_tag";
+            const string testTag = "test_tag";
 
             await Sut.GetDbFromConfiguration().AddAsync(testKey, testClass, tags: new HashSet<string> { testTag });
 
@@ -47,10 +46,10 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Trait("Category", "Tags")]
         public async Task AddAsync_WithTags_CorrectTaggedKey()
         {
-            var testKey = "test_key";
-            var testValue = "test_value";
+            const string testKey = "test_key";
+            const string testValue = "test_value";
             var testClass = new TestClass<string>(testKey, testValue);
-            var testTag = "test_tag";
+            const string testTag = "test_tag";
 
             await Sut.GetDbFromConfiguration().AddAsync(testKey, testClass, tags: new HashSet<string> { testTag });
 
@@ -64,8 +63,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Trait("Category", "Tags")]
         public async Task AddAsyncTimeSpan_WithTags_ShouldAdd()
         {
-            var testKey = "test_key";
-            var testValue = "test_value";
+            const string testKey = "test_key";
+            const string testValue = "test_value";
             var testClass = new TestClass<string>(testKey, testValue);
             var testTags = new HashSet<string> { "test_tag" };
 
@@ -78,10 +77,10 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Trait("Category", "Tags")]
         public async Task AddAsyncTimeSpan_WithTags_TagExists()
         {
-            var testKey = "test_key";
-            var testValue = "test_value";
+            const string testKey = "test_key";
+            const string testValue = "test_value";
             var testClass = new TestClass<string>(testKey, testValue);
-            var testTag = "test_tag";
+            const string testTag = "test_tag";
 
             await Sut.GetDbFromConfiguration().AddAsync(testKey, testClass, TimeSpan.FromSeconds(1), tags: new HashSet<string> { testTag });
 
@@ -94,10 +93,10 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Trait("Category", "Tags")]
         public async Task AddAsyncTimeSpan_WithTags_CorrectTaggedKey()
         {
-            var testKey = "test_key";
-            var testValue = "test_value";
+            const string testKey = "test_key";
+            const string testValue = "test_value";
             var testClass = new TestClass<string>(testKey, testValue);
-            var testTag = "test_tag";
+            const string testTag = "test_tag";
 
             await Sut.GetDbFromConfiguration().AddAsync(testKey, testClass, TimeSpan.FromSeconds(1), tags: new HashSet<string> { testTag });
 
@@ -111,8 +110,8 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Trait("Category", "Tags")]
         public async Task AddAsyncDateTimeOffset_WithTags_ShouldAdd()
         {
-            var testKey = "test_key";
-            var testValue = "test_value";
+            const string testKey = "test_key";
+            const string testValue = "test_value";
             var testClass = new TestClass<string>(testKey, testValue);
             var testTags = new HashSet<string> { "test_tag" };
 
@@ -125,10 +124,10 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Trait("Category", "Tags")]
         public async Task AddAsyncDateTimeOffset_WithTags_TagExists()
         {
-            var testKey = "test_key";
-            var testValue = "test_value";
+            const string testKey = "test_key";
+            const string testValue = "test_value";
             var testClass = new TestClass<string>(testKey, testValue);
-            var testTag = "test_tag";
+            const string testTag = "test_tag";
 
             await Sut.GetDbFromConfiguration().AddAsync(testKey, testClass, DateTimeOffset.UtcNow, tags: new HashSet<string> { testTag });
 
@@ -141,10 +140,10 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Trait("Category", "Tags")]
         public async Task AddAsyncDateTimeOffset_WithTags_CorrectTaggedKey()
         {
-            var testKey = "test_key";
-            var testValue = "test_value";
+            const string testKey = "test_key";
+            const string testValue = "test_value";
             var testClass = new TestClass<string>(testKey, testValue);
-            var testTag = "test_tag";
+            const string testTag = "test_tag";
 
             await Sut.GetDbFromConfiguration().AddAsync(testKey, testClass, DateTimeOffset.UtcNow, tags: new HashSet<string> { testTag });
 
@@ -158,10 +157,10 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Trait("Category", "Tags")]
         public async Task GetByTagAsync_ShouldReturnSomeValues()
         {
-            var testKey = "test_key";
-            var testValue = "test_value";
+            const string testKey = "test_key";
+            const string testValue = "test_value";
             var testClass = new TestClass<string>(testKey, testValue);
-            var testTag = "test_tag";
+            const string testTag = "test_tag";
 
             await Sut.GetDbFromConfiguration().AddAsync(testKey, testClass, tags: new HashSet<string> { testTag });
 
@@ -174,10 +173,10 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Trait("Category", "Tags")]
         public async Task GetByTagAsync_ShouldReturnCorrectValue()
         {
-            var testKey = "test_key";
-            var testValue = "test_value";
+            const string testKey = "test_key";
+            const string testValue = "test_value";
             var testClass = new TestClass<string>(testKey, testValue);
-            var testTag = "test_tag";
+            const string testTag = "test_tag";
 
             await Sut.GetDbFromConfiguration().AddAsync(testKey, testClass, tags: new HashSet<string> { testTag });
 
@@ -190,7 +189,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Trait("Category", "Tags")]
         public async Task RemoveByTagAsync_ShouldReturnZero()
         {
-            var testTag = "test_tag";
+            const string testTag = "test_tag";
 
             var result = await Sut.GetDbFromConfiguration().RemoveByTagAsync(testTag);
 
@@ -201,10 +200,10 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         [Trait("Category", "Tags")]
         public async Task RemoveByTagAsync_ShouldReturnOneDeletedValue()
         {
-            var testKey = "test_key";
-            var testValue = "test_value";
+            const string testKey = "test_key";
+            const string testValue = "test_value";
             var testClass = new TestClass<string>(testKey, testValue);
-            var testTag = "test_tag";
+            const string testTag = "test_tag";
 
             await Sut.GetDbFromConfiguration().AddAsync(testKey, testClass, tags: new HashSet<string> { testTag });
 

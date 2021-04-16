@@ -1,5 +1,7 @@
 ﻿using System.Text;
+
 using Newtonsoft.Json;
+
 using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.Newtonsoft

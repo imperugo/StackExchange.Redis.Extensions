@@ -4,7 +4,7 @@
     /// This class represent the Server enumeration strategy used in the operations
     /// that require to iterate all the redis servers
     /// </summary>
-    public partial class ServerEnumerationStrategy
+    public class ServerEnumerationStrategy
     {
         /// <summary>
         /// The iteration mode.

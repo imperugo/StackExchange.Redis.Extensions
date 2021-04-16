@@ -1,59 +1,49 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StackExchange.Redis.Extensions.Newtonsoft;
-using StackExchange.Redis.Extensions.Core;
+using Microsoft.Extensions.Logging;
+
+using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.System.Text.Json;
 
 namespace StackExchange.Redis.Samples.Web.Mvc
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
 
-            // var conf = new RedisConfiguration()
-            // {
-            //     AbortOnConnectFail = true,
-            //     KeyPrefix = "MyPrefix__",
-            //     Hosts = new RedisHost[]
-            //     {
-            //         new RedisHost { Host = "localhost", Port = 6379 }
-            //     },
-            //     AllowAdmin = true,
-            //     ConnectTimeout = 3000,
-            //     Database = 0,
-            //     ServerEnumerationStrategy = new ServerEnumerationStrategy()
-            //     {
-            //         Mode = ServerEnumerationStrategy.ModeOptions.All,
-            //         TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
-            //         UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
-            //     }
-            // };
-            var conf = new RedisConfiguration();
-            conf.ConnectionString = "localhost:6379,ConnectTimeout=5000,allowAdmin=true";
+            var conf = new RedisConfiguration()
+            {
+                AbortOnConnectFail = true,
+                KeyPrefix = "MyPrefix__",
+                Hosts = new[] { new RedisHost { Host = "localhost", Port = 6379 } },
+                AllowAdmin = true,
+                ConnectTimeout = 5000,
+                Database = 0,
+                PoolSize = 50,
+                ServerEnumerationStrategy = new ServerEnumerationStrategy()
+                {
+                    Mode = ServerEnumerationStrategy.ModeOptions.All,
+                    TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
+                    UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
+                }
+            };
 
-            services.AddStackExchangeRedisExtensions<NewtonsoftSerializer>(conf);
+            services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(conf);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
             if (env.IsDevelopment())
             {
@@ -66,7 +56,17 @@ namespace StackExchange.Redis.Samples.Web.Mvc
                 app.UseHsts();
             }
 
-            app.UserRedisInformation();
+            // app.UseRedisInformation(opt =>
+            // {
+            //     opt.AllowedIPs = Array.Empty<IPAddress>();
+            //     // opt.AllowedIPs = = new[] { IPAddress.Parse("127.0.0.1"), IPAddress.Parse("::1") };
+            //     opt.AllowFunction = (HttpContext x) =>
+            //     {
+            //         return false;
+            //     };
+            // });
+            app.UseRedisInformation();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -80,6 +80,17 @@ namespace StackExchange.Redis.Samples.Web.Mvc
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            // var redisDb = app.ApplicationServices.GetRequiredService<IRedisDatabase>();
+
+            // redisDb.SubscribeAsync<string>("MyEventName", x =>
+            //     {
+            //         logger.LogInformation("Just got this message {0}", x);
+
+            //         return Task.CompletedTask;
+            //     })
+            //     .GetAwaiter()
+            //     .GetResult();
         }
     }
 }
