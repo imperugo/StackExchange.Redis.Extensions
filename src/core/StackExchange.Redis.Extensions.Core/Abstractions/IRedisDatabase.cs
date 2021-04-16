@@ -227,8 +227,7 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="key">The cache key.</param>
         /// <param name="item">Name of the member.</param>
         /// <param name="flag">Behaviour markers associated with a given command.</param>
-        /// <param name="tags">Tags</param>
-        Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null)
+        Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
             where T : class;
 
         /// <summary>

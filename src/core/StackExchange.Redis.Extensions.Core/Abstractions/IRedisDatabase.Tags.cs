@@ -9,8 +9,6 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
     {
         Task<IEnumerable<T>> GetByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None);
 
-        Task<IEnumerable<T>> HashGetByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None);
-
-        Task<IEnumerable<T>> SetMembersByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None);
+        Task<long> RemoveByTagAsync<T>(string tag, CommandFlags flags = CommandFlags.None);
     }
 }

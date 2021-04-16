@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Extensions;
@@ -23,39 +22,14 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             return result.Values;
         }
 
-        public async Task<IEnumerable<T>> HashGetByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None)
+        public async Task<long> RemoveByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None)
         {
-            var tagKey = TagHelper.GenerateTagHashKey(tag);
-
-            var tagsValues = await SetMembersAsync<TagHashValue>(tagKey, commandFlags).ConfigureAwait(false);
-
-            var grouped = tagsValues.GroupBy(x => x.HashKey).ToDictionary(g => g.Key, g => g.Select(_ => _.Key));
-
-            var result = new List<T>();
-
-            foreach (var pair in grouped)
-            {
-                var values = (await HashGetAsync<T>(pair.Key, pair.Value.ToList(), commandFlags).ConfigureAwait(false)).Values;
-                result.AddRange(values);
-            }
-
-            return result;
-        }
-
-        public async Task<IEnumerable<T>> SetMembersByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None)
-        {
-            var tagKey = TagHelper.GenerateTagSetKey(tag);
+            var tagKey = TagHelper.GenerateTagKey(tag);
 
             var keys = await SetMembersAsync<string>(tagKey, commandFlags).ConfigureAwait(false);
 
-            var result = new List<T>();
-            foreach (var key in keys)
-            {
-                var members = await SetMembersAsync<T>(key, commandFlags).ConfigureAwait(false);
-                result.AddRange(members);
-            }
-
-            return result;
+            var deletedRecordsNumber = await RemoveAllAsync(keys, commandFlags).ConfigureAwait(false);
+            return deletedRecordsNumber;
         }
 
         private Task<bool> ExecuteAddWithTags(

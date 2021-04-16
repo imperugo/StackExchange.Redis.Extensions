@@ -160,12 +160,11 @@ namespace StackExchange.Redis.Extensions.Core.Abstractions
         /// <param name="value">The value to be inserted</param>
         /// <param name="nx">Behave like hsetnx - set only if not exists</param>
         /// <param name="flag">Behaviour markers associated with a given command</param>
-        /// <param name="tags">Tags</param>
         /// <returns>
         ///     <c>true</c> if field is a new field in the hash and value was set.
         ///     <c>false</c> if field already exists in the hash and no operation was performed.
         /// </returns>
-        Task<bool> HashSetAsync<T>(string hashKey, string key, T value, bool nx = false, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null);
+        Task<bool> HashSetAsync<T>(string hashKey, string key, T value, bool nx = false, CommandFlags flag = CommandFlags.None);
 
         /// <summary>
         ///     Sets the specified fields to their respective values in the hash stored at key.

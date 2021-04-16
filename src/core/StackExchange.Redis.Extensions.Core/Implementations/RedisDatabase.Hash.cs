@@ -88,21 +88,9 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         }
 
         /// <inheritdoc/>
-        public Task<bool> HashSetAsync<T>(string hashKey, string key, T value, bool nx = false, CommandFlags commandFlags = CommandFlags.None, HashSet<string> tags = null)
+        public Task<bool> HashSetAsync<T>(string hashKey, string key, T value, bool nx = false, CommandFlags commandFlags = CommandFlags.None)
         {
-            var when = nx ? When.NotExists : When.Always;
-            if (tags != null && tags.Count > 0)
-            {
-                return ExecuteHashAddWithTags(
-                    hashKey,
-                    key,
-                    tags,
-                    db => db.HashSetAsync(hashKey, key, Serializer.Serialize(value), when, commandFlags),
-                    when,
-                    commandFlags);
-            }
-
-            return Database.HashSetAsync(hashKey, key, Serializer.Serialize(value), when, commandFlags);
+            return Database.HashSetAsync(hashKey, key, Serializer.Serialize(value), nx ? When.NotExists : When.Always, commandFlags);
         }
 
         /// <inheritdoc/>

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using StackExchange.Redis;
+
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Extensions;
-using StackExchange.Redis.Extensions.Core.Helpers;
 using StackExchange.Redis.Extensions.Core.Models;
 using StackExchange.Redis.Extensions.Core.ServerIteration;
 using StackExchange.Redis.KeyspaceIsolation;
@@ -258,7 +257,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         }
 
         /// <inheritdoc/>
-        public Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null)
+        public Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
             where T : class
         {
             if (string.IsNullOrEmpty(key))
@@ -268,11 +267,6 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 throw new ArgumentNullException(nameof(item), "item cannot be null.");
 
             var serializedObject = Serializer.Serialize(item);
-
-            if (tags?.Count > 0)
-            {
-                return ExecuteSetAddWithTags(key, tags, db => db.SetAddAsync(key, serializedObject, flag), flag);
-            }
 
             return Database.SetAddAsync(key, serializedObject, flag);
         }
