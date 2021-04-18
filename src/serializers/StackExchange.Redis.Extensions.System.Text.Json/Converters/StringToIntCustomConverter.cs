@@ -16,7 +16,7 @@ namespace StackExchange.Redis.Extensions.System.Text.Json.Converters
 
 #pragma warning disable RCS1176
 
-                if (Utf8Parser.TryParse(span, out int number, out int bytesConsumed) && span.Length == bytesConsumed)
+                if (Utf8Parser.TryParse(span, out int number, out var bytesConsumed) && span.Length == bytesConsumed)
                     return number;
 
 #pragma warning restore RCS1176

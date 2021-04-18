@@ -60,7 +60,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 }
 
                 while (!this.connections.IsEmpty)
-                    this.connections.TryTake(out var taken);
+                    this.connections.TryTake(out var _);
             }
 
             // free native resources if there are any.

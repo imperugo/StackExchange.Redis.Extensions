@@ -16,6 +16,8 @@ The idea of this library is to make easier your live when you need to send / rec
 
 Latest release is available on NuGet.
 
+Latest CI build ![.github/workflows/dotnetcore.yml](https://github.com/imperugo/StackExchange.Redis.Extensions/workflows/.github/workflows/dotnetcore.yml/badge.svg)
+
 | Channel                  | Status                                                       |
 | ------------------------ | ------------------------------------------------------------ |
 | Nuget (Core)             | [![NuGet Status](http://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Core.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Core/) |

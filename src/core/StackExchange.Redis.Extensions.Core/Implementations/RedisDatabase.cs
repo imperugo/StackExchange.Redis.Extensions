@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using StackExchange.Redis;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Extensions;
@@ -54,7 +53,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             {
                 var db = connectionPoolManager.GetConnection().GetDatabase(dbNumber);
 
-                if (!string.IsNullOrWhiteSpace(keyPrefix))
+                if (keyPrefix?.Length > 0)
                     return db.WithKeyPrefix(keyPrefix);
 
                 return db;
@@ -117,9 +116,12 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         }
 
         /// <inheritdoc/>
-        public Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None)
+        public Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null)
         {
             var entryBytes = value.OfValueSize(Serializer, maxValueLength, key);
+
+            if (tags?.Count > 0)
+                return ExecuteAddWithTags(key, tags, db => db.StringSetAsync(key, entryBytes, null, when, flag), when, flag);
 
             return Database.StringSetAsync(key, entryBytes, null, when, flag);
         }
@@ -131,11 +133,14 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         }
 
         /// <inheritdoc/>
-        public Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
+        public Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null)
         {
             var entryBytes = value.OfValueSize(Serializer, maxValueLength, key);
 
             var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
+
+            if (tags?.Count > 0)
+                return ExecuteAddWithTags(key, tags, db => db.StringSetAsync(key, entryBytes, expiration, when, flag), when, flag);
 
             return Database.StringSetAsync(key, entryBytes, expiration, when, flag);
         }
@@ -147,9 +152,12 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         }
 
         /// <inheritdoc/>
-        public Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None)
+        public Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null)
         {
             var entryBytes = value.OfValueSize(Serializer, maxValueLength, key);
+
+            if (tags?.Count > 0)
+                return ExecuteAddWithTags(key, tags, db => db.StringSetAsync(key, entryBytes, expiresIn, when, flag), when, flag);
 
             return Database.StringSetAsync(key, entryBytes, expiresIn, when, flag);
         }
