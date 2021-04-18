@@ -10,7 +10,6 @@
         /// </summary>
         /// <param name="tag">Tag</param>
         /// <returns>Return key associated with tag</returns>
-        public static string GenerateTagKey(string tag) =>
-            $"tag:{tag}";
+        public static string GenerateTagKey(string tag) => "tag:" + tag;
     }
 }

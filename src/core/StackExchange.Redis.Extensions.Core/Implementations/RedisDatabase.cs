@@ -53,7 +53,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             {
                 var db = connectionPoolManager.GetConnection().GetDatabase(dbNumber);
 
-                if (!string.IsNullOrWhiteSpace(keyPrefix))
+                if (keyPrefix?.Length > 0)
                     return db.WithKeyPrefix(keyPrefix);
 
                 return db;
