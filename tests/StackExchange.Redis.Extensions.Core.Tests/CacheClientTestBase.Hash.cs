@@ -90,8 +90,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             var data = db
                 .HashGet(hashKey, map.Keys.Select(x => (RedisValue)x).ToArray())
                 .ToList()
-                .ConvertAll(x => serializer.Deserialize<TestClass<DateTime>>(x))
-;
+                .ConvertAll(x => serializer.Deserialize<TestClass<DateTime>>(x));
 
             Assert.Equal(map.Count, data.Count);
 
