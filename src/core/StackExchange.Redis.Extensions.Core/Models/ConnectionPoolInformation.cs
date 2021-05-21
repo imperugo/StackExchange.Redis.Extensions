@@ -19,10 +19,5 @@
         /// Gets or sets the number of invalid connections in the connection pool.
         /// </summary>
         public int InvalidConnections { get; set; }
-
-        /// <summary>
-        /// Gets or sets the number ready connection, not used yet.
-        /// </summary>
-        public int ReadyNotUsedYet { get; set; }
     }
 }

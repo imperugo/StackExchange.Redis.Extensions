@@ -31,7 +31,7 @@ namespace StackExchange.Redis.Samples.Web.Mvc.Controllers
 
             string BuildInfo(ConnectionPoolInformation info)
             {
-                return $"\talive: {info.ActiveConnections.ToString()}, required: {info.RequiredPoolSize.ToString()}, ready: {info.ReadyNotUsedYet.ToString()}";
+                return $"\talive: {info.ActiveConnections.ToString()}, required: {info.RequiredPoolSize.ToString()}";
             }
         }
     }
