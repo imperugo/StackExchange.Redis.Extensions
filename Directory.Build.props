@@ -4,7 +4,7 @@
   <!-- General information -->
   <PropertyGroup>
     <Authors>Ugo Lattanzi</Authors>
-    <VersionPrefix>7.0.0</VersionPrefix>
+    <VersionPrefix>7.0.1</VersionPrefix>
     <!--
     <VersionSuffix>pre</VersionSuffix>
     -->
