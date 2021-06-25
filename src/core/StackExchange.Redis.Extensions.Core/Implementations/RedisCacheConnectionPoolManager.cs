@@ -136,8 +136,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
                 this.Connection = multiplexer ?? throw new ArgumentNullException(nameof(multiplexer));
                 this.Connection.ConnectionFailed += this.ConnectionFailed;
                 this.Connection.ConnectionRestored += this.ConnectionRestored;
-                this.Connection.InternalError += this.InternalError;   
-                this.Connection.ErrorMessage += this.ErrorMessage;                
+                this.Connection.InternalError += this.InternalError;
+                this.Connection.ErrorMessage += this.ErrorMessage;
 
                 this.logger = logger;
             }
@@ -152,8 +152,8 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             {
                 this.Connection.ConnectionFailed -= ConnectionFailed;
                 this.Connection.ConnectionRestored -= ConnectionRestored;
-                this.Connection.InternalError -= this.InternalError;   
-                this.Connection.ErrorMessage -= this.ErrorMessage;                   
+                this.Connection.InternalError -= this.InternalError;
+                this.Connection.ErrorMessage -= this.ErrorMessage;
 
                 Connection.Dispose();
             }
@@ -167,16 +167,16 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             {
                 logger.LogError("Redis connection error restored.");
             }
-            
+
             private void InternalError(object sender, InternalErrorEventArgs e)
             {
                 logger.LogError(e.Exception, "Redis internal error {0}.", e.Origin);
-            }               
-            
+            }
+
             private void ErrorMessage(object sender, RedisErrorEventArgs e)
             {
                 logger.LogError("Redis error: " + e.Message);
-            }                           
+            }
         }
     }
 }

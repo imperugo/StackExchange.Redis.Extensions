@@ -29,7 +29,7 @@ namespace StackExchange.Redis.Samples.Web.Mvc.Controllers
 
             return BuildInfo(before) + "\t" + BuildInfo(after);
 
-            string BuildInfo(ConnectionPoolInformation info)
+            static string BuildInfo(ConnectionPoolInformation info)
             {
                 return $"\talive: {info.ActiveConnections.ToString()}, required: {info.RequiredPoolSize.ToString()}";
             }
