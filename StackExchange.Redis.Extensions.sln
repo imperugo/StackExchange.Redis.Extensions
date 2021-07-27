@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.Protobuf", "src\serializers\StackExchange.Redis.Extensions.Protobuf\StackExchange.Redis.Extensions.Protobuf.csproj", "{11FC924C-275C-453F-8923-8AEF7EC90B82}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.Bebop", "src\serializers\StackExchange.Redis.Extensions.Bebop\StackExchange.Redis.Extensions.Bebop.csproj", "{5CCD8D5D-EBCA-4C6E-A345-F81666A53A6D}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.System.Text.Json", "src\serializers\StackExchange.Redis.Extensions.System.Text.Json\StackExchange.Redis.Extensions.System.Text.Json.csproj", "{C83F298E-4FE1-4128-89C1-EECB676FA913}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.Utf8Json", "src\serializers\StackExchange.Redis.Extensions.Utf8Json\StackExchange.Redis.Extensions.Utf8Json.csproj", "{3AB92D8A-14CB-4551-8C37-569067B9D6A5}"
