@@ -7,6 +7,15 @@
   <ItemGroup>
     <PackageReference Include="MsgPack.Cli" Version="1.0.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Update="Roslynator.Analyzers" Version="3.2.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Update="Roslynator.CodeAnalysis.Analyzers" Version="1.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Remove="Roslynator.Formatting.Analyzers" />
   </ItemGroup>
 
   <ItemGroup>

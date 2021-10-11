@@ -2,6 +2,10 @@
   <PropertyGroup>
     <Title>Use the System.Text.Json serialization with StackExchange.Redis.</Title>
     <Summary>Use the System.Text.Json serialization with StackExchange.Redis.</Summary>
+    <AssemblyName>ismkdc.StackExchange.Redis.Extensions.System.Text.Json</AssemblyName>
+    <RootNamespace>ismkdc.StackExchange.Redis.Extensions.System.Text.Json</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageVersion>7.1.2</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

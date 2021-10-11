@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="coverlet.collector" Version="3.1.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -29,6 +29,15 @@
     <PackageReference Include="xunit.categories" Version="2.0.5" />
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="Divergic.Logging.Xunit" Version="3.6.0" />
+    <PackageReference Update="Roslynator.Analyzers" Version="3.2.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Update="Roslynator.CodeAnalysis.Analyzers" Version="1.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Remove="Roslynator.Formatting.Analyzers" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,7 +46,7 @@
     <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.MsgPack\StackExchange.Redis.Extensions.MsgPack.csproj" />
     <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.Newtonsoft\StackExchange.Redis.Extensions.Newtonsoft.csproj" />
     <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.Protobuf\StackExchange.Redis.Extensions.Protobuf.csproj" />
-    <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.System.Text.Json\StackExchange.Redis.Extensions.System.Text.Json.csproj" />
+    <ProjectReference Include="..\..\src\serializers\ismkdc.StackExchange.Redis.Extensions.System.Text.Json\ismkdc.StackExchange.Redis.Extensions.System.Text.Json.csproj" />
     <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.Utf8Json\StackExchange.Redis.Extensions.Utf8Json.csproj" />
   </ItemGroup>
 

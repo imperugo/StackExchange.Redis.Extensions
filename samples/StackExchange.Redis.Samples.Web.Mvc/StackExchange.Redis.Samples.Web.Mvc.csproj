@@ -7,8 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.System.Text.Json\StackExchange.Redis.Extensions.System.Text.Json.csproj" />
-    <ProjectReference Include="..\..\src\aspnet\StackExchange.Redis.Extensions.AspNetCore\StackExchange.Redis.Extensions.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\serializers\ismkdc.StackExchange.Redis.Extensions.System.Text.Json\ismkdc.StackExchange.Redis.Extensions.System.Text.Json.csproj" />
+    <ProjectReference Include="..\..\src\aspnet\ismkdc.StackExchange.Redis.Extensions.AspNetCore\ismkdc.StackExchange.Redis.Extensions.AspNetCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Roslynator.Analyzers" Version="3.2.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Update="Roslynator.CodeAnalysis.Analyzers" Version="1.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Remove="Roslynator.Formatting.Analyzers" />
   </ItemGroup>
 
 </Project>
