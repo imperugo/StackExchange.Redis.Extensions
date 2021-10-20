@@ -34,12 +34,27 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
         private string serviceName;
         private SslProtocols? sslProtocols;
         private Func<ProfilingSession> profilingSessionProvider;
+        private int workCount = Environment.ProcessorCount * 2;
 
         /// <summary>
         /// A RemoteCertificateValidationCallback delegate responsible for validating the certificate supplied by the remote party; note
         /// that this cannot be specified in the configuration-string.
         /// </summary>
         public event RemoteCertificateValidationCallback CertificateValidation;
+
+        /// <summary>
+        /// Gets or sets the every ConnectionMultiplexer SocketManager WorkCount
+        /// </summary>
+        public int WorkCount
+        {
+            get => workCount;
+
+            set
+            {
+                workCount = value;
+                ResetConfigurationOptions();
+            }
+        }
 
         /// <summary>
         /// Gets or sets the servicename used in case of Sentinel.
@@ -356,8 +371,13 @@ namespace StackExchange.Redis.Extensions.Core.Configuration
                             available: false);
                     }
 
-                    newOptions.CertificateValidation += CertificateValidation;
+                    if (WorkCount > 0)
+                    {
+                        newOptions.SocketManager = new SocketManager(GetType().Name, WorkCount,
+                            SocketManager.SocketManagerOptions.None);
+                    }
 
+                    newOptions.CertificateValidation += CertificateValidation;
                     options = newOptions;
                 }
 
