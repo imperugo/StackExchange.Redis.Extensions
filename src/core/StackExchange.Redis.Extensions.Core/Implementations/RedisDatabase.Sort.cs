@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using StackExchange.Redis.Extensions.Core.Abstractions;
+using StackExchange.Redis.Extensions.Core.Models;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations
 {
@@ -46,6 +47,21 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
             var result = await Database.SortedSetRangeByScoreAsync(key, start, stop, exclude, order, skip, take, commandFlags).ConfigureAwait(false);
 
             return result.Select(m => m == RedisValue.Null ? default : Serializer.Deserialize<T>(m));
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<ScoreRankResult<T>>> SortedSetRangeByRankWithScoresAsync<T>(
+                                    string key,
+                                    long start = 0L,
+                                    long stop = -1L,
+                                    Order order = Order.Ascending,
+                                    CommandFlags commandFlags = CommandFlags.None)
+        {
+            var result = await Database.SortedSetRangeByRankWithScoresAsync(key, start, stop, order, commandFlags).ConfigureAwait(false);
+
+            return result
+                .Select(x => new ScoreRankResult<T> { Element = Serializer.Deserialize<T>(x.Element), Score = x.Score })
+                .ToArray();
         }
     }
 }

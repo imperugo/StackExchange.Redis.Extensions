@@ -108,7 +108,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations
         {
             for (var i = 0; i < this.redisConfiguration.PoolSize; i++)
             {
-                var multiplexer = ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions);
+                var multiplexer = ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions); ;
 
                 if (this.redisConfiguration.ProfilingSessionProvider != null)
                     multiplexer.RegisterProfiler(this.redisConfiguration.ProfilingSessionProvider);

@@ -19,6 +19,23 @@
       }
     },
     {
+      "label": "build solution net6",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/StackExchange.Redis.Extensions.sln",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary",
+        "-f:net6.0"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
       "label": "build solution net5",
       "command": "dotnet",
       "type": "process",

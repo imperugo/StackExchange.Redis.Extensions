@@ -1,5 +1,6 @@
 ﻿using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using StackExchange.Redis.Extensions.System.Text.Json.Converters;
 
@@ -13,7 +14,7 @@ namespace StackExchange.Redis.Extensions.System.Text.Json
             {
                 PropertyNameCaseInsensitive = true,
                 AllowTrailingCommas = true,
-                IgnoreNullValues = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = false,
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };

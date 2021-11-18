@@ -66,7 +66,35 @@ namespace StackExchange.Redis.Extensions.Core.Tests
         }
 
         [Fact]
-        public async Task Return_items_ordered()
+        public async Task Return_items_ordered_by_rank()
+        {
+            var testobject1 = new TestClass<DateTime>("test_1", DateTime.UtcNow);
+            var testobject2 = new TestClass<DateTime>("test_2", DateTime.UtcNow);
+            var testobject3 = new TestClass<DateTime>("test_3", DateTime.UtcNow);
+            var testobject4 = new TestClass<DateTime>("test_4", DateTime.UtcNow);
+            var testobject5 = new TestClass<DateTime>("test_5", DateTime.UtcNow);
+
+            await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject1), 1);
+            await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject2), 2);
+            await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject3), 3);
+            await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject4), 4);
+            await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject5), 5);
+
+            var descendingList = (await Sut.GetDbFromConfiguration().SortedSetRangeByRankWithScoresAsync<TestClass<DateTime>>("my Key", 0, 2)).ToList();
+
+            Assert.Equal(descendingList[0].Element, testobject1);
+            Assert.Equal(descendingList[1].Element, testobject2);
+            Assert.Equal(descendingList[2].Element, testobject3);
+
+            Assert.Equal(1, descendingList[0].Score);
+            Assert.Equal(2, descendingList[1].Score);
+            Assert.Equal(3, descendingList[2].Score);
+
+            Assert.Equal(3, descendingList.Count);
+        }
+
+        [Fact]
+        public async Task Return_items_ordered_by_score()
         {
             var testobject1 = new TestClass<DateTime>("test_1", DateTime.UtcNow);
             var testobject2 = new TestClass<DateTime>("test_2", DateTime.UtcNow);
@@ -81,6 +109,34 @@ namespace StackExchange.Redis.Extensions.Core.Tests
             Assert.Equal(descendingList[0], testobject1);
             Assert.Equal(descendingList[1], testobject2);
             Assert.Equal(descendingList[2], testobject3);
+            Assert.Equal(3, descendingList.Count);
+        }
+
+        [Fact]
+        public async Task Return_items_ordered_by_rank_descent()
+        {
+            var testobject1 = new TestClass<DateTime>("test_1", DateTime.UtcNow);
+            var testobject2 = new TestClass<DateTime>("test_2", DateTime.UtcNow);
+            var testobject3 = new TestClass<DateTime>("test_3", DateTime.UtcNow);
+            var testobject4 = new TestClass<DateTime>("test_4", DateTime.UtcNow);
+            var testobject5 = new TestClass<DateTime>("test_5", DateTime.UtcNow);
+
+            await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject1), 1);
+            await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject2), 2);
+            await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject3), 3);
+            await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject4), 4);
+            await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject5), 5);
+
+            var descendingList = (await Sut.GetDbFromConfiguration().SortedSetRangeByRankWithScoresAsync<TestClass<DateTime>>("my Key", 0, 2, Order.Descending)).ToList();
+
+            Assert.Equal(descendingList[0].Element, testobject5);
+            Assert.Equal(descendingList[1].Element, testobject4);
+            Assert.Equal(descendingList[2].Element, testobject3);
+
+            Assert.Equal(5, descendingList[0].Score);
+            Assert.Equal(4, descendingList[1].Score);
+            Assert.Equal(3, descendingList[2].Score);
+
             Assert.Equal(3, descendingList.Count);
         }
 
