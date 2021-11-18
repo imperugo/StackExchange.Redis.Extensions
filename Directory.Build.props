@@ -8,7 +8,7 @@
     <!--
     <VersionSuffix>pre</VersionSuffix>
     -->
-    <TargetFrameworks>netstandard2.0;net461;net472;netcoreapp3.1;net5.0,net6.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461;net472;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
     <!--
       When I Work on MacOS, I use the following line:
       <TargetFrameworks>netstandard2.0;netcoreapp3.1;net5.0;net6.0</TargetFrameworks> 

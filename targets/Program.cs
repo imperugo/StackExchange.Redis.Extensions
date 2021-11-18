@@ -20,7 +20,7 @@ namespace Targets
             Target(
                 "test",
                 DependsOn("build"),
-                Directory.EnumerateFiles("src", "*Tests.csproj", SearchOption.AllDirectories),
+                Directory.EnumerateFiles("tests", "*Tests.csproj", SearchOption.AllDirectories),
                 proj => Run(sdk.GetDotnetCliPath(), $"test \"{proj}\" --configuration Release --no-build"));
 
             RunTargetsAndExit(args);
