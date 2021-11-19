@@ -37,6 +37,7 @@
     <Rule Id="CA1900" Action="Error" />
     <Rule Id="CA1901" Action="Error" />
     <Rule Id="CA2002" Action="Error" />
+    <Rule Id="CA2012" Action="Error" />
     <Rule Id="CA2100" Action="Error" />
     <Rule Id="CA2101" Action="Error" />
     <Rule Id="CA2108" Action="Error" />
@@ -83,16 +84,27 @@
     <Rule Id="RS1022" Action="None" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.CodeStyle" RuleNamespace="Microsoft.CodeAnalysis.CSharp.CodeStyle">
+    <Rule Id="IDE0008" Action="None" />
+    <Rule Id="IDE0011" Action="None" />
+    <Rule Id="IDE0005" Action="Error" />
     <Rule Id="IDE0017" Action="None" />
+    <Rule Id="IDE0044" Action="Error" />
     <Rule Id="IDE0052" Action="Error" />
     <Rule Id="IDE0055" Action="Error" />
     <Rule Id="IDE0063" Action="Error" />
     <Rule Id="IDE0066" Action="None" />
     <Rule Id="IDE0071" Action="None" />
+    <Rule Id="AD0001" Action="None" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
     <Rule Id="IDE0003" Action="None" />
     <Rule Id="IDE0028" Action="None" />
+    <Rule Id="IDE0060" Action="None" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.NetAnalyzers">
+    <Rule Id="CA1050" Action="Error" />
+    <Rule Id="CA1834" Action="Error" />
+    <Rule Id="CA2208" Action="None" />
   </Rules>
   <Rules AnalyzerId="Roslynator.CSharp.Analyzers" RuleNamespace="Roslynator.CSharp.Analyzers">
     <Rule Id="RCS1001" Action="Error" />
@@ -101,8 +113,7 @@
     <Rule Id="RCS1005" Action="Error" />
     <Rule Id="RCS1006" Action="None" />
     <Rule Id="RCS1010" Action="Error" />
-    <Rule Id="RCS1014a" Action="Error" />
-    <Rule Id="RCS1014i" Action="Error" />
+    <Rule Id="RCS1015" Action="Error" />
     <Rule Id="RCS1016a" Action="Error" />
     <Rule Id="RCS1016b" Action="Error" />
     <Rule Id="RCS1021" Action="Error" />
@@ -119,8 +130,7 @@
     <Rule Id="RCS1042" Action="Error" />
     <Rule Id="RCS1043" Action="Error" />
     <Rule Id="RCS1047" Action="Error" />
-    <Rule Id="RCS1051" Action="None" />
-    <Rule Id="RCS1051a" Action="Error" />
+    <Rule Id="RCS1051a" Action="None" />
     <Rule Id="RCS1059" Action="Error" />
     <Rule Id="RCS1064" Action="Error" />
     <Rule Id="RCS1065" Action="Error" />
@@ -133,10 +143,12 @@
     <Rule Id="RCS1075" Action="Error" />
     <Rule Id="RCS1077" Action="Error" />
     <Rule Id="RCS1078i" Action="Error" />
+    <Rule Id="RCS1080" Action="Error" />
     <Rule Id="RCS1085" Action="Error" />
     <Rule Id="RCS1090" Action="None" />
     <Rule Id="RCS1091" Action="Error" />
     <Rule Id="RCS1094" Action="Error" />
+    <Rule Id="RCS1110" Action="None" />
     <Rule Id="RCS1118" Action="Error" />
     <Rule Id="RCS1124" Action="Error" />
     <Rule Id="RCS1129" Action="Error" />
@@ -149,19 +161,24 @@
     <Rule Id="RCS1151" Action="Error" />
     <Rule Id="RCS1163" Action="None" />
     <Rule Id="RCS1168" Action="None" />
+    <Rule Id="RCS1169" Action="Error" />
     <Rule Id="RCS1172" Action="Error" />
     <Rule Id="RCS1174" Action="Error" />
+    <Rule Id="RCS1175" Action="None" />
     <Rule Id="RCS1176" Action="Error" />
     <Rule Id="RCS1177" Action="Error" />
     <Rule Id="RCS1181" Action="None" />
     <Rule Id="RCS1182" Action="Error" />
+    <Rule Id="RCS1187" Action="Error" />
     <Rule Id="RCS1188" Action="Error" />
+    <Rule Id="RCS1192" Action="Error" />
     <Rule Id="RCS1194" Action="None" />
     <Rule Id="RCS1198" Action="Error" />
     <Rule Id="RCS1203" Action="None" />
     <Rule Id="RCS1208" Action="Info" />
     <Rule Id="RCS1211" Action="Error" />
     <Rule Id="RCS1248a" Action="Error" />
+    <Rule Id="CS0251" Action="None" />
   </Rules>
   <Rules AnalyzerId="Roslynator.Formatting.Analyzers" RuleNamespace="Roslynator.Formatting.Analyzers">
     <Rule Id="RCS0001" Action="Error" />
@@ -176,7 +193,6 @@
     <Rule Id="RCS0010" Action="Error" />
     <Rule Id="RCS0011" Action="Error" />
     <Rule Id="RCS0014" Action="Error" />
-    <Rule Id="RCS0015" Action="None" />
     <Rule Id="RCS0015i" Action="Error" />
     <Rule Id="RCS0016" Action="Error" />
     <Rule Id="RCS0020" Action="Error" />
@@ -185,14 +201,10 @@
     <Rule Id="RCS0023" Action="Error" />
     <Rule Id="RCS0024" Action="Error" />
     <Rule Id="RCS0025" Action="Error" />
-    <Rule Id="RCS0027" Action="None" />
-    <Rule Id="RCS0027i" Action="Error" />
-    <Rule Id="RCS0028" Action="None" />
-    <Rule Id="RCS0028i" Action="Error" />
+    <Rule Id="RCS0028i" Action="None" />
     <Rule Id="RCS0029" Action="Error" />
     <Rule Id="RCS0030" Action="Error" />
     <Rule Id="RCS0031" Action="Error" />
-    <Rule Id="RCS0032" Action="None" />
     <Rule Id="RCS0032i" Action="Error" />
     <Rule Id="RCS0033" Action="Error" />
     <Rule Id="RCS0034" Action="Error" />
@@ -205,12 +217,13 @@
     <Rule Id="RCS0055" Action="Error" />
     <Rule Id="RCS1170" Action="Error" />
     <Rule Id="RCS1214" Action="Error" />
+    <Rule Id="RCS1229" Action="Error" />
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1201" Action="None" />
     <Rule Id="SA1600" Action="None" />
   </Rules>
-  <Rules AnalyzerId="V12Analyzer" RuleNamespace="DocumentationAnalyzers">
+  <Rules AnalyzerId="V2Analyzer" RuleNamespace="DocumentationAnalyzers">
     <Rule Id="SA0001" Action="None" />
     <Rule Id="SA1009" Action="None" />
     <Rule Id="SA1101" Action="None" />

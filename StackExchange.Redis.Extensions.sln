@@ -37,6 +37,22 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Samples
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Targets", "targets\Targets.csproj", "{8E054312-8C94-4FC9-86C4-B79E431413C5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "items", "items", "{0C036AC5-5E42-4ACE-B682-39D97D8A819D}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+		Directory.Build.props = Directory.Build.props
+		build.sh = build.sh
+		README.md = README.md
+		NuGetPack.bat = NuGetPack.bat
+		packages.md = packages.md
+		build.bat = build.bat
+		CONTRIBUTING.md = CONTRIBUTING.md
+		LICENSE = LICENSE
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		.ruleset = .ruleset
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -50,6 +50,9 @@ namespace StackExchange.Redis.Extensions.Jil
         /// <inheritdoc/>
         public T Deserialize<T>(byte[] serializedObject)
         {
+            if (serializedObject.Length == 0)
+                return default(T);
+
             var jsonString = encoding.GetString(serializedObject);
             return JSON.Deserialize<T>(jsonString);
         }
