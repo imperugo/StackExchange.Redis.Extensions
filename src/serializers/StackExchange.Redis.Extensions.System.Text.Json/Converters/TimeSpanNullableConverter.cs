@@ -1,25 +1,24 @@
-using System;
+﻿using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace StackExchange.Redis.Extensions.System.Text.Json.Converters
+namespace StackExchange.Redis.Extensions.System.Text.Json.Converters;
+
+internal class TimeSpanNullableConverter : JsonConverter<TimeSpan?>
 {
-    internal class TimeSpanNullableConverter : JsonConverter<TimeSpan?>
+    public override TimeSpan? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        public override TimeSpan? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            var value = reader.GetString();
+        var value = reader.GetString();
 
-            if (value?.Length > 0)
-                return TimeSpan.Parse(value);
+        if (value?.Length > 0)
+            return TimeSpan.Parse(value);
 
-            return null;
-        }
+        return null;
+    }
 
-        public override void Write(Utf8JsonWriter writer, TimeSpan? value, JsonSerializerOptions options)
-        {
-            if (value != null)
-                writer.WriteStringValue(value.ToString());
-        }
+    public override void Write(Utf8JsonWriter writer, TimeSpan? value, JsonSerializerOptions options)
+    {
+        if (value != null)
+            writer.WriteStringValue(value.ToString());
     }
 }

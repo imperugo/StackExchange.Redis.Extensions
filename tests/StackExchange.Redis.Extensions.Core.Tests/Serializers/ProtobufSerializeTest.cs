@@ -1,12 +1,11 @@
 ﻿using StackExchange.Redis.Extensions.Protobuf;
 
-namespace StackExchange.Redis.Extensions.Core.Tests.Serializers
+namespace StackExchange.Redis.Extensions.Core.Tests.Serializers;
+
+public class ProtobufSerializeTest : CacheClientTestBase
 {
-    public class ProtobufSerializeTest : CacheClientTestBase
+    public ProtobufSerializeTest()
+        : base(new ProtobufSerializer())
     {
-        public ProtobufSerializeTest()
-            : base(new ProtobufSerializer())
-        {
-        }
     }
 }

@@ -1,17 +1,11 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using StackExchange.Redis.Extensions.Newtonsoft;
 
-using StackExchange.Redis.Extensions.Newtonsoft;
+namespace StackExchange.Redis.Extensions.Core.Tests.Serializers;
 
-using Xunit;
-
-namespace StackExchange.Redis.Extensions.Core.Tests.Serializers
+public class JsonNetSerializeTest : CacheClientTestBase
 {
-    public class JsonNetSerializeTest : CacheClientTestBase
+    public JsonNetSerializeTest()
+        : base(new NewtonsoftSerializer())
     {
-        public JsonNetSerializeTest()
-            : base(new NewtonsoftSerializer())
-        {
-        }
     }
 }

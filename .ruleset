@@ -145,7 +145,7 @@
     <Rule Id="RCS1078i" Action="Error" />
     <Rule Id="RCS1080" Action="Error" />
     <Rule Id="RCS1085" Action="Error" />
-    <Rule Id="RCS1090" Action="None" />
+    <Rule Id="RCS1090" Action="Error" />
     <Rule Id="RCS1091" Action="Error" />
     <Rule Id="RCS1094" Action="Error" />
     <Rule Id="RCS1110" Action="None" />

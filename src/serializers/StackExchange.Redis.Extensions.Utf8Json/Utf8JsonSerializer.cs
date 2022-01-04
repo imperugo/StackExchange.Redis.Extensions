@@ -1,32 +1,30 @@
-﻿using System.Text;
-using System.Threading.Tasks;
+﻿using StackExchange.Redis.Extensions.Core;
 
-using StackExchange.Redis.Extensions.Core;
+using Utf8Json;
 
-namespace StackExchange.Redis.Extensions.Utf8Json
+namespace StackExchange.Redis.Extensions.Utf8Json;
+
+/// <summary>
+/// JSon.Net implementation of <see cref="ISerializer"/>
+/// </summary>
+public class Utf8JsonSerializer : ISerializer
 {
     /// <summary>
-    /// JSon.Net implementation of <see cref="ISerializer"/>
+    /// Initializes a new instance of the <see cref="Utf8JsonSerializer"/> class.
     /// </summary>
-    public class Utf8JsonSerializer : ISerializer
+    public Utf8JsonSerializer()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Utf8JsonSerializer"/> class.
-        /// </summary>
-        public Utf8JsonSerializer()
-        {
-        }
+    }
 
-        /// <inheritdoc/>
-        public byte[] Serialize(object item)
-        {
-            return global::Utf8Json.JsonSerializer.Serialize(item);
-        }
+    /// <inheritdoc/>
+    public byte[] Serialize(object item)
+    {
+        return JsonSerializer.Serialize(item);
+    }
 
-        /// <inheritdoc/>
-        public T Deserialize<T>(byte[] serializedObject)
-        {
-            return global::Utf8Json.JsonSerializer.Deserialize<T>(serializedObject);
-        }
+    /// <inheritdoc/>
+    public T Deserialize<T>(byte[] serializedObject)
+    {
+        return JsonSerializer.Deserialize<T>(serializedObject);
     }
 }
