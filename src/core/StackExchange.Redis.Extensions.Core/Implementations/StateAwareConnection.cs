@@ -49,22 +49,22 @@ public sealed partial class RedisCacheConnectionPoolManager
             Connection.Dispose();
         }
 
-        private void ConnectionFailed(object sender, ConnectionFailedEventArgs e)
+        private void ConnectionFailed(object? sender, ConnectionFailedEventArgs e)
         {
-            logger.LogError(e.Exception, "Redis connection error {FailureType}.", e.FailureType.ToString());
+            logger.LogError(e.Exception, "Redis connection error {FailureType}", e.FailureType.ToString());
         }
 
-        private void ConnectionRestored(object sender, ConnectionFailedEventArgs e)
+        private void ConnectionRestored(object? sender, ConnectionFailedEventArgs e)
         {
             logger.LogError("Redis connection error restored");
         }
 
-        private void InternalError(object sender, InternalErrorEventArgs e)
+        private void InternalError(object? sender, InternalErrorEventArgs e)
         {
             logger.LogError(e.Exception, "Redis internal error {Origin}", e.Origin);
         }
 
-        private void ErrorMessage(object sender, RedisErrorEventArgs e)
+        private void ErrorMessage(object? sender, RedisErrorEventArgs e)
         {
             logger.LogError("Redis error: {Message}", e.Message);
         }

@@ -21,7 +21,7 @@ public abstract partial class CacheClientTestBase
         var entryValue = new TestClass<DateTime>("test", DateTime.UtcNow);
 
         // act
-        var res = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, entryValue, nx: true).ConfigureAwait(false);
+        var res = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, entryValue, true).ConfigureAwait(false);
 
         // assert
         Assert.True(res);
@@ -43,7 +43,7 @@ public abstract partial class CacheClientTestBase
         var initRes = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, initialValue).ConfigureAwait(false);
 
         // act
-        var res = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, entryValue, nx: true).ConfigureAwait(false);
+        var res = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, entryValue, true).ConfigureAwait(false);
 
         // assert
         Assert.True(initRes);
@@ -64,7 +64,7 @@ public abstract partial class CacheClientTestBase
         var initRes = Sut.GetDbFromConfiguration().Database.HashSet(hashKey, entryKey, serializer.Serialize(initialValue));
 
         // act
-        var res = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, entryValue, nx: false).ConfigureAwait(false);
+        var res = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, entryValue, false).ConfigureAwait(false);
 
         // assert
         Assert.True(initRes, "Initial value was not set");

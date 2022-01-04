@@ -2,6 +2,7 @@
   <PropertyGroup>
     <Title>Use the System.Text.Json serialization with StackExchange.Redis.</Title>
     <Summary>Use the System.Text.Json serialization with StackExchange.Redis.</Summary>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

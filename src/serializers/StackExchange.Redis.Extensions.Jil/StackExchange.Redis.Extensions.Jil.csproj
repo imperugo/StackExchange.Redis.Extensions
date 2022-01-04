@@ -3,6 +3,7 @@
     <Title>Use the Jil serialization with StackExchange.Redis.</Title>
     <Summary>Use the Jil serialization with StackExchange.Redis.</Summary>
     <SignAssembly>false</SignAssembly>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

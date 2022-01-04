@@ -1,4 +1,6 @@
-﻿using StackExchange.Redis.Extensions.Core;
+﻿using System;
+
+using StackExchange.Redis.Extensions.Core;
 
 using Utf8Json;
 
@@ -9,21 +11,16 @@ namespace StackExchange.Redis.Extensions.Utf8Json;
 /// </summary>
 public class Utf8JsonSerializer : ISerializer
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Utf8JsonSerializer"/> class.
-    /// </summary>
-    public Utf8JsonSerializer()
+    /// <inheritdoc/>
+    public byte[] Serialize(object? item)
     {
+        return item == null
+            ? Array.Empty<byte>()
+            : JsonSerializer.Serialize(item);
     }
 
     /// <inheritdoc/>
-    public byte[] Serialize(object item)
-    {
-        return JsonSerializer.Serialize(item);
-    }
-
-    /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject)
+    public T Deserialize<T>(byte[] serializedObject) where T : class
     {
         return JsonSerializer.Deserialize<T>(serializedObject);
     }

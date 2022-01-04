@@ -2,6 +2,7 @@
   <PropertyGroup>
     <Title>Use the MsgPack serialization with StackExchange.Redis.</Title>
     <Summary>Use the MsgPack serialization with StackExchange.Redis.</Summary>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

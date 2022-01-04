@@ -23,7 +23,7 @@ public class HomeController : Controller
     {
         var before = pool.GetConnectionInformations();
         var rng = new Random();
-        await redisDatabase.AddAsync($"key-{rng}", rng.Next()).ConfigureAwait(false);
+        await redisDatabase.AddAsync($"key-{rng}", new { a = rng.Next() }).ConfigureAwait(false);
 
         var after = pool.GetConnectionInformations();
 

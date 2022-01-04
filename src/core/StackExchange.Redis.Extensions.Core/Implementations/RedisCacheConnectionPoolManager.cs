@@ -27,7 +27,7 @@ public sealed partial class RedisCacheConnectionPoolManager : IRedisCacheConnect
     /// </summary>
     /// <param name="redisConfiguration">The redis configuration.</param>
     /// <param name="logger">The logger.</param>
-    public RedisCacheConnectionPoolManager(RedisConfiguration redisConfiguration, ILogger<RedisCacheConnectionPoolManager> logger = null)
+    public RedisCacheConnectionPoolManager(RedisConfiguration redisConfiguration, ILogger<RedisCacheConnectionPoolManager>? logger = null)
     {
         this.redisConfiguration = redisConfiguration ?? throw new ArgumentNullException(nameof(redisConfiguration));
         this.logger = logger ?? NullLogger<RedisCacheConnectionPoolManager>.Instance;

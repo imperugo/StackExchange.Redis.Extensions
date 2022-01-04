@@ -10,6 +10,7 @@ public partial class RedisDatabase : IRedisDatabase
 {
     /// <inheritdoc/>
     public Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
+        where T : class
     {
         var sub = connectionPoolManager.GetConnection().GetSubscriber();
         return sub.PublishAsync(channel, Serializer.Serialize(message), flags);
@@ -17,6 +18,7 @@ public partial class RedisDatabase : IRedisDatabase
 
     /// <inheritdoc/>
     public Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
+        where T : class
     {
         if (handler == null)
             throw new ArgumentNullException(nameof(handler));
@@ -32,6 +34,7 @@ public partial class RedisDatabase : IRedisDatabase
 
     /// <inheritdoc/>
     public Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
+        where T : class
     {
         if (handler == null)
             throw new ArgumentNullException(nameof(handler));

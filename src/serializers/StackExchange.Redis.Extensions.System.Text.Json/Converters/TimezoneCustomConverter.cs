@@ -10,7 +10,7 @@ internal class TimezoneCustomConverter : JsonConverter<TimeZoneInfo>
     {
         var name = reader.GetString();
 
-        return TimeZoneInfo.FindSystemTimeZoneById(name);
+        return TimeZoneInfo.FindSystemTimeZoneById(name!);
     }
 
     public override void Write(Utf8JsonWriter writer, TimeZoneInfo value, JsonSerializerOptions options)

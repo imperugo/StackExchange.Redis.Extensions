@@ -19,13 +19,12 @@ public class JilSerializer : ISerializer
     /// </summary>
     public JilSerializer()
         : this(new(
-            prettyPrint: true,
-            excludeNulls: false,
-            jsonp: false,
-            dateFormat:
+            true,
+            false,
+            false,
             DateTimeFormat.ISO8601,
-            includeInherited: true,
-            unspecifiedDateTimeKindBehavior: UnspecifiedDateTimeKindBehavior.IsLocal))
+            true,
+            UnspecifiedDateTimeKindBehavior.IsLocal))
     {
     }
 
@@ -41,18 +40,15 @@ public class JilSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public byte[] Serialize(object item)
+    public byte[] Serialize(object? item)
     {
         var jsonString = JSON.Serialize(item);
         return encoding.GetBytes(jsonString);
     }
 
     /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject)
+    public T Deserialize<T>(byte[] serializedObject) where T : class
     {
-        if (serializedObject == null || serializedObject.Length == 0)
-            return default(T);
-
         var jsonString = encoding.GetString(serializedObject);
         return JSON.Deserialize<T>(jsonString);
     }

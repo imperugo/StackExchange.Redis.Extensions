@@ -113,7 +113,7 @@ public abstract partial class CacheClientTestBase : IDisposable
             .ConfigureAwait(false);
 
         Assert.NotNull(response);
-        Assert.True(response.Count > 0);
+        Assert.NotEmpty(response);
         Assert.Equal("6379", response.Single(x => x.Key == "tcp_port").InfoValue);
     }
 
@@ -156,7 +156,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     [Fact]
     public async Task Add_Multiple_Object_With_A_Single_Roundtrip_To_Redis_Must_Store_Data_Correctly_Into_Database()
     {
-        var values = new List<Tuple<string, string>>
+        var values = new Tuple<string, string>[]
         {
             new("key1", "value1"),
             new("key2", "value2"),
@@ -505,7 +505,7 @@ public abstract partial class CacheClientTestBase : IDisposable
         const int size = 3000;
         var values = Range(0, size).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
 
-        var tupleValues = values.Select(x => new Tuple<string, TestClass<string>>(x.Key, x)).ToList();
+        var tupleValues = values.Select(x => new Tuple<string, TestClass<string>>(x.Key, x)).ToArray();
 
         var result = await Sut.GetDbFromConfiguration().AddAllAsync(tupleValues).ConfigureAwait(false);
         var cached = await Sut.GetDbFromConfiguration().GetAllAsync<TestClass<string>>(values.Select(x => x.Key).ToArray()).ConfigureAwait(false);
@@ -524,7 +524,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     [Fact]
     public async Task Massive_Add_With_Expiring_Should_Delete_Expired_Keys()
     {
-        var values = new List<Tuple<string, string>>
+        var values = new Tuple<string, string>[]
         {
             new("ProductOneList1", "1"),
             new("ProductOneList2", "2"),
@@ -560,7 +560,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     {
         // Issue 228
         // https://github.com/imperugo/StackExchange.Redis.Extensions/issues/288
-        var valuesOneList = new List<Tuple<string, string>>
+        var valuesOneList = new Tuple<string, string>[]
         {
             new("ProductManyList1", "1"),
             new("ProductManyList2", "2"),
@@ -587,7 +587,7 @@ public abstract partial class CacheClientTestBase : IDisposable
             Assert.False(exists, value.Item1);
         }
 
-        var valuesTwoLis = new List<Tuple<string, string>>
+        var valuesTwoLis = new Tuple<string, string>[]
         {
             new("ProductManyList10", "1"),
             new("ProductManyList11", "2"),
@@ -611,18 +611,6 @@ public abstract partial class CacheClientTestBase : IDisposable
             var exists = await Sut.GetDbFromConfiguration().ExistsAsync(value.Item1).ConfigureAwait(false);
             Assert.False(exists, value.Item1);
         }
-    }
-
-    [Fact]
-    public async Task Adding_Value_Type_Should_Return_Correct_Value()
-    {
-        const int d = 1;
-        var added = await Sut.GetDbFromConfiguration().AddAsync("my Key", d).ConfigureAwait(false);
-        var dbValue = await Sut.GetDbFromConfiguration().GetAsync<int>("my Key").ConfigureAwait(false);
-
-        Assert.True(added);
-        Assert.True(db.KeyExists("my Key"));
-        Assert.Equal(dbValue, d);
     }
 
     [Fact]
@@ -1053,7 +1041,7 @@ public abstract partial class CacheClientTestBase : IDisposable
         var originalTime = DateTime.UtcNow.AddSeconds(5).Subtract(DateTime.UtcNow);
         var testTime = DateTime.UtcNow.AddSeconds(20).Subtract(DateTime.UtcNow);
 
-        var values = new List<Tuple<string, TestClass<string>>> { new(key, value) };
+        var values = new Tuple<string, TestClass<string>>[] { new(key, value) };
         var keys = new List<string> { key };
 
         await Sut.GetDbFromConfiguration().AddAllAsync(values, originalTime).ConfigureAwait(false);

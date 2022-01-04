@@ -14,6 +14,6 @@ public interface IRedisDatabaseFactory
     /// Return an instance of <see cref="IRedisDatabase"/>.
     /// </summary>
     /// <param name="name">If not specified returns the default instance</param>
-    IRedisCacheClient GetRedisClient(string name = null);
+    IRedisCacheClient GetRedisClient(string? name = null);
 }
 

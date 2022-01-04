@@ -119,7 +119,7 @@ public interface IRedisCacheClient
     /// <param name="dbNumber">The databse number.</param>
     /// <param name="keyPrefix">The key prefix.</param>
     /// <returns>An instance of <see cref="IRedisDatabase"/>.</returns>
-    IRedisDatabase GetDb(int dbNumber, string keyPrefix = null);
+    IRedisDatabase GetDb(int dbNumber, string? keyPrefix = null);
 
     /// <summary>
     /// Returns an instance a Redis database for the default database present into the configuration file;

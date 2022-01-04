@@ -26,6 +26,7 @@ public partial class RedisDatabase : IRedisDatabase
         string key,
         T value,
         CommandFlags commandFlags = CommandFlags.None)
+        where T : class
     {
         var entryBytes = Serializer.Serialize(value);
 
@@ -33,7 +34,7 @@ public partial class RedisDatabase : IRedisDatabase
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<T>> SortedSetRangeByScoreAsync<T>(
+    public async Task<IEnumerable<T?>> SortedSetRangeByScoreAsync<T>(
         string key,
         double start = double.NegativeInfinity,
         double stop = double.PositiveInfinity,
@@ -42,6 +43,7 @@ public partial class RedisDatabase : IRedisDatabase
         long skip = 0L,
         long take = -1L,
         CommandFlags commandFlags = CommandFlags.None)
+        where T : class
     {
         var result = await Database.SortedSetRangeByScoreAsync(key, start, stop, exclude, order, skip, take, commandFlags).ConfigureAwait(false);
 
@@ -55,11 +57,12 @@ public partial class RedisDatabase : IRedisDatabase
         long stop = -1L,
         Order order = Order.Ascending,
         CommandFlags commandFlags = CommandFlags.None)
+        where T : class
     {
         var result = await Database.SortedSetRangeByRankWithScoresAsync(key, start, stop, order, commandFlags).ConfigureAwait(false);
 
         return result
-            .Select(x => new ScoreRankResult<T> { Element = Serializer.Deserialize<T>(x.Element), Score = x.Score })
+            .Select(x => new ScoreRankResult<T>(Serializer.Deserialize<T>(x.Element), x.Score))
             .ToArray();
     }
 }

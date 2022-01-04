@@ -33,7 +33,7 @@ internal class RedisInformationMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        if(logger.IsEnabled(LogLevel.Trace))
+        if (logger.IsEnabled(LogLevel.Trace))
             logger.LogTrace("{MiddlewareName} --> Handling request: {Path}", nameof(RedisInformationMiddleware), context.Request.Path);
 
         if (context.Request.Method == "GET" && context.Request.Path == "/redis/connectionInfo")

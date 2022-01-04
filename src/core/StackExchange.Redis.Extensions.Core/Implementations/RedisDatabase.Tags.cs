@@ -12,11 +12,15 @@ namespace StackExchange.Redis.Extensions.Core.Implementations;
 public partial class RedisDatabase : IRedisDatabase
 {
     /// <inheritdoc/>
-    public async Task<IEnumerable<T>> GetByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None)
+    public async Task<IEnumerable<T?>> GetByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
     {
         var tagKey = TagHelper.GenerateTagKey(tag);
 
         var keys = await SetMembersAsync<string>(tagKey, commandFlags).ConfigureAwait(false);
+
+        if (keys.Length == 0)
+            return Enumerable.Empty<T>();
 
         var result = await GetAllAsync<T>(keys).ConfigureAwait(false);
 

@@ -10,7 +10,7 @@ public interface ISerializer
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>Return the serialized object</returns>
-    byte[] Serialize(object item);
+    byte[] Serialize(object? item);
 
     /// <summary>
     /// Deserializes the specified bytes.
@@ -20,5 +20,5 @@ public interface ISerializer
     /// <returns>
     /// The instance of the specified Item
     /// </returns>
-    T Deserialize<T>(byte[] serializedObject);
+    T Deserialize<T>(byte[] serializedObject) where T : class;
 }

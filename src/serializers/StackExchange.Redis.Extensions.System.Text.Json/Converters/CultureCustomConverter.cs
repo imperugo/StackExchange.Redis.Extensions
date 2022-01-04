@@ -11,7 +11,7 @@ internal class CultureCustomConverter : JsonConverter<CultureInfo>
     {
         var name = reader.GetString();
 
-        return new(name);
+        return new(name!);
     }
 
     public override void Write(Utf8JsonWriter writer, CultureInfo value, JsonSerializerOptions options)

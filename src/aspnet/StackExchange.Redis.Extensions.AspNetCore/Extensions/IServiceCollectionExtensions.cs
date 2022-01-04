@@ -23,7 +23,7 @@ public static class IServiceCollectionExtensions
         RedisConfiguration redisConfiguration)
         where T : class, ISerializer, new()
     {
-        return services.AddStackExchangeRedisExtensions<T>(sp => new [] { redisConfiguration });
+        return services.AddStackExchangeRedisExtensions<T>(sp => new[] { redisConfiguration });
     }
 
     /// <summary>

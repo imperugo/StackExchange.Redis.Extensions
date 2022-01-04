@@ -39,7 +39,7 @@ public partial interface IRedisDatabase
     /// <returns>
     ///     True if the object has been removed. Otherwise false
     /// </returns>
-    Task<bool> SortedSetRemoveAsync<T>(string key, T value, CommandFlags flag = CommandFlags.None);
+    Task<bool> SortedSetRemoveAsync<T>(string key, T value, CommandFlags flag = CommandFlags.None) where T : class;
 
     /// <summary>
     ///     Get entries from sorted-set ordered
@@ -59,7 +59,7 @@ public partial interface IRedisDatabase
     /// <returns>
     ///     True if the object has been removed. Otherwise false
     /// </returns>
-    Task<IEnumerable<T>> SortedSetRangeByScoreAsync<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending, long skip = 0L, long take = -1L, CommandFlags flag = CommandFlags.None);
+    Task<IEnumerable<T?>> SortedSetRangeByScoreAsync<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending, long skip = 0L, long take = -1L, CommandFlags flag = CommandFlags.None) where T : class;
 
     /// <summary>
     ///     Get entries from sorted-set ordered by rank
@@ -76,7 +76,7 @@ public partial interface IRedisDatabase
     /// <returns>
     ///     True if the object has been removed. Otherwise false
     /// </returns>
-    Task<IEnumerable<ScoreRankResult<T>>> SortedSetRangeByRankWithScoresAsync<T>(string key, long start = 0L, long stop = -1L, Order order = Order.Ascending, CommandFlags commandFlags = CommandFlags.None);
+    Task<IEnumerable<ScoreRankResult<T>>> SortedSetRangeByRankWithScoresAsync<T>(string key, long start = 0L, long stop = -1L, Order order = Order.Ascending, CommandFlags commandFlags = CommandFlags.None) where T : class;
 
     /// <summary>
     ///     Add the entry to a sorted set with  an increment score
@@ -92,5 +92,5 @@ public partial interface IRedisDatabase
     /// <returns>
     ///      if the object has been added return previous score. Otherwise return 0.0 when first add
     /// </returns>
-    Task<double> SortedSetAddIncrementAsync<T>(string key, T value, double score, CommandFlags flag = CommandFlags.None);
+    Task<double> SortedSetAddIncrementAsync<T>(string key, T? value, double score, CommandFlags flag = CommandFlags.None) where T : class;
 }

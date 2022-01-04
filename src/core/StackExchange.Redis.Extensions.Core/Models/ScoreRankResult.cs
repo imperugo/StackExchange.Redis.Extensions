@@ -7,12 +7,23 @@
 public class ScoreRankResult<T>
 {
     /// <summary>
+    /// Initializes a new instance of the <see cref="ScoreRankResult{T}"/> class.
+    /// </summary>
+    /// <param name="element">The element into redis.</param>
+    /// <param name="score">The score.</param>
+    public ScoreRankResult(T element, double score)
+    {
+        Element = element;
+        Score = score;
+    }
+
+    /// <summary>
     /// The element into redis
     /// </summary>
-    public T Element { get; set; }
+    public T Element { get; }
 
     /// <summary>
     /// The score
     /// </summary>
-    public double Score { get; set; }
+    public double Score { get; }
 }

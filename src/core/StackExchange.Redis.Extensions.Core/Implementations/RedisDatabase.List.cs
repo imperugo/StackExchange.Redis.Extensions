@@ -39,7 +39,7 @@ public partial class RedisDatabase : IRedisDatabase
     }
 
     /// <inheritdoc/>
-    public async Task<T> ListGetFromRightAsync<T>(string key, CommandFlags flags = CommandFlags.None)
+    public async Task<T?> ListGetFromRightAsync<T>(string key, CommandFlags flags = CommandFlags.None)
         where T : class
     {
         if (string.IsNullOrEmpty(key))

@@ -33,7 +33,8 @@ public partial class RedisDatabase : IRedisDatabase
     }
 
     /// <inheritdoc/>
-    public async Task<T> HashGetAsync<T>(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
+    public async Task<T?> HashGetAsync<T>(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
     {
         var redisValue = await Database.HashGetAsync(hashKey, key, commandFlags).ConfigureAwait(false);
 
@@ -41,16 +42,17 @@ public partial class RedisDatabase : IRedisDatabase
     }
 
     /// <inheritdoc/>
-    public async Task<Dictionary<string, T>> HashGetAsync<T>(string hashKey, string[] keys, CommandFlags commandFlags = CommandFlags.None)
+    public async Task<Dictionary<string, T?>> HashGetAsync<T>(string hashKey, string[] keys, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
     {
-        var tasks = new Task<T>[keys.Length];
+        var tasks = new Task<T?>[keys.Length];
 
         for (var i = 0; i < keys.Length; i++)
             tasks[i] = HashGetAsync<T>(hashKey, keys[i], commandFlags);
 
         await Task.WhenAll(tasks).ConfigureAwait(false);
 
-        var result = new Dictionary<string, T>();
+        var result = new Dictionary<string, T?>();
 
         for (var i = 0; i < tasks.Length; i++)
             result.Add(keys[i], tasks[i].Result);
@@ -60,6 +62,7 @@ public partial class RedisDatabase : IRedisDatabase
 
     /// <inheritdoc/>
     public async Task<Dictionary<string, T>> HashGetAllAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
     {
         return (await Database.HashGetAllAsync(hashKey, commandFlags).ConfigureAwait(false))
             .ToDictionary(
@@ -94,12 +97,14 @@ public partial class RedisDatabase : IRedisDatabase
 
     /// <inheritdoc/>
     public Task<bool> HashSetAsync<T>(string hashKey, string key, T value, bool nx = false, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
     {
         return Database.HashSetAsync(hashKey, key, Serializer.Serialize(value), nx ? When.NotExists : When.Always, commandFlags);
     }
 
     /// <inheritdoc/>
     public Task HashSetAsync<T>(string hashKey, IDictionary<string, T> values, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
     {
         var entries = values.Select(kv => new HashEntry(kv.Key, Serializer.Serialize(kv.Value)));
 
@@ -108,12 +113,14 @@ public partial class RedisDatabase : IRedisDatabase
 
     /// <inheritdoc/>
     public async Task<IEnumerable<T>> HashValuesAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
     {
         return (await Database.HashValuesAsync(hashKey, commandFlags).ConfigureAwait(false)).Select(x => Serializer.Deserialize<T>(x));
     }
 
     /// <inheritdoc/>
     public Dictionary<string, T> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
     {
         return Database.HashScan(hashKey, pattern, pageSize, commandFlags).ToDictionary(x => x.Name.ToString(), x => Serializer.Deserialize<T>(x.Value), StringComparer.Ordinal);
     }

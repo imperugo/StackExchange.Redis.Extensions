@@ -52,7 +52,7 @@ public partial interface IRedisDatabase
     /// <param name="key">The cache key.</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>Null if not present, otherwise the instance of T.</returns>
-    Task<T> GetAsync<T>(string key, CommandFlags flag = CommandFlags.None);
+    Task<T?> GetAsync<T>(string key, CommandFlags flag = CommandFlags.None) where T : class;
 
     /// <summary>Get the object with the specified key from Redis database and update the expiry time</summary>
     /// <typeparam name="T">The type of the expected object.</typeparam>
@@ -60,7 +60,7 @@ public partial interface IRedisDatabase
     /// <param name="expiresAt">Expiration time.</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>Null if not present, otherwise the instance of T.</returns>
-    Task<T> GetAsync<T>(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None);
+    Task<T?> GetAsync<T>(string key, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None) where T : class;
 
     /// <summary>
     ///     Get the object with the specified key from Redis database and update the expiry time
@@ -72,7 +72,7 @@ public partial interface IRedisDatabase
     /// <returns>
     ///     Null if not present, otherwise the instance of T.
     /// </returns>
-    Task<T> GetAsync<T>(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None);
+    Task<T?> GetAsync<T>(string key, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None) where T : class;
 
     /// <summary>
     ///     Adds the specified instance to the Redis database.
@@ -84,7 +84,7 @@ public partial interface IRedisDatabase
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <param name="tags">Tags</param>
     /// <returns>True if the object has been added. Otherwise false</returns>
-    Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null);
+    Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string>? tags = null) where T : class;
 
     /// <summary>
     ///     Replaces the object with specified key into Redis database.
@@ -97,7 +97,7 @@ public partial interface IRedisDatabase
     /// <returns>
     ///     True if the object has been added. Otherwise false
     /// </returns>
-    Task<bool> ReplaceAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None);
+    Task<bool> ReplaceAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None) where T : class;
 
     /// <summary>
     ///     Adds the specified instance to the Redis database.
@@ -112,7 +112,7 @@ public partial interface IRedisDatabase
     /// <returns>
     ///     True if the object has been added. Otherwise false
     /// </returns>
-    Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null);
+    Task<bool> AddAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string>? tags = null) where T : class;
 
     /// <summary>
     ///     Replaces the object with specified key into Redis database.
@@ -126,7 +126,7 @@ public partial interface IRedisDatabase
     /// <returns>
     ///     True if the object has been added. Otherwise false
     /// </returns>
-    Task<bool> ReplaceAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None);
+    Task<bool> ReplaceAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None) where T : class;
 
     /// <summary>
     ///     Adds the specified instance to the Redis database.
@@ -141,7 +141,7 @@ public partial interface IRedisDatabase
     /// <returns>
     ///     True if the object has been added. Otherwise false
     /// </returns>
-    Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string> tags = null);
+    Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string>? tags = null) where T : class;
 
     /// <summary>
     ///     Replaces the object with specified key into Redis database.
@@ -155,7 +155,7 @@ public partial interface IRedisDatabase
     /// <returns>
     ///     True if the object has been added. Otherwise false
     /// </returns>
-    Task<bool> ReplaceAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None);
+    Task<bool> ReplaceAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None) where T : class;
 
     /// <summary>
     ///     Get the objects with the specified keys from Redis database with a single roundtrip
@@ -166,7 +166,7 @@ public partial interface IRedisDatabase
     ///     Empty list if there are no results, otherwise the instance of T.
     ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
     /// </returns>
-    Task<IDictionary<string, T>> GetAllAsync<T>(string[] keys);
+    Task<IDictionary<string, T?>> GetAllAsync<T>(string[] keys) where T : class;
 
     /// <summary>
     ///     Get the objects with the specified keys from Redis database with one roundtrip
@@ -178,7 +178,7 @@ public partial interface IRedisDatabase
     ///     Empty list if there are no results, otherwise the instance of T.
     ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
     /// </returns>
-    Task<IDictionary<string, T>> GetAllAsync<T>(string[] keys, DateTimeOffset expiresAt);
+    Task<IDictionary<string, T?>> GetAllAsync<T>(string[] keys, DateTimeOffset expiresAt) where T : class;
 
     /// <summary>
     ///     Get the objects with the specified keys from Redis database with one roundtrip
@@ -190,7 +190,7 @@ public partial interface IRedisDatabase
     ///     Empty list if there are no results, otherwise the instance of T.
     ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
     /// </returns>
-    Task<IDictionary<string, T>> GetAllAsync<T>(string[] keys, TimeSpan expiresIn);
+    Task<IDictionary<string, T?>> GetAllAsync<T>(string[] keys, TimeSpan expiresIn) where T : class;
 
     /// <summary>
     ///     Add the objects with the specified keys to Redis database with a single roundtrip
@@ -200,7 +200,7 @@ public partial interface IRedisDatabase
     /// <param name="expiresAt">Expiration time.</param>
     /// <param name="when">The condition (Always is the default value).</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None);
+    Task<bool> AddAllAsync<T>(Tuple<string, T>[] items, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None) where T : class;
 
     /// <summary>
     ///     Add the objects with the specified keys to Redis database with a single roundtrip
@@ -209,7 +209,7 @@ public partial interface IRedisDatabase
     /// <param name="items">The items.</param>
     /// <param name="when">The condition (Always is the default value).</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, When when = When.Always, CommandFlags flag = CommandFlags.None);
+    Task<bool> AddAllAsync<T>(Tuple<string, T>[] items, When when = When.Always, CommandFlags flag = CommandFlags.None) where T : class;
 
     /// <summary>
     ///     Add the objects with the specified keys to Redis database with a single roundtrip
@@ -219,7 +219,7 @@ public partial interface IRedisDatabase
     /// <param name="expiresIn">Time until expiration.</param>
     /// <param name="when">The condition (Always is the default value).</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    Task<bool> AddAllAsync<T>(IList<Tuple<string, T>> items, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None);
+    Task<bool> AddAllAsync<T>(Tuple<string, T>[] items, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None) where T : class;
 
     /// <summary>
     ///     Run SADD command http://redis.io/commands/sadd
@@ -237,7 +237,7 @@ public partial interface IRedisDatabase
     /// <typeparam name="T">The type of the expected object.</typeparam>
     /// <param name="key">The key of the set</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    Task<T> SetPopAsync<T>(string key, CommandFlags flag = CommandFlags.None)
+    Task<T?> SetPopAsync<T>(string key, CommandFlags flag = CommandFlags.None)
         where T : class;
 
     /// <summary>
@@ -247,7 +247,7 @@ public partial interface IRedisDatabase
     /// <param name="key">The key of the set</param>
     /// <param name="count">The number of elements to return</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    Task<IEnumerable<T>> SetPopAsync<T>(string key, long count, CommandFlags flag = CommandFlags.None)
+    Task<IEnumerable<T?>> SetPopAsync<T>(string key, long count, CommandFlags flag = CommandFlags.None)
         where T : class;
 
     /// <summary>
@@ -305,7 +305,7 @@ public partial interface IRedisDatabase
     /// <param name="key">The key</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>An array of objects in the set</returns>
-    Task<T[]> SetMembersAsync<T>(string key, CommandFlags flag = CommandFlags.None);
+    Task<T[]> SetMembersAsync<T>(string key, CommandFlags flag = CommandFlags.None) where T : class;
 
     /// <summary>
     ///     Searches the keys from Redis database
@@ -342,7 +342,7 @@ public partial interface IRedisDatabase
     ///     Gets the information about redis with category.
     ///     More info see http://redis.io/commands/INFO
     /// </summary>
-    Task<List<InfoDetail>> GetInfoCategorizedAsync();
+    Task<InfoDetail[]> GetInfoCategorizedAsync();
 
     /// <summary>
     ///     Updates the expiry time of a redis cache object

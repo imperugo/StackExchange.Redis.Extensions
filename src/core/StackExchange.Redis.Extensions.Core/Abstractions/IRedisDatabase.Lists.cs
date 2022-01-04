@@ -37,6 +37,6 @@ public partial interface IRedisDatabase
     /// <remarks>
     ///     http://redis.io/commands/rpop
     /// </remarks>
-    Task<T> ListGetFromRightAsync<T>(string key, CommandFlags flag = CommandFlags.None)
+    Task<T?> ListGetFromRightAsync<T>(string key, CommandFlags flag = CommandFlags.None)
         where T : class;
 }

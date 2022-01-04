@@ -80,7 +80,7 @@ public class RedisCacheClient : IRedisCacheClient
     public ISerializer Serializer { get; }
 
     /// <inheritdoc/>
-    public IRedisDatabase GetDb(int dbNumber, string keyPrefix = null)
+    public IRedisDatabase GetDb(int dbNumber, string? keyPrefix = null)
     {
         if (string.IsNullOrEmpty(keyPrefix))
             keyPrefix = redisConfiguration.KeyPrefix;
@@ -91,7 +91,7 @@ public class RedisCacheClient : IRedisCacheClient
             redisConfiguration.ServerEnumerationStrategy,
             dbNumber,
             redisConfiguration.MaxValueLength,
-            keyPrefix);
+            keyPrefix!);
     }
 
     /// <inheritdoc/>

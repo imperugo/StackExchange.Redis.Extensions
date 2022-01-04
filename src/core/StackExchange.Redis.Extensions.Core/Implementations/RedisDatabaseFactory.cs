@@ -9,7 +9,7 @@ using StackExchange.Redis.Extensions.Core.Configuration;
 namespace StackExchange.Redis.Extensions.Core.Implementations;
 
 /// <inheritdoc/>
-public class RedisDatabaseFactory :IRedisDatabaseFactory
+public class RedisDatabaseFactory : IRedisDatabaseFactory
 {
     private readonly Dictionary<string, IRedisCacheClient> redisCacheClients;
 
@@ -34,7 +34,7 @@ public class RedisDatabaseFactory :IRedisDatabaseFactory
             hashSet.Add(configuration.Name);
         }
 
-        if(!hashSet.Contains(Constants.DefaultConnectionName))
+        if (!hashSet.Contains(Constants.DefaultConnectionName))
             throw new ArgumentException("Unable to locale the default connection. Please add a connection named 'Default'");
 
         redisCacheClients = new(redisConfigurations.Length);
@@ -58,7 +58,7 @@ public class RedisDatabaseFactory :IRedisDatabaseFactory
     }
 
     /// <inheritdoc/>
-    public IRedisCacheClient GetRedisClient(string name = null)
+    public IRedisCacheClient GetRedisClient(string? name = null)
     {
         name ??= Constants.DefaultConnectionName;
 

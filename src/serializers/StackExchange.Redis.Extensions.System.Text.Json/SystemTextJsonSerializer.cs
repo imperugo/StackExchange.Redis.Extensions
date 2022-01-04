@@ -57,14 +57,17 @@ public class SystemTextJsonSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject)
+    public T Deserialize<T>(byte[] serializedObject) where T : class
     {
-        return JsonSerializer.Deserialize<T>(serializedObject, Options(typeof(T)));
+        return JsonSerializer.Deserialize<T>(serializedObject, Options(typeof(T)))!;
     }
 
     /// <inheritdoc/>
-    public byte[] Serialize(object item)
+    public byte[] Serialize(object? item)
     {
+        if (item == null)
+            return Array.Empty<byte>();
+
         var type = item.GetType();
 
         return JsonSerializer.SerializeToUtf8Bytes(item, type, Options(type));

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 using Newtonsoft.Json;
 
@@ -34,23 +35,26 @@ public class NewtonsoftSerializer : ISerializer
     /// Initializes a new instance of the <see cref="NewtonsoftSerializer"/> class.
     /// </summary>
     /// <param name="settings">The settings.</param>
-    public NewtonsoftSerializer(JsonSerializerSettings settings)
+    public NewtonsoftSerializer(JsonSerializerSettings? settings)
     {
         this.settings = settings ?? new JsonSerializerSettings();
     }
 
     /// <inheritdoc/>
-    public byte[] Serialize(object item)
+    public byte[] Serialize(object? item)
     {
+        if (item == null)
+            return Array.Empty<byte>();
+
         var type = item?.GetType();
         var jsonString = JsonConvert.SerializeObject(item, type, settings);
         return encoding.GetBytes(jsonString);
     }
 
     /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject)
+    public T Deserialize<T>(byte[] serializedObject) where T : class
     {
         var jsonString = encoding.GetString(serializedObject);
-        return JsonConvert.DeserializeObject<T>(jsonString, settings);
+        return JsonConvert.DeserializeObject<T>(jsonString, settings)!;
     }
 }

@@ -15,7 +15,7 @@ public partial interface IRedisDatabase
     ///     Empty list if there are no results, otherwise the instance of T.
     ///     If a cache tag is not present on Redis the specified object into the returned IEnumerable will be null
     /// </returns>
-    Task<IEnumerable<T>> GetByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None);
+    Task<IEnumerable<T?>> GetByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None) where T : class;
 
     /// <summary>
     ///     Removes all specified keys by tag from Redis Database

@@ -15,25 +15,25 @@ namespace StackExchange.Redis.Extensions.Core.Configuration;
 /// </summary>
 public class RedisConfiguration
 {
-    private ConfigurationOptions options;
-    private string keyPrefix;
-    private string password;
+    private ConfigurationOptions? options;
+    private string keyPrefix = string.Empty;
+    private string? password;
     private bool allowAdmin;
     private bool ssl;
     private int connectTimeout = 5000;
     private int syncTimeout = 1000;
     private bool abortOnConnectFail;
     private int database;
-    private RedisHost[] hosts;
-    private ServerEnumerationStrategy serverEnumerationStrategy;
+    private RedisHost[] hosts = Array.Empty<RedisHost>();
+    private ServerEnumerationStrategy serverEnumerationStrategy = new();
     private uint maxValueLength;
     private int poolSize = 5;
-    private string[] excludeCommands;
-    private string configurationChannel;
-    private string connectionString;
-    private string serviceName;
+    private string[]? excludeCommands;
+    private string? configurationChannel;
+    private string? connectionString;
+    private string? serviceName;
     private SslProtocols? sslProtocols;
-    private Func<ProfilingSession> profilingSessionProvider;
+    private Func<ProfilingSession>? profilingSessionProvider;
     private int workCount = Environment.ProcessorCount * 2;
     private ConnectionSelectionStrategy connectionSelectionStrategy = ConnectionSelectionStrategy.LeastLoaded;
 
@@ -41,7 +41,7 @@ public class RedisConfiguration
     /// A RemoteCertificateValidationCallback delegate responsible for validating the certificate supplied by the remote party; note
     /// that this cannot be specified in the configuration-string.
     /// </summary>
-    public event RemoteCertificateValidationCallback CertificateValidation;
+    public event RemoteCertificateValidationCallback? CertificateValidation;
 
     /// <summary>
     /// The identifier name for the connection
@@ -79,7 +79,7 @@ public class RedisConfiguration
     /// <summary>
     /// Gets or sets the servicename used in case of Sentinel.
     /// </summary>
-    public string ServiceName
+    public string? ServiceName
     {
         get => serviceName;
 
@@ -112,7 +112,7 @@ public class RedisConfiguration
     /// <summary>
     /// Gets or sets the connection string. In wins over property configuration.
     /// </summary>
-    public string ConnectionString
+    public string? ConnectionString
     {
         get => connectionString;
 
@@ -126,7 +126,7 @@ public class RedisConfiguration
     /// <summary>
     /// Gets or sets the channel to use for broadcasting and listening for configuration change notification.
     /// </summary>
-    public string ConfigurationChannel
+    public string? ConfigurationChannel
     {
         get => configurationChannel;
 
@@ -154,7 +154,7 @@ public class RedisConfiguration
     /// <summary>
     /// Gets or sets the redis password.
     /// </summary>
-    public string Password
+    public string? Password
     {
         get => password;
 
@@ -308,7 +308,7 @@ public class RedisConfiguration
     /// <summary>
     /// Gets or sets exclude commands.
     /// </summary>
-    public string[] ExcludeCommands
+    public string[]? ExcludeCommands
     {
         get => excludeCommands;
 
@@ -322,7 +322,7 @@ public class RedisConfiguration
     /// <summary>
     /// Gets or sets redis Profiler to attach to ConnectionMultiplexer.
     /// </summary>
-    public Func<ProfilingSession> ProfilingSessionProvider
+    public Func<ProfilingSession>? ProfilingSessionProvider
     {
         get => profilingSessionProvider;
 
@@ -388,7 +388,7 @@ public class RedisConfiguration
                 {
                     newOptions.CommandMap = CommandMap.Create(
                         new(ExcludeCommands),
-                        available: false);
+                        false);
                 }
 
                 if (WorkCount > 0)

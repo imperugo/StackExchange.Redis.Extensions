@@ -8,7 +8,7 @@ internal static class EnumerableExtensions
     public static TSource MinBy<TSource, TKey>(
         this IEnumerable<TSource> source,
         Func<TSource, TKey> selector,
-        IComparer<TKey> comparer = null)
+        IComparer<TKey>? comparer = null)
     {
         comparer ??= Comparer<TKey>.Default;
 

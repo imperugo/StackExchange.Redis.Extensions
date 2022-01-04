@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 using ProtoBuf;
 
@@ -12,8 +13,11 @@ namespace StackExchange.Redis.Extensions.Protobuf;
 public class ProtobufSerializer : ISerializer
 {
     /// <inheritdoc/>
-    public byte[] Serialize(object item)
+    public byte[] Serialize(object? item)
     {
+        if (item == null)
+            return Array.Empty<byte>();
+
         using var ms = new MemoryStream();
 
         Serializer.Serialize(ms, item);
@@ -22,7 +26,7 @@ public class ProtobufSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject)
+    public T Deserialize<T>(byte[] serializedObject) where T : class
     {
         using var ms = new MemoryStream(serializedObject);
 

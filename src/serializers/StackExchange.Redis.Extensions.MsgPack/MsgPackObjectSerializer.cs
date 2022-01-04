@@ -19,23 +19,24 @@ public class MsgPackObjectSerializer : ISerializer
     /// Initializes a new instance of the <see cref="MsgPackObjectSerializer"/> class.
     /// </summary>
     public MsgPackObjectSerializer()
+        : this(null, null)
     {
-        encoding = Encoding.UTF8;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MsgPackObjectSerializer"/> class.
     /// </summary>
-    public MsgPackObjectSerializer(Action<SerializerRepository> customSerializerRegistrar = null, Encoding encoding = null)
+    public MsgPackObjectSerializer(Action<SerializerRepository>? customSerializerRegistrar = null, Encoding? encoding = null)
     {
         customSerializerRegistrar?.Invoke(SerializationContext.Default.Serializers);
 
-        if (encoding == null)
-            this.encoding = Encoding.UTF8;
+        encoding ??= Encoding.UTF8;
+
+        this.encoding = encoding;
     }
 
     /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject)
+    public T Deserialize<T>(byte[] serializedObject) where T : class
     {
         if (typeof(T) == typeof(string))
             return (T)Convert.ChangeType(encoding.GetString(serializedObject), typeof(T));
@@ -48,10 +49,13 @@ public class MsgPackObjectSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public byte[] Serialize(object item)
+    public byte[] Serialize(object? item)
     {
         if (item is string)
-            return encoding.GetBytes(item.ToString());
+            return encoding.GetBytes(item.ToString() ?? string.Empty);
+
+        if (item == null)
+            return Array.Empty<byte>();
 
         var serializer = MessagePackSerializer.Get(item.GetType());
 

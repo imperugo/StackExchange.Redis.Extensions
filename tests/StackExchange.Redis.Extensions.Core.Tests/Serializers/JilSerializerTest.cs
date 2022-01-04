@@ -8,12 +8,12 @@ public class JilSerializerTest : CacheClientTestBase
 {
     public JilSerializerTest()
         : base(new JilSerializer(new(
-            prettyPrint: false,
-            excludeNulls: true,
-            jsonp: false,
-            dateFormat: DateTimeFormat.ISO8601,
-            includeInherited: true,
-            unspecifiedDateTimeKindBehavior: UnspecifiedDateTimeKindBehavior.IsLocal)))
+            false,
+            true,
+            false,
+            DateTimeFormat.ISO8601,
+            true,
+            UnspecifiedDateTimeKindBehavior.IsLocal)))
     {
     }
 }
