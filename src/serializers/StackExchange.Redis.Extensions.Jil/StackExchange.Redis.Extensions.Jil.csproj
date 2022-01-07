@@ -3,11 +3,12 @@
     <Title>Use the Jil serialization with StackExchange.Redis.</Title>
     <Summary>Use the Jil serialization with StackExchange.Redis.</Summary>
     <SignAssembly>false</SignAssembly>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Jil" Version="2.17.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

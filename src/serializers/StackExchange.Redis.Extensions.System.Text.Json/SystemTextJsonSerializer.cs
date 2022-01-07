@@ -1,42 +1,85 @@
-﻿using System.Text.Json;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using StackExchange.Redis.Extensions.Core;
 
-namespace StackExchange.Redis.Extensions.System.Text.Json
+namespace StackExchange.Redis.Extensions.System.Text.Json;
+
+/// <summary>
+/// System.Text.Json implementation of <see cref="ISerializer"/>
+/// </summary>
+public class SystemTextJsonSerializer : ISerializer
 {
+    private readonly Dictionary<Type, JsonSerializerContext> serializationContexts = new();
+    private readonly JsonSerializerOptions defaultSerializer = SerializationOptions.Flexible;
+
     /// <summary>
-    /// System.Text.Json implementation of <see cref="ISerializer"/>
+    /// Initializes a new instance of the <see cref="SystemTextJsonSerializer"/> class.
     /// </summary>
-    public class SystemTextJsonSerializer : ISerializer
+    public SystemTextJsonSerializer()
     {
-        private readonly JsonSerializerOptions serializerOptions;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SystemTextJsonSerializer"/> class.
-        /// </summary>
-        public SystemTextJsonSerializer()
-        {
-            this.serializerOptions = SerializationOptions.Flexible;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SystemTextJsonSerializer"/> class.
+    /// </summary>
+    public SystemTextJsonSerializer(JsonSerializerOptions defaultSerializer)
+    {
+        this.defaultSerializer = defaultSerializer;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SystemTextJsonSerializer"/> class.
-        /// </summary>
-        public SystemTextJsonSerializer(JsonSerializerOptions serializerOptions)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SystemTextJsonSerializer"/> class.
+    /// </summary>
+    public SystemTextJsonSerializer(IEnumerable<ICacheSerializationContext> cacheSerializationContexts)
+    {
+        foreach (var contexts in cacheSerializationContexts)
         {
-            this.serializerOptions = serializerOptions;
+            foreach (var context in contexts.GetContexts())
+                serializationContexts.Add(context.Key, context.Value);
         }
+    }
 
-        /// <inheritdoc/>
-        public T Deserialize<T>(byte[] serializedObject)
-        {
-            return JsonSerializer.Deserialize<T>(serializedObject, serializerOptions);
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SystemTextJsonSerializer"/> class.
+    /// </summary>
+    public SystemTextJsonSerializer(JsonSerializerOptions defaultSerializer, IEnumerable<ICacheSerializationContext> cacheSerializationContexts)
+    {
+        this.defaultSerializer = defaultSerializer;
 
-        /// <inheritdoc/>
-        public byte[] Serialize(object item)
+        foreach (var contexts in cacheSerializationContexts)
         {
-            return JsonSerializer.SerializeToUtf8Bytes(item, serializerOptions);
+            foreach (var context in contexts.GetContexts())
+                serializationContexts.Add(context.Key, context.Value);
         }
+    }
+
+    /// <inheritdoc/>
+    public T Deserialize<T>(byte[] serializedObject) where T : class
+    {
+        return JsonSerializer.Deserialize<T>(serializedObject, Options(typeof(T)))!;
+    }
+
+    /// <inheritdoc/>
+    public byte[] Serialize<T>(T? item)
+        where T : class
+    {
+        if (item == null)
+            return Array.Empty<byte>();
+
+        var type = item.GetType();
+
+        return JsonSerializer.SerializeToUtf8Bytes(item, type, Options(type));
+    }
+
+    private JsonSerializerOptions Options(Type type)
+    {
+        return serializationContexts.TryGetValue(type, out var context)
+            ? context.Options
+            : defaultSerializer;
     }
 }

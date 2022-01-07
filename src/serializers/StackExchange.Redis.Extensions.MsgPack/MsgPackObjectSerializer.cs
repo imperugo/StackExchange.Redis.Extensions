@@ -1,63 +1,70 @@
-﻿using System;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 using System.IO;
+using System.Text;
 
 using MsgPack.Serialization;
 
 using StackExchange.Redis.Extensions.Core;
 
-namespace StackExchange.Redis.Extensions.MsgPack
+namespace StackExchange.Redis.Extensions.MsgPack;
+
+/// <summary>
+/// MsgPac implementation of <see cref="ISerializer"/>
+/// </summary>
+public class MsgPackObjectSerializer : ISerializer
 {
+    private readonly Encoding encoding;
+
     /// <summary>
-    /// MsgPac implementation of <see cref="ISerializer"/>
+    /// Initializes a new instance of the <see cref="MsgPackObjectSerializer"/> class.
     /// </summary>
-    public class MsgPackObjectSerializer : ISerializer
+    public MsgPackObjectSerializer()
+        : this(null, null)
     {
-        private readonly System.Text.Encoding encoding;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MsgPackObjectSerializer"/> class.
-        /// </summary>
-        public MsgPackObjectSerializer()
-        {
-            this.encoding = System.Text.Encoding.UTF8;
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MsgPackObjectSerializer"/> class.
+    /// </summary>
+    public MsgPackObjectSerializer(Action<SerializerRepository>? customSerializerRegistrar = null, Encoding? encoding = null)
+    {
+        customSerializerRegistrar?.Invoke(SerializationContext.Default.Serializers);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MsgPackObjectSerializer"/> class.
-        /// </summary>
-        public MsgPackObjectSerializer(Action<SerializerRepository> customSerializerRegistrar = null, System.Text.Encoding encoding = null)
-        {
-            customSerializerRegistrar?.Invoke(SerializationContext.Default.Serializers);
+        encoding ??= Encoding.UTF8;
 
-            if (encoding == null)
-                this.encoding = System.Text.Encoding.UTF8;
-        }
+        this.encoding = encoding;
+    }
 
-        /// <inheritdoc/>
-        public T Deserialize<T>(byte[] serializedObject)
-        {
-            if (typeof(T) == typeof(string))
-                return (T)Convert.ChangeType(encoding.GetString(serializedObject), typeof(T));
+    /// <inheritdoc/>
+    public T Deserialize<T>(byte[] serializedObject) where T : class
+    {
+        if (typeof(T) == typeof(string))
+            return (T)Convert.ChangeType(encoding.GetString(serializedObject), typeof(T));
 
-            var serializer = MessagePackSerializer.Get<T>();
+        var serializer = MessagePackSerializer.Get<T>();
 
-            using var byteStream = new MemoryStream(serializedObject);
+        using var byteStream = new MemoryStream(serializedObject);
 
-            return serializer.Unpack(byteStream);
-        }
+        return serializer.Unpack(byteStream);
+    }
 
-        /// <inheritdoc/>
-        public byte[] Serialize(object item)
-        {
-            if (item is string)
-                return encoding.GetBytes(item.ToString());
+    /// <inheritdoc/>
+    public byte[] Serialize<T>(T? item)
+        where T : class
+    {
+        if (item is string)
+            return encoding.GetBytes(item.ToString() ?? string.Empty);
 
-            var serializer = MessagePackSerializer.Get(item.GetType());
+        if (item == null)
+            return Array.Empty<byte>();
 
-            using var byteStream = new MemoryStream();
-            serializer.Pack(byteStream, item);
+        var serializer = MessagePackSerializer.Get(item.GetType());
 
-            return byteStream.ToArray();
-        }
+        using var byteStream = new MemoryStream();
+        serializer.Pack(byteStream, item);
+
+        return byteStream.ToArray();
     }
 }

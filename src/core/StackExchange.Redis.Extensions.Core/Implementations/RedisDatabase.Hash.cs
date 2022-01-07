@@ -1,117 +1,129 @@
-﻿using System;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using StackExchange.Redis;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 
-namespace StackExchange.Redis.Extensions.Core.Implementations
+namespace StackExchange.Redis.Extensions.Core.Implementations;
+
+public partial class RedisDatabase : IRedisDatabase
 {
-    public partial class RedisDatabase : IRedisDatabase
+    /// <inheritdoc/>
+    public Task<bool> HashDeleteAsync(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
     {
-        /// <inheritdoc/>
-        public Task<bool> HashDeleteAsync(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
-        {
-            return Database.HashDeleteAsync(hashKey, key, commandFlags);
-        }
+        return Database.HashDeleteAsync(hashKey, key, commandFlags);
+    }
 
-        /// <inheritdoc/>
-        public Task<long> HashDeleteAsync(string hashKey, IEnumerable<string> keys, CommandFlags commandFlags = CommandFlags.None)
-        {
-            return Database.HashDeleteAsync(hashKey, keys.Select(x => (RedisValue)x).ToArray(), commandFlags);
-        }
+    /// <inheritdoc/>
+    public Task<long> HashDeleteAsync(string hashKey, string[] keys, CommandFlags commandFlags = CommandFlags.None)
+    {
+        var redisKeys = new RedisValue[keys.Length];
 
-        /// <inheritdoc/>
-        public Task<bool> HashExistsAsync(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
-        {
-            return Database.HashExistsAsync(hashKey, key, commandFlags);
-        }
+        for (var i = 0; i < keys.Length; i++)
+            redisKeys[i] = (RedisValue)keys[i];
 
-        /// <inheritdoc/>
-        public async Task<T> HashGetAsync<T>(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
-        {
-            var redisValue = await Database.HashGetAsync(hashKey, key, commandFlags).ConfigureAwait(false);
+        return Database.HashDeleteAsync(hashKey, redisKeys, commandFlags);
+    }
 
-            return redisValue.HasValue ? Serializer.Deserialize<T>(redisValue) : default;
-        }
+    /// <inheritdoc/>
+    public Task<bool> HashExistsAsync(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
+    {
+        return Database.HashExistsAsync(hashKey, key, commandFlags);
+    }
 
-        /// <inheritdoc/>
-        public async Task<Dictionary<string, T>> HashGetAsync<T>(string hashKey, IList<string> keys, CommandFlags commandFlags = CommandFlags.None)
-        {
-            var tasks = new Task<T>[keys.Count];
+    /// <inheritdoc/>
+    public async Task<T?> HashGetAsync<T>(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
+    {
+        var redisValue = await Database.HashGetAsync(hashKey, key, commandFlags).ConfigureAwait(false);
 
-            for (var i = 0; i < keys.Count; i++)
-                tasks[i] = HashGetAsync<T>(hashKey, keys[i], commandFlags);
+        return redisValue.HasValue ? Serializer.Deserialize<T>(redisValue) : default;
+    }
 
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+    /// <inheritdoc/>
+    public async Task<Dictionary<string, T?>> HashGetAsync<T>(string hashKey, string[] keys, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
+    {
+        var tasks = new Task<T?>[keys.Length];
 
-            var result = new Dictionary<string, T>();
+        for (var i = 0; i < keys.Length; i++)
+            tasks[i] = HashGetAsync<T>(hashKey, keys[i], commandFlags);
 
-            for (var i = 0; i < tasks.Length; i++)
-                result.Add(keys[i], tasks[i].Result);
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
-            return result;
-        }
+        var result = new Dictionary<string, T?>();
 
-        /// <inheritdoc/>
-        public async Task<Dictionary<string, T>> HashGetAllAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
-        {
-            return (await Database.HashGetAllAsync(hashKey, commandFlags).ConfigureAwait(false))
-                .ToDictionary(
-                    x => x.Name.ToString(),
-                    x => Serializer.Deserialize<T>(x.Value),
-                    StringComparer.Ordinal);
-        }
+        for (var i = 0; i < tasks.Length; i++)
+            result.Add(keys[i], tasks[i].Result);
 
-        /// <inheritdoc/>
-        public Task<long> HashIncerementByAsync(string hashKey, string key, long value, CommandFlags commandFlags = CommandFlags.None)
-        {
-            return Database.HashIncrementAsync(hashKey, key, value, commandFlags);
-        }
+        return result;
+    }
 
-        /// <inheritdoc/>
-        public Task<double> HashIncerementByAsync(string hashKey, string key, double value, CommandFlags commandFlags = CommandFlags.None)
-        {
-            return Database.HashIncrementAsync(hashKey, key, value, commandFlags);
-        }
+    /// <inheritdoc/>
+    public async Task<Dictionary<string, T>> HashGetAllAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
+    {
+        return (await Database.HashGetAllAsync(hashKey, commandFlags).ConfigureAwait(false))
+            .ToDictionary(
+                x => x.Name.ToString(),
+                x => Serializer.Deserialize<T>(x.Value),
+                StringComparer.Ordinal);
+    }
 
-        /// <inheritdoc/>
-        public async Task<IEnumerable<string>> HashKeysAsync(string hashKey, CommandFlags commandFlags = CommandFlags.None)
-        {
-            return (await Database.HashKeysAsync(hashKey, commandFlags).ConfigureAwait(false)).Select(x => x.ToString());
-        }
+    /// <inheritdoc/>
+    public Task<long> HashIncerementByAsync(string hashKey, string key, long value, CommandFlags commandFlags = CommandFlags.None)
+    {
+        return Database.HashIncrementAsync(hashKey, key, value, commandFlags);
+    }
 
-        /// <inheritdoc/>
-        public Task<long> HashLengthAsync(string hashKey, CommandFlags commandFlags = CommandFlags.None)
-        {
-            return Database.HashLengthAsync(hashKey, commandFlags);
-        }
+    /// <inheritdoc/>
+    public Task<double> HashIncerementByAsync(string hashKey, string key, double value, CommandFlags commandFlags = CommandFlags.None)
+    {
+        return Database.HashIncrementAsync(hashKey, key, value, commandFlags);
+    }
 
-        /// <inheritdoc/>
-        public Task<bool> HashSetAsync<T>(string hashKey, string key, T value, bool nx = false, CommandFlags commandFlags = CommandFlags.None)
-        {
-            return Database.HashSetAsync(hashKey, key, Serializer.Serialize(value), nx ? When.NotExists : When.Always, commandFlags);
-        }
+    /// <inheritdoc/>
+    public async Task<IEnumerable<string>> HashKeysAsync(string hashKey, CommandFlags commandFlags = CommandFlags.None)
+    {
+        return (await Database.HashKeysAsync(hashKey, commandFlags).ConfigureAwait(false)).Select(x => x.ToString());
+    }
 
-        /// <inheritdoc/>
-        public Task HashSetAsync<T>(string hashKey, IDictionary<string, T> values, CommandFlags commandFlags = CommandFlags.None)
-        {
-            var entries = values.Select(kv => new HashEntry(kv.Key, Serializer.Serialize(kv.Value)));
+    /// <inheritdoc/>
+    public Task<long> HashLengthAsync(string hashKey, CommandFlags commandFlags = CommandFlags.None)
+    {
+        return Database.HashLengthAsync(hashKey, commandFlags);
+    }
 
-            return Database.HashSetAsync(hashKey, entries.ToArray(), commandFlags);
-        }
+    /// <inheritdoc/>
+    public Task<bool> HashSetAsync<T>(string hashKey, string key, T value, bool nx = false, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
+    {
+        return Database.HashSetAsync(hashKey, key, Serializer.Serialize(value), nx ? When.NotExists : When.Always, commandFlags);
+    }
 
-        /// <inheritdoc/>
-        public async Task<IEnumerable<T>> HashValuesAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
-        {
-            return (await Database.HashValuesAsync(hashKey, commandFlags).ConfigureAwait(false)).Select(x => Serializer.Deserialize<T>(x));
-        }
+    /// <inheritdoc/>
+    public Task HashSetAsync<T>(string hashKey, IDictionary<string, T> values, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
+    {
+        var entries = values.Select(kv => new HashEntry(kv.Key, Serializer.Serialize(kv.Value)));
 
-        /// <inheritdoc/>
-        public Dictionary<string, T> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags commandFlags = CommandFlags.None)
-        {
-            return Database.HashScan(hashKey, pattern, pageSize, commandFlags).ToDictionary(x => x.Name.ToString(), x => Serializer.Deserialize<T>(x.Value), StringComparer.Ordinal);
-        }
+        return Database.HashSetAsync(hashKey, entries.ToArray(), commandFlags);
+    }
+
+    /// <inheritdoc/>
+    public async Task<IEnumerable<T>> HashValuesAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
+    {
+        return (await Database.HashValuesAsync(hashKey, commandFlags).ConfigureAwait(false)).Select(x => Serializer.Deserialize<T>(x));
+    }
+
+    /// <inheritdoc/>
+    public Dictionary<string, T> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags commandFlags = CommandFlags.None)
+        where T : class
+    {
+        return Database.HashScan(hashKey, pattern, pageSize, commandFlags).ToDictionary(x => x.Name.ToString(), x => Serializer.Deserialize<T>(x.Value), StringComparer.Ordinal);
     }
 }

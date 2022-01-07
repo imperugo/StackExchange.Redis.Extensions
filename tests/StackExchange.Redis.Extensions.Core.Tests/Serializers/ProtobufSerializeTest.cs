@@ -1,12 +1,13 @@
-﻿using StackExchange.Redis.Extensions.Protobuf;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
-namespace StackExchange.Redis.Extensions.Core.Tests.Serializers
+using StackExchange.Redis.Extensions.Protobuf;
+
+namespace StackExchange.Redis.Extensions.Core.Tests.Serializers;
+
+public class ProtobufSerializeTest : CacheClientTestBase
 {
-    public class ProtobufSerializeTest : CacheClientTestBase
+    public ProtobufSerializeTest()
+        : base(new ProtobufSerializer())
     {
-        public ProtobufSerializeTest()
-            : base(new ProtobufSerializer())
-        {
-        }
     }
 }

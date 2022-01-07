@@ -1,100 +1,108 @@
-﻿using System;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using StackExchange.Redis.Extensions.Core.Abstractions;
 
-namespace StackExchange.Redis.Extensions.Core.Implementations
+namespace StackExchange.Redis.Extensions.Core.Implementations;
+
+public partial class RedisDatabase : IRedisDatabase
 {
-    public partial class RedisDatabase : IRedisDatabase
+    /// <inheritdoc/>
+    public Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
+        where T : class
     {
-        /// <inheritdoc/>
-        public Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)
-        {
-            var sub = connectionPoolManager.GetConnection().GetSubscriber();
-            return sub.PublishAsync(channel, Serializer.Serialize(message), flags);
-        }
+        var sub = connectionPoolManager.GetConnection().GetSubscriber();
+        return sub.PublishAsync(channel, Serializer.Serialize(message), flags);
+    }
 
-        /// <inheritdoc/>
-        public Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
-        {
-            if (handler == null)
-                throw new ArgumentNullException(nameof(handler));
+    /// <inheritdoc/>
+    public Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
+        where T : class
+    {
+        if (handler == null)
+            throw new ArgumentNullException(nameof(handler));
 
-            var sub = connectionPoolManager.GetConnection().GetSubscriber();
+        var sub = connectionPoolManager.GetConnection().GetSubscriber();
 
-            return sub.SubscribeAsync(channel, async (redisChannel, value) => await handler(Serializer.Deserialize<T>(value)).ConfigureAwait(false), flags);
-        }
+        async void Handler(RedisChannel redisChannel, RedisValue value) =>
+            await handler(Serializer.Deserialize<T>(value))
+                .ConfigureAwait(false);
 
-        /// <inheritdoc/>
-        public Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
-        {
-            if (handler == null)
-                throw new ArgumentNullException(nameof(handler));
+        return sub.SubscribeAsync(channel, Handler, flags);
+    }
 
-            var sub = connectionPoolManager.GetConnection().GetSubscriber();
-            return sub.UnsubscribeAsync(channel, (redisChannel, value) => handler(Serializer.Deserialize<T>(value)), flags);
-        }
+    /// <inheritdoc/>
+    public Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
+        where T : class
+    {
+        if (handler == null)
+            throw new ArgumentNullException(nameof(handler));
 
-        /// <inheritdoc/>
-        public Task UnsubscribeAllAsync(CommandFlags flags = CommandFlags.None)
-        {
-            var sub = connectionPoolManager.GetConnection().GetSubscriber();
-            return sub.UnsubscribeAllAsync(flags);
-        }
+        var sub = connectionPoolManager.GetConnection().GetSubscriber();
+        return sub.UnsubscribeAsync(channel, (_, value) => handler(Serializer.Deserialize<T>(value)), flags);
+    }
 
-        /// <inheritdoc/>
-        public async Task<bool> UpdateExpiryAsync(string key, DateTimeOffset expiresAt, CommandFlags flags = CommandFlags.None)
-        {
-            if (await Database.KeyExistsAsync(key).ConfigureAwait(false))
-                return await Database.KeyExpireAsync(key, expiresAt.UtcDateTime.Subtract(DateTime.UtcNow), flags).ConfigureAwait(false);
+    /// <inheritdoc/>
+    public Task UnsubscribeAllAsync(CommandFlags flags = CommandFlags.None)
+    {
+        var sub = connectionPoolManager.GetConnection().GetSubscriber();
+        return sub.UnsubscribeAllAsync(flags);
+    }
 
-            return false;
-        }
+    /// <inheritdoc/>
+    public async Task<bool> UpdateExpiryAsync(string key, DateTimeOffset expiresAt, CommandFlags flags = CommandFlags.None)
+    {
+        if (await Database.KeyExistsAsync(key).ConfigureAwait(false))
+            return await Database.KeyExpireAsync(key, expiresAt.UtcDateTime.Subtract(DateTime.UtcNow), flags).ConfigureAwait(false);
 
-        /// <inheritdoc/>
-        public async Task<bool> UpdateExpiryAsync(string key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.None)
-        {
-            if (await Database.KeyExistsAsync(key).ConfigureAwait(false))
-                return await Database.KeyExpireAsync(key, expiresIn, flags).ConfigureAwait(false);
+        return false;
+    }
 
-            return false;
-        }
+    /// <inheritdoc/>
+    public async Task<bool> UpdateExpiryAsync(string key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.None)
+    {
+        if (await Database.KeyExistsAsync(key).ConfigureAwait(false))
+            return await Database.KeyExpireAsync(key, expiresIn, flags).ConfigureAwait(false);
 
-        /// <inheritdoc/>
-        public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, DateTimeOffset expiresAt, CommandFlags flags = CommandFlags.None)
-        {
-            var tasks = new Task<bool>[keys.Length];
+        return false;
+    }
 
-            for (var i = 0; i < keys.Length; i++)
-                tasks[i] = UpdateExpiryAsync(keys[i], expiresAt.UtcDateTime, flags);
+    /// <inheritdoc/>
+    public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, DateTimeOffset expiresAt, CommandFlags flags = CommandFlags.None)
+    {
+        var tasks = new Task<bool>[keys.Length];
 
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+        for (var i = 0; i < keys.Length; i++)
+            tasks[i] = UpdateExpiryAsync(keys[i], expiresAt.UtcDateTime, flags);
 
-            var results = new Dictionary<string, bool>(keys.Length, StringComparer.Ordinal);
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
-            for (var i = 0; i < keys.Length; i++)
-                results.Add(keys[i], tasks[i].Result);
+        var results = new Dictionary<string, bool>(keys.Length, StringComparer.Ordinal);
 
-            return results;
-        }
+        for (var i = 0; i < keys.Length; i++)
+            results.Add(keys[i], tasks[i].Result);
 
-        /// <inheritdoc/>
-        public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, TimeSpan expiresIn, CommandFlags flags = CommandFlags.None)
-        {
-            var tasks = new Task<bool>[keys.Length];
+        return results;
+    }
 
-            for (var i = 0; i < keys.Length; i++)
-                tasks[i] = UpdateExpiryAsync(keys[i], expiresIn, flags);
+    /// <inheritdoc/>
+    public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, TimeSpan expiresIn, CommandFlags flags = CommandFlags.None)
+    {
+        var tasks = new Task<bool>[keys.Length];
 
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+        for (var i = 0; i < keys.Length; i++)
+            tasks[i] = UpdateExpiryAsync(keys[i], expiresIn, flags);
 
-            var results = new Dictionary<string, bool>(keys.Length, StringComparer.Ordinal);
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
-            for (var i = 0; i < keys.Length; i++)
-                results.Add(keys[i], tasks[i].Result);
+        var results = new Dictionary<string, bool>(keys.Length, StringComparer.Ordinal);
 
-            return results;
-        }
+        for (var i = 0; i < keys.Length; i++)
+            results.Add(keys[i], tasks[i].Result);
+
+        return results;
     }
 }

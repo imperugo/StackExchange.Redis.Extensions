@@ -1,69 +1,70 @@
-﻿namespace StackExchange.Redis.Extensions.Core.Configuration
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+namespace StackExchange.Redis.Extensions.Core.Configuration;
+
+/// <summary>
+/// This class represent the Server enumeration strategy used in the operations
+/// that require to iterate all the redis servers
+/// </summary>
+public class ServerEnumerationStrategy
 {
     /// <summary>
-    /// This class represent the Server enumeration strategy used in the operations
-    /// that require to iterate all the redis servers
+    /// The iteration mode.
     /// </summary>
-    public class ServerEnumerationStrategy
+    public enum ModeOptions
     {
-        /// <summary>
-        /// The iteration mode.
-        /// </summary>
-        public enum ModeOptions
-        {
-            /// <summary>Will execute the operation on a all nodes.</summary>
-            All = 0,
+        /// <summary>Will execute the operation on a all nodes.</summary>
+        All = 0,
 
-            /// <summary>Will execute the operation on a single node.</summary>
-            Single
-        }
-
-        /// <summary>
-        /// The target role.
-        /// </summary>
-        public enum TargetRoleOptions
-        {
-            /// <summary>Any kind of server.</summary>
-            Any = 0,
-
-            /// <summary>Prefer the slave.</summary>
-            PreferSlave
-        }
-
-        /// <summary>
-        /// The Unreachable server action.
-        /// </summary>
-        public enum UnreachableServerActionOptions
-        {
-            /// <summary>Will throw an exception in case the server is unreachable.</summary>
-            Throw = 0,
-
-            /// <summary>Will NOT throw an exception in case the server is unreachable.</summary>
-            IgnoreIfOtherAvailable
-        }
-
-        /// <summary>
-        /// Gets or sets the strategy mode
-        /// </summary>
-        /// <value>
-        ///   Default value All.
-        /// </value>
-        public ModeOptions Mode { get; set; }
-
-        /// <summary>
-        /// Gets or sets specify the target role
-        /// </summary>
-        /// <value>
-        ///   Default value Any.
-        /// </value>
-        public TargetRoleOptions TargetRole { get; set; }
-
-        /// <summary>
-        /// Gets or sets the unreachable server action
-        /// </summary>
-        /// <value>
-        ///   Default value Throw.
-        /// </value>
-        public UnreachableServerActionOptions UnreachableServerAction { get; set; }
+        /// <summary>Will execute the operation on a single node.</summary>
+        Single
     }
+
+    /// <summary>
+    /// The target role.
+    /// </summary>
+    public enum TargetRoleOptions
+    {
+        /// <summary>Any kind of server.</summary>
+        Any = 0,
+
+        /// <summary>Prefer the slave.</summary>
+        PreferSlave
+    }
+
+    /// <summary>
+    /// The Unreachable server action.
+    /// </summary>
+    public enum UnreachableServerActionOptions
+    {
+        /// <summary>Will throw an exception in case the server is unreachable.</summary>
+        Throw = 0,
+
+        /// <summary>Will NOT throw an exception in case the server is unreachable.</summary>
+        IgnoreIfOtherAvailable
+    }
+
+    /// <summary>
+    /// Gets or sets the strategy mode
+    /// </summary>
+    /// <value>
+    ///   Default value All.
+    /// </value>
+    public ModeOptions Mode { get; set; }
+
+    /// <summary>
+    /// Gets or sets specify the target role
+    /// </summary>
+    /// <value>
+    ///   Default value Any.
+    /// </value>
+    public TargetRoleOptions TargetRole { get; set; }
+
+    /// <summary>
+    /// Gets or sets the unreachable server action
+    /// </summary>
+    /// <value>
+    ///   Default value Throw.
+    /// </value>
+    public UnreachableServerActionOptions UnreachableServerAction { get; set; }
 }

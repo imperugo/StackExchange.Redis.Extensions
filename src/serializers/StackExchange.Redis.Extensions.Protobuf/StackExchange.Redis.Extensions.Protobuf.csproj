@@ -2,11 +2,12 @@
   <PropertyGroup>
     <Title>Use the Protobuf-net serialization with StackExchange.Redis.</Title>
     <Summary>Use the Protobuf-net serialization with StackExchange.Redis.</Summary>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="protobuf-net" Version="3.0.101" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

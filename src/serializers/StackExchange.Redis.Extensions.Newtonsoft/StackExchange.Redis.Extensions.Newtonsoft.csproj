@@ -2,11 +2,12 @@
   <PropertyGroup>
     <Title>Use the Newtonsoft Json.Net serialization with StackExchange.Redis.</Title>
     <Summary>Use the Newtonsoft Json.Net serialization with StackExchange.Redis.</Summary>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

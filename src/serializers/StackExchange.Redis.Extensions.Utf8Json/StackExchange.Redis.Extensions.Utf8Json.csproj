@@ -2,11 +2,12 @@
   <PropertyGroup>
     <Title>Use the Utf8Json serialization with StackExchange.Redis.</Title>
     <Summary>Use the Utf8Json serialization with StackExchange.Redis.</Summary>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Utf8Json" Version="1.3.7" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

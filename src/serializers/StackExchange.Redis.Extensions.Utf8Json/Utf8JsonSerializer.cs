@@ -1,32 +1,30 @@
-﻿using System.Text;
-using System.Threading.Tasks;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 
 using StackExchange.Redis.Extensions.Core;
 
-namespace StackExchange.Redis.Extensions.Utf8Json
+using Utf8Json;
+
+namespace StackExchange.Redis.Extensions.Utf8Json;
+
+/// <summary>
+/// JSon.Net implementation of <see cref="ISerializer"/>
+/// </summary>
+public class Utf8JsonSerializer : ISerializer
 {
-    /// <summary>
-    /// JSon.Net implementation of <see cref="ISerializer"/>
-    /// </summary>
-    public class Utf8JsonSerializer : ISerializer
+    /// <inheritdoc/>
+    public byte[] Serialize<T>(T? item)
+        where T : class
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Utf8JsonSerializer"/> class.
-        /// </summary>
-        public Utf8JsonSerializer()
-        {
-        }
+        return item == null
+            ? Array.Empty<byte>()
+            : JsonSerializer.Serialize(item);
+    }
 
-        /// <inheritdoc/>
-        public byte[] Serialize(object item)
-        {
-            return global::Utf8Json.JsonSerializer.Serialize(item);
-        }
-
-        /// <inheritdoc/>
-        public T Deserialize<T>(byte[] serializedObject)
-        {
-            return global::Utf8Json.JsonSerializer.Deserialize<T>(serializedObject);
-        }
+    /// <inheritdoc/>
+    public T Deserialize<T>(byte[] serializedObject) where T : class
+    {
+        return JsonSerializer.Deserialize<T>(serializedObject);
     }
 }

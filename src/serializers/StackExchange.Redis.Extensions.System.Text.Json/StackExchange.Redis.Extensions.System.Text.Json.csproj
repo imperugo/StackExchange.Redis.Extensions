@@ -2,11 +2,12 @@
   <PropertyGroup>
     <Title>Use the System.Text.Json serialization with StackExchange.Redis.</Title>
     <Summary>Use the System.Text.Json serialization with StackExchange.Redis.</Summary>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="6.0.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="System.Text.Json" Version="6.0.1" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
