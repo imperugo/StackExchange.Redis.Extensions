@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 
 using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Core.Abstractions;
@@ -51,17 +53,17 @@ public static class IServiceCollectionExtensions
         Func<IServiceProvider, RedisConfiguration[]> redisConfigurationFactory)
         where T : class, ISerializer, new()
     {
-        services.AddSingleton<IRedisDatabaseFactory, RedisDatabaseFactory>();
+        services.AddSingleton<IRedisClientFactory, RedisClientFactory>();
         services.AddSingleton<ISerializer, T>();
 
         services.AddSingleton((provider) => provider
-            .GetRequiredService<IRedisDatabaseFactory>()
+            .GetRequiredService<IRedisClientFactory>()
             .GetDefaultRedisClient());
 
         services.AddSingleton((provider) => provider
-            .GetRequiredService<IRedisDatabaseFactory>()
+            .GetRequiredService<IRedisClientFactory>()
             .GetDefaultRedisClient()
-            .GetDbFromConfiguration());
+            .GetDefaultDatabase());
 
         services.AddSingleton(redisConfigurationFactory);
 

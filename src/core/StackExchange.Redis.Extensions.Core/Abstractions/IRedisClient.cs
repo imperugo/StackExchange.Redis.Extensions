@@ -1,9 +1,11 @@
-﻿namespace StackExchange.Redis.Extensions.Core.Abstractions;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+namespace StackExchange.Redis.Extensions.Core.Abstractions;
 
 /// <summary>
 /// Allows a client to access to an instance of Redis database.
 /// </summary>
-public interface IRedisCacheClient
+public interface IRedisClient
 {
     /// <summary>
     /// Gets an instance of the Redis database for the database 0.
@@ -125,5 +127,10 @@ public interface IRedisCacheClient
     /// Returns an instance a Redis database for the default database present into the configuration file;
     /// </summary>
     /// <returns>An instance of <see cref="IRedisDatabase"/>.</returns>
-    IRedisDatabase GetDbFromConfiguration();
+    IRedisDatabase GetDefaultDatabase();
+
+    /// <summary>
+    /// Returns an instance <see cref="ConnectionPoolManager"/> that handles the connection pooling.
+    /// </summary>
+    IRedisConnectionPoolManager ConnectionPoolManager { get; }
 }

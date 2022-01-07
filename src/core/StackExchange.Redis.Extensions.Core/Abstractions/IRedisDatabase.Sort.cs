@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using StackExchange.Redis.Extensions.Core.Models;
@@ -24,7 +26,7 @@ public partial interface IRedisDatabase
     /// <returns>
     ///     True if the object has been added. Otherwise false
     /// </returns>
-    Task<bool> SortedSetAddAsync<T>(string key, T value, double score, CommandFlags flag = CommandFlags.None);
+    Task<bool> SortedSetAddAsync<T>(string key, T value, double score, CommandFlags flag = CommandFlags.None) where T : class;
 
     /// <summary>
     ///     Remove the entry to a sorted set

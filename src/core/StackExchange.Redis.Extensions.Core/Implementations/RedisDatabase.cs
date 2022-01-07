@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +17,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations;
 /// <inheritdoc/>
 public partial class RedisDatabase : IRedisDatabase
 {
-    private readonly IRedisCacheConnectionPoolManager connectionPoolManager;
+    private readonly IRedisConnectionPoolManager connectionPoolManager;
     private readonly ServerEnumerationStrategy serverEnumerationStrategy;
     private readonly string keyPrefix;
     private readonly uint maxValueLength;
@@ -31,7 +33,7 @@ public partial class RedisDatabase : IRedisDatabase
     /// <param name="maxvalueLength">The max lenght of the cache object.</param>
     /// <param name="keyPrefix">The key prefix.</param>
     public RedisDatabase(
-        IRedisCacheConnectionPoolManager connectionPoolManager,
+        IRedisConnectionPoolManager connectionPoolManager,
         ISerializer serializer,
         ServerEnumerationStrategy serverEnumerationStrategy,
         int dbNumber,

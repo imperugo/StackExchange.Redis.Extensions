@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 using System.IO;
 using System.Text;
 
@@ -49,7 +51,8 @@ public class MsgPackObjectSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public byte[] Serialize(object? item)
+    public byte[] Serialize<T>(T? item)
+        where T : class
     {
         if (item is string)
             return encoding.GetBytes(item.ToString() ?? string.Empty);

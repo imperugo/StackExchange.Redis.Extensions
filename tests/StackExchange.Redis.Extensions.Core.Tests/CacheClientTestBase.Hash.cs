@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -21,7 +23,7 @@ public abstract partial class CacheClientTestBase
         var entryValue = new TestClass<DateTime>("test", DateTime.UtcNow);
 
         // act
-        var res = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, entryValue, true).ConfigureAwait(false);
+        var res = await Sut.GetDefaultDatabase().HashSetAsync(hashKey, entryKey, entryValue, true).ConfigureAwait(false);
 
         // assert
         Assert.True(res);
@@ -40,10 +42,10 @@ public abstract partial class CacheClientTestBase
         var entryKey = Guid.NewGuid().ToString();
         var entryValue = new TestClass<DateTime>("test1", DateTime.UtcNow);
         var initialValue = new TestClass<DateTime>("test2", DateTime.UtcNow);
-        var initRes = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, initialValue).ConfigureAwait(false);
+        var initRes = await Sut.GetDefaultDatabase().HashSetAsync(hashKey, entryKey, initialValue).ConfigureAwait(false);
 
         // act
-        var res = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, entryValue, true).ConfigureAwait(false);
+        var res = await Sut.GetDefaultDatabase().HashSetAsync(hashKey, entryKey, entryValue, true).ConfigureAwait(false);
 
         // assert
         Assert.True(initRes);
@@ -61,15 +63,15 @@ public abstract partial class CacheClientTestBase
         var entryKey = Guid.NewGuid().ToString();
         var entryValue = new TestClass<DateTime>("test1", DateTime.UtcNow);
         var initialValue = new TestClass<DateTime>("test2", DateTime.UtcNow);
-        var initRes = Sut.GetDbFromConfiguration().Database.HashSet(hashKey, entryKey, serializer.Serialize(initialValue));
+        var initRes = Sut.GetDefaultDatabase().Database.HashSet(hashKey, entryKey, serializer.Serialize(initialValue));
 
         // act
-        var res = await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, entryKey, entryValue, false).ConfigureAwait(false);
+        var res = await Sut.GetDefaultDatabase().HashSetAsync(hashKey, entryKey, entryValue, false).ConfigureAwait(false);
 
         // assert
         Assert.True(initRes, "Initial value was not set");
         Assert.False(res); // NOTE: HSET returns: 1 if new field was created and value set, or 0 if field existed and value set. reference: http://redis.io/commands/HSET
-        var data = serializer.Deserialize<TestClass<DateTime>>(Sut.GetDbFromConfiguration().Database.HashGet(hashKey, entryKey));
+        var data = serializer.Deserialize<TestClass<DateTime>>(Sut.GetDefaultDatabase().Database.HashGet(hashKey, entryKey));
         Assert.Equal(entryValue, data);
     }
 
@@ -82,7 +84,7 @@ public abstract partial class CacheClientTestBase
         var map = values.ToDictionary(val => Guid.NewGuid().ToString());
 
         // act
-        await Sut.GetDbFromConfiguration().HashSetAsync(hashKey, map).ConfigureAwait(false);
+        await Sut.GetDefaultDatabase().HashSetAsync(hashKey, map).ConfigureAwait(false);
         await Task.Delay(500).ConfigureAwait(false);
 
         // assert
@@ -105,10 +107,10 @@ public abstract partial class CacheClientTestBase
         var entryKey = Guid.NewGuid().ToString();
         var entryValue = new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow);
 
-        Assert.True(db.HashSet(hashKey, entryKey, Sut.GetDbFromConfiguration().Serializer.Serialize(entryValue)), "Failed setting test value into redis");
+        Assert.True(db.HashSet(hashKey, entryKey, Sut.GetDefaultDatabase().Serializer.Serialize(entryValue)), "Failed setting test value into redis");
 
         // act
-        var result = await Sut.GetDbFromConfiguration().HashDeleteAsync(hashKey, entryKey).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashDeleteAsync(hashKey, entryKey).ConfigureAwait(false);
 
         // assert
         Assert.True(result);
@@ -123,7 +125,7 @@ public abstract partial class CacheClientTestBase
         var entryKey = Guid.NewGuid().ToString();
 
         // act
-        var result = await Sut.GetDbFromConfiguration().HashDeleteAsync(hashKey, entryKey).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashDeleteAsync(hashKey, entryKey).ConfigureAwait(false);
 
         // assert
         Assert.False(result);
@@ -140,10 +142,10 @@ public abstract partial class CacheClientTestBase
                 .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
                 .ToDictionary(x => x.Key);
 
-        await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
+        await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
 
         // act
-        var result = await Sut.GetDbFromConfiguration().HashDeleteAsync(hashKey, values.Keys.ToArray()).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashDeleteAsync(hashKey, values.Keys.ToArray()).ConfigureAwait(false);
 
         // assert
         Assert.Equal(values.Count, result);
@@ -169,11 +171,11 @@ public abstract partial class CacheClientTestBase
                 .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
                 .ToDictionary(x => x.Key);
 
-        await db.HashSetAsync(hashKey, valuesDelete.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
-        await db.HashSetAsync(hashKey, valuesKeep.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
+        await db.HashSetAsync(hashKey, valuesDelete.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
+        await db.HashSetAsync(hashKey, valuesKeep.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
 
         // act
-        var result = await Sut.GetDbFromConfiguration().HashDeleteAsync(hashKey, valuesDelete.Keys.ToArray()).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashDeleteAsync(hashKey, valuesDelete.Keys.ToArray()).ConfigureAwait(false);
 
         // assert
         Assert.Equal(valuesDelete.Count, result);
@@ -185,7 +187,7 @@ public abstract partial class CacheClientTestBase
         Assert.DoesNotContain(dbValues, x => x.IsNull);
         Assert.Equal(1000, await db.HashLengthAsync(hashKey).ConfigureAwait(false));
         Assert.Equal(1000, dbValues.Length);
-        Assert.All(dbValues, x => Assert.True(valuesKeep.ContainsKey(Sut.GetDbFromConfiguration().Serializer.Deserialize<TestClass<int>>(x).Key)));
+        Assert.All(dbValues, x => Assert.True(valuesKeep.ContainsKey(Sut.GetDefaultDatabase().Serializer.Deserialize<TestClass<int>>(x).Key)));
     }
 
     [Fact]
@@ -195,10 +197,10 @@ public abstract partial class CacheClientTestBase
         var hashKey = Guid.NewGuid().ToString();
         var entryKey = Guid.NewGuid().ToString();
         var entryValue = new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow);
-        Assert.True(await db.HashSetAsync(hashKey, entryKey, Sut.GetDbFromConfiguration().Serializer.Serialize(entryValue)).ConfigureAwait(false), "Failed setting test value into redis");
+        Assert.True(await db.HashSetAsync(hashKey, entryKey, Sut.GetDefaultDatabase().Serializer.Serialize(entryValue)).ConfigureAwait(false), "Failed setting test value into redis");
 
         // act
-        var result = await Sut.GetDbFromConfiguration().HashExistsAsync(hashKey, entryKey).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashExistsAsync(hashKey, entryKey).ConfigureAwait(false);
 
         // assert
         Assert.True(result, "Entry doesn't exist in hash, but it should");
@@ -212,7 +214,7 @@ public abstract partial class CacheClientTestBase
         var entryKey = Guid.NewGuid().ToString();
 
         // act
-        var result = await Sut.GetDbFromConfiguration().HashExistsAsync(hashKey, entryKey).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashExistsAsync(hashKey, entryKey).ConfigureAwait(false);
 
         // assert
         Assert.False(result, "Entry doesn't exist in hash, but call returned true");
@@ -225,7 +227,7 @@ public abstract partial class CacheClientTestBase
         var hashKey = Guid.NewGuid().ToString();
 
         // act
-        var result = await Sut.GetDbFromConfiguration().HashKeysAsync(hashKey).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashKeysAsync(hashKey).ConfigureAwait(false);
 
         // assert
         Assert.NotNull(result);
@@ -242,10 +244,10 @@ public abstract partial class CacheClientTestBase
                 .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
                 .ToDictionary(x => x.Key);
 
-        await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
+        await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
 
         // act
-        var result = await Sut.GetDbFromConfiguration().HashKeysAsync(hashKey).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashKeysAsync(hashKey).ConfigureAwait(false);
 
         // assert
         Assert.NotNull(result);
@@ -264,7 +266,7 @@ public abstract partial class CacheClientTestBase
         var hashKey = Guid.NewGuid().ToString();
 
         // act
-        var result = await Sut.GetDbFromConfiguration().HashValuesAsync<string>(hashKey).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashValuesAsync<string>(hashKey).ConfigureAwait(false);
 
         // assert
         Assert.NotNull(result);
@@ -281,10 +283,10 @@ public abstract partial class CacheClientTestBase
                 .Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
                 .ToDictionary(x => x.Key);
 
-        await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
+        await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
 
         // act
-        var result = await Sut.GetDbFromConfiguration().HashValuesAsync<TestClass<DateTime>>(hashKey).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashValuesAsync<TestClass<DateTime>>(hashKey).ConfigureAwait(false);
 
         // assert
         Assert.NotNull(result);
@@ -303,7 +305,7 @@ public abstract partial class CacheClientTestBase
         var hashKey = Guid.NewGuid().ToString();
 
         // act
-        var result = await Sut.GetDbFromConfiguration().HashLengthAsync(hashKey).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashLengthAsync(hashKey).ConfigureAwait(false);
 
         // assert
         Assert.Equal(0, result);
@@ -319,10 +321,10 @@ public abstract partial class CacheClientTestBase
                 .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
                 .ToDictionary(x => x.Key);
 
-        await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
+        await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
 
         // act
-        var result = await Sut.GetDbFromConfiguration().HashLengthAsync(hashKey).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashLengthAsync(hashKey).ConfigureAwait(false);
 
         // assert
         Assert.Equal(1000, result);
@@ -338,11 +340,11 @@ public abstract partial class CacheClientTestBase
 
         // act
         Assert.False(db.HashExists(hashKey, entryKey));
-        var result = await Sut.GetDbFromConfiguration().HashIncerementByAsync(hashKey, entryKey, incBy).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashIncerementByAsync(hashKey, entryKey, incBy).ConfigureAwait(false);
 
         // assert
         Assert.Equal(incBy, result);
-        Assert.True(await Sut.GetDbFromConfiguration().HashExistsAsync(hashKey, entryKey).ConfigureAwait(false));
+        Assert.True(await Sut.GetDefaultDatabase().HashExistsAsync(hashKey, entryKey).ConfigureAwait(false));
         Assert.Equal(incBy, db.HashGet(hashKey, entryKey));
     }
 
@@ -358,7 +360,7 @@ public abstract partial class CacheClientTestBase
         Assert.True(db.HashSet(hashKey, entryKey, entryValue));
 
         // act
-        var result = await Sut.GetDbFromConfiguration().HashIncerementByAsync(hashKey, entryKey, incBy).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashIncerementByAsync(hashKey, entryKey, incBy).ConfigureAwait(false);
 
         // assert
         const int expected = entryValue + incBy;
@@ -376,11 +378,11 @@ public abstract partial class CacheClientTestBase
 
         // act
         Assert.False(db.HashExists(hashKey, entryKey));
-        var result = await Sut.GetDbFromConfiguration().HashIncerementByAsync(hashKey, entryKey, incBy).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashIncerementByAsync(hashKey, entryKey, incBy).ConfigureAwait(false);
 
         // assert
         Assert.Equal(incBy, result);
-        Assert.True(await Sut.GetDbFromConfiguration().HashExistsAsync(hashKey, entryKey).ConfigureAwait(false));
+        Assert.True(await Sut.GetDefaultDatabase().HashExistsAsync(hashKey, entryKey).ConfigureAwait(false));
         Assert.Equal(incBy, (double)await db.HashGetAsync(hashKey, entryKey).ConfigureAwait(false), 6); // have to provide epsilon due to double error
     }
 
@@ -396,7 +398,7 @@ public abstract partial class CacheClientTestBase
         Assert.True(db.HashSet(hashKey, entryKey, entryValue));
 
         // act
-        var result = await Sut.GetDbFromConfiguration().HashIncerementByAsync(hashKey, entryKey, incBy).ConfigureAwait(false);
+        var result = await Sut.GetDefaultDatabase().HashIncerementByAsync(hashKey, entryKey, incBy).ConfigureAwait(false);
 
         // assert
         const double expected = entryValue + incBy;
@@ -412,7 +414,7 @@ public abstract partial class CacheClientTestBase
         Assert.True(db.HashLength(hashKey) == 0);
 
         // act
-        var result = Sut.GetDbFromConfiguration().HashScan<string>(hashKey, "*");
+        var result = Sut.GetDefaultDatabase().HashScan<string>(hashKey, "*");
 
         // assert
         Assert.Empty(result);
@@ -428,10 +430,10 @@ public abstract partial class CacheClientTestBase
                 .Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
                 .ToDictionary(x => x.Key);
 
-        await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
+        await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
 
         // act
-        var result = Sut.GetDbFromConfiguration().HashScan<TestClass<DateTime>>(hashKey, "*");
+        var result = Sut.GetDefaultDatabase().HashScan<TestClass<DateTime>>(hashKey, "*");
 
         // assert
         Assert.NotNull(result);
@@ -455,10 +457,10 @@ public abstract partial class CacheClientTestBase
                 .Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
                 .ToDictionary(x => x.Key);
 
-        await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDbFromConfiguration().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
+        await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray()).ConfigureAwait(false);
 
         // act
-        var result = Sut.GetDbFromConfiguration().HashScan<TestClass<DateTime>>(hashKey, "2*");
+        var result = Sut.GetDefaultDatabase().HashScan<TestClass<DateTime>>(hashKey, "2*");
 
         // assert
         Assert.NotNull(result);

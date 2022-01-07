@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +13,9 @@ namespace StackExchange.Redis.Samples.Web.Mvc.Controllers;
 public class HomeController : Controller
 {
     private readonly IRedisDatabase redisDatabase;
-    private readonly IRedisCacheConnectionPoolManager pool;
+    private readonly IRedisConnectionPoolManager pool;
 
-    public HomeController(IRedisDatabase redisDatabase, IRedisCacheConnectionPoolManager pool)
+    public HomeController(IRedisDatabase redisDatabase, IRedisConnectionPoolManager pool)
     {
         this.redisDatabase = redisDatabase;
         this.pool = pool;

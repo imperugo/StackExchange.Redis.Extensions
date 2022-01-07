@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,6 +17,7 @@ public partial class RedisDatabase : IRedisDatabase
         T value,
         double score,
         CommandFlags commandFlags = CommandFlags.None)
+        where T : class
     {
         var entryBytes = Serializer.Serialize(value);
 

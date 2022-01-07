@@ -12,13 +12,7 @@ indent_style = space
 [*.{cs,csx,vb,vbx}]
 indent_size = 4
 insert_final_newline = true
-charset = utf-8-bom
-
-[*.xaml]
-indent_size = 4
-
-[*.ps1]
-indent_size = 2
+charset = utf-8
 
 # Xml project files
 [*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,projitems,shproj}]
@@ -30,9 +24,6 @@ indent_size = 2
 
 # JSON files
 [*.json]
-indent_size = 2
-
-[*.groovy]
 indent_size = 2
 
 # Dotnet code style settings:
@@ -74,17 +65,9 @@ dotnet_naming_rule.constants_must_be_pascal_cased.symbols = constant_symbols
 dotnet_naming_rule.constants_must_be_pascal_cased.style = pascal_case_style
 dotnet_naming_rule.constants_must_be_pascal_cased.severity = warning
 
-#dotnet_naming_rule.private_static_fields_must_be_camel_cased_and_prefixed_with_s_underscore.symbols   = private_static_field_symbols
-#dotnet_naming_rule.private_static_fields_must_be_camel_cased_and_prefixed_with_s_underscore.style     = camel_case_and_prefix_with_s_underscore_style
-#dotnet_naming_rule.private_static_fields_must_be_camel_cased_and_prefixed_with_s_underscore.severity  = warning
-
-#dotnet_naming_rule.private_instance_fields_must_be_camel_cased_and_prefixed_with_underscore.symbols   = private_field_symbols
-#dotnet_naming_rule.private_instance_fields_must_be_camel_cased_and_prefixed_with_underscore.style     = camel_case_and_prefix_with_underscore_style
-#dotnet_naming_rule.private_instance_fields_must_be_camel_cased_and_prefixed_with_underscore.severity  = warning
-
 # Symbols
-dotnet_naming_symbols.externally_visible_symbols.applicable_kinds = class,struct,interface,enum,property,method,field,event,delegate
-dotnet_naming_symbols.externally_visible_symbols.applicable_accessibilities = public,internal,friend,protected,protected_internal,protected_friend,private_protected
+dotnet_naming_symbols.externally_visible_symbols.applicable_kinds = class, struct, interface, enum, property, method, field, event, delegate
+dotnet_naming_symbols.externally_visible_symbols.applicable_accessibilities = public, internal, protected, protected_internal, private_protected
 
 dotnet_naming_symbols.interface_symbols.applicable_kinds = interface
 dotnet_naming_symbols.interface_symbols.applicable_accessibilities = *
@@ -96,23 +79,10 @@ dotnet_naming_symbols.constant_symbols.applicable_kinds = field
 dotnet_naming_symbols.constant_symbols.required_modifiers = const
 dotnet_naming_symbols.constant_symbols.applicable_accessibilities = *
 
-dotnet_naming_symbols.private_static_field_symbols.applicable_kinds = field
-dotnet_naming_symbols.private_static_field_symbols.required_modifiers = static,shared
-dotnet_naming_symbols.private_static_field_symbols.applicable_accessibilities = private
-
-dotnet_naming_symbols.private_field_symbols.applicable_kinds = field
-dotnet_naming_symbols.private_field_symbols.applicable_accessibilities = private
-
 # Styles
 dotnet_naming_style.camel_case_style.capitalization = camel_case
 
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
-
-#dotnet_naming_style.camel_case_and_prefix_with_s_underscore_style.required_prefix                     = s_
-#dotnet_naming_style.camel_case_and_prefix_with_s_underscore_style.capitalization                      = camel_case
-
-#dotnet_naming_style.camel_case_and_prefix_with_underscore_style.required_prefix                       = _
-#dotnet_naming_style.camel_case_and_prefix_with_underscore_style.capitalization                        = camel_case
 
 dotnet_naming_style.pascal_case_and_prefix_with_I_style.required_prefix = I
 dotnet_naming_style.pascal_case_and_prefix_with_I_style.capitalization = pascal_case
@@ -120,9 +90,10 @@ dotnet_naming_style.pascal_case_and_prefix_with_I_style.capitalization = pascal_
 # CSharp code style settings:
 [*.cs]
 # Prefer "var" only when the type is apparent
-csharp_style_var_for_built_in_types = false:suggestion
-csharp_style_var_when_type_is_apparent = true:suggestion
-csharp_style_var_elsewhere = false:suggestion
+csharp_style_var_for_built_in_types = true:error
+csharp_style_var_when_type_is_apparent = true:error
+csharp_style_var_elsewhere = true:error
+
 
 # Prefer method-like constructs to have a block body
 csharp_style_expression_bodied_methods = false:none
@@ -180,7 +151,6 @@ csharp_space_between_method_call_parameter_list_parentheses = false
 csharp_space_between_method_call_name_and_opening_parenthesis = false
 csharp_space_between_method_declaration_parameter_list_parentheses = false
 csharp_space_between_method_declaration_empty_parameter_list_parentheses = false
-csharp_space_between_method_declaration_parameter_list_parentheses = false
 csharp_space_between_method_declaration_name_and_open_parenthesis = false
 csharp_space_between_parentheses = false
 csharp_space_between_square_brackets = false
@@ -188,7 +158,6 @@ csharp_space_between_empty_square_brackets = false
 csharp_space_before_open_square_brackets = false
 csharp_space_around_declaration_statements = false
 csharp_space_around_binary_operators = before_and_after
-csharp_space_after_cast = false
 csharp_space_before_semicolon_in_for_statement = false
 csharp_space_before_dot = false
 csharp_space_after_dot = false
@@ -205,7 +174,7 @@ csharp_preserve_single_line_blocks = true
 # Code block
 csharp_prefer_braces = false:none
 
-# Prefer "var" everywhere
-csharp_style_var_for_built_in_types = true:error
-csharp_style_var_when_type_is_apparent = true:error
-csharp_style_var_elsewhere = true:error
+# IDE0073: File header
+dotnet_diagnostic.IDE0073.severity = warning
+file_header_template = Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+

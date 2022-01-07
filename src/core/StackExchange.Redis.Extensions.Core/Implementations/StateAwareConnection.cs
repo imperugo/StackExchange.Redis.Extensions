@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 
 using Microsoft.Extensions.Logging;
 
@@ -6,7 +8,7 @@ using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations;
 
-public sealed partial class RedisCacheConnectionPoolManager
+public sealed partial class RedisConnectionPoolManager
 {
     /// <summary>
     ///     Wraps a <see cref="ConnectionMultiplexer" /> instance. Subscribes to certain events of the

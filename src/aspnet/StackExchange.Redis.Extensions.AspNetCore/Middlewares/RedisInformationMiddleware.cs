@@ -1,4 +1,7 @@
-﻿using System.Linq;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -6,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 using StackExchange.Redis.Extensions.Core.Abstractions;
+using StackExchange.Redis.Extensions.Core.Models;
 
 namespace StackExchange.Redis.Extensions.AspNetCore.Middlewares;
 
@@ -13,7 +17,7 @@ internal class RedisInformationMiddleware
 {
     private readonly ILogger<RedisInformationMiddleware> logger;
     private readonly RequestDelegate next;
-    private readonly IRedisCacheConnectionPoolManager connectionPoolManager;
+    private readonly IRedisClientFactory redisClientFactory;
     private readonly IRedisDatabase redisDatabase;
     private readonly RedisMiddlewareAccessOptions options;
 
@@ -21,13 +25,13 @@ internal class RedisInformationMiddleware
         RequestDelegate next,
         RedisMiddlewareAccessOptions options,
         ILogger<RedisInformationMiddleware> logger,
-        IRedisCacheConnectionPoolManager connectionPoolManager,
+        IRedisClientFactory redisClientFactory,
         IRedisDatabase redisDatabase)
     {
         this.next = next;
         this.options = options;
         this.logger = logger;
-        this.connectionPoolManager = connectionPoolManager;
+        this.redisClientFactory = redisClientFactory;
         this.redisDatabase = redisDatabase;
     }
 
@@ -44,9 +48,14 @@ internal class RedisInformationMiddleware
                 return;
             }
 
-            var data = connectionPoolManager.GetConnectionInformations();
+            var clients = redisClientFactory.GetAllClients();
 
-            await JsonSerializer.SerializeAsync(context.Response.Body, data).ConfigureAwait(false);
+            var list = new List<ConnectionPoolInformation>();
+
+            foreach (var client in clients)
+                list.Add(client.ConnectionPoolManager.GetConnectionInformations());
+
+            await JsonSerializer.SerializeAsync(context.Response.Body, list).ConfigureAwait(false);
 
             return;
         }

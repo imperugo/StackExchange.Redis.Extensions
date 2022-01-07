@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -63,7 +65,8 @@ public class SystemTextJsonSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public byte[] Serialize(object? item)
+    public byte[] Serialize<T>(T? item)
+        where T : class
     {
         if (item == null)
             return Array.Empty<byte>();

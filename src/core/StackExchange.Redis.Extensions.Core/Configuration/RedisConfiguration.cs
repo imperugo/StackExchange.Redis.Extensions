@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 using System.Net.Security;
 using System.Security.Authentication;
 
@@ -44,9 +45,14 @@ public class RedisConfiguration
     public event RemoteCertificateValidationCallback? CertificateValidation;
 
     /// <summary>
+    /// Indicate if the current configuration is the default;
+    /// </summary>
+    public bool IsDefault { get; set; }
+
+    /// <summary>
     /// The identifier name for the connection
     /// </summary>
-    public string Name { get; set; } = Constants.DefaultConnectionName;
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the every ConnectionSelectionStrategy to use during connection selection.
@@ -341,7 +347,7 @@ public class RedisConfiguration
     ///     Proprerty is optional.
     ///     Property should be assined by invocation code only once. (We are not doing additional checks in the property itself in order to prevent any possible issues during serialization)
     /// </remarks>
-    public StateAwareConnectionResolver StateAwareConnectionFactory { get; set; } = (cm, logger) => new RedisCacheConnectionPoolManager.StateAwareConnection(cm, logger);
+    public StateAwareConnectionResolver StateAwareConnectionFactory { get; set; } = (cm, logger) => new RedisConnectionPoolManager.StateAwareConnection(cm, logger);
 
     /// <summary>
     /// Gets the Redis configuration options

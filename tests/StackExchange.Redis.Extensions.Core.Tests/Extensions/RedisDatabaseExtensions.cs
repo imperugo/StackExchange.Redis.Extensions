@@ -1,4 +1,6 @@
-﻿namespace StackExchange.Redis.Extensions.Tests.Extensions;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+namespace StackExchange.Redis.Extensions.Tests.Extensions;
 
 internal static class RedisDatabaseExtensions
 {

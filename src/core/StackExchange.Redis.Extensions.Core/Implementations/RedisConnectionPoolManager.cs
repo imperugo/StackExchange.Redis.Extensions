@@ -1,6 +1,7 @@
-﻿using System;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -13,24 +14,24 @@ using StackExchange.Redis.Extensions.Core.Models;
 namespace StackExchange.Redis.Extensions.Core.Implementations;
 
 /// <inheritdoc/>
-public sealed partial class RedisCacheConnectionPoolManager : IRedisCacheConnectionPoolManager
+public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolManager
 {
     private static readonly object @lock = new();
     private readonly IStateAwareConnection[] connections;
     private readonly RedisConfiguration redisConfiguration;
-    private readonly ILogger<RedisCacheConnectionPoolManager> logger;
+    private readonly ILogger<RedisConnectionPoolManager> logger;
     private readonly Random random = new();
     private bool isDisposed;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RedisCacheConnectionPoolManager"/> class.
+    /// Initializes a new instance of the <see cref="RedisConnectionPoolManager"/> class.
     /// </summary>
     /// <param name="redisConfiguration">The redis configuration.</param>
     /// <param name="logger">The logger.</param>
-    public RedisCacheConnectionPoolManager(RedisConfiguration redisConfiguration, ILogger<RedisCacheConnectionPoolManager>? logger = null)
+    public RedisConnectionPoolManager(RedisConfiguration redisConfiguration, ILogger<RedisConnectionPoolManager>? logger = null)
     {
         this.redisConfiguration = redisConfiguration ?? throw new ArgumentNullException(nameof(redisConfiguration));
-        this.logger = logger ?? NullLogger<RedisCacheConnectionPoolManager>.Instance;
+        this.logger = logger ?? NullLogger<RedisConnectionPoolManager>.Instance;
 
         lock (@lock)
         {

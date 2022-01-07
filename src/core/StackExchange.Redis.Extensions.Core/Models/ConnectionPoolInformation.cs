@@ -1,4 +1,6 @@
-﻿namespace StackExchange.Redis.Extensions.Core.Models;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+namespace StackExchange.Redis.Extensions.Core.Models;
 
 /// <summary>
 /// A class that contains redis connection pool informations.

@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
+
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
+using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.System.Text.Json;
 
@@ -16,39 +20,40 @@ public class Startup
     {
         services.AddControllersWithViews();
 
-        var conf = new RedisConfiguration
+        var configurations = new[]
         {
-            AbortOnConnectFail = true,
-            KeyPrefix = "MyPrefix__",
-            Hosts = new[] { new RedisHost { Host = "localhost", Port = 6379 } },
-            AllowAdmin = true,
-            ConnectTimeout = 5000,
-            Database = 0,
-            PoolSize = 50,
-            ServerEnumerationStrategy = new()
+            new RedisConfiguration
             {
-                Mode = ServerEnumerationStrategy.ModeOptions.All,
-                TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
-                UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
+                AbortOnConnectFail = true,
+                KeyPrefix = "MyPrefix__",
+                Hosts = new[] { new RedisHost { Host = "localhost", Port = 6379 } },
+                AllowAdmin = true,
+                ConnectTimeout = 5000,
+                Database = 0,
+                PoolSize = 5,
+                IsDefault = true
+            },
+            new RedisConfiguration
+            {
+                AbortOnConnectFail = true,
+                KeyPrefix = "MyPrefix__",
+                Hosts = new[] { new RedisHost { Host = "localhost", Port = 6389 } },
+                AllowAdmin = true,
+                ConnectTimeout = 5000,
+                Database = 0,
+                PoolSize = 2,
+                Name = "Secndary Instance"
             }
         };
 
-        services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(conf);
+        services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(configurations);
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
-        {
             app.UseDeveloperExceptionPage();
-        }
-        else
-        {
-            app.UseExceptionHandler("/Home/Error");
-            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-            app.UseHsts();
-        }
 
         // app.UseRedisInformation(opt =>
         // {
@@ -59,6 +64,7 @@ public class Startup
         //         return false;
         //     };
         // });
+
         app.UseRedisInformation();
 
         app.UseHttpsRedirection();
@@ -75,15 +81,31 @@ public class Startup
                 "{controller=Home}/{action=Index}/{id?}");
         });
 
-        // var redisDb = app.ApplicationServices.GetRequiredService<IRedisDatabase>();
+        var redisDatabase = app.ApplicationServices.GetRequiredService<IRedisDatabase>();
 
-        // redisDb.SubscribeAsync<string>("MyEventName", x =>
-        //     {
-        //         logger.LogInformation("Just got this message {0}", x);
+        var obj = new CacheObject
+        {
+            Birthdate = DateTime.Now,
+            Firstname = "John",
+            Lastname = "Doe"
+        };
 
-        //         return Task.CompletedTask;
-        //     })
-        //     .GetAwaiter()
-        //     .GetResult();
+        redisDatabase.AddAsync("MyCacheKey", obj).GetAwaiter().GetResult();
+
+        var redisDatabaseFactory = app.ApplicationServices.GetRequiredService<IRedisClientFactory>();
+
+        var redisDatabase2 = redisDatabaseFactory.GetRedisClient("Secndary Instance");
+        redisDatabase2
+            .GetDefaultDatabase()
+            .AddAsync("MyCacheKey", obj)
+            .GetAwaiter()
+            .GetResult();
     }
+}
+
+public class CacheObject
+{
+    public string Firstname { get; set; }
+    public string Lastname { get; set; }
+    public DateTime Birthdate { get; set; }
 }

@@ -1,26 +1,27 @@
-﻿using StackExchange.Redis.Extensions.Core.Configuration;
-using StackExchange.Redis.Extensions.Core.Implementations;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
-namespace StackExchange.Redis.Extensions.Core.Abstractions;
+using StackExchange.Redis.Extensions.Core.Abstractions;
+using StackExchange.Redis.Extensions.Core.Configuration;
+
+namespace StackExchange.Redis.Extensions.Core.Implementations;
 
 /// <inheritdoc/>
-public class RedisCacheClient : IRedisCacheClient
+public class RedisClient : IRedisClient
 {
-    private readonly IRedisCacheConnectionPoolManager connectionPoolManager;
     private readonly RedisConfiguration redisConfiguration;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RedisCacheClient"/> class.
+    /// Initializes a new instance of the <see cref="RedisClient"/> class.
     /// </summary>
-    /// <param name="connectionPoolManager">An instance of the <see cref="IRedisCacheConnectionPoolManager" />.</param>
+    /// <param name="connectionPoolManager">An instance of the <see cref="IRedisConnectionPoolManager" />.</param>
     /// <param name="serializer">An instance of the <see cref="ISerializer" />.</param>
     /// <param name="redisConfiguration">An instance of the <see cref="RedisConfiguration" />.</param>
-    public RedisCacheClient(
-        IRedisCacheConnectionPoolManager connectionPoolManager,
+    public RedisClient(
+        IRedisConnectionPoolManager connectionPoolManager,
         ISerializer serializer,
         RedisConfiguration redisConfiguration)
     {
-        this.connectionPoolManager = connectionPoolManager;
+        ConnectionPoolManager = connectionPoolManager;
         Serializer = serializer;
         this.redisConfiguration = redisConfiguration;
     }
@@ -86,7 +87,7 @@ public class RedisCacheClient : IRedisCacheClient
             keyPrefix = redisConfiguration.KeyPrefix;
 
         return new RedisDatabase(
-            connectionPoolManager,
+            ConnectionPoolManager,
             Serializer,
             redisConfiguration.ServerEnumerationStrategy,
             dbNumber,
@@ -95,8 +96,11 @@ public class RedisCacheClient : IRedisCacheClient
     }
 
     /// <inheritdoc/>
-    public IRedisDatabase GetDbFromConfiguration()
+    public IRedisDatabase GetDefaultDatabase()
     {
         return GetDb(redisConfiguration.Database, redisConfiguration.KeyPrefix);
     }
+
+    /// <inheritdoc/>
+    public IRedisConnectionPoolManager ConnectionPoolManager { get; }
 }

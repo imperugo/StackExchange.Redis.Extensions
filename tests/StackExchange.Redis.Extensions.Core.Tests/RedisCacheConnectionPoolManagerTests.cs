@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +17,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests;
 public class RedisCacheConnectionPoolManagerTests : IDisposable
 {
     private bool isDisposed;
-    private readonly RedisCacheConnectionPoolManager sut;
+    private readonly RedisConnectionPoolManager sut;
     private readonly ITestOutputHelper output;
 
     public RedisCacheConnectionPoolManagerTests(ITestOutputHelper output)
@@ -47,7 +49,7 @@ public class RedisCacheConnectionPoolManagerTests : IDisposable
             }
         };
 
-        var logger = output.BuildLoggerFor<RedisCacheConnectionPoolManager>();
+        var logger = output.BuildLoggerFor<RedisConnectionPoolManager>();
 
         sut = new(configuration, logger);
         this.output = output;

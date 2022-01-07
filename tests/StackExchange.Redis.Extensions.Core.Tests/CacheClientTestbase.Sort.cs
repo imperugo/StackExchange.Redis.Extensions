@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +17,7 @@ public abstract partial class CacheClientTestBase
     {
         var testobject = new TestClass<DateTime>();
 
-        var added = await Sut.GetDbFromConfiguration().SortedSetAddAsync("my Key", testobject, 0).ConfigureAwait(false);
+        var added = await Sut.GetDefaultDatabase().SortedSetAddAsync("my Key", testobject, 0).ConfigureAwait(false);
 
         var result = db.SortedSetScan("my Key").First();
 
@@ -35,8 +37,8 @@ public abstract partial class CacheClientTestBase
         var entryValueFirst = new TestClass<DateTime>("test_first", utcNow);
         var entryValueLast = new TestClass<DateTime>("test_last", utcNow);
 
-        await Sut.GetDbFromConfiguration().SortedSetAddAsync("my Key", entryValueFirst, 1).ConfigureAwait(false);
-        await Sut.GetDbFromConfiguration().SortedSetAddAsync("my Key", entryValueLast, 2).ConfigureAwait(false);
+        await Sut.GetDefaultDatabase().SortedSetAddAsync("my Key", entryValueFirst, 1).ConfigureAwait(false);
+        await Sut.GetDefaultDatabase().SortedSetAddAsync("my Key", entryValueLast, 2).ConfigureAwait(false);
 
         var result = db.SortedSetScan("my Key").ToList();
 
@@ -56,7 +58,7 @@ public abstract partial class CacheClientTestBase
 
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject), 0).ConfigureAwait(false);
 
-        var removed = await Sut.GetDbFromConfiguration().SortedSetRemoveAsync("my Key", testobject).ConfigureAwait(false);
+        var removed = await Sut.GetDefaultDatabase().SortedSetRemoveAsync("my Key", testobject).ConfigureAwait(false);
 
         Assert.True(removed);
 
@@ -78,7 +80,7 @@ public abstract partial class CacheClientTestBase
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject4), 4).ConfigureAwait(false);
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject5), 5).ConfigureAwait(false);
 
-        var descendingList = (await Sut.GetDbFromConfiguration().SortedSetRangeByRankWithScoresAsync<TestClass<DateTime>>("my Key", 0, 2).ConfigureAwait(false)).ToList();
+        var descendingList = (await Sut.GetDefaultDatabase().SortedSetRangeByRankWithScoresAsync<TestClass<DateTime>>("my Key", 0, 2).ConfigureAwait(false)).ToList();
 
         Assert.Equal(descendingList[0].Element, testobject1);
         Assert.Equal(descendingList[1].Element, testobject2);
@@ -102,7 +104,7 @@ public abstract partial class CacheClientTestBase
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject2), 2).ConfigureAwait(false);
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject3), 3).ConfigureAwait(false);
 
-        var descendingList = (await Sut.GetDbFromConfiguration().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key").ConfigureAwait(false)).ToList();
+        var descendingList = (await Sut.GetDefaultDatabase().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key").ConfigureAwait(false)).ToList();
 
         Assert.Equal(descendingList[0], testobject1);
         Assert.Equal(descendingList[1], testobject2);
@@ -125,7 +127,7 @@ public abstract partial class CacheClientTestBase
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject4), 4).ConfigureAwait(false);
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject5), 5).ConfigureAwait(false);
 
-        var descendingList = (await Sut.GetDbFromConfiguration().SortedSetRangeByRankWithScoresAsync<TestClass<DateTime>>("my Key", 0, 2, Order.Descending).ConfigureAwait(false)).ToList();
+        var descendingList = (await Sut.GetDefaultDatabase().SortedSetRangeByRankWithScoresAsync<TestClass<DateTime>>("my Key", 0, 2, Order.Descending).ConfigureAwait(false)).ToList();
 
         Assert.Equal(descendingList[0].Element, testobject5);
         Assert.Equal(descendingList[1].Element, testobject4);
@@ -149,7 +151,7 @@ public abstract partial class CacheClientTestBase
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject2), 2).ConfigureAwait(false);
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject3), 1).ConfigureAwait(false);
 
-        var descendingList = (await Sut.GetDbFromConfiguration().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", order: Order.Ascending).ConfigureAwait(false)).ToList();
+        var descendingList = (await Sut.GetDefaultDatabase().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", order: Order.Ascending).ConfigureAwait(false)).ToList();
 
         Assert.Equal(descendingList[0], testobject3);
         Assert.Equal(descendingList[1], testobject2);
@@ -170,7 +172,7 @@ public abstract partial class CacheClientTestBase
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject3), 3).ConfigureAwait(false);
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject4), 4).ConfigureAwait(false);
 
-        var descendingList = (await Sut.GetDbFromConfiguration().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", 1, 2).ConfigureAwait(false)).ToList();
+        var descendingList = (await Sut.GetDefaultDatabase().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", 1, 2).ConfigureAwait(false)).ToList();
 
         Assert.Equal(descendingList[0], testobject1);
         Assert.Equal(descendingList[1], testobject2);
@@ -190,7 +192,7 @@ public abstract partial class CacheClientTestBase
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject3), 3).ConfigureAwait(false);
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject4), 4).ConfigureAwait(false);
 
-        var descendingList = (await Sut.GetDbFromConfiguration().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", skip: 1, take: 2).ConfigureAwait(false)).ToList();
+        var descendingList = (await Sut.GetDefaultDatabase().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", skip: 1, take: 2).ConfigureAwait(false)).ToList();
 
         Assert.Equal(descendingList[0], testobject2);
         Assert.Equal(descendingList[1], testobject3);
@@ -210,7 +212,7 @@ public abstract partial class CacheClientTestBase
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject3), 3).ConfigureAwait(false);
         await db.SortedSetAddAsync("my Key", serializer.Serialize(testobject4), 4).ConfigureAwait(false);
 
-        var descendingList = (await Sut.GetDbFromConfiguration().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", 1, 4, Exclude.Both).ConfigureAwait(false)).ToList();
+        var descendingList = (await Sut.GetDefaultDatabase().SortedSetRangeByScoreAsync<TestClass<DateTime>>("my Key", 1, 4, Exclude.Both).ConfigureAwait(false)).ToList();
 
         Assert.Equal(descendingList[0], testobject2);
         Assert.Equal(descendingList[1], testobject3);
@@ -223,8 +225,8 @@ public abstract partial class CacheClientTestBase
         var testobject = new TestClass<DateTime>();
         const int defaultscore = 1;
         const int nextscore = 2;
-        var added = await Sut.GetDbFromConfiguration().SortedSetAddIncrementAsync("my Key", testobject, defaultscore).ConfigureAwait(false);
-        await Sut.GetDbFromConfiguration().SortedSetAddIncrementAsync("my Key", testobject, nextscore).ConfigureAwait(false);
+        var added = await Sut.GetDefaultDatabase().SortedSetAddIncrementAsync("my Key", testobject, defaultscore).ConfigureAwait(false);
+        await Sut.GetDefaultDatabase().SortedSetAddIncrementAsync("my Key", testobject, nextscore).ConfigureAwait(false);
         var result = db.SortedSetScan("my Key").First();
 
         Assert.Equal(defaultscore, added);
