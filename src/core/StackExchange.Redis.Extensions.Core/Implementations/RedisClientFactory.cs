@@ -30,6 +30,9 @@ public class RedisClientFactory : IRedisClientFactory
         var hashSet = new HashSet<string>();
         var redisClientFactoryLogger = loggerFactory?.CreateLogger<RedisClientFactory>() ?? NullLogger<RedisClientFactory>.Instance;
 
+        if (redisConfigurations.Length == 0)
+            redisConfigurations[0].IsDefault = true;
+
         for (var i = 0; i < redisConfigurations.Length; i++)
         {
             var configuration = redisConfigurations[i];
