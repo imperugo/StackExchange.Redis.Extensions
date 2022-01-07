@@ -2,8 +2,7 @@ name: StackExchange.Redis.Extensions Build
 on:
   push:
     branches:
-      - master
-      - v7
+      - nuget
     tags:
       - "*.*.*"
 jobs:
