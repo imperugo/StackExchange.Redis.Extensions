@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.System.Text.Json;
@@ -83,21 +84,13 @@ public class Startup
 
         var redisDatabase = app.ApplicationServices.GetRequiredService<IRedisDatabase>();
 
-        var obj = new CacheObject
-        {
-            Birthdate = DateTime.Now,
-            Firstname = "John",
-            Lastname = "Doe"
-        };
+        var obj = new ValueTypeRedisItem<bool>(true);
 
-        redisDatabase.AddAsync("MyCacheKey", obj).GetAwaiter().GetResult();
+        redisDatabase.AddAsync("myCacheKey", obj)
+            .GetAwaiter()
+            .GetResult();
 
-        var redisDatabaseFactory = app.ApplicationServices.GetRequiredService<IRedisClientFactory>();
-
-        var redisDatabase2 = redisDatabaseFactory.GetRedisClient("Secndary Instance");
-        redisDatabase2
-            .GetDefaultDatabase()
-            .AddAsync("MyCacheKey", obj)
+        var result = redisDatabase.GetAsync<ValueTypeRedisItem<bool>>("myCacheKey")
             .GetAwaiter()
             .GetResult();
     }

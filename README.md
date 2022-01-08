@@ -12,11 +12,9 @@ The idea of this library is to make easier your live when you need to send / rec
 
 ### Release
 
-![.NET Core](https://github.com/imperugo/StackExchange.Redis.Extensions/workflows/.NET%20Core/badge.svg?branch=v6)
+![.NET Core](https://github.com/imperugo/StackExchange.Redis.Extensions/actions/workflows/dotnetcore.yml/badge.svg)
 
 Latest release is available on NuGet.
-
-Latest CI build ![.github/workflows/dotnetcore.yml](https://github.com/imperugo/StackExchange.Redis.Extensions/workflows/.github/workflows/dotnetcore.yml/badge.svg)
 
 | Channel                  | Status                                                       |
 | ------------------------ | ------------------------------------------------------------ |
@@ -36,4 +34,4 @@ For questions or issues do not hesitate to [raise an issue](https://github.com/i
 
 
 ### License
-StackExchange.Redis is Copyright © 2015 [Ugo Lattanzi](https://www.linkedin.com/in/imperugo/) and other contributors under the MIT license.
+StackExchange.Redis is Copyright ©  [Ugo Lattanzi](https://www.linkedin.com/in/imperugo/) and other contributors under the MIT license.
