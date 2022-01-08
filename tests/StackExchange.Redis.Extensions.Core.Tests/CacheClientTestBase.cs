@@ -94,17 +94,6 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Serializing_And_Deserializing_ValueTypeRedisItem_Should_Not_Throw_Any_Exception()
-    {
-        var obj = new ValueTypeRedisItem<bool>(true);
-
-        await Sut.GetDefaultDatabase().AddAsync("myCacheKey", obj).ConfigureAwait(false);
-        var result = await Sut.GetDefaultDatabase().GetAsync<ValueTypeRedisItem<bool>>("myCacheKey").ConfigureAwait(false);
-
-        Assert.Equal(obj.Value, result!.Value);
-    }
-
-    [Fact]
     public async Task Info_Should_Return_Valid_Information()
     {
         var response = await Sut
