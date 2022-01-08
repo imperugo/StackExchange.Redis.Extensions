@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -20,17 +21,19 @@ public class RedisClientFactory : IRedisClientFactory
     /// <summary>
     /// Initializes a new instance of the <see cref="RedisClientFactory"/> class.
     /// </summary>
-    /// <param name="redisConfigurations">The connection configurations.</param>
+    /// <param name="configurations">The connection configurations.</param>
     /// <param name="loggerFactory">The logger factory</param>
     /// <param name="serializer">The cache serializer</param>
-    public RedisClientFactory(RedisConfiguration[] redisConfigurations, ILoggerFactory? loggerFactory, ISerializer serializer)
+    public RedisClientFactory(IEnumerable<RedisConfiguration> configurations, ILoggerFactory? loggerFactory, ISerializer serializer)
     {
         // First of all, I need to validate the configurations
         var hasDefaultConfigured = false;
         var hashSet = new HashSet<string>();
         var redisClientFactoryLogger = loggerFactory?.CreateLogger<RedisClientFactory>() ?? NullLogger<RedisClientFactory>.Instance;
 
-        if (redisConfigurations.Length == 0)
+        var redisConfigurations = configurations.ToArray();
+
+        if (redisConfigurations.Length == 1)
             redisConfigurations[0].IsDefault = true;
 
         for (var i = 0; i < redisConfigurations.Length; i++)

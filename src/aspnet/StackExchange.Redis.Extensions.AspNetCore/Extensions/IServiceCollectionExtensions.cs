@@ -1,6 +1,7 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 
 using StackExchange.Redis.Extensions.Core;
 using StackExchange.Redis.Extensions.Core.Abstractions;
@@ -36,7 +37,7 @@ public static class IServiceCollectionExtensions
     /// <typeparam name="T">The typof of serializer. <see cref="ISerializer" />.</typeparam>
     public static IServiceCollection AddStackExchangeRedisExtensions<T>(
         this IServiceCollection services,
-        RedisConfiguration[] redisConfiguration)
+        IEnumerable<RedisConfiguration> redisConfiguration)
         where T : class, ISerializer, new()
     {
         return services.AddStackExchangeRedisExtensions<T>(sp => redisConfiguration);
@@ -50,7 +51,7 @@ public static class IServiceCollectionExtensions
     /// <typeparam name="T">The typof of serializer. <see cref="ISerializer" />.</typeparam>
     public static IServiceCollection AddStackExchangeRedisExtensions<T>(
         this IServiceCollection services,
-        Func<IServiceProvider, RedisConfiguration[]> redisConfigurationFactory)
+        Func<IServiceProvider,  IEnumerable<RedisConfiguration>> redisConfigurationFactory)
         where T : class, ISerializer, new()
     {
         services.AddSingleton<IRedisClientFactory, RedisClientFactory>();
