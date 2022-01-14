@@ -24,7 +24,7 @@ public static class IServiceCollectionExtensions
     public static IServiceCollection AddStackExchangeRedisExtensions<T>(
         this IServiceCollection services,
         RedisConfiguration redisConfiguration)
-        where T : class, ISerializer, new()
+        where T : class, ISerializer
     {
         return services.AddStackExchangeRedisExtensions<T>(sp => new[] { redisConfiguration });
     }
@@ -38,7 +38,7 @@ public static class IServiceCollectionExtensions
     public static IServiceCollection AddStackExchangeRedisExtensions<T>(
         this IServiceCollection services,
         IEnumerable<RedisConfiguration> redisConfiguration)
-        where T : class, ISerializer, new()
+        where T  : class, ISerializer
     {
         return services.AddStackExchangeRedisExtensions<T>(sp => redisConfiguration);
     }
@@ -52,7 +52,7 @@ public static class IServiceCollectionExtensions
     public static IServiceCollection AddStackExchangeRedisExtensions<T>(
         this IServiceCollection services,
         Func<IServiceProvider,  IEnumerable<RedisConfiguration>> redisConfigurationFactory)
-        where T : class, ISerializer, new()
+        where T : class, ISerializer
     {
         services.AddSingleton<IRedisClientFactory, RedisClientFactory>();
         services.AddSingleton<ISerializer, T>();

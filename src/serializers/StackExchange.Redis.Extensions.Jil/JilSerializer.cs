@@ -43,14 +43,13 @@ public class JilSerializer : ISerializer
 
     /// <inheritdoc/>
     public byte[] Serialize<T>(T? item)
-        where T : class
     {
         var jsonString = JSON.Serialize(item);
         return encoding.GetBytes(jsonString);
     }
 
     /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject) where T : class
+    public T Deserialize<T>(byte[] serializedObject)
     {
         var jsonString = encoding.GetString(serializedObject);
         return JSON.Deserialize<T>(jsonString);

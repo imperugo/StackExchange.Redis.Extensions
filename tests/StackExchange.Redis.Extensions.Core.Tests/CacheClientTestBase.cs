@@ -134,6 +134,20 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
+    public async Task Add_Value_Type_To_Redis_Database()
+    {
+        var added = await Sut
+            .GetDefaultDatabase()
+            .AddAsync("my Key", true)
+            .ConfigureAwait(false);
+
+        var redisValue = await db.KeyExistsAsync("my Key").ConfigureAwait(false);
+
+        Assert.True(added);
+        Assert.True(redisValue);
+    }
+
+    [Fact]
     public async Task Add_Complex_Item_To_Redis_Database()
     {
         var testobject = new TestClass<DateTime>();
@@ -208,6 +222,27 @@ public abstract partial class CacheClientTestBase : IDisposable
         Assert.Equal(result[values[1].Key], values[1].Value);
         Assert.Equal(result[values[2].Key], values[2].Value);
         Assert.Null(result["notexistingkey"]);
+    }
+
+    [Fact]
+    public async Task Get_With_Value_Type_Should_Return_Correct_Value()
+    {
+        var now = DateTime.UtcNow;
+        await db.StringSetAsync("my key" ,serializer.Serialize(true)).ConfigureAwait(false);
+        await db.StringSetAsync("my key2" ,serializer.Serialize(now)).ConfigureAwait(false);
+
+        var cachedObject = await Sut
+            .GetDefaultDatabase()
+            .GetAsync<bool>("my key")
+            .ConfigureAwait(false);
+
+        var cachedObject2 = await Sut
+            .GetDefaultDatabase()
+            .GetAsync<DateTime>("my key2")
+            .ConfigureAwait(false);
+
+        Assert.True(cachedObject);
+        Assert.Equal(now, cachedObject2);
     }
 
     [Fact]
@@ -874,7 +909,7 @@ public abstract partial class CacheClientTestBase : IDisposable
         const string key = "MyList";
 
         foreach (var x in values)
-            await Sut.GetDefaultDatabase().ListAddToLeftAsync(key, serializer.Serialize(x)).ConfigureAwait(false);
+            await Sut.GetDefaultDatabase().ListAddToLeftAsync(key, serializer.Serialize(x), When.Always, CommandFlags.None).ConfigureAwait(false);
 
         var keys = await db.ListRangeAsync(key).ConfigureAwait(false);
 
@@ -937,7 +972,7 @@ public abstract partial class CacheClientTestBase : IDisposable
         foreach (var value in values)
         {
             // TODO: why no assertion on the result?
-            var result = await Sut.GetDefaultDatabase().ListAddToLeftAsync(key, serializer.Serialize(value)).ConfigureAwait(false);
+            var result = await Sut.GetDefaultDatabase().ListAddToLeftAsync(key, serializer.Serialize(value), When.Always, CommandFlags.None).ConfigureAwait(false);
         }
 
         var keys = await db.ListRangeAsync(key).ConfigureAwait(false);

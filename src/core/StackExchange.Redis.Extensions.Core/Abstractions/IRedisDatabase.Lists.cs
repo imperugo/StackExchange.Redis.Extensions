@@ -18,7 +18,7 @@ public partial interface IRedisDatabase
     /// <param name="when">The condition (Always is the default value).</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     Task<long> ListAddToLeftAsync<T>(string key, T item, When when = When.Always, CommandFlags flag = CommandFlags.None)
-        where T : class;
+       ;
 
     /// <summary>
     ///     Lists the add to left asynchronous.
@@ -27,8 +27,7 @@ public partial interface IRedisDatabase
     /// <param name="key">The key.</param>
     /// <param name="items">The items.</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    Task<long> ListAddToLeftAsync<T>(string key, T[] items, CommandFlags flag = CommandFlags.None)
-        where T : class;
+    Task<long> ListAddToLeftAsync<T>(string key, T[] items, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Removes and returns the last element of the list stored at key.
@@ -39,6 +38,5 @@ public partial interface IRedisDatabase
     /// <remarks>
     ///     http://redis.io/commands/rpop
     /// </remarks>
-    Task<T?> ListGetFromRightAsync<T>(string key, CommandFlags flag = CommandFlags.None)
-        where T : class;
+    Task<T?> ListGetFromRightAsync<T>(string key, CommandFlags flag = CommandFlags.None);
 }

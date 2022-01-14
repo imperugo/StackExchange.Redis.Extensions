@@ -16,7 +16,6 @@ public class ProtobufSerializer : ISerializer
 {
     /// <inheritdoc/>
     public byte[] Serialize<T>(T? item)
-        where T : class
     {
         if (item == null)
             return Array.Empty<byte>();
@@ -29,7 +28,7 @@ public class ProtobufSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject) where T : class
+    public T Deserialize<T>(byte[] serializedObject)
     {
         using var ms = new MemoryStream(serializedObject);
 

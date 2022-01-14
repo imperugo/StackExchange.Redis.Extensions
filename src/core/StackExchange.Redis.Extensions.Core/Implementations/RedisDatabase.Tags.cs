@@ -15,7 +15,6 @@ public partial class RedisDatabase : IRedisDatabase
 {
     /// <inheritdoc/>
     public async Task<IEnumerable<T?>> GetByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None)
-        where T : class
     {
         var tagKey = TagHelper.GenerateTagKey(tag);
 

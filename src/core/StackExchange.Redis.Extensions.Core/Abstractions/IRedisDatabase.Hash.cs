@@ -62,7 +62,7 @@ public partial interface IRedisDatabase
     /// <param name="key">Key of the entry</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>the value associated with field, or nil when field is not present in the hash or key does not exist.</returns>
-    Task<T?> HashGetAsync<T>(string hashKey, string key, CommandFlags flag = CommandFlags.None) where T : class;
+    Task<T?> HashGetAsync<T>(string hashKey, string key, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Returns the values associated with the specified fields in the hash stored at key.
@@ -77,7 +77,7 @@ public partial interface IRedisDatabase
     /// <param name="keys">Keys to retrieve from the hash</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>list of values associated with the given fields, in the same order as they are requested.</returns>
-    Task<Dictionary<string, T?>> HashGetAsync<T>(string hashKey, string[] keys, CommandFlags flag = CommandFlags.None) where T : class;
+    Task<Dictionary<string, T?>> HashGetAsync<T>(string hashKey, string[] keys, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Returns all fields and values of the hash stored at key. In the returned value,
@@ -90,7 +90,7 @@ public partial interface IRedisDatabase
     /// <param name="hashKey">Key of the hash</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>list of fields and their values stored in the hash, or an empty list when key does not exist.</returns>
-    Task<Dictionary<string, T>> HashGetAllAsync<T>(string hashKey, CommandFlags flag = CommandFlags.None) where T : class;
+    Task<Dictionary<string, T>> HashGetAllAsync<T>(string hashKey, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Increments the number stored at field in the hash stored at key by increment.
@@ -163,7 +163,7 @@ public partial interface IRedisDatabase
     ///     <c>true</c> if field is a new field in the hash and value was set.
     ///     <c>false</c> if field already exists in the hash and no operation was performed.
     /// </returns>
-    Task<bool> HashSetAsync<T>(string hashKey, string key, T value, bool nx = false, CommandFlags flag = CommandFlags.None) where T : class;
+    Task<bool> HashSetAsync<T>(string hashKey, string key, T value, bool nx = false, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Sets the specified fields to their respective values in the hash stored at key.
@@ -177,7 +177,7 @@ public partial interface IRedisDatabase
     /// <param name="hashKey">Key of the hash</param>
     /// <param name="values">The values to be inserted</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    Task HashSetAsync<T>(string hashKey, IDictionary<string, T> values, CommandFlags flag = CommandFlags.None) where T : class;
+    Task HashSetAsync<T>(string hashKey, IDictionary<string, T> values, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Returns all values in the hash stored at key.
@@ -189,7 +189,7 @@ public partial interface IRedisDatabase
     /// <param name="hashKey">Key of the hash</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>list of values in the hash, or an empty list when key does not exist.</returns>
-    Task<IEnumerable<T>> HashValuesAsync<T>(string hashKey, CommandFlags flag = CommandFlags.None) where T : class;
+    Task<IEnumerable<T>> HashValuesAsync<T>(string hashKey, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     iterates fields of Hash types and their associated values.
@@ -203,5 +203,5 @@ public partial interface IRedisDatabase
     /// <param name="pattern">GLOB search pattern</param>
     /// <param name="pageSize">Number of elements to retrieve from the redis server in the cursor</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    Dictionary<string, T> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags flag = CommandFlags.None) where T : class;
+    Dictionary<string, T> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags flag = CommandFlags.None);
 }

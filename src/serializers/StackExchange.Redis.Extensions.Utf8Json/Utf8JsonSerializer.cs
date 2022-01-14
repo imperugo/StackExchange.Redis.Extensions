@@ -15,7 +15,6 @@ public class Utf8JsonSerializer : ISerializer
 {
     /// <inheritdoc/>
     public byte[] Serialize<T>(T? item)
-        where T : class
     {
         return item == null
             ? Array.Empty<byte>()
@@ -23,7 +22,7 @@ public class Utf8JsonSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject) where T : class
+    public T Deserialize<T>(byte[] serializedObject)
     {
         return JsonSerializer.Deserialize<T>(serializedObject);
     }

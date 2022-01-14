@@ -8,7 +8,6 @@ namespace StackExchange.Redis.Extensions.Core.Extensions;
 internal static class ValueLengthExtensions
 {
     public static IEnumerable<KeyValuePair<string, byte[]>> OfValueInListSize<T>(this IEnumerable<Tuple<string, T>> items, ISerializer serializer, uint maxValueLength)
-        where T : class
     {
         using var iterator = items.GetEnumerator();
 
@@ -24,7 +23,6 @@ internal static class ValueLengthExtensions
     }
 
     public static byte[] OfValueSize<T>(this T? value, ISerializer serializer, uint maxValueLength, string key)
-        where T : class
     {
         return value == null
             ? Array.Empty<byte>()
@@ -32,7 +30,6 @@ internal static class ValueLengthExtensions
     }
 
     private static byte[] SerializeItem<T>(this T? item, ISerializer serializer)
-        where T : class
     {
         return item == null
             ? Array.Empty<byte>()

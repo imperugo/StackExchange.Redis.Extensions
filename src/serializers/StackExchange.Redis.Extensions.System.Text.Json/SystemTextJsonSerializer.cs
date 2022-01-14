@@ -59,14 +59,13 @@ public class SystemTextJsonSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject) where T : class
+    public T Deserialize<T>(byte[] serializedObject)
     {
         return JsonSerializer.Deserialize<T>(serializedObject, Options(typeof(T)))!;
     }
 
     /// <inheritdoc/>
     public byte[] Serialize<T>(T? item)
-        where T : class
     {
         if (item == null)
             return Array.Empty<byte>();

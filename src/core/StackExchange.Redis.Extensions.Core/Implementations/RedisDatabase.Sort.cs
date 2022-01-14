@@ -17,7 +17,6 @@ public partial class RedisDatabase : IRedisDatabase
         T value,
         double score,
         CommandFlags commandFlags = CommandFlags.None)
-        where T : class
     {
         var entryBytes = Serializer.Serialize(value);
 
@@ -29,7 +28,6 @@ public partial class RedisDatabase : IRedisDatabase
         string key,
         T value,
         CommandFlags commandFlags = CommandFlags.None)
-        where T : class
     {
         var entryBytes = Serializer.Serialize(value);
 
@@ -46,7 +44,6 @@ public partial class RedisDatabase : IRedisDatabase
         long skip = 0L,
         long take = -1L,
         CommandFlags commandFlags = CommandFlags.None)
-        where T : class
     {
         var result = await Database.SortedSetRangeByScoreAsync(key, start, stop, exclude, order, skip, take, commandFlags).ConfigureAwait(false);
 
@@ -60,7 +57,6 @@ public partial class RedisDatabase : IRedisDatabase
         long stop = -1L,
         Order order = Order.Ascending,
         CommandFlags commandFlags = CommandFlags.None)
-        where T : class
     {
         var result = await Database.SortedSetRangeByRankWithScoresAsync(key, start, stop, order, commandFlags).ConfigureAwait(false);
 
