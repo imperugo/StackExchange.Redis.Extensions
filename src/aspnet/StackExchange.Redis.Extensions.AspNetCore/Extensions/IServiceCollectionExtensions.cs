@@ -38,7 +38,7 @@ public static class IServiceCollectionExtensions
     public static IServiceCollection AddStackExchangeRedisExtensions<T>(
         this IServiceCollection services,
         IEnumerable<RedisConfiguration> redisConfiguration)
-        where T  : class, ISerializer
+        where T : class, ISerializer
     {
         return services.AddStackExchangeRedisExtensions<T>(sp => redisConfiguration);
     }
@@ -51,7 +51,7 @@ public static class IServiceCollectionExtensions
     /// <typeparam name="T">The typof of serializer. <see cref="ISerializer" />.</typeparam>
     public static IServiceCollection AddStackExchangeRedisExtensions<T>(
         this IServiceCollection services,
-        Func<IServiceProvider,  IEnumerable<RedisConfiguration>> redisConfigurationFactory)
+        Func<IServiceProvider, IEnumerable<RedisConfiguration>> redisConfigurationFactory)
         where T : class, ISerializer
     {
         services.AddSingleton<IRedisClientFactory, RedisClientFactory>();

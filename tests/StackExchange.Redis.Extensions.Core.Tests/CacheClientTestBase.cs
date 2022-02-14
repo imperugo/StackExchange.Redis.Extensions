@@ -228,8 +228,8 @@ public abstract partial class CacheClientTestBase : IDisposable
     public async Task Get_With_Value_Type_Should_Return_Correct_Value()
     {
         var now = DateTime.UtcNow;
-        await db.StringSetAsync("my key" ,serializer.Serialize(true)).ConfigureAwait(false);
-        await db.StringSetAsync("my key2" ,serializer.Serialize(now)).ConfigureAwait(false);
+        await db.StringSetAsync("my key", serializer.Serialize(true)).ConfigureAwait(false);
+        await db.StringSetAsync("my key2", serializer.Serialize(now)).ConfigureAwait(false);
 
         var cachedObject = await Sut
             .GetDefaultDatabase()
