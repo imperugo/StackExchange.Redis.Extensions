@@ -4,11 +4,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-using StackExchange.Redis.Extensions.Core.Abstractions;
-
 namespace StackExchange.Redis.Extensions.Core.Implementations;
 
-public partial class RedisDatabase : IRedisDatabase
+public partial class RedisDatabase
 {
     /// <inheritdoc/>
     public Task<long> ListAddToLeftAsync<T>(string key, T item, When when = When.Always, CommandFlags flags = CommandFlags.None)

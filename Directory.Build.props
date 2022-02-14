@@ -4,7 +4,7 @@
   <!-- General information -->
   <PropertyGroup>
     <Authors>Ugo Lattanzi</Authors>
-    <VersionPrefix>8.0.3</VersionPrefix>
+    <VersionPrefix>8.0.4</VersionPrefix>
     <!--
     <VersionSuffix>pre</VersionSuffix>
     -->
@@ -106,15 +106,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Roslynator.Analyzers" Version="3.3.0">
+    <PackageReference Include="Roslynator.Analyzers" Version="4.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="3.3.0">
+    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="3.3.0">
+    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>

@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-    <PackageReference Include="coverlet.collector" Version="3.1.0">
+    <PackageReference Include="coverlet.collector" Version="3.1.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -26,9 +26,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="xunit.categories" Version="2.0.5" />
+    <PackageReference Include="xunit.categories" Version="2.0.6" />
     <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="Divergic.Logging.Xunit" Version="3.6.0" />
+    <PackageReference Include="Divergic.Logging.Xunit" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>

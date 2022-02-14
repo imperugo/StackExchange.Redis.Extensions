@@ -4,11 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using StackExchange.Redis.Extensions.Core.Abstractions;
-
 namespace StackExchange.Redis.Extensions.Core.Implementations;
 
-public partial class RedisDatabase : IRedisDatabase
+public partial class RedisDatabase
 {
     /// <inheritdoc/>
     public Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flags = CommandFlags.None)

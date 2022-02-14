@@ -36,4 +36,3 @@ public interface IRedisClientFactory
     /// <param name="name">If not specified returns the default instance</param>
     IRedisDatabase GetRedisDatabase(string? name = null);
 }
-

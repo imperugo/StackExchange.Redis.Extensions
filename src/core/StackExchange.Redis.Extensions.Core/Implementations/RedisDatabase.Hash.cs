@@ -5,11 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using StackExchange.Redis.Extensions.Core.Abstractions;
-
 namespace StackExchange.Redis.Extensions.Core.Implementations;
 
-public partial class RedisDatabase : IRedisDatabase
+public partial class RedisDatabase
 {
     /// <inheritdoc/>
     public Task<bool> HashDeleteAsync(string hashKey, string key, CommandFlags commandFlags = CommandFlags.None)

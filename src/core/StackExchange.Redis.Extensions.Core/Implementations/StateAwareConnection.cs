@@ -58,7 +58,7 @@ public sealed partial class RedisConnectionPoolManager
 
         private void ConnectionRestored(object? sender, ConnectionFailedEventArgs e)
         {
-            logger.LogError("Redis connection error restored");
+            logger.LogInformation("Redis connection error restored");
         }
 
         private void InternalError(object? sender, InternalErrorEventArgs e)

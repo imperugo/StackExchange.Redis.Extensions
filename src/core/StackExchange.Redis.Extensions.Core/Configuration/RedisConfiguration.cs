@@ -398,10 +398,7 @@ public class RedisConfiguration
                 }
 
                 if (WorkCount > 0)
-                {
-                    newOptions.SocketManager = new(GetType().Name, WorkCount,
-                        SocketManager.SocketManagerOptions.None);
-                }
+                    newOptions.SocketManager = new(GetType().Name, WorkCount);
 
                 newOptions.CertificateValidation += CertificateValidation;
                 options = newOptions;

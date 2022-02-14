@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Models;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations;
 
-public partial class RedisDatabase : IRedisDatabase
+public partial class RedisDatabase
 {
     /// <inheritdoc/>
     public Task<bool> SortedSetAddAsync<T>(

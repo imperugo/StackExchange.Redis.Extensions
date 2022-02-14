@@ -36,6 +36,7 @@ public static class ServerIteratorFactory
                     multiplexer,
                     serverEnumerationStrategy.TargetRole,
                     serverEnumerationStrategy.UnreachableServerAction);
+
                 return serversSingle.Take(1);
 
             default:

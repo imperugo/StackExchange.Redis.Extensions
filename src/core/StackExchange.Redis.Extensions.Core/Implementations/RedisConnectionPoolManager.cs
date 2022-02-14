@@ -47,7 +47,6 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
         GC.SuppressFinalize(this);
     }
 
-    /// <inheritdoc/>
     private void Dispose(bool disposing)
     {
         if (isDisposed)

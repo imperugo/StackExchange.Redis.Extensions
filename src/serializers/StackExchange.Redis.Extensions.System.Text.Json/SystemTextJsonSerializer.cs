@@ -67,12 +67,9 @@ public class SystemTextJsonSerializer : ISerializer
     /// <inheritdoc/>
     public byte[] Serialize<T>(T? item)
     {
-        if (item == null)
-            return Array.Empty<byte>();
-
-        var type = item.GetType();
-
-        return JsonSerializer.SerializeToUtf8Bytes(item, type, Options(type));
+        return item == null
+            ? Array.Empty<byte>()
+            : JsonSerializer.SerializeToUtf8Bytes<T>(item, Options(typeof(T)));
     }
 
     private JsonSerializerOptions Options(Type type)
