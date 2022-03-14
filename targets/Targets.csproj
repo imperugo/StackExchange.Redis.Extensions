@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Bullseye" Version="3.5.0" />
     <PackageReference Include="Colorful.Console" Version="1.2.10" />
-    <PackageReference Include="SimpleExec" Version="6.2.0" />
+    <PackageReference Include="SimpleExec" Version="9.0.0" />
   </ItemGroup>
 
 </Project>
