@@ -137,8 +137,8 @@ public abstract partial class CacheClientTestBase
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
-        var values =
-            Range(0, 1000)
+        var values
+            = Range(0, 1000)
                 .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
                 .ToDictionary(x => x.Key);
 
@@ -161,13 +161,13 @@ public abstract partial class CacheClientTestBase
         // arrange
         var hashKey = Guid.NewGuid().ToString();
 
-        var valuesDelete =
-            Range(0, 1000)
+        var valuesDelete
+            = Range(0, 1000)
                 .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
                 .ToDictionary(x => x.Key);
 
-        var valuesKeep =
-            Range(0, 1000)
+        var valuesKeep
+            = Range(0, 1000)
                 .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
                 .ToDictionary(x => x.Key);
 
@@ -239,8 +239,8 @@ public abstract partial class CacheClientTestBase
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
-        var values =
-            Range(0, 1000)
+        var values
+            = Range(0, 1000)
                 .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
                 .ToDictionary(x => x.Key);
 
@@ -278,8 +278,8 @@ public abstract partial class CacheClientTestBase
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
-        var values =
-            Range(0, 1000)
+        var values
+            = Range(0, 1000)
                 .Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
                 .ToDictionary(x => x.Key);
 
@@ -316,8 +316,8 @@ public abstract partial class CacheClientTestBase
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
-        var values =
-            Range(0, 1000)
+        var values
+            = Range(0, 1000)
                 .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
                 .ToDictionary(x => x.Key);
 
@@ -425,8 +425,8 @@ public abstract partial class CacheClientTestBase
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
-        var values =
-            Range(0, 1000)
+        var values
+            = Range(0, 1000)
                 .Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
                 .ToDictionary(x => x.Key);
 
@@ -452,8 +452,8 @@ public abstract partial class CacheClientTestBase
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
-        var values =
-            Range(0, 1000)
+        var values
+            = Range(0, 1000)
                 .Select(x => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
                 .ToDictionary(x => x.Key);
 
