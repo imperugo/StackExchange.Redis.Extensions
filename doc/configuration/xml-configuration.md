@@ -2,7 +2,7 @@
 
 If you are running the library outside of .NET Core, probably you have a `web.config` o `app.config` file. In this case here the code you have to add.
 
-```markup
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
 	<configSections>
@@ -21,7 +21,7 @@ If you are running the library outside of .NET Core, probably you have a `web.co
 
 From now, in order to read the configuration is enough to run this:
 
-```javascript
+```csharp
 var redisConfiguration = RedisCachingSectionHandler.GetConfig();
 ```
 

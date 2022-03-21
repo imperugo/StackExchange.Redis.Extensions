@@ -23,7 +23,7 @@ There are multiple api that the library offers, here a list:
 
 Note that all the example are based on a c# object like this:
 
-```javascript
+```csharp
 public class User
 {
     public UserDocument()

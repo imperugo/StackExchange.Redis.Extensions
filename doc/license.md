@@ -2,7 +2,7 @@
 
 #### License, etc.
 
-StackExchange.Redis is Copyright © 2015 [Ugo Lattanzi](https://www.linkedin.com/in/imperugo/) and other contributors under the [MIT license](https://github.com/AutoMapper/AutoMapper/blob/master/LICENSE.txt).
+StackExchange.Redis is Copyright © [Ugo Lattanzi](https://www.linkedin.com/in/imperugo/) and other contributors under the [MIT license](https://github.com/AutoMapper/AutoMapper/blob/master/LICENSE.txt).
 
 #### The MIT License (MIT)
 

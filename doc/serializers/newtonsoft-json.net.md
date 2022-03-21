@@ -12,19 +12,19 @@ Install-Package StackExchange.Redis.Extensions.Newtonsoft
 {% endtab %}
 
 {% tab title=".NET Cli" %}
-```
+```bash
 dotnet add package StackExchange.Redis.Extensions.Newtonsoft
 ```
 {% endtab %}
 
 {% tab title="Package Reference" %}
-```
+```xml
 <PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="5.5.0" />
 ```
 {% endtab %}
 
 {% tab title="Paket cli" %}
-```
+```bash
 paket add StackExchange.Redis.Extensions.Newtonsoft
 ```
 {% endtab %}
@@ -36,7 +36,7 @@ Now that you have installed the package, you can register it into your favourite
 
 Example using **Microsoft.Extensions.DependencyInjection:**
 
-```aspnet
+```csharp
 services.AddSingleton<ISerializer, NewtonsoftSerializer>();
 ```
 

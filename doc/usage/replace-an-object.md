@@ -2,7 +2,7 @@
 
 Create your instance:
 
-```javascript
+```csharp
 var user = new User()
 {
 	Username = "imperugo",
@@ -21,7 +21,7 @@ var user = new User()
 
 Replacing an object is pretty easy.
 
-```javascript
+```csharp
 bool added = await cacheClient.Db0.ReplaceAsync("my cache key", user, DateTimeOffset.Now.AddMinutes(10));
 ```
 

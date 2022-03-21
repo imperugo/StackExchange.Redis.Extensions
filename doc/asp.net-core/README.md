@@ -10,19 +10,19 @@ Install-Package StackExchange.Redis.Extensions.AspNetCore
 {% endtab %}
 
 {% tab title=".NET Cli" %}
-```
+```bash
 dotnet add package StackExchange.Redis.Extensions.AspNetCore
 ```
 {% endtab %}
 
 {% tab title="Package Reference" %}
-```
+```xml
 <PackageReference Include="StackExchange.Redis.Extensions.AspNetCore" Version="6.1.0" />
 ```
 {% endtab %}
 
 {% tab title="Paket cli" %}
-```
+```bash
 paket add StackExchange.Redis.Extensions.AspNetCore
 ```
 {% endtab %}
@@ -32,7 +32,7 @@ paket add StackExchange.Redis.Extensions.AspNetCore
 
 Into your startup class,&#x20;
 
-```javascript
+```csharp
 public void ConfigureServices(IServiceCollection services)
 {
     // Retrieve the configuration fro your json/xml file
@@ -45,7 +45,7 @@ public void ConfigureServices(IServiceCollection services)
 Remember to install also you favorite serializer.
 {% endhint %}
 
-```javascript
+```csharp
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
     app.UserRedisInformation();

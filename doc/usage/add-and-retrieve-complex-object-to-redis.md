@@ -2,7 +2,7 @@
 
 Create your instance:
 
-```javascript
+```csharp
 var user = new User()
 {
 	Username = "imperugo",
@@ -21,13 +21,13 @@ var user = new User()
 
 Add object to Redis
 
-```javascript
+```csharp
 bool added = await cacheClient.Db0.AddAsync("my cache key", user, DateTimeOffset.Now.AddMinutes(10));
 ```
 
 Retrieve the object:
 
-```javascript
+```csharp
 var userFromCache = await cacheClient.Db0.GetAsync<User>("my cache key");
 ```
 
@@ -37,7 +37,7 @@ Note that is possible to change the expires time of the item also when you are r
 
 Remove and object
 
-```javascript
+```csharp
 bool removed = await cacheClient.Db0.RemoveAsync<User>("my cache key");
 ```
 

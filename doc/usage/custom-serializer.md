@@ -7,7 +7,7 @@ If you want to use a serializer that is not available with this library you have
 
 The ISerializer interface looks like this:
 
-```aspnet
+```csharp
 using System.Threading.Tasks;
 
 namespace StackExchange.Redis.Extensions.Core

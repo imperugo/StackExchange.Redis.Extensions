@@ -4,7 +4,7 @@ If you need to add, remove or retrieve more than one item you don't have to send
 
 You instance:
 
-```javascript
+```csharp
 var user1 = new User()
 {
 	Username = "imperugo",
@@ -38,7 +38,7 @@ var user2 = new User()
 
 Add multiple items:
 
-```javascript
+```csharp
 var items = new List<Tuple<string, User>>();
 items.Add(new Tuple<string, User>("key1", user1));
 items.Add(new Tuple<string, User>("key2", user2));
@@ -50,7 +50,7 @@ bool added = await cacheClient
 
 Remove multiple items:
 
-```javascript
+```csharp
 var numberOfItemRemoved = await cacheClient
                                 .Db0
                                 .RemoveAllAsync(new []{"key1","key2"});
@@ -58,7 +58,7 @@ var numberOfItemRemoved = await cacheClient
 
 Retrieve multiple items:
 
-```javascript
+```csharp
 var users = await cacheClient
                                 .Db0
                                 .GetAllAsync<User>(new []{"key1","key2"});

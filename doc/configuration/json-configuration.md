@@ -2,7 +2,7 @@
 
 If you work with .NET Core the Json format is absolutely the best way because .NET Core offers a package that makes easy to bind the json file into a C# class but let's proceed in order, the json first:
 
-```javascript
+```csharp
 {
 	"Redis": {
 		"Password": "my_super_secret_password",
@@ -30,7 +30,7 @@ If you work with .NET Core the Json format is absolutely the best way because .N
 
 Now:
 
-```javascript
+```csharp
 config.SetBasePath(env.ContentRootPath)
 .AddJsonFile("./Configuration/redis.json", optional: false, reloadOnChange: true)
 .AddJsonFile($"./Configuration/redis.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
@@ -45,13 +45,13 @@ Finally the dependency injection:
 
 Example using **Microsoft.Extensions.DependencyInjection:**
 
-```aspnet
+```csharp
 services.AddSingleton(redisConfiguration);
 ```
 
 Example using **Castle.Windsor:**
 
-```aspnet
+```csharp
 container.Register(Component.For<RedisConfiguration>().Instance(redisConfiguration));
 ```
 

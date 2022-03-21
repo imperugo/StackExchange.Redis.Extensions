@@ -2,7 +2,7 @@
 
 If you want to embed your configuration directly into the c# the class more or less looks like this:
 
-```javascript
+```csharp
 var redisConfiguration = new RedisConfiguration()
 {
 	AbortOnConnectFail = true,
@@ -34,13 +34,13 @@ Not is enough to register it into your DI container:
 
 Example using **Microsoft.Extensions.DependencyInjection:**
 
-```aspnet
+```csharp
 services.AddSingleton(redisConfiguration);
 ```
 
 Example using **Castle.Windsor:**
 
-```aspnet
+```csharp
 container.Register(Component.For<RedisConfiguration>().Instance(redisConfiguration));
 ```
 

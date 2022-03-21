@@ -14,19 +14,19 @@ Install-Package StackExchange.Redis.Extensions.MsgPack
 {% endtab %}
 
 {% tab title=".NET Cli" %}
-```
+```bash
 dotnet add package StackExchange.Redis.Extensions.MsgPack
 ```
 {% endtab %}
 
 {% tab title="Package Reference" %}
-```
+```xml
 <PackageReference Include="StackExchange.Redis.Extensions.MsgPack" Version="5.5.0" />
 ```
 {% endtab %}
 
 {% tab title="Paket cli" %}
-```
+```bash
 paket add StackExchange.Redis.Extensions.MsgPack
 ```
 {% endtab %}
@@ -38,13 +38,13 @@ Now that you have installed the package, you can register it into your favourite
 
 Example using **Microsoft.Extensions.DependencyInjection:**
 
-```aspnet
+```csharp
 services.AddSingleton<ISerializer, MsgPackObjectSerializer>();
 ```
 
 Example using **Castle.Windsor:**
 
-```aspnet
+```csharp
 container.Register(Component.For<ISerializer>()
 				.ImplementedBy<MsgPackObjectSerializer>()
 				.LifestyleSingleton());

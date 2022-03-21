@@ -4,7 +4,7 @@ Sometimes is helpfull to expose the redis information outside of you application
 
 For this we have created a specific middleware that you can use like this:
 
-```javascript
+```csharp
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
     app.UserRedisInformation();
@@ -15,7 +15,7 @@ From now, you have two endpoint availables:
 
 **edis information "/redis/connectionInfo"**
 
-```javascript
+```csharp
 {
   "RequiredPoolSize": 5,
   "ActiveConnections": 1,
@@ -26,7 +26,7 @@ From now, you have two endpoint availables:
 
 **Redis information "/redis/info"**
 
-```javascript
+```csharp
 {
   "redis_version": "5.0.7",
   "redis_git_sha1": "00000000",
@@ -155,7 +155,7 @@ From now, you have two endpoint availables:
 
 Of course these responses could contains sensilbe data, for this reason you can allow access only to a specific set of IP Addresses of you custom login.
 
-```javascript
+```csharp
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
     app.UserRedisInformation(x =>

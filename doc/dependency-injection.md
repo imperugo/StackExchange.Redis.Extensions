@@ -6,7 +6,7 @@ Becoming a super hero is a fairly straight forward process and one step of this 
 
 All you need to do is this:
 
-```javascript
+```csharp
 /// <summary>
 /// Add StackExchange.Redis with its serialization provider.
 /// </summary>
