@@ -49,24 +49,24 @@ dotnet_style_predefined_type_for_member_access = true:suggestion
 dotnet_style_readonly_field = true:warning
 
 # Naming Rules
-dotnet_naming_rule.externally_visible_members_must_be_pascal_cased.symbols = externally_visible_symbols
-dotnet_naming_rule.externally_visible_members_must_be_pascal_cased.style = pascal_case_style
-dotnet_naming_rule.externally_visible_members_must_be_pascal_cased.severity = warning
-
 dotnet_naming_rule.interfaces_must_be_pascal_cased_and_prefixed_with_I.symbols = interface_symbols
 dotnet_naming_rule.interfaces_must_be_pascal_cased_and_prefixed_with_I.style = pascal_case_and_prefix_with_I_style
 dotnet_naming_rule.interfaces_must_be_pascal_cased_and_prefixed_with_I.severity = warning
+
+dotnet_naming_rule.externally_visible_members_must_be_pascal_cased.symbols = externally_visible_symbols
+dotnet_naming_rule.externally_visible_members_must_be_pascal_cased.style = pascal_case_style
+dotnet_naming_rule.externally_visible_members_must_be_pascal_cased.severity = warning
 
 dotnet_naming_rule.parameters_must_be_camel_cased.symbols = parameter_symbols
 dotnet_naming_rule.parameters_must_be_camel_cased.style = camel_case_style
 dotnet_naming_rule.parameters_must_be_camel_cased.severity = warning
 
-dotnet_naming_rule.constants_must_be_pascal_cased.symbols = constant_symbols
-dotnet_naming_rule.constants_must_be_pascal_cased.style = pascal_case_style
-dotnet_naming_rule.constants_must_be_pascal_cased.severity = warning
+dotnet_naming_rule.constants_must_be_snake_cased.symbols = constant_symbols
+dotnet_naming_rule.constants_must_be_snake_cased.style = snake_case
+dotnet_naming_rule.constants_must_be_snake_cased.severity = warning
 
 # Symbols
-dotnet_naming_symbols.externally_visible_symbols.applicable_kinds = class, struct, interface, enum, property, method, field, event, delegate
+dotnet_naming_symbols.externally_visible_symbols.applicable_kinds = class, struct, enum, property, method, field, event, delegate
 dotnet_naming_symbols.externally_visible_symbols.applicable_accessibilities = public, internal, protected, protected_internal, private_protected
 
 dotnet_naming_symbols.interface_symbols.applicable_kinds = interface
@@ -81,10 +81,14 @@ dotnet_naming_symbols.constant_symbols.applicable_accessibilities = *
 
 # Styles
 dotnet_naming_style.camel_case_style.capitalization = camel_case
+
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 
 dotnet_naming_style.pascal_case_and_prefix_with_I_style.required_prefix = I
 dotnet_naming_style.pascal_case_and_prefix_with_I_style.capitalization = pascal_case
+
+dotnet_naming_style.snake_case.capitalization = all_upper
+dotnet_naming_style.snake_case.word_separator = _
 
 # CSharp code style settings:
 [*.cs]
@@ -177,3 +181,11 @@ csharp_prefer_braces = false:none
 dotnet_diagnostic.IDE0073.severity = warning
 file_header_template = Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
+# Roslynator
+roslynator_accessibility_modifiers = explicit
+roslynator_object_creation_type_style = implicit_when_type_is_obvious
+roslynator_enum_has_flag_style = operator
+roslynator_equals_token_new_line = before
+roslynator_use_var_instead_of_implicit_object_creation = true
+roslynator_new_line_before_while_in_do_statement = true
+roslynator_blank_line_between_single_line_accessors = true
