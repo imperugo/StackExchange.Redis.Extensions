@@ -56,7 +56,7 @@ public class RedisCacheConnectionPoolManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task Equeue_Parallels_Calls_Should_Use_All_The_Pool()
+    public async Task Equeue_Parallels_Calls_Should_Use_All_The_Pool_Async()
     {
         const string cacheKey = "my cache key";
         const int maxNumberOfIterations = 10000;

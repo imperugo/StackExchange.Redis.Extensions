@@ -21,7 +21,7 @@ public class HomeController : Controller
         this.pool = pool;
     }
 
-    public async Task<string> Index()
+    public async Task<string> IndexAsync()
     {
         var before = pool.GetConnectionInformations();
         var rng = new Random();

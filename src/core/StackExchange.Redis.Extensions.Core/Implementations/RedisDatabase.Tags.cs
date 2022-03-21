@@ -37,7 +37,7 @@ public partial class RedisDatabase
         return await RemoveAllAsync(keys, commandFlags).ConfigureAwait(false);
     }
 
-    private Task<bool> ExecuteAddWithTags(
+    private Task<bool> ExecuteAddWithTagsAsync(
         string key,
         HashSet<string> tags,
         Func<IDatabaseAsync, Task<bool>> action,

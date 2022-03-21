@@ -16,7 +16,7 @@ public abstract partial class CacheClientTestBase
 {
     [Fact]
     [Trait("Category", "Tags")]
-    public async Task AddAsync_WithTags_ShouldAdd()
+    public async Task AddAsync_WithTags_ShouldAdd_Async()
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
@@ -30,7 +30,7 @@ public abstract partial class CacheClientTestBase
 
     [Fact]
     [Trait("Category", "Tags")]
-    public async Task AddAsync_WithTags_TagExists()
+    public async Task AddAsync_WithTags_TagExists_Async()
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
@@ -46,7 +46,7 @@ public abstract partial class CacheClientTestBase
 
     [Fact]
     [Trait("Category", "Tags")]
-    public async Task AddAsync_WithTags_CorrectTaggedKey()
+    public async Task AddAsync_WithTags_CorrectTaggedKey_Async()
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
@@ -63,7 +63,7 @@ public abstract partial class CacheClientTestBase
 
     [Fact]
     [Trait("Category", "Tags")]
-    public async Task AddAsyncTimeSpan_WithTags_ShouldAdd()
+    public async Task AddAsyncTimeSpan_WithTags_ShouldAdd_Async()
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
@@ -77,7 +77,7 @@ public abstract partial class CacheClientTestBase
 
     [Fact]
     [Trait("Category", "Tags")]
-    public async Task AddAsyncTimeSpan_WithTags_TagExists()
+    public async Task AddAsyncTimeSpan_WithTags_TagExists_Async()
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
@@ -93,7 +93,7 @@ public abstract partial class CacheClientTestBase
 
     [Fact]
     [Trait("Category", "Tags")]
-    public async Task AddAsyncTimeSpan_WithTags_CorrectTaggedKey()
+    public async Task AddAsyncTimeSpan_WithTags_CorrectTaggedKey_Async()
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
@@ -110,7 +110,7 @@ public abstract partial class CacheClientTestBase
 
     [Fact]
     [Trait("Category", "Tags")]
-    public async Task AddAsyncDateTimeOffset_WithTags_ShouldAdd()
+    public async Task AddAsyncDateTimeOffset_WithTags_ShouldAdd_Async()
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
@@ -124,7 +124,7 @@ public abstract partial class CacheClientTestBase
 
     [Fact]
     [Trait("Category", "Tags")]
-    public async Task AddAsyncDateTimeOffset_WithTags_TagExists()
+    public async Task AddAsyncDateTimeOffset_WithTags_TagExists_Async()
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
@@ -140,7 +140,7 @@ public abstract partial class CacheClientTestBase
 
     [Fact]
     [Trait("Category", "Tags")]
-    public async Task AddAsyncDateTimeOffset_WithTags_CorrectTaggedKey()
+    public async Task AddAsyncDateTimeOffset_WithTags_CorrectTaggedKey_Async()
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
@@ -157,7 +157,7 @@ public abstract partial class CacheClientTestBase
 
     [Fact]
     [Trait("Category", "Tags")]
-    public async Task GetByTagAsync_ShouldReturnSomeValues()
+    public async Task GetByTagAsync_ShouldReturnSomeValues_Async()
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
@@ -173,7 +173,7 @@ public abstract partial class CacheClientTestBase
 
     [Fact]
     [Trait("Category", "Tags")]
-    public async Task GetByTagAsync_ShouldReturnCorrectValue()
+    public async Task GetByTagAsync_ShouldReturnCorrectValue_Async()
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
@@ -189,7 +189,7 @@ public abstract partial class CacheClientTestBase
 
     [Fact]
     [Trait("Category", "Tags")]
-    public async Task RemoveByTagAsync_ShouldReturnZero()
+    public async Task RemoveByTagAsync_ShouldReturnZero_Async()
     {
         const string testTag = "test_tag";
 
@@ -200,7 +200,7 @@ public abstract partial class CacheClientTestBase
 
     [Fact]
     [Trait("Category", "Tags")]
-    public async Task RemoveByTagAsync_ShouldReturnOneDeletedValue()
+    public async Task RemoveByTagAsync_ShouldReturnOneDeletedValue_Async()
     {
         const string testKey = "test_key";
         const string testValue = "test_value";

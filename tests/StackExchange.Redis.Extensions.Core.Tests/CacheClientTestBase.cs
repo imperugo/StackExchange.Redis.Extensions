@@ -94,7 +94,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Info_Should_Return_Valid_Information()
+    public async Task Info_Should_Return_Valid_Information_Async()
     {
         var response = await Sut
             .GetDefaultDatabase()
@@ -107,7 +107,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Info_Category_Should_Return_Valid_Information()
+    public async Task Info_Category_Should_Return_Valid_Information_Async()
     {
         var response = await Sut
             .GetDefaultDatabase()
@@ -120,7 +120,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Add_Item_To_Redis_Database()
+    public async Task Add_Item_To_Redis_Database_Async()
     {
         var added = await Sut
             .GetDefaultDatabase()
@@ -134,7 +134,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Add_Value_Type_To_Redis_Database()
+    public async Task Add_Value_Type_To_Redis_Database_Async()
     {
         var added = await Sut
             .GetDefaultDatabase()
@@ -148,7 +148,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Add_Complex_Item_To_Redis_Database()
+    public async Task Add_Complex_Item_To_Redis_Database_Async()
     {
         var testobject = new TestClass<DateTime>();
 
@@ -170,7 +170,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Add_Multiple_Object_With_A_Single_Roundtrip_To_Redis_Must_Store_Data_Correctly_Into_Database()
+    public async Task Add_Multiple_Object_With_A_Single_Roundtrip_To_Redis_Must_Store_Data_Correctly_Into_Database_Async()
     {
         var values = new Tuple<string, string>[]
         {
@@ -196,7 +196,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Get_All_Should_Return_All_Database_Keys()
+    public async Task Get_All_Should_Return_All_Database_Keys_Async()
     {
         var values = Range(0, 5)
             .Select(i => new TestClass<string>($"Key{i.ToString()}", Guid.NewGuid().ToString()))
@@ -225,7 +225,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Get_With_Value_Type_Should_Return_Correct_Value()
+    public async Task Get_With_Value_Type_Should_Return_Correct_Value_Async()
     {
         var now = DateTime.UtcNow;
         await db.StringSetAsync("my key", serializer.Serialize(true)).ConfigureAwait(false);
@@ -246,7 +246,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Get_With_Complex_Item_Should_Return_Correct_Value()
+    public async Task Get_With_Complex_Item_Should_Return_Correct_Value_Async()
     {
         var value = Range(0, 1)
             .Select(i => new ComplexClassForTest<string, Guid>($"Key{i.ToString()}", Guid.NewGuid()))
@@ -265,7 +265,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Remove_All_Should_Remove_All_Specified_Keys()
+    public async Task Remove_All_Should_Remove_All_Specified_Keys_Async()
     {
         var values = Range(1, 5)
             .Select(i => new TestClass<string>($"Key{i.ToString()}", Guid.NewGuid().ToString()))
@@ -283,7 +283,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Search_With_Valid_Start_With_Pattern_Should_Return_Correct_Keys()
+    public async Task Search_With_Valid_Start_With_Pattern_Should_Return_Correct_Keys_Async()
     {
         var values = Range(1, 20)
             .Select(i => new TestClass<string>($"Key{i.ToString()}", Guid.NewGuid().ToString()));
@@ -299,7 +299,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SearchKeys_With_Key_Prefix_Should_Return_All_Database_Keys()
+    public async Task SearchKeys_With_Key_Prefix_Should_Return_All_Database_Keys_Async()
     {
         var tsk1 = Sut.GetDefaultDatabase().AddAsync("mykey1", "Foo");
         var tsk2 = Sut.GetDefaultDatabase().AddAsync("mykey2", "Bar");
@@ -316,7 +316,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SearchKeys_With_Start_Should_Return_All_Keys()
+    public async Task SearchKeys_With_Start_Should_Return_All_Keys_Async()
     {
         var values = Range(0, 10)
             .Select(i => new TestClass<string>($"mykey{i.ToString()}", Guid.NewGuid().ToString()));
@@ -333,7 +333,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SearchKeys_With_Key_Prefix_Should_Return_Keys_Without_Prefix()
+    public async Task SearchKeys_With_Key_Prefix_Should_Return_Keys_Without_Prefix_Async()
     {
         var values = Range(0, 10)
             .Select(i => new TestClass<string>($"mykey{i.ToString()}", Guid.NewGuid().ToString()))
@@ -355,7 +355,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Exist_With_Valid_Object_Should_Return_The_Correct_Instance()
+    public async Task Exist_With_Valid_Object_Should_Return_The_Correct_Instance_Async()
     {
         var values = Range(0, 2)
             .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
@@ -370,7 +370,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Exist_With_Not_Valid_Object_Should_Return_The_Correct_Instance()
+    public async Task Exist_With_Not_Valid_Object_Should_Return_The_Correct_Instance_Async()
     {
         var values = Range(0, 2)
             .Select(
@@ -384,7 +384,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetAdd_With_An_Existing_Key_Should_Return_Valid_Data()
+    public async Task SetAdd_With_An_Existing_Key_Should_Return_Valid_Data_Async()
     {
         var values = Range(0, 5)
             .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
@@ -403,7 +403,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetPop_With_An_Existing_Key_Should_Return_Valid_Data()
+    public async Task SetPop_With_An_Existing_Key_Should_Return_Valid_Data_Async()
     {
         var values = Range(0, 5)
             .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
@@ -424,19 +424,19 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetPop_With_A_Non_Existing_Key_Should_Return_Null()
+    public async Task SetPop_With_A_Non_Existing_Key_Should_Return_Null_Async()
     {
         Assert.Null(await Sut.GetDefaultDatabase().SetPopAsync<string>("MySet").ConfigureAwait(false));
     }
 
     [Fact]
-    public async Task SetPop_With_An_Empty_Key_Should_Throw_Exception()
+    public async Task SetPop_With_An_Empty_Key_Should_Throw_Exception_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().SetPopAsync<string>(string.Empty)).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task SetPop_Count_With_An_Existing_Key_Should_Return_Valid_Data()
+    public async Task SetPop_Count_With_An_Existing_Key_Should_Return_Valid_Data_Async()
     {
         var values = Range(0, 5)
             .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
@@ -469,20 +469,20 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetPop_Count_With_A_Non_Existing_Key_Should_Return_Null()
+    public async Task SetPop_Count_With_A_Non_Existing_Key_Should_Return_Null_Async()
     {
         var result = await Sut.GetDefaultDatabase().SetPopAsync<string>("MySet", 0).ConfigureAwait(false);
         Assert.Null(result);
     }
 
     [Fact]
-    public async Task SetPop_Count_With_An_Empty_Key_Should_Throw_Exception()
+    public async Task SetPop_Count_With_An_Empty_Key_Should_Throw_Exception_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().SetPopAsync<string>(string.Empty, 0)).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task SetMembers_With_Valid_Data_Should_Return_Correct_Keys()
+    public async Task SetMembers_With_Valid_Data_Should_Return_Correct_Keys_Async()
     {
         var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
 
@@ -501,7 +501,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetMember_With_Valid_Data_Should_Return_Correct_Keys()
+    public async Task SetMember_With_Valid_Data_Should_Return_Correct_Keys_Async()
     {
         var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
 
@@ -521,7 +521,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetMembers_With_Complex_Object_And_Valid_Data_Should_Return_Correct_Keys()
+    public async Task SetMembers_With_Complex_Object_And_Valid_Data_Should_Return_Correct_Keys_Async()
     {
         var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
 
@@ -537,7 +537,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Massive_Add_Should_Not_Throw_Exception_And_Work_Correctly()
+    public async Task Massive_Add_Should_Not_Throw_Exception_And_Work_Correctly_Async()
     {
         const int size = 3000;
         var values = Range(0, size).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
@@ -559,7 +559,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Massive_Add_With_Expiring_Should_Delete_Expired_Keys()
+    public async Task Massive_Add_With_Expiring_Should_Delete_Expired_Keys_Async()
     {
         var values = new Tuple<string, string>[]
         {
@@ -593,7 +593,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Massive_Add_With_Expiring_And_Add_List_Again_Should_Work()
+    public async Task Massive_Add_With_Expiring_And_Add_List_Again_Should_Work_Async()
     {
         // Issue 228
         // https://github.com/imperugo/StackExchange.Redis.Extensions/issues/288
@@ -651,7 +651,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Adding_Collection_To_Redis_Should_Work_Correctly()
+    public async Task Adding_Collection_To_Redis_Should_Work_Correctly_Async()
     {
         var items = Range(1, 3).Select(i => new TestClass<string> { Key = $"key{i.ToString()}", Value = $"value{i.ToString()}" }).ToArray();
         var added = await Sut.GetDefaultDatabase().AddAsync("my Key", items).ConfigureAwait(false);
@@ -669,7 +669,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Adding_Collection_To_Redis_Should_Expire()
+    public async Task Adding_Collection_To_Redis_Should_Expire_Async()
     {
         var expiresIn = new TimeSpan(0, 0, 1);
         var items = Range(1, 3).Select(i => new Tuple<string, string>($"key{i.ToString()}", "value{i}")).ToArray();
@@ -683,7 +683,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Pub_Sub()
+    public async Task Pub_Sub_Async()
     {
         var message = Range(0, 10).ToArray();
         var channel = new RedisChannel(Encoding.UTF8.GetBytes("unit_test"), RedisChannel.PatternMode.Auto);
@@ -713,19 +713,19 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetAddGenericShouldThrowExceptionWhenKeyIsEmpty()
+    public async Task SetAddGenericShouldThrowExceptionWhenKeyIsEmpty_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().SetAddAsync(string.Empty, string.Empty)).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task SetAddGenericShouldThrowExceptionWhenItemIsNull()
+    public async Task SetAddGenericShouldThrowExceptionWhenItemIsNull_Async()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDefaultDatabase().SetAddAsync<string>("MySet", null)).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task SetAddGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+    public async Task SetAddGeneric_With_An_Existing_Key_Should_Return_Valid_Data_Async()
     {
         var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToList();
 
@@ -744,25 +744,25 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetAddAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
+    public async Task SetAddAsyncGenericShouldThrowExceptionWhenKeyIsEmpty_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().SetAddAsync(string.Empty, string.Empty)).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task SetAddAsyncGenericShouldThrowExceptionWhenItemIsNull()
+    public async Task SetAddAsyncGenericShouldThrowExceptionWhenItemIsNull_Async()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDefaultDatabase().SetAddAsync<string>("MySet", null)).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task SetContainsAsyncShouldThrowExceptionWhenKeyIsEmpty()
+    public async Task SetContainsAsyncShouldThrowExceptionWhenKeyIsEmpty_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().SetContainsAsync(string.Empty, string.Empty)).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task SetContainsAsyncShouldReturnTrue()
+    public async Task SetContainsAsyncShouldReturnTrue_Async()
     {
         const string key = "MySet";
         const string item = "MyItem";
@@ -775,7 +775,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetContainsAsyncShouldReturnFalseWhenItemIsWrong()
+    public async Task SetContainsAsyncShouldReturnFalseWhenItemIsWrong_Async()
     {
         const string key = "MySet";
         const string item = "MyItem";
@@ -789,7 +789,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetContainsAsyncShouldReturnFalseWhenKeyIsWrong()
+    public async Task SetContainsAsyncShouldReturnFalseWhenKeyIsWrong_Async()
     {
         const string key = "MySet";
         const string item = "MyItem";
@@ -803,25 +803,25 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetContainsAsyncShouldThrowExceptionWhenItemIsNull()
+    public async Task SetContainsAsyncShouldThrowExceptionWhenItemIsNull_Async()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDefaultDatabase().SetContainsAsync<string>("MySet", null)).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task SetAddAllGenericShouldThrowExceptionWhenItemsIsNull()
+    public async Task SetAddAllGenericShouldThrowExceptionWhenItemsIsNull_Async()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDefaultDatabase().SetAddAllAsync("MySet", CommandFlags.None, (string[])null)).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task SetAddAllGenericShouldThrowExceptionWhenItemsContainsOneNullItem()
+    public async Task SetAddAllGenericShouldThrowExceptionWhenItemsContainsOneNullItem_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().SetAddAllAsync("MySet", CommandFlags.None, "value", null, "value2")).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task SetRemoveGenericWithAnExistingItemShouldReturnTrue()
+    public async Task SetRemoveGenericWithAnExistingItemShouldReturnTrue_Async()
     {
         const string key = "MySet", item = "MyItem";
 
@@ -832,7 +832,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetRemoveGenericWithAnUnexistingItemShouldReturnFalse()
+    public async Task SetRemoveGenericWithAnUnexistingItemShouldReturnFalse_Async()
     {
         const string key = "MySet";
 
@@ -843,7 +843,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetRemoveAsyncGenericWithAnExistingItemShouldReturnTrue()
+    public async Task SetRemoveAsyncGenericWithAnExistingItemShouldReturnTrue_Async()
     {
         const string key = "MySet", item = "MyItem";
 
@@ -854,13 +854,13 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetRemoveAllGenericShouldThrowExceptionWhenItemsContainsOneNullItem()
+    public async Task SetRemoveAllGenericShouldThrowExceptionWhenItemsContainsOneNullItem_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().SetRemoveAllAsync("MySet", CommandFlags.None, "value", null, "value2")).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task SetRemoveAllGenericWithAnExistingItemShouldReturnValidData()
+    public async Task SetRemoveAllGenericWithAnExistingItemShouldReturnValidData_Async()
     {
         const string key = "MySet";
         var items = new[] { "MyItem1", "MyItem2" };
@@ -872,37 +872,37 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetRemoveAllAsyncGenericShouldThrowExceptionWhenItemsContainsOneNullItem()
+    public async Task SetRemoveAllAsyncGenericShouldThrowExceptionWhenItemsContainsOneNullItem_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().SetRemoveAllAsync<string>("MySet", CommandFlags.None, "value", null, "value2")).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task ListAddToLeftGenericShouldThrowExceptionWhenKeyIsEmpty()
+    public async Task ListAddToLeftGenericShouldThrowExceptionWhenKeyIsEmpty_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().ListAddToLeftAsync(string.Empty, string.Empty)).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task ListAddToLeftArrayShouldThrowExceptionWhenKeyIsEmpty()
+    public async Task ListAddToLeftArrayShouldThrowExceptionWhenKeyIsEmpty_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().ListAddToLeftAsync(string.Empty, items: Array.Empty<TestClass<string>>())).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task ListAddToLeftGenericShouldThrowExceptionWhenItemIsNull()
+    public async Task ListAddToLeftGenericShouldThrowExceptionWhenItemIsNull_Async()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDefaultDatabase().ListAddToLeftAsync<string>("MyList", item: null)).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task ListAddToLeftGenericShouldThrowExceptionWhenItemsIsNull()
+    public async Task ListAddToLeftGenericShouldThrowExceptionWhenItemsIsNull_Async()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDefaultDatabase().ListAddToLeftAsync<string>("MyList", items: null)).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task ListAddToLeftGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+    public async Task ListAddToLeftGeneric_With_An_Existing_Key_Should_Return_Valid_Data_Async()
     {
         var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToList();
 
@@ -917,7 +917,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task ListAddToLeftArray_With_An_Existing_Key_Should_Return_Valid_Data()
+    public async Task ListAddToLeftArray_With_An_Existing_Key_Should_Return_Valid_Data_Async()
     {
         var values = Range(0, 5000).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
 
@@ -931,7 +931,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenKeyIsEmpty()
+    public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenKeyIsEmpty_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(
             () => Sut.GetDefaultDatabase().ListAddToLeftAsync(string.Empty, string.Empty))
@@ -939,7 +939,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task ListAddToLeftAsyncArrayShouldThrowExceptionWhenKeyIsEmpty()
+    public async Task ListAddToLeftAsyncArrayShouldThrowExceptionWhenKeyIsEmpty_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(
             () => Sut.GetDefaultDatabase().ListAddToLeftAsync(string.Empty, items: Array.Empty<TestClass<string>>()))
@@ -947,7 +947,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemIsNull()
+    public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemIsNull_Async()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(
             () => Sut.GetDefaultDatabase().ListAddToLeftAsync<string>("MyList", item: null))
@@ -955,7 +955,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemsIsNull()
+    public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemsIsNull_Async()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(
             () => Sut.GetDefaultDatabase().ListAddToLeftAsync<string>("MyList", items: null))
@@ -963,7 +963,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task ListAddToLeftAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+    public async Task ListAddToLeftAsyncGeneric_With_An_Existing_Key_Should_Return_Valid_Data_Async()
     {
         var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToList();
 
@@ -981,7 +981,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task ListAddToLeftAsyncArray_With_An_Existing_Key_Should_Return_Valid_Data()
+    public async Task ListAddToLeftAsyncArray_With_An_Existing_Key_Should_Return_Valid_Data_Async()
     {
         var values = Range(0, 5000).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
 
@@ -995,13 +995,13 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task ListGetFromRightGenericShouldThrowExceptionWhenKeyIsEmpty()
+    public async Task ListGetFromRightGenericShouldThrowExceptionWhenKeyIsEmpty_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().ListGetFromRightAsync<string>(string.Empty)).ConfigureAwait(false);
     }
 
     [Fact]
-    public async Task ListGetFromRightGeneric_With_An_Existing_Key_Should_Return_Valid_Data()
+    public async Task ListGetFromRightGeneric_With_An_Existing_Key_Should_Return_Valid_Data_Async()
     {
         var values = Range(0, 1)
             .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
@@ -1018,7 +1018,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task ListGetFromRightGeneric_With_An_Existing_Key_Should_Return_Null_If_List_Is_Empty()
+    public async Task ListGetFromRightGeneric_With_An_Existing_Key_Should_Return_Null_If_List_Is_Empty_Async()
     {
         const string key = "MyList";
 
@@ -1028,7 +1028,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task ListGetFromRight_With_An_Existing_Key_Should_Return_Null_If_List_Is_Empty()
+    public async Task ListGetFromRight_With_An_Existing_Key_Should_Return_Null_If_List_Is_Empty_Async()
     {
         const string key = "MyList";
 
@@ -1038,7 +1038,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Get_Value_With_Expiry_Updates_ExpiryAt()
+    public async Task Get_Value_With_Expiry_Updates_ExpiryAt_Async()
     {
         const string key = "TestKey";
         const string value = "TestValue";
@@ -1055,7 +1055,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Get_Value_With_Expiry_Updates_ExpiryIn()
+    public async Task Get_Value_With_Expiry_Updates_ExpiryIn_Async()
     {
         const string key = "TestKey";
         const string value = "TestValue";
@@ -1071,7 +1071,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Get_All_Value_With_Expiry_Updates_Expiry()
+    public async Task Get_All_Value_With_Expiry_Updates_Expiry_Async()
     {
         const string key = "TestKey";
         var value = new TestClass<string> { Key = key, Value = "Hello World!" };
@@ -1089,7 +1089,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task Update_Expiry_ExpiresIn()
+    public async Task Update_Expiry_ExpiresIn_Async()
     {
         const string key = "TestKey";
         const string value = "Test Value";

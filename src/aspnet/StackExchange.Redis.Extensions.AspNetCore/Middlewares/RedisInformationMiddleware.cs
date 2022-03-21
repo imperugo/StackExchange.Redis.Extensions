@@ -35,7 +35,9 @@ internal class RedisInformationMiddleware
         this.redisDatabase = redisDatabase;
     }
 
+#pragma warning disable RCS1046
     public async Task Invoke(HttpContext context)
+#pragma warning restore RCS1046
     {
         if (logger.IsEnabled(LogLevel.Trace))
             logger.LogTrace("{MiddlewareName} --> Handling request: {Path}", nameof(RedisInformationMiddleware), context.Request.Path);

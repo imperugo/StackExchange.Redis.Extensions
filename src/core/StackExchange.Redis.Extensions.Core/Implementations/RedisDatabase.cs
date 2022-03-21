@@ -127,7 +127,7 @@ public partial class RedisDatabase : IRedisDatabase
         var entryBytes = value.OfValueSize(Serializer, maxValueLength, key);
 
         return tags?.Count > 0
-            ? ExecuteAddWithTags(key, tags, db => db.StringSetAsync(key, entryBytes, null, when, flag), when, flag)
+            ? ExecuteAddWithTagsAsync(key, tags, db => db.StringSetAsync(key, entryBytes, null, when, flag), when, flag)
             : Database.StringSetAsync(key, entryBytes, null, when, flag);
     }
 
@@ -145,7 +145,7 @@ public partial class RedisDatabase : IRedisDatabase
         var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
 
         return tags?.Count > 0
-            ? ExecuteAddWithTags(key, tags, db => db.StringSetAsync(key, entryBytes, expiration, when, flag), when, flag)
+            ? ExecuteAddWithTagsAsync(key, tags, db => db.StringSetAsync(key, entryBytes, expiration, when, flag), when, flag)
             : Database.StringSetAsync(key, entryBytes, expiration, when, flag);
     }
 
@@ -161,7 +161,7 @@ public partial class RedisDatabase : IRedisDatabase
         var entryBytes = value.OfValueSize(Serializer, maxValueLength, key);
 
         return tags?.Count > 0
-            ? ExecuteAddWithTags(key, tags, db => db.StringSetAsync(key, entryBytes, expiresIn, when, flag), when, flag)
+            ? ExecuteAddWithTagsAsync(key, tags, db => db.StringSetAsync(key, entryBytes, expiresIn, when, flag), when, flag)
             : Database.StringSetAsync(key, entryBytes, expiresIn, when, flag);
     }
 

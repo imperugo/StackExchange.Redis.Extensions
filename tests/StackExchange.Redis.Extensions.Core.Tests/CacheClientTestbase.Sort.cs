@@ -13,7 +13,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests;
 public abstract partial class CacheClientTestBase
 {
     [Fact]
-    public async Task Add_Item_To_Sorted_Set()
+    public async Task Add_Item_To_Sorted_Set_Async()
     {
         var testobject = new TestClass<DateTime>();
 
@@ -31,7 +31,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task Add_More_Items_To_Sorted_Set_In_Order()
+    public async Task Add_More_Items_To_Sorted_Set_In_Order_Async()
     {
         var utcNow = DateTime.UtcNow;
         var entryValueFirst = new TestClass<DateTime>("test_first", utcNow);
@@ -52,7 +52,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task Remove_Item_From_Sorted_Set()
+    public async Task Remove_Item_From_Sorted_Set_Async()
     {
         var testobject = new TestClass<DateTime>();
 
@@ -66,7 +66,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task Return_items_ordered_by_rank()
+    public async Task Return_items_ordered_by_rank_Async()
     {
         var testobject1 = new TestClass<DateTime>("test_1", DateTime.UtcNow);
         var testobject2 = new TestClass<DateTime>("test_2", DateTime.UtcNow);
@@ -94,7 +94,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task Return_items_ordered_by_score()
+    public async Task Return_items_ordered_by_score_Async()
     {
         var testobject1 = new TestClass<DateTime>("test_1", DateTime.UtcNow);
         var testobject2 = new TestClass<DateTime>("test_2", DateTime.UtcNow);
@@ -113,7 +113,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task Return_items_ordered_by_rank_descent()
+    public async Task Return_items_ordered_by_rank_descent_Async()
     {
         var testobject1 = new TestClass<DateTime>("test_1", DateTime.UtcNow);
         var testobject2 = new TestClass<DateTime>("test_2", DateTime.UtcNow);
@@ -141,7 +141,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task Return_items_ordered_ascended()
+    public async Task Return_items_ordered_ascended_Async()
     {
         var testobject1 = new TestClass<DateTime>("test_1", DateTime.UtcNow);
         var testobject2 = new TestClass<DateTime>("test_2", DateTime.UtcNow);
@@ -160,7 +160,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task Return_items_ordered_by_specific_score()
+    public async Task Return_items_ordered_by_specific_score_Async()
     {
         var testobject1 = new TestClass<DateTime>("test_1", DateTime.UtcNow);
         var testobject2 = new TestClass<DateTime>("test_2", DateTime.UtcNow);
@@ -180,7 +180,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task Return_items_ordered_and_skipping_and_taking()
+    public async Task Return_items_ordered_and_skipping_and_taking_Async()
     {
         var testobject1 = new TestClass<DateTime>("test_1", DateTime.UtcNow);
         var testobject2 = new TestClass<DateTime>("test_2", DateTime.UtcNow);
@@ -200,7 +200,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task Return_items_ordered_with_exclude()
+    public async Task Return_items_ordered_with_exclude_Async()
     {
         var testobject1 = new TestClass<DateTime>("test_1", DateTime.UtcNow);
         var testobject2 = new TestClass<DateTime>("test_2", DateTime.UtcNow);
@@ -220,7 +220,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task Add_IncrementItemt_To_Sorted_Set()
+    public async Task Add_IncrementItemt_To_Sorted_Set_Async()
     {
         var testobject = new TestClass<DateTime>();
         const int defaultscore = 1;

@@ -15,7 +15,7 @@ namespace StackExchange.Redis.Extensions.Core.Tests;
 public abstract partial class CacheClientTestBase
 {
     [Fact]
-    public async Task HashSetSingleValueNX_ValueDoesntExists_ShouldInsertAndRetrieveValue()
+    public async Task HashSetSingleValueNX_ValueDoesntExists_ShouldInsertAndRetrieveValue_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -35,7 +35,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashSetSingleValueNX_ValueExists_ShouldNotInsertOriginalValueNotChanged()
+    public async Task HashSetSingleValueNX_ValueExists_ShouldNotInsertOriginalValueNotChanged_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -56,7 +56,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashSetSingleValue_ValueExists_ShouldUpdateValue()
+    public async Task HashSetSingleValue_ValueExists_ShouldUpdateValue_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -76,7 +76,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashSetMultipleValues_HashGetMultipleValues_ShouldInsert()
+    public async Task HashSetMultipleValues_HashGetMultipleValues_ShouldInsert_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -100,7 +100,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashDelete_KeyExists_ShouldDelete()
+    public async Task HashDelete_KeyExists_ShouldDelete_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -118,7 +118,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashDelete_KeyDoesntExist_ShouldReturnFalse()
+    public async Task HashDelete_KeyDoesntExist_ShouldReturnFalse_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -133,7 +133,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashDeleteMultiple_AllKeysExist_ShouldDeleteAll()
+    public async Task HashDeleteMultiple_AllKeysExist_ShouldDeleteAll_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -156,7 +156,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashDeleteMultiple_NotAllKeysExist_ShouldDeleteAllOnlyRequested()
+    public async Task HashDeleteMultiple_NotAllKeysExist_ShouldDeleteAllOnlyRequested_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -191,7 +191,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashExists_KeyExists_ReturnTrue()
+    public async Task HashExists_KeyExists_ReturnTrue_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -207,7 +207,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashExists_KeyDoesntExists_ReturnFalse()
+    public async Task HashExists_KeyDoesntExists_ReturnFalse_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -221,7 +221,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashKeys_HashEmpty_ReturnEmptyCollection()
+    public async Task HashKeys_HashEmpty_ReturnEmptyCollection_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -235,7 +235,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashKeys_HashNotEmpty_ReturnKeysCollection()
+    public async Task HashKeys_HashNotEmpty_ReturnKeysCollection_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -260,7 +260,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashValues_HashEmpty_ReturnEmptyCollection()
+    public async Task HashValues_HashEmpty_ReturnEmptyCollection_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -274,7 +274,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashValues_HashNotEmpty_ReturnAllValues()
+    public async Task HashValues_HashNotEmpty_ReturnAllValues_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -299,7 +299,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashLength_HashEmpty_ReturnZero()
+    public async Task HashLength_HashEmpty_ReturnZero_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -312,7 +312,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashLength_HashNotEmpty_ReturnCorrectCount()
+    public async Task HashLength_HashNotEmpty_ReturnCorrectCount_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -331,7 +331,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashIncerementByLong_ValueDoesntExist_EntryCreatedWithValue()
+    public async Task HashIncerementByLong_ValueDoesntExist_EntryCreatedWithValue_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -349,7 +349,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashIncerementByLong_ValueExist_EntryIncrementedCorrectValueReturned()
+    public async Task HashIncerementByLong_ValueExist_EntryIncrementedCorrectValueReturned_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -369,7 +369,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashIncerementByDouble_ValueDoesntExist_EntryCreatedWithValue()
+    public async Task HashIncerementByDouble_ValueDoesntExist_EntryCreatedWithValue_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -387,7 +387,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashIncerementByDouble_ValueExist_EntryIncrementedCorrectValueReturned()
+    public async Task HashIncerementByDouble_ValueExist_EntryIncrementedCorrectValueReturned_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -421,7 +421,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashScan_EntriesExistUseAstrisk_ReturnCursorToAllEntries()
+    public async Task HashScan_EntriesExistUseAstrisk_ReturnCursorToAllEntries_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
@@ -448,7 +448,7 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashScan_EntriesExistUseAstrisk_ReturnCursorToAllEntriesBeginningWithTwo()
+    public async Task HashScan_EntriesExistUseAstrisk_ReturnCursorToAllEntriesBeginningWithTwo_Async()
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
