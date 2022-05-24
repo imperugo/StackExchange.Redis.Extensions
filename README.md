@@ -22,7 +22,7 @@ The idea of this library is to make easier your live when you need to send / rec
 
 
 
-[Documentation](https://imperugo.gitbook.io/stackexchange-redis-extensions/) is composed of articles and guidance detailing how to get the most out of StackExchange.Redis.Extensions
+[Documentation](doc/README.md) is composed of articles and guidance detailing how to get the most out of StackExchange.Redis.Extensions
 
 
 

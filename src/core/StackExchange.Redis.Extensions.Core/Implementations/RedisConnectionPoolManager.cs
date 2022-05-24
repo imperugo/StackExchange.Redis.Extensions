@@ -1,6 +1,7 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations;
 /// <inheritdoc/>
 public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolManager
 {
-    private static readonly object @lock = new();
+    private readonly static object @lock = new();
     private readonly IStateAwareConnection[] connections;
     private readonly RedisConfiguration redisConfiguration;
     private readonly ILogger<RedisConnectionPoolManager> logger;
@@ -75,7 +76,7 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
                 break;
 
             case ConnectionSelectionStrategy.LeastLoaded:
-                connection = connections.MinBy(x => x.TotalOutstanding());
+                connection = connections.MinBy(x => x.TotalOutstanding())!;
                 break;
 
             default:
@@ -86,6 +87,13 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
             logger.LogDebug("Using connection {HashCode} with {OutStanding} outstanding!", connection.Connection.GetHashCode().ToString(), connection.TotalOutstanding().ToString());
 
         return connection.Connection;
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<IConnectionMultiplexer> GetConnections()
+    {
+        foreach (var connection in connections)
+            yield return connection.Connection;
     }
 
     /// <inheritdoc/>

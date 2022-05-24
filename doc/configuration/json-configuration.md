@@ -2,7 +2,7 @@
 
 If you work with .NET Core the Json format is absolutely the best way because .NET Core offers a package that makes easy to bind the json file into a C# class but let's proceed in order, the json first:
 
-```csharp
+```json
 {
 	"Redis": {
 		"Password": "my_super_secret_password",

@@ -1,6 +1,7 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 
 using StackExchange.Redis.Extensions.Core.Models;
 
@@ -16,6 +17,12 @@ public interface IRedisConnectionPoolManager : IDisposable
     /// </summary>
     /// <returns>Returns an instance of<see cref="IConnectionMultiplexer"/>.</returns>
     IConnectionMultiplexer GetConnection();
+
+    /// <summary>
+    /// Get the Redis connections
+    /// </summary>
+    /// <returns>All the active connections <see cref="IConnectionMultiplexer"/>.</returns>
+    IEnumerable<IConnectionMultiplexer> GetConnections();
 
     /// <summary>
     ///     Gets the information about the connection pool

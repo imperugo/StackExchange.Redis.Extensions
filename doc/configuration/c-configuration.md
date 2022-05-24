@@ -3,31 +3,61 @@
 If you want to embed your configuration directly into the c# the class more or less looks like this:
 
 ```csharp
-var redisConfiguration = new RedisConfiguration()
+var configurations = new[]
 {
-	AbortOnConnectFail = true,
-	KeyPrefix = "_my_key_prefix_",
-	Hosts = new RedisHost[]
-	{
-		new RedisHost(){Host = "192.168.0.10", Port = 6379},
-		new RedisHost(){Host = "192.168.0.11",  Port =6379},
-		new RedisHost(){Host = "192.168.0.12",  Port =6379}
-	},
-	ServiceName = "my-sentinel", // In case you are using Sentinel
-	AllowAdmin = true,
-	ConnectTimeout = 3000,
-	Database = 0,
-	Ssl = true,
-	Password = "my_super_secret_password",
-	ServerEnumerationStrategy = new ServerEnumerationStrategy()
-	{
-		Mode = ServerEnumerationStrategy.ModeOptions.All,
-		TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
-		UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
-	},
-	MaxValueLength = 1024,
-	PoolSize = 5
-};
+    new RedisConfiguration()
+    {
+        AbortOnConnectFail = true,
+        KeyPrefix = "_my_key_prefix_",
+        Hosts = new RedisHost[]
+        {
+            new RedisHost(){Host = "192.168.0.10", Port = 6379},
+            new RedisHost(){Host = "192.168.0.11",  Port =6379},
+            new RedisHost(){Host = "192.168.0.12",  Port =6379}
+        },
+        ServiceName = "my-sentinel", // In case you are using Sentinel
+        AllowAdmin = true,
+        ConnectTimeout = 3000,
+        Database = 0,
+        Ssl = true,
+        Password = "my_super_secret_password",
+        ServerEnumerationStrategy = new ServerEnumerationStrategy()
+        {
+            Mode = ServerEnumerationStrategy.ModeOptions.All,
+            TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
+            UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
+        },
+        MaxValueLength = 1024,
+        PoolSize = 5,
+        IsDefault = true,
+        Name = "My Primary Connection"
+    },
+    new RedisConfiguration()
+    {
+        AbortOnConnectFail = true,
+        KeyPrefix = "_my_key_prefix_",
+        Hosts = new RedisHost[]
+        {
+            new RedisHost(){Host = "202.147.6.91", Port = 6379},
+            new RedisHost(){Host = "202.147.6.92",  Port =6379},
+        },
+        ServiceName = "my-sentinel", // In case you are using Sentinel
+        AllowAdmin = true,
+        ConnectTimeout = 3000,
+        Database = 3,
+        Ssl = true,
+        Password = "my_super_secret_password",
+        ServerEnumerationStrategy = new ServerEnumerationStrategy()
+        {
+            Mode = ServerEnumerationStrategy.ModeOptions.All,
+            TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
+            UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
+        },
+        MaxValueLength = 1024,
+        PoolSize = 2,
+        Name = "My Secondary Connection"
+    }
+}:
 ```
 
 Not is enough to register it into your DI container:
@@ -43,4 +73,3 @@ Example using **Castle.Windsor:**
 ```csharp
 container.Register(Component.For<RedisConfiguration>().Instance(redisConfiguration));
 ```
-
