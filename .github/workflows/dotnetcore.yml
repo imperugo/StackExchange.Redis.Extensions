@@ -30,7 +30,7 @@ jobs:
 
       - run: dotnet --info
       - if: matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest'
-        run: ./build.sh
+        run: dotnet test --verbosity quiet
 
   publish:
     needs: build
