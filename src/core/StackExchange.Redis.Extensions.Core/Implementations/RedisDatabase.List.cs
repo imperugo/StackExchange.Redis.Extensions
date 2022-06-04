@@ -1,6 +1,7 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -50,5 +51,19 @@ public partial class RedisDatabase
         return item == RedisValue.Null
             ? default
             : Serializer.Deserialize<T>(item);
+    }
+    
+    /// <inheritdoc/>
+    public async Task<IEnumerable<T>> ListRangeAsync<T>(string key, long start = 0, long stop = -1,
+        CommandFlags flags = CommandFlags.None)
+    {
+        if (string.IsNullOrEmpty(key))
+            throw new ArgumentException("key cannot be empty.", nameof(key));
+
+        var items = await Database.ListRangeAsync(key, start, stop, flags).ConfigureAwait(false);
+
+        return items.Length == 0
+            ? Enumerable.Empty<T>()
+            : items.Select(x => Serializer.Deserialize<T>(x));
     }
 }
