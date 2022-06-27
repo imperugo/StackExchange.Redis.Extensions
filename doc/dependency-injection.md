@@ -33,5 +33,5 @@ public static IServiceCollection AddStackExchangeRedisExtensions<T>(this IServic
 
 There are two important things to know in this code block:
 
-* Ho to retrieve an instance of the redis configuration ([here](configuration/) the solution);
-* Choise the right serializer ([here](serializers/) few options)
+* How to retrieve an instance of the redis configuration ([here](configuration/) the solution);
+* Choose the right serializer ([here](serializers/) few options)
