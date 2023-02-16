@@ -172,14 +172,17 @@ public partial class RedisDatabase : IRedisDatabase
     }
 
     /// <inheritdoc/>
-    public async Task<IDictionary<string, T?>> GetAllAsync<T>(string[] keys)
+    public async Task<IDictionary<string, T?>> GetAllAsync<T>(HashSet<string>? keys, CommandFlags flag = CommandFlags.None)
     {
-        var redisKeys = new RedisKey[keys.Length];
+        if (keys == null || keys.Count == 0)
+            return new Dictionary<string, T?>(0, StringComparer.Ordinal);
 
-        for (var i = 0; i < keys.Length; i++)
-            redisKeys[i] = (RedisKey)keys[i];
+        var redisKeys = new RedisKey[keys.Count];
 
-        var result = await Database.StringGetAsync(redisKeys).ConfigureAwait(false);
+        for (var i = 0; i < keys.Count; i++)
+            redisKeys[i] = (RedisKey)keys.ElementAt(i);
+
+        var result = await Database.StringGetAsync(redisKeys, flag).ConfigureAwait(false);
 
         var dict = new Dictionary<string, T?>(redisKeys.Length, StringComparer.Ordinal);
 
@@ -192,6 +195,14 @@ public partial class RedisDatabase : IRedisDatabase
         }
 
         return dict;
+    }
+
+    /// <inheritdoc/>
+    public Task<IDictionary<string, T?>> GetAllAsync<T>(string[] keys)
+    {
+        var hashSetKeys = new HashSet<string>(keys);
+
+        return GetAllAsync<T>(hashSetKeys);
     }
 
     /// <inheritdoc/>
