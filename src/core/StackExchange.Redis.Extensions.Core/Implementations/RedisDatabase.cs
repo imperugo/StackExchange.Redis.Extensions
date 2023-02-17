@@ -179,8 +179,12 @@ public partial class RedisDatabase : IRedisDatabase
 
         var redisKeys = new RedisKey[keys.Count];
 
-        for (var i = 0; i < keys.Count; i++)
-            redisKeys[i] = (RedisKey)keys.ElementAt(i);
+        var i = 0;
+        foreach (var key in keys)
+        {
+            redisKeys[i] = (RedisKey)key;
+            i++;
+        }
 
         var result = await Database.StringGetAsync(redisKeys, flag).ConfigureAwait(false);
 
