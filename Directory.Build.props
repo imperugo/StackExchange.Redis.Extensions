@@ -8,11 +8,12 @@
     <!--
     <VersionSuffix>pre</VersionSuffix>
     -->
-    <TargetFrameworks>netstandard2.0;net472;net6.0;net7.0</TargetFrameworks>
+<!--    <TargetFrameworks>netstandard2.0;net472;net6.0;net7.0</TargetFrameworks>-->
     <!--
       When I Work on MacOS, I use the following line:
-      <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+      <TargetFrameworks>netstandard2.0;net6.0;net7.0</TargetFrameworks>
     -->
+    <TargetFrameworks>netstandard2.1;net6.0;net7.0</TargetFrameworks>
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

@@ -501,7 +501,17 @@ public partial class RedisDatabase : IRedisDatabase
         var data = ParseCategorizedInfo(info);
 
         // Return a dictionary of the Info Key and Info value
-        return data.ToDictionary(x => x.Key, x => x.InfoValue);
+
+        var result = new Dictionary<string, string>();
+
+        for (var i = 0; i < data.Length; i++)
+        {
+            var x = data[i];
+
+            result.TryAdd(x.Key, x.InfoValue);
+        }
+
+        return result;
     }
 
     private InfoDetail[] ParseCategorizedInfo(string info)

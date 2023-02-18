@@ -4,12 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
+using MemoryPack;
+
 namespace StackExchange.Redis.Extensions.Tests.Helpers;
 
 [Serializable]
 [DataContract]
-public class TestClass<T> : IEquatable<TestClass<T>>
+[MemoryPackable]
+public partial class TestClass<T> : IEquatable<TestClass<T>>
 {
+    [MemoryPackConstructor]
     public TestClass()
     {
     }

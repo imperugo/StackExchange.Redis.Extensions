@@ -204,7 +204,7 @@ public abstract partial class CacheClientTestBase : IDisposable
 
         await Parallel.ForEachAsync(values, async (x, cancellationToken) => await db.StringSetAsync(x.Key, serializer.Serialize(x.Value)).ConfigureAwait(false)).ConfigureAwait(false);
 
-        var keys = new[]
+        var keys = new HashSet<string>
         {
             values[0].Key,
             values[1].Key,
@@ -545,7 +545,7 @@ public abstract partial class CacheClientTestBase : IDisposable
         var tupleValues = values.Select(x => new Tuple<string, TestClass<string>>(x.Key, x)).ToArray();
 
         var result = await Sut.GetDefaultDatabase().AddAllAsync(tupleValues).ConfigureAwait(false);
-        var cached = await Sut.GetDefaultDatabase().GetAllAsync<TestClass<string>>(values.Select(x => x.Key).ToArray()).ConfigureAwait(false);
+        var cached = await Sut.GetDefaultDatabase().GetAllAsync<TestClass<string>>(values.Select(x => x.Key).ToHashSet()).ConfigureAwait(false);
 
         Assert.True(result);
         Assert.NotNull(cached);
@@ -1082,7 +1082,7 @@ public abstract partial class CacheClientTestBase : IDisposable
         var keys = new List<string> { key };
 
         await Sut.GetDefaultDatabase().AddAllAsync(values, originalTime).ConfigureAwait(false);
-        await Sut.GetDefaultDatabase().GetAllAsync<TestClass<string>>(keys.ToArray(), testTime).ConfigureAwait(false);
+        await Sut.GetDefaultDatabase().GetAllAsync<TestClass<string>>(keys.ToHashSet(), testTime).ConfigureAwait(false);
         var resultValue = await db.StringGetWithExpiryAsync(key).ConfigureAwait(false);
 
         Assert.True(originalTime < resultValue.Expiry.Value);
