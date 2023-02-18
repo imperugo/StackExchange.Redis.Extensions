@@ -4,12 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
+using MemoryPack;
+
 namespace StackExchange.Redis.Extensions.Tests.Helpers;
 
 [Serializable]
 [DataContract]
-public class ComplexClassForTest<T, TK> : IEquatable<ComplexClassForTest<T, TK>>
+[MemoryPackable]
+public partial class ComplexClassForTest<T, TK> : IEquatable<ComplexClassForTest<T, TK>>
 {
+    [MemoryPackConstructor]
     public ComplexClassForTest()
     {
     }
