@@ -22,5 +22,5 @@ public interface ISerializer
     /// <returns>
     /// The instance of the specified Item
     /// </returns>
-    T Deserialize<T>(byte[] serializedObject);
+    T? Deserialize<T>(byte[] serializedObject);
 }

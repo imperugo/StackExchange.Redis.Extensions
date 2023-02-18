@@ -55,7 +55,7 @@ internal class RedisInformationMiddleware
             var list = new List<ConnectionPoolInformation>();
 
             foreach (var client in clients)
-                list.Add(client.ConnectionPoolManager.GetConnectionInformations());
+                list.Add(client.ConnectionPoolManager.GetConnectionInformation());
 
             await JsonSerializer.SerializeAsync(context.Response.Body, list).ConfigureAwait(false);
 

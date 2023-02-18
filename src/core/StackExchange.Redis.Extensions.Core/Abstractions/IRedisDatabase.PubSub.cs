@@ -26,7 +26,7 @@ public partial interface IRedisDatabase
     /// <param name="channel">The pub/sub channel name</param>
     /// <param name="handler">The function to run when a message has received.</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flag = CommandFlags.None);
+    Task SubscribeAsync<T>(RedisChannel channel, Func<T?, Task> handler, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Unregisters a callback handler to process messages published to a channel.
@@ -35,7 +35,7 @@ public partial interface IRedisDatabase
     /// <param name="channel">The pub/sub channel name</param>
     /// <param name="handler">The function to run when a message has received.</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flag = CommandFlags.None);
+    Task UnsubscribeAsync<T>(RedisChannel channel, Func<T?, Task> handler, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Unregisters all callback handlers on a channel.

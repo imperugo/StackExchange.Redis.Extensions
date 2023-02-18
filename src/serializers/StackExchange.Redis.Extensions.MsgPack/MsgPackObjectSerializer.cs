@@ -38,7 +38,7 @@ public class MsgPackObjectSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject)
+    public T? Deserialize<T>(byte[] serializedObject)
     {
         if (typeof(T) == typeof(string))
             return (T)Convert.ChangeType(encoding.GetString(serializedObject), typeof(T));

@@ -49,6 +49,6 @@ public partial class RedisDatabase
 
         return item == RedisValue.Null
             ? default
-            : Serializer.Deserialize<T>(item);
+            : Serializer.Deserialize<T>(item!);
     }
 }

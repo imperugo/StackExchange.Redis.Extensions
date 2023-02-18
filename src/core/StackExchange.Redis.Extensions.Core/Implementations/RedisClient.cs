@@ -92,7 +92,7 @@ public class RedisClient : IRedisClient
             redisConfiguration.ServerEnumerationStrategy,
             dbNumber,
             redisConfiguration.MaxValueLength,
-            keyPrefix!);
+            keyPrefix);
     }
 
     /// <inheritdoc/>

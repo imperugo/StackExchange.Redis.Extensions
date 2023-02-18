@@ -37,7 +37,7 @@ public partial class RedisDatabase
     {
         var redisValue = await Database.HashGetAsync(hashKey, key, commandFlags).ConfigureAwait(false);
 
-        return redisValue.HasValue ? Serializer.Deserialize<T>(redisValue) : default;
+        return redisValue.HasValue ? Serializer.Deserialize<T>(redisValue!) : default;
     }
 
     /// <inheritdoc/>
@@ -59,12 +59,12 @@ public partial class RedisDatabase
     }
 
     /// <inheritdoc/>
-    public async Task<Dictionary<string, T>> HashGetAllAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
+    public async Task<Dictionary<string, T?>> HashGetAllAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
     {
         return (await Database.HashGetAllAsync(hashKey, commandFlags).ConfigureAwait(false))
             .ToDictionary(
                 x => x.Name.ToString(),
-                x => Serializer.Deserialize<T>(x.Value),
+                x => Serializer.Deserialize<T>(x.Value!),
                 StringComparer.Ordinal);
     }
 
@@ -107,14 +107,14 @@ public partial class RedisDatabase
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<T>> HashValuesAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
+    public async Task<IEnumerable<T?>> HashValuesAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
     {
-        return (await Database.HashValuesAsync(hashKey, commandFlags).ConfigureAwait(false)).Select(x => Serializer.Deserialize<T>(x));
+        return (await Database.HashValuesAsync(hashKey, commandFlags).ConfigureAwait(false)).Select(x => Serializer.Deserialize<T>(x!));
     }
 
     /// <inheritdoc/>
-    public Dictionary<string, T> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags commandFlags = CommandFlags.None)
+    public Dictionary<string, T?> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags commandFlags = CommandFlags.None)
     {
-        return Database.HashScan(hashKey, pattern, pageSize, commandFlags).ToDictionary(x => x.Name.ToString(), x => Serializer.Deserialize<T>(x.Value), StringComparer.Ordinal);
+        return Database.HashScan(hashKey, pattern, pageSize, commandFlags).ToDictionary(x => x.Name.ToString(), x => Serializer.Deserialize<T>(x.Value!), StringComparer.Ordinal);
     }
 }

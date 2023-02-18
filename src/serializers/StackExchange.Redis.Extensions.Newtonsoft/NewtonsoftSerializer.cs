@@ -54,7 +54,7 @@ public class NewtonsoftSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject)
+    public T? Deserialize<T>(byte[] serializedObject)
     {
         var jsonString = encoding.GetString(serializedObject);
         return JsonConvert.DeserializeObject<T>(jsonString, settings)!;

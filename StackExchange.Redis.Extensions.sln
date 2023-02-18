@@ -51,6 +51,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "items", "items", "{0C036AC5
 		.ruleset = .ruleset
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.MemoryPack", "src\serializers\StackExchange.Redis.Extensions.MemoryPack\StackExchange.Redis.Extensions.MemoryPack.csproj", "{63B1A4C1-3A5F-4AD0-901E-5BE7513B79B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -184,6 +186,18 @@ Global
 		{D67CB379-4FFE-44DE-82AD-4884410EAE68}.Release|x64.Build.0 = Release|Any CPU
 		{D67CB379-4FFE-44DE-82AD-4884410EAE68}.Release|x86.ActiveCfg = Release|Any CPU
 		{D67CB379-4FFE-44DE-82AD-4884410EAE68}.Release|x86.Build.0 = Release|Any CPU
+		{63B1A4C1-3A5F-4AD0-901E-5BE7513B79B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63B1A4C1-3A5F-4AD0-901E-5BE7513B79B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63B1A4C1-3A5F-4AD0-901E-5BE7513B79B0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{63B1A4C1-3A5F-4AD0-901E-5BE7513B79B0}.Debug|x64.Build.0 = Debug|Any CPU
+		{63B1A4C1-3A5F-4AD0-901E-5BE7513B79B0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{63B1A4C1-3A5F-4AD0-901E-5BE7513B79B0}.Debug|x86.Build.0 = Debug|Any CPU
+		{63B1A4C1-3A5F-4AD0-901E-5BE7513B79B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63B1A4C1-3A5F-4AD0-901E-5BE7513B79B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63B1A4C1-3A5F-4AD0-901E-5BE7513B79B0}.Release|x64.ActiveCfg = Release|Any CPU
+		{63B1A4C1-3A5F-4AD0-901E-5BE7513B79B0}.Release|x64.Build.0 = Release|Any CPU
+		{63B1A4C1-3A5F-4AD0-901E-5BE7513B79B0}.Release|x86.ActiveCfg = Release|Any CPU
+		{63B1A4C1-3A5F-4AD0-901E-5BE7513B79B0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9F9CBFE0-44DE-11EA-A8DD-B7FC9A10F453} = {8C4063C0-44DE-11EA-A8DD-B7FC9A10F453}
@@ -199,5 +213,6 @@ Global
 		{D08EBEF3-9085-48EB-9625-EDC523130447} = {9F9CBFE0-44DE-11EA-A8DD-B7FC9A10F453}
 		{39272F4E-08B3-432B-A67B-BBFB398E5B8B} = {84A7F7A8-EE6E-472A-A564-9C8AD6A07947}
 		{D67CB379-4FFE-44DE-82AD-4884410EAE68} = {EF631C92-AFB9-4D53-A532-039AA1D95FC2}
+		{63B1A4C1-3A5F-4AD0-901E-5BE7513B79B0} = {95A26DA0-44DE-11EA-A8DD-B7FC9A10F453}
 	EndGlobalSection
 EndGlobal

@@ -90,7 +90,7 @@ public partial interface IRedisDatabase
     /// <param name="hashKey">Key of the hash</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>list of fields and their values stored in the hash, or an empty list when key does not exist.</returns>
-    Task<Dictionary<string, T>> HashGetAllAsync<T>(string hashKey, CommandFlags flag = CommandFlags.None);
+    Task<Dictionary<string, T?>> HashGetAllAsync<T>(string hashKey, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Increments the number stored at field in the hash stored at key by increment.
@@ -189,7 +189,7 @@ public partial interface IRedisDatabase
     /// <param name="hashKey">Key of the hash</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>list of values in the hash, or an empty list when key does not exist.</returns>
-    Task<IEnumerable<T>> HashValuesAsync<T>(string hashKey, CommandFlags flag = CommandFlags.None);
+    Task<IEnumerable<T?>> HashValuesAsync<T>(string hashKey, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     iterates fields of Hash types and their associated values.
@@ -203,5 +203,5 @@ public partial interface IRedisDatabase
     /// <param name="pattern">GLOB search pattern</param>
     /// <param name="pageSize">Number of elements to retrieve from the redis server in the cursor</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    Dictionary<string, T> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags flag = CommandFlags.None);
+    Dictionary<string, T?> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags flag = CommandFlags.None);
 }

@@ -96,7 +96,7 @@ public partial class RedisDatabase : IRedisDatabase
 
         return !valueBytes.HasValue
             ? default
-            : Serializer.Deserialize<T>(valueBytes);
+            : Serializer.Deserialize<T>(valueBytes!);
     }
 
     /// <inheritdoc/>
@@ -172,32 +172,38 @@ public partial class RedisDatabase : IRedisDatabase
     }
 
     /// <inheritdoc/>
-    public async Task<IDictionary<string, T?>> GetAllAsync<T>(string[] keys)
+    public async Task<IDictionary<string, T?>> GetAllAsync<T>(HashSet<string> keys, CommandFlags flag = CommandFlags.None)
     {
-        var redisKeys = new RedisKey[keys.Length];
+        if (keys.Count == 0)
+            return new Dictionary<string, T?>(0, StringComparer.Ordinal);
 
-        for (var i = 0; i < keys.Length; i++)
-            redisKeys[i] = (RedisKey)keys[i];
+        var redisKeys = new RedisKey[keys.Count];
 
-        var result = await Database.StringGetAsync(redisKeys).ConfigureAwait(false);
+        var i = 0;
+        foreach (var key in keys)
+        {
+            redisKeys[i] = (RedisKey)key;
+            i++;
+        }
+
+        var result = await Database.StringGetAsync(redisKeys, flag).ConfigureAwait(false);
 
         var dict = new Dictionary<string, T?>(redisKeys.Length, StringComparer.Ordinal);
 
         for (var index = 0; index < redisKeys.Length; index++)
         {
             var value = result[index];
-            dict.Add(redisKeys[index], value == RedisValue.Null
+            dict.Add(redisKeys[index]!, value == RedisValue.Null
                 ? default
-                : Serializer.Deserialize<T>(value));
+                : Serializer.Deserialize<T>(value!));
         }
 
         return dict;
     }
 
     /// <inheritdoc/>
-    public async Task<IDictionary<string, T?>> GetAllAsync<T>(string[] keys, DateTimeOffset expiresAt)
-    {
-        var tsk1 = GetAllAsync<T>(keys);
+    public async Task<IDictionary<string, T?>> GetAllAsync<T>(HashSet<string> keys, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)    {
+        var tsk1 = GetAllAsync<T>(keys, flag);
         var tsk2 = UpdateExpiryAllAsync(keys, expiresAt);
 
         await Task.WhenAll(tsk1, tsk2).ConfigureAwait(false);
@@ -206,9 +212,8 @@ public partial class RedisDatabase : IRedisDatabase
     }
 
     /// <inheritdoc/>
-    public async Task<IDictionary<string, T?>> GetAllAsync<T>(string[] keys, TimeSpan expiresIn)
-    {
-        var tsk1 = GetAllAsync<T>(keys);
+    public async Task<IDictionary<string, T?>> GetAllAsync<T>(HashSet<string> keys, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None)    {
+        var tsk1 = GetAllAsync<T>(keys, flag);
         var tsk2 = UpdateExpiryAllAsync(keys, expiresIn);
 
         await Task.WhenAll(tsk1, tsk2).ConfigureAwait(false);
@@ -289,7 +294,7 @@ public partial class RedisDatabase : IRedisDatabase
 
         return item == RedisValue.Null
             ? default
-            : Serializer.Deserialize<T>(item);
+            : Serializer.Deserialize<T>(item!);
     }
 
     /// <inheritdoc/>
@@ -300,7 +305,7 @@ public partial class RedisDatabase : IRedisDatabase
 
         var items = await Database.SetPopAsync(key, count, flag).ConfigureAwait(false);
 
-        return items.Select(item => item == RedisValue.Null ? default : Serializer.Deserialize<T>(item));
+        return items.Select(item => item == RedisValue.Null ? default : Serializer.Deserialize<T>(item!));
     }
 
     /// <inheritdoc/>
@@ -392,7 +397,7 @@ public partial class RedisDatabase : IRedisDatabase
         {
             var m = members[i];
 
-            result[i] = Serializer.Deserialize<T>(m);
+            result[i] = Serializer.Deserialize<T>(m!)!;
         }
 
         return result;
@@ -417,11 +422,11 @@ public partial class RedisDatabase : IRedisDatabase
             do
             {
                 var redisResult = await Database.ExecuteAsync("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000").ConfigureAwait(false);
-                var innerResult = (RedisResult[])redisResult;
+                var innerResult = (RedisResult[])redisResult!;
 
-                nextCursor = long.Parse((string)innerResult[0]);
+                nextCursor = long.Parse((string)innerResult[0]!);
 
-                var resultLines = ((string[])innerResult[1]).ToArray();
+                var resultLines = ((string[])innerResult[1]!).ToArray();
                 keys.UnionWith(resultLines);
             }
             while (nextCursor != 0);

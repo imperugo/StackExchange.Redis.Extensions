@@ -28,7 +28,7 @@ public class ProtobufSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject)
+    public T? Deserialize<T>(byte[] serializedObject)
     {
         using var ms = new MemoryStream(serializedObject);
 
