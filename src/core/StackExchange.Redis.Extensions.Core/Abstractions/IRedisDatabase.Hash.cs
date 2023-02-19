@@ -77,7 +77,7 @@ public partial interface IRedisDatabase
     /// <param name="keys">Keys to retrieve from the hash</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>list of values associated with the given fields, in the same order as they are requested.</returns>
-    Task<Dictionary<string, T?>> HashGetAsync<T>(string hashKey, string[] keys, CommandFlags flag = CommandFlags.None);
+    Task<IDictionary<string, T?>> HashGetAsync<T>(string hashKey, string[] keys, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Returns all fields and values of the hash stored at key. In the returned value,
@@ -90,7 +90,7 @@ public partial interface IRedisDatabase
     /// <param name="hashKey">Key of the hash</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>list of fields and their values stored in the hash, or an empty list when key does not exist.</returns>
-    Task<Dictionary<string, T?>> HashGetAllAsync<T>(string hashKey, CommandFlags flag = CommandFlags.None);
+    Task<IDictionary<string, T?>> HashGetAllAsync<T>(string hashKey, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Increments the number stored at field in the hash stored at key by increment.

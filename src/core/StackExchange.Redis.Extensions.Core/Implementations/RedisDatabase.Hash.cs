@@ -1,6 +1,7 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,8 +42,19 @@ public partial class RedisDatabase
     }
 
     /// <inheritdoc/>
-    public async Task<Dictionary<string, T?>> HashGetAsync<T>(string hashKey, string[] keys, CommandFlags commandFlags = CommandFlags.None)
+    public async Task<IDictionary<string, T?>> HashGetAsync<T>(string hashKey, string[] keys, CommandFlags commandFlags = CommandFlags.None)
     {
+#if NET7_0 || NET6_0
+        var concurrent = new ConcurrentDictionary<string, T?>();
+
+        await Parallel.ForEachAsync(keys, async (key, token) =>
+        {
+            var result = await HashGetAsync<T>(hashKey, key, commandFlags);
+            concurrent.TryAdd(key, result);
+        });
+
+        return concurrent;
+#else
         var tasks = new Task<T?>[keys.Length];
 
         for (var i = 0; i < keys.Length; i++)
@@ -56,10 +68,11 @@ public partial class RedisDatabase
             result.Add(keys[i], tasks[i].Result);
 
         return result;
+#endif
     }
 
     /// <inheritdoc/>
-    public async Task<Dictionary<string, T?>> HashGetAllAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
+    public async Task<IDictionary<string, T?>> HashGetAllAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
     {
         return (await Database.HashGetAllAsync(hashKey, commandFlags).ConfigureAwait(false))
             .ToDictionary(
