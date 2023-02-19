@@ -202,7 +202,15 @@ public abstract partial class CacheClientTestBase : IDisposable
             .Select(i => new TestClass<string>($"Key{i.ToString()}", Guid.NewGuid().ToString()))
             .ToArray();
 
-        await Parallel.ForEachAsync(values, async (x, cancellationToken) => await db.StringSetAsync(x.Key, serializer.Serialize(x.Value)).ConfigureAwait(false)).ConfigureAwait(false);
+        var tasks = new Task[values.Length];
+
+        for(var i =0; i < values.Length; i++)
+        {
+            var x = values[i];
+            tasks[i] = db.StringSetAsync(x.Key, serializer.Serialize(x.Value));
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
         var keys = new HashSet<string>
         {
@@ -271,7 +279,15 @@ public abstract partial class CacheClientTestBase : IDisposable
             .Select(i => new TestClass<string>($"Key{i.ToString()}", Guid.NewGuid().ToString()))
             .ToArray();
 
-        await Parallel.ForEachAsync(values, async (x, _) => await db.StringSetAsync(x.Key, x.Value).ConfigureAwait(false)).ConfigureAwait(false);
+        var tasks = new Task[values.Length];
+
+        for(var i =0; i < values.Length; i++)
+        {
+            var x = values[i];
+            tasks[i] = db.StringSetAsync(x.Key, serializer.Serialize(x.Value));
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
         await Sut
             .GetDefaultDatabase()
@@ -286,9 +302,18 @@ public abstract partial class CacheClientTestBase : IDisposable
     public async Task Search_With_Valid_Start_With_Pattern_Should_Return_Correct_Keys_Async()
     {
         var values = Range(1, 20)
-            .Select(i => new TestClass<string>($"Key{i.ToString()}", Guid.NewGuid().ToString()));
+            .Select(i => new TestClass<string>($"Key{i.ToString()}", Guid.NewGuid().ToString()))
+            .ToArray();
 
-        await Parallel.ForEachAsync(values, async (x, _) => await db.StringSetAsync(x.Key, x.Value).ConfigureAwait(false)).ConfigureAwait(false);
+        var tasks = new Task[values.Length];
+
+        for(var i =0; i < values.Length; i++)
+        {
+            var x = values[i];
+            tasks[i] = db.StringSetAsync(x.Key, serializer.Serialize(x.Value));
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
         var keys = await Sut
             .GetDefaultDatabase()
@@ -319,9 +344,18 @@ public abstract partial class CacheClientTestBase : IDisposable
     public async Task SearchKeys_With_Start_Should_Return_All_Keys_Async()
     {
         var values = Range(0, 10)
-            .Select(i => new TestClass<string>($"mykey{i.ToString()}", Guid.NewGuid().ToString()));
+            .Select(i => new TestClass<string>($"mykey{i.ToString()}", Guid.NewGuid().ToString()))
+            .ToArray();
 
-        await Parallel.ForEachAsync(values, async (x, _) => await db.StringSetAsync(x.Key, x.Value).ConfigureAwait(false)).ConfigureAwait(false);
+        var tasks = new Task[values.Length];
+
+        for(var i =0; i < values.Length; i++)
+        {
+            var x = values[i];
+            tasks[i] = db.StringSetAsync(x.Key, serializer.Serialize(x.Value));
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
         var keys = (await Sut
             .GetDefaultDatabase()
@@ -339,7 +373,15 @@ public abstract partial class CacheClientTestBase : IDisposable
             .Select(i => new TestClass<string>($"mykey{i.ToString()}", Guid.NewGuid().ToString()))
             .ToArray();
 
-        await Parallel.ForEachAsync(values, async (x, _) => await db.StringSetAsync(x.Key, x.Value).ConfigureAwait(false)).ConfigureAwait(false);
+        var tasks = new Task[values.Length];
+
+        for(var i =0; i < values.Length; i++)
+        {
+            var x = values[i];
+            tasks[i] = db.StringSetAsync(x.Key, serializer.Serialize(x.Value));
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
         var keys = (await Sut
             .GetDefaultDatabase()
@@ -361,7 +403,15 @@ public abstract partial class CacheClientTestBase : IDisposable
             .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
             .ToArray();
 
-        await Parallel.ForEachAsync(values, async (x, _) => await db.StringSetAsync(x.Key, x.Value).ConfigureAwait(false)).ConfigureAwait(false);
+        var tasks = new Task[values.Length];
+
+        for(var i =0; i < values.Length; i++)
+        {
+            var x = values[i];
+            tasks[i] = db.StringSetAsync(x.Key, serializer.Serialize(x.Value));
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
         Assert.True(await Sut
             .GetDefaultDatabase()
@@ -376,9 +426,18 @@ public abstract partial class CacheClientTestBase : IDisposable
             .Select(
                 _ => new TestClass<string>(
                     Guid.NewGuid().ToString(),
-                    Guid.NewGuid().ToString()));
+                    Guid.NewGuid().ToString()))
+            .ToArray();
 
-        await Parallel.ForEachAsync(values, async (x, _) => await db.StringSetAsync(x.Key, x.Value).ConfigureAwait(false)).ConfigureAwait(false);
+        var tasks = new Task[values.Length];
+
+        for(var i =0; i < values.Length; i++)
+        {
+            var x = values[i];
+            tasks[i] = db.StringSetAsync(x.Key, serializer.Serialize(x.Value));
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
         Assert.False(await Sut.GetDefaultDatabase().ExistsAsync("this key doesn not exist into redi").ConfigureAwait(false));
     }
@@ -390,12 +449,11 @@ public abstract partial class CacheClientTestBase : IDisposable
             .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
             .ToArray();
 
-        await Parallel.ForEachAsync(values, async (x, _) =>
-            {
-                await db.StringSetAsync(x.Key, serializer.Serialize(x.Value)).ConfigureAwait(false);
-                await Sut.GetDefaultDatabase().SetAddAsync("MySet", x.Key).ConfigureAwait(false);
-            })
-            .ConfigureAwait(false);
+        foreach (var x in values)
+        {
+            await db.StringSetAsync(x.Key, serializer.Serialize(x.Value)).ConfigureAwait(false);
+            await Sut.GetDefaultDatabase().SetAddAsync("MySet", x.Key).ConfigureAwait(false);
+        }
 
         var keys = db.SetMembers("MySet");
 
@@ -409,7 +467,15 @@ public abstract partial class CacheClientTestBase : IDisposable
             .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
             .ToArray();
 
-        await Parallel.ForEachAsync(values, async (x, _) => await db.SetAddAsync("MySet", serializer.Serialize(x.Value)).ConfigureAwait(false)).ConfigureAwait(false);
+        var tasks = new Task[values.Length];
+
+        for(var i =0; i < values.Length; i++)
+        {
+            var x = values[i];
+            tasks[i] = db.SetAddAsync("MySet", serializer.Serialize(x.Value));
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
         var result = await Sut.GetDefaultDatabase().SetPopAsync<string>("MySet").ConfigureAwait(false);
 
@@ -442,7 +508,15 @@ public abstract partial class CacheClientTestBase : IDisposable
             .Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
             .ToArray();
 
-        await Parallel.ForEachAsync(values, async (x, _) => await db.SetAddAsync("MySet", serializer.Serialize(x.Value)).ConfigureAwait(false)).ConfigureAwait(false);
+        var tasks = new Task[values.Length];
+
+        for(var i =0; i < values.Length; i++)
+        {
+            var x = values[i];
+            tasks[i] = db.SetAddAsync("MySet", serializer.Serialize(x.Value));
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
         var result = (await Sut
             .GetDefaultDatabase()
@@ -486,7 +560,15 @@ public abstract partial class CacheClientTestBase : IDisposable
     {
         var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
 
-        await Parallel.ForEachAsync(values, async (x, _) => await db.SetAddAsync("MySet", serializer.Serialize(x)).ConfigureAwait(false)).ConfigureAwait(false);
+        var tasks = new Task[values.Length];
+
+        for(var i =0; i < values.Length; i++)
+        {
+            var x = values[i];
+            tasks[i] = db.SetAddAsync("MySet", serializer.Serialize(x));
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
         var keys = (await Sut
             .GetDefaultDatabase()
@@ -505,12 +587,11 @@ public abstract partial class CacheClientTestBase : IDisposable
     {
         var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
 
-        await Parallel.ForEachAsync(values, async (x, _) =>
-            {
-                await db.StringSetAsync(x.Key, serializer.Serialize(x.Value)).ConfigureAwait(false);
-                await db.SetAddAsync("MySet", x.Key).ConfigureAwait(false);
-            })
-            .ConfigureAwait(false);
+        foreach (var x in values)
+        {
+            await db.StringSetAsync(x.Key, serializer.Serialize(x.Value)).ConfigureAwait(false);
+            await db.SetAddAsync("MySet", x.Key).ConfigureAwait(false);
+        }
 
         var keys = await Sut
             .GetDefaultDatabase()
@@ -525,7 +606,15 @@ public abstract partial class CacheClientTestBase : IDisposable
     {
         var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
 
-        await Parallel.ForEachAsync(values, async (x, _) => await db.SetAddAsync("MySet", serializer.Serialize(x)).ConfigureAwait(false)).ConfigureAwait(false);
+        var tasks = new Task[values.Length];
+
+        for(var i =0; i < values.Length; i++)
+        {
+            var x = values[i];
+            tasks[i] = db.SetAddAsync("MySet", serializer.Serialize(x));
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
         var keys = (await Sut
             .GetDefaultDatabase()
@@ -729,12 +818,11 @@ public abstract partial class CacheClientTestBase : IDisposable
     {
         var values = Range(0, 5).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToList();
 
-        await Parallel.ForEachAsync(values, async (x, _) =>
-            {
-                await db.StringSetAsync(x.Key, serializer.Serialize(x.Value)).ConfigureAwait(false);
-                await Sut.GetDefaultDatabase().SetAddAsync("MySet", x).ConfigureAwait(false);
-            })
-            .ConfigureAwait(false);
+        foreach (var x in values)
+        {
+            await db.StringSetAsync(x.Key, serializer.Serialize(x.Value)).ConfigureAwait(false);
+            await Sut.GetDefaultDatabase().SetAddAsync("MySet", x).ConfigureAwait(false);
+        }
 
         var keys = await db
             .SetMembersAsync("MySet")
@@ -1009,7 +1097,15 @@ public abstract partial class CacheClientTestBase : IDisposable
 
         const string key = "MyList";
 
-        await Parallel.ForEachAsync(values, async (x, _) => await db.ListLeftPushAsync(key, serializer.Serialize(x)).ConfigureAwait(false)).ConfigureAwait(false);
+        var tasks = new Task[values.Length];
+
+        for(var i =0; i < values.Length; i++)
+        {
+            var x = values[i];
+            tasks[i] = db.ListLeftPushAsync(key, serializer.Serialize(x));
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
 
         var item = await Sut.GetDefaultDatabase().ListGetFromRightAsync<TestClass<string>>(key).ConfigureAwait(false);
 

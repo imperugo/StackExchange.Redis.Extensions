@@ -508,7 +508,7 @@ public partial class RedisDatabase : IRedisDatabase
         {
             var x = data[i];
 
-            result.TryAdd(x.Key, x.InfoValue);
+            result.Add(x.Key, x.InfoValue);
         }
 
         return result;

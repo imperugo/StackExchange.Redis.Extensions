@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <IsPackable>False</IsPackable>
     <NoWarn>SA1507,SA1210,SA1515,SA1591,SA1513,CS1507,CS1210,CS1515,CS1591</NoWarn>
   </PropertyGroup>
 
