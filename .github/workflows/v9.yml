@@ -3,11 +3,9 @@ on:
   push:
     branches:
       - v9
-    tags:
-      - "*.*.*"
+
 jobs:
   build:
-    needs: build
     name: Build
     runs-on: windows-latest
     steps:
