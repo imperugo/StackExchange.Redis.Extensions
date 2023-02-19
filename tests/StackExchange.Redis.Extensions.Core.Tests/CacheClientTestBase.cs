@@ -34,13 +34,22 @@ public abstract partial class CacheClientTestBase : IDisposable
 
     internal CacheClientTestBase(ISerializer serializer)
     {
+        var redisHost = Environment.GetEnvironmentVariable("REDIS_HOST");
+
+        if (string.IsNullOrEmpty(redisHost))
+            redisHost = "localhost";
+
         var redisConfiguration = new RedisConfiguration()
         {
             AbortOnConnectFail = true,
             KeyPrefix = "MyPrefix__",
             Hosts = new[]
             {
-                new RedisHost { Host = "localhost", Port = 6379 }
+                new RedisHost
+                {
+                    Host = redisHost,
+                    Port = 6379
+                }
             },
             AllowAdmin = true,
             ConnectTimeout = 3000,
