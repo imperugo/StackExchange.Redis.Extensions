@@ -6,22 +6,34 @@ on:
 
 jobs:
   build:
-    name: Build
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ "ubuntu-latest"]
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Install Dependencies (Ubuntu)
+        run: sudo apt install redis-server
+        if: matrix.os == 'ubuntu-latest'
 
+      - name: Setup .NET Core 3.1
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
+
+      - uses: actions/checkout@v2
       - name: Setup .NET Core6.0
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x
 
+      - uses: actions/checkout@v2
       - name: Setup .NET Core7.0
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 7.0.x
 
-      - name: Build with dotnet
-        run: dotnet test
-        shell: bash
+      - run: dotnet --info
+      - if: matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest'
+        run: ./build.sh
