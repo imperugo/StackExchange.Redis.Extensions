@@ -51,7 +51,8 @@ public partial class RedisDatabase
         {
             var result = await HashGetAsync<T>(hashKey, key, commandFlags);
             concurrent.TryAdd(key, result);
-        });
+        })
+            .ConfigureAwait(false);
 
         return concurrent;
 #else
