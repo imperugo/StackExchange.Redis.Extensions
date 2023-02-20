@@ -8,7 +8,7 @@ jobs:
   # Label of the container job
   container-job:
     # Containers must run in Linux based operating systems
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     # Service containers to run with `container-job`
     services:
@@ -23,10 +23,39 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    env:
-      # The hostname used to communicate with the Redis service container
-      REDIS_HOST: redis
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup .NET Core 2.1
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 2.1.x
+
+      - name: Setup .NET Core 5.0
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+
+      - name: Setup .NET Core 6.0
+        uses: actions/setup-dotnet@v1
+        with:
+            dotnet-version: 6.0.x
+
+      - name: Setup .NET Core 7.0
+        uses: actions/setup-dotnet@v1
+        with:
+            dotnet-version: 7.0.x
+
+      - name: Build with dotnet
+        run: dotnet test
+        shell: bash
+
+  publish:
+    needs: build
+    name: Publish Nuget Packages
+    runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -51,11 +80,6 @@ jobs:
         with:
           dotnet-version: 6.0.x
 
-      - name: Setup .NET Core7.0
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.x
-
       - name: Build with dotnet
-        run: dotnet test
+        run: ./NuGetPack.bat
         shell: bash
