@@ -6,59 +6,72 @@ on:
     tags:
       - "*.*.*"
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ["ubuntu-latest", "macos-latest"]
-    name: ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+  # Label of the container job
+  runner-job:
+    # You must use a Linux environment when using service containers or container jobs
+    runs-on: ubuntu-latest
+
+    # Service containers to run with `runner-job`
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
+
     steps:
-      - name: Install Dependencies (Ubuntu)
-        run: sudo apt install redis-server
-        if: matrix.os == 'ubuntu-latest'
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Install Dependencies (macOS)
-        run: brew install redis && brew services start redis
-        if: matrix.os == 'macos-latest'
-
-      - uses: actions/checkout@v2
-      - name: Setup .NET Core6.0
-        uses: actions/setup-dotnet@v1
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: |
+            2.1.x
+            6.0.x
+            7.0.x
 
-      - run: dotnet --info
-      - if: matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest'
-        run: dotnet test --verbosity quiet
+      - name: Run .NET 7 Tests
+        run: dotnet test -f net7.0 --verbosity quiet
+        shell: bash
+        env:
+          REDIS_HOST: localhost
+
+      - name: Run .NET 6 Tests
+        run: dotnet test -f net6.0 --verbosity quiet
+        shell: bash
+        env:
+          REDIS_HOST: localhost
+
+      - name: Run netcoreapp2.1 Tests
+        run: dotnet test -f netcoreapp2.1 --verbosity quiet
+        shell: bash
+        env:
+          REDIS_HOST: localhost
 
   publish:
-    needs: build
+    needs: runner-job
     name: Publish Nuget Packages
     runs-on: windows-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Setup .NET Core 2.1
-        uses: actions/setup-dotnet@v1
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 2.1.x
-
-      - name: Setup .NET Core 3.1
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 3.1.x
-
-      - name: Setup .NET Core 5.0
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 5.0.x
-
-      - name: Setup .NET Core6.0
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.x
+          dotnet-version: |
+            2.1.x
+            6.0.x
+            7.0.x
 
       - name: Build with dotnet
         run: ./NuGetPack.bat

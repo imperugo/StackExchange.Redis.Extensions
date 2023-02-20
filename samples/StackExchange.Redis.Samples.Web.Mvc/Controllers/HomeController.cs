@@ -23,11 +23,11 @@ public class HomeController : Controller
 
     public async Task<string> IndexAsync()
     {
-        var before = pool.GetConnectionInformations();
+        var before = pool.GetConnectionInformation();
         var rng = new Random();
         await redisDatabase.AddAsync($"key-{rng}", new { a = rng.Next() }).ConfigureAwait(false);
 
-        var after = pool.GetConnectionInformations();
+        var after = pool.GetConnectionInformation();
 
         return BuildInfo(before) + "\t" + BuildInfo(after);
 

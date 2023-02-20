@@ -12,7 +12,7 @@ public class InfoDetail
     /// </summary>
     /// <param name="category">The category name.</param>
     /// <param name="key">The redis key.</param>
-    /// <param name="infoValue">The informations</param>
+    /// <param name="infoValue">The information</param>
     public InfoDetail(string category, string key, string infoValue)
     {
         Category = category;

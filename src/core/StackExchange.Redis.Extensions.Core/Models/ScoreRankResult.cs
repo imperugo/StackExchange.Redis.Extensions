@@ -13,7 +13,7 @@ public class ScoreRankResult<T>
     /// </summary>
     /// <param name="element">The element into redis.</param>
     /// <param name="score">The score.</param>
-    public ScoreRankResult(T element, double score)
+    public ScoreRankResult(T? element, double score)
     {
         Element = element;
         Score = score;
@@ -22,7 +22,7 @@ public class ScoreRankResult<T>
     /// <summary>
     /// The element into redis
     /// </summary>
-    public T Element { get; }
+    public T? Element { get; }
 
     /// <summary>
     /// The score

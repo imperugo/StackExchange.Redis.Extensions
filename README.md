@@ -47,6 +47,13 @@ Latest release is available on NuGet.
 
 For questions or issues do not hesitate to [raise an issue](https://github.com/imperugo/StackExchange.Redis.Extensions/issues/new/choose) or [get in touch](https://twitter.com/imperugo).
 
+### Contributing
+
+Thanks to all the people who already contributed!
+
+<a href="https://github.com/imperugo/StackExchange.Redis.Extensions/graphs/contributors">
+  <img src="https://contributors-img.web.app/image?repo=imperugo/StackExchange.Redis.Extensions" />
+</a>
 
 ### License
 StackExchange.Redis is Copyright ©  [Ugo Lattanzi](https://www.linkedin.com/in/imperugo/) and other contributors under the MIT license.

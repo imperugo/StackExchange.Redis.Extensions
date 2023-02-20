@@ -22,6 +22,11 @@ public class RedisCacheConnectionPoolManagerTests : IDisposable
 
     public RedisCacheConnectionPoolManagerTests(ITestOutputHelper output)
     {
+        var redisHost = Environment.GetEnvironmentVariable("REDIS_HOST");
+
+        if (string.IsNullOrEmpty(redisHost))
+            redisHost = "localhost";
+
         // See more info here: https://gist.github.com/JonCole/e65411214030f0d823cb#file-threadpool-md
         // Everything started from here https://gist.github.com/JonCole/925630df72be1351b21440625ff2671f#file-redis-bestpractices-stackexchange-redis-md
         ThreadPool.GetMaxThreads(out var maxThread, out var maxIoThread);
@@ -35,7 +40,7 @@ public class RedisCacheConnectionPoolManagerTests : IDisposable
             KeyPrefix = "MyPrefix__",
             Hosts = new RedisHost[]
             {
-                new() { Host = "localhost", Port = 6379 }
+                new() { Host = redisHost, Port = 6379 }
             },
             AllowAdmin = true,
             ConnectTimeout = 3000,

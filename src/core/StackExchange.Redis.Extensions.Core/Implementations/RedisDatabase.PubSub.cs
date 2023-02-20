@@ -16,7 +16,7 @@ public partial class RedisDatabase
     }
 
     /// <inheritdoc/>
-    public Task SubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
+    public Task SubscribeAsync<T>(RedisChannel channel, Func<T?, Task> handler, CommandFlags flags = CommandFlags.None)
     {
         if (handler == null)
             throw new ArgumentNullException(nameof(handler));
@@ -24,20 +24,20 @@ public partial class RedisDatabase
         var sub = connectionPoolManager.GetConnection().GetSubscriber();
 
         async void Handler(RedisChannel redisChannel, RedisValue value) =>
-            await handler(Serializer.Deserialize<T>(value))
+            await handler(Serializer.Deserialize<T>(value!))
                 .ConfigureAwait(false);
 
         return sub.SubscribeAsync(channel, Handler, flags);
     }
 
     /// <inheritdoc/>
-    public Task UnsubscribeAsync<T>(RedisChannel channel, Func<T, Task> handler, CommandFlags flags = CommandFlags.None)
+    public Task UnsubscribeAsync<T>(RedisChannel channel, Func<T?, Task> handler, CommandFlags flags = CommandFlags.None)
     {
         if (handler == null)
             throw new ArgumentNullException(nameof(handler));
 
         var sub = connectionPoolManager.GetConnection().GetSubscriber();
-        return sub.UnsubscribeAsync(channel, (_, value) => handler(Serializer.Deserialize<T>(value)), flags);
+        return sub.UnsubscribeAsync(channel, (_, value) => handler(Serializer.Deserialize<T>(value!)), flags);
     }
 
     /// <inheritdoc/>
@@ -66,37 +66,53 @@ public partial class RedisDatabase
     }
 
     /// <inheritdoc/>
-    public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, DateTimeOffset expiresAt, CommandFlags flags = CommandFlags.None)
+    public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(HashSet<string> keys, DateTimeOffset expiresAt, CommandFlags flags = CommandFlags.None)
     {
-        var tasks = new Task<bool>[keys.Length];
+        var tasks = new Task<bool>[keys.Count];
 
-        for (var i = 0; i < keys.Length; i++)
-            tasks[i] = UpdateExpiryAsync(keys[i], expiresAt.UtcDateTime, flags);
+        var i = 0;
+        foreach (var key in keys)
+        {
+            tasks[i] = UpdateExpiryAsync(key, expiresAt.UtcDateTime, flags);
+            i++;
+        }
 
         await Task.WhenAll(tasks).ConfigureAwait(false);
 
-        var results = new Dictionary<string, bool>(keys.Length, StringComparer.Ordinal);
+        var results = new Dictionary<string, bool>(keys.Count, StringComparer.Ordinal);
 
-        for (var i = 0; i < keys.Length; i++)
-            results.Add(keys[i], tasks[i].Result);
+        i = 0;
+        foreach (var key in keys)
+        {
+            results.Add(key, tasks[i].Result);
+            i++;
+        }
 
         return results;
     }
 
     /// <inheritdoc/>
-    public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, TimeSpan expiresIn, CommandFlags flags = CommandFlags.None)
+    public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(HashSet<string> keys, TimeSpan expiresIn, CommandFlags flags = CommandFlags.None)
     {
-        var tasks = new Task<bool>[keys.Length];
+        var tasks = new Task<bool>[keys.Count];
 
-        for (var i = 0; i < keys.Length; i++)
-            tasks[i] = UpdateExpiryAsync(keys[i], expiresIn, flags);
+        var i = 0;
+        foreach (var key in keys)
+        {
+            tasks[i] = UpdateExpiryAsync(key, expiresIn, flags);
+            i++;
+        }
 
         await Task.WhenAll(tasks).ConfigureAwait(false);
 
-        var results = new Dictionary<string, bool>(keys.Length, StringComparer.Ordinal);
+        var results = new Dictionary<string, bool>(keys.Count, StringComparer.Ordinal);
 
-        for (var i = 0; i < keys.Length; i++)
-            results.Add(keys[i], tasks[i].Result);
+        i = 0;
+        foreach (var key in keys)
+        {
+            results.Add(key, tasks[i].Result);
+            i++;
+        }
 
         return results;
     }

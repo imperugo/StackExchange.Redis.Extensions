@@ -164,11 +164,12 @@ public partial interface IRedisDatabase
     /// </summary>
     /// <typeparam name="T">The type of the expected object.</typeparam>
     /// <param name="keys">The cache keys.</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>
     ///     Empty list if there are no results, otherwise the instance of T.
     ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
     /// </returns>
-    Task<IDictionary<string, T?>> GetAllAsync<T>(string[] keys);
+    Task<IDictionary<string, T?>> GetAllAsync<T>(HashSet<string> keys, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Get the objects with the specified keys from Redis database with one roundtrip
@@ -176,11 +177,12 @@ public partial interface IRedisDatabase
     /// <typeparam name="T">The type of the expected object.</typeparam>
     /// <param name="keys">The cache keys.</param>
     /// <param name="expiresAt">Expiration time.</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>
     ///     Empty list if there are no results, otherwise the instance of T.
     ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
     /// </returns>
-    Task<IDictionary<string, T?>> GetAllAsync<T>(string[] keys, DateTimeOffset expiresAt);
+    Task<IDictionary<string, T?>> GetAllAsync<T>(HashSet<string> keys, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Get the objects with the specified keys from Redis database with one roundtrip
@@ -188,11 +190,12 @@ public partial interface IRedisDatabase
     /// <typeparam name="T">The type of the expected object.</typeparam>
     /// <param name="keys">The cache keys.</param>
     /// <param name="expiresIn">Time until expiration.</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>
     ///     Empty list if there are no results, otherwise the instance of T.
     ///     If a cache key is not present on Redis the specified object into the returned Dictionary will be null
     /// </returns>
-    Task<IDictionary<string, T?>> GetAllAsync<T>(string[] keys, TimeSpan expiresIn);
+    Task<IDictionary<string, T?>> GetAllAsync<T>(HashSet<string> keys, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Add the objects with the specified keys to Redis database with a single roundtrip
@@ -371,7 +374,7 @@ public partial interface IRedisDatabase
     /// <param name="expiresAt">The new expiry time of the object</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>An array of type bool, where true if the object is updated and false if the object does not exist at the same index as the input keys</returns>
-    Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None);
+    Task<IDictionary<string, bool>> UpdateExpiryAllAsync(HashSet<string> keys, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Updates the expiry time of a redis cache object
@@ -380,5 +383,5 @@ public partial interface IRedisDatabase
     /// <param name="expiresIn">Time until the object will expire</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>An IDictionary object that contains the origional key and the result of the operation</returns>
-    Task<IDictionary<string, bool>> UpdateExpiryAllAsync(string[] keys, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None);
+    Task<IDictionary<string, bool>> UpdateExpiryAllAsync(HashSet<string> keys, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None);
 }

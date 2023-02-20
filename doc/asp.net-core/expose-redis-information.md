@@ -7,7 +7,7 @@ For this we have created a specific middleware that you can use like this:
 ```csharp
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
-    app.UserRedisInformation();
+    app.UseRedisInformation();
 }
 ```
 

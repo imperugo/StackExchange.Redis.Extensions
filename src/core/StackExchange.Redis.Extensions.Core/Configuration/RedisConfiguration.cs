@@ -361,7 +361,7 @@ public class RedisConfiguration
             {
                 ConfigurationOptions newOptions;
 
-                if (!string.IsNullOrEmpty(ConnectionString))
+                if (ConnectionString?.Length > 0)
                 {
                     newOptions = ConfigurationOptions.Parse(ConnectionString);
                 }
@@ -375,7 +375,7 @@ public class RedisConfiguration
                         ConnectTimeout = ConnectTimeout,
                         SyncTimeout = SyncTimeout,
                         AbortOnConnectFail = AbortOnConnectFail,
-                        ConfigurationChannel = ConfigurationChannel,
+                        ConfigurationChannel = ConfigurationChannel!,
                         SslProtocols = sslProtocols,
                         ChannelPrefix = KeyPrefix
                     };

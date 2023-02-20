@@ -22,7 +22,12 @@ public partial class RedisDatabase
         if (keys.Length == 0)
             return Enumerable.Empty<T>();
 
-        var result = await GetAllAsync<T>(keys).ConfigureAwait(false);
+        var hashKeys = new HashSet<string>();
+
+        foreach (var key in keys)
+            hashKeys.Add(key);
+
+        var result = await GetAllAsync<T>(hashKeys, commandFlags).ConfigureAwait(false);
 
         return result.Values;
     }

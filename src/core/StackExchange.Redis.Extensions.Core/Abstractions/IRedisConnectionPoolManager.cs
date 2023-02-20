@@ -27,5 +27,5 @@ public interface IRedisConnectionPoolManager : IDisposable
     /// <summary>
     ///     Gets the information about the connection pool
     /// </summary>
-    ConnectionPoolInformation GetConnectionInformations();
+    ConnectionPoolInformation GetConnectionInformation();
 }

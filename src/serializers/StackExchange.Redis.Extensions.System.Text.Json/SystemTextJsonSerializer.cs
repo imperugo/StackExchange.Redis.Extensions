@@ -59,7 +59,7 @@ public class SystemTextJsonSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject)
+    public T? Deserialize<T>(byte[] serializedObject)
     {
         return JsonSerializer.Deserialize<T>(serializedObject, Options(typeof(T)))!;
     }

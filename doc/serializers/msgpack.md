@@ -6,31 +6,21 @@
 
 PackageManager:
 
-{% tabs %}
-{% tab title="PackageManager" %}
 ```bash
 Install-Package StackExchange.Redis.Extensions.MsgPack
 ```
-{% endtab %}
 
-{% tab title=".NET Cli" %}
 ```bash
 dotnet add package StackExchange.Redis.Extensions.MsgPack
 ```
-{% endtab %}
 
-{% tab title="Package Reference" %}
 ```xml
 <PackageReference Include="StackExchange.Redis.Extensions.MsgPack" Version="5.5.0" />
 ```
-{% endtab %}
 
-{% tab title="Paket cli" %}
 ```bash
 paket add StackExchange.Redis.Extensions.MsgPack
 ```
-{% endtab %}
-{% endtabs %}
 
 ### Setup
 
@@ -49,7 +39,3 @@ container.Register(Component.For<ISerializer>()
 				.ImplementedBy<MsgPackObjectSerializer>()
 				.LifestyleSingleton());
 ```
-
-{% hint style="info" %}
-The library used is MsgPack.Cli version 1.0.1. For more information about it, please take a look here [https://github.com/msgpack/msgpack-cli](https://github.com/msgpack/msgpack-cli)
-{% endhint %}

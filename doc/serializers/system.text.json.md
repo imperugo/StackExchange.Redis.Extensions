@@ -4,31 +4,21 @@ The System.Text.Json provides high-performance and low-allocating types that ser
 
 ### Install
 
-{% tabs %}
-{% tab title="PackageManager" %}
 ```bash
 Install-Package StackExchange.Redis.Extensions.System.Text.Json
 ```
-{% endtab %}
 
-{% tab title=".NET Cli" %}
 ```bash
 dotnet add package StackExchange.Redis.Extensions.System.Text.Json
 ```
-{% endtab %}
 
-{% tab title="Package Reference" %}
 ```xml
 <PackageReference Include="StackExchange.Redis.Extensions.System.Text.Json" Version="5.5.0" />
 ```
-{% endtab %}
 
-{% tab title="Paket cli" %}
 ```bash
 paket add StackExchange.Redis.Extensions.System.Text.Json
 ```
-{% endtab %}
-{% endtabs %}
 
 ### Setup
 
@@ -47,7 +37,3 @@ container.Register(Component.For<ISerializer>()
 				.ImplementedBy<SystemTextJsonSerializer>()
 				.LifestyleSingleton());
 ```
-
-{% hint style="info" %}
-The library used is System.Text.Json version 4.7.0. For more information about it, please take a look here [https://docs.microsoft.com/en-us/dotnet/api/system.text.json?view=netcore-3.1](https://docs.microsoft.com/en-us/dotnet/api/system.text.json?view=netcore-3.1)
-{% endhint %}

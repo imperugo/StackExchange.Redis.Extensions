@@ -17,7 +17,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations;
 /// <inheritdoc/>
 public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolManager
 {
-    private readonly static object @lock = new();
+    private static readonly object @lock = new();
     private readonly IStateAwareConnection[] connections;
     private readonly RedisConfiguration redisConfiguration;
     private readonly ILogger<RedisConnectionPoolManager> logger;
@@ -76,7 +76,7 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
                 break;
 
             case ConnectionSelectionStrategy.LeastLoaded:
-                connection = connections.MinBy(x => x.TotalOutstanding())!;
+                connection = connections.MinBy(x => x.TotalOutstanding());
                 break;
 
             default:
@@ -97,7 +97,7 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
     }
 
     /// <inheritdoc/>
-    public ConnectionPoolInformation GetConnectionInformations()
+    public ConnectionPoolInformation GetConnectionInformation()
     {
         var activeConnections = 0;
         var invalidConnections = 0;

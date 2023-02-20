@@ -3,11 +3,11 @@
 In order to use StackExchange.Redis.Extensions you need to use two packages:
 
 * The `core` package;
-* The `serialier` package;
+* The `serializer` package;
 
 ### The Core Package
 
-The core package is the library includes all the method you need into your code, like `AddAsync`, `ExistsAsync` and so on. It carries `StackExchange.Redis` and usually you can access to it usi the interface `IRedisCacheClient` or `IRedisDatabase.`
+The core package is the library that includes all the method you need into your code, like `AddAsync`, `ExistsAsync` and so on. It carries `StackExchange.Redis` and usually you can access it using the interface `IRedisCacheClient` or `IRedisDatabase.`
 
 ### The Serializer package
 
@@ -18,5 +18,6 @@ In order to prevent conflict between **StackExchange.Redis** serializer and what
 * MsgPack
 * Protobuf-net
 * UTF8Json
-* Binary
+* MemoryPack
+* Jil
 * System.Text.Json
