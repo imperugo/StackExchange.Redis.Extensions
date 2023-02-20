@@ -8,7 +8,7 @@ jobs:
   # Label of the container job
   runner-job:
     # You must use a Linux environment when using service containers or container jobs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     # Service containers to run with `runner-job`
     services:
