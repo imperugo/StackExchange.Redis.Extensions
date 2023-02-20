@@ -30,10 +30,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup .NET Core 2.1
+      - name: Setup .NET Core 2.0
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 2.1.x
+          dotnet-version: 2.0.x
 
       - name: Setup .NET Core 6.0
         uses: actions/setup-dotnet@v1
@@ -52,7 +52,7 @@ jobs:
           REDIS_HOST: localhost
 
       - name: Run .NET 6 Tests
-        run: dotnet test -f net6.0
+        run: dotnet test -f net6.0 --verbosity quiet
         shell: bash
         env:
           REDIS_HOST: localhost
@@ -71,10 +71,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup .NET Core 2.1
+      - name: Setup .NET Core 2.0
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 2.1.x
+          dotnet-version: 2.0.x
 
       - name: Setup .NET Core 6.0
         uses: actions/setup-dotnet@v1
