@@ -53,7 +53,7 @@ jobs:
         shell: bash
 
   publish:
-    needs: build
+    needs: container-job
     name: Publish Nuget Packages
     runs-on: windows-latest
     steps:
