@@ -46,7 +46,7 @@ jobs:
             dotnet-version: 7.0.x
 
       - name: Build with dotnet
-        run: dotnet test
+        run: ./build.sh
         shell: bash
 
         # Environment variable used by the `client.js` script to create a new Redis client.

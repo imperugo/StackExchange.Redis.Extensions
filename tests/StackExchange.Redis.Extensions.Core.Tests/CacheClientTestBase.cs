@@ -710,7 +710,7 @@ public abstract partial class CacheClientTestBase : IDisposable
 
         await Sut.GetDefaultDatabase().AddAllAsync(valuesOneList, TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
 
-        await Task.Delay(TimeSpan.FromMilliseconds(2)).ConfigureAwait(false);
+        await Task.Delay(TimeSpan.FromMilliseconds(10)).ConfigureAwait(false);
 
         foreach (var value in valuesOneList)
         {
@@ -739,7 +739,7 @@ public abstract partial class CacheClientTestBase : IDisposable
             .AddAllAsync(valuesTwoLis, TimeSpan.FromMilliseconds(1))
             .ConfigureAwait(false);
 
-        await Task.Delay(TimeSpan.FromMilliseconds(2)).ConfigureAwait(false);
+        await Task.Delay(TimeSpan.FromMilliseconds(10)).ConfigureAwait(false);
 
         foreach (var value in valuesTwoLis)
         {
