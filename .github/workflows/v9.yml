@@ -6,11 +6,11 @@ on:
 
 jobs:
   # Label of the container job
-  container-job:
-    # Containers must run in Linux based operating systems
+  runner-job:
+    # You must use a Linux environment when using service containers or container jobs
     runs-on: ubuntu-latest
 
-    # Service containers to run with `container-job`
+    # Service containers to run with `runner-job`
     services:
       # Label used to access the service container
       redis:
@@ -22,11 +22,9 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
-    # Environment variable used by the `client.js` script to create a new Redis client.
-    env:
-      # The hostname used to communicate with the Redis service container
-      REDIS_HOST: localhost
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
 
     steps:
       - name: Checkout repository
@@ -51,8 +49,13 @@ jobs:
         run: dotnet test
         shell: bash
 
+        # Environment variable used by the `client.js` script to create a new Redis client.
+        env:
+          # The hostname used to communicate with the Redis service container
+          REDIS_HOST: localhost
+
   publish:
-    needs: container-job
+    needs: runner-job
     name: Publish Nuget Packages
     runs-on: windows-latest
     steps:
