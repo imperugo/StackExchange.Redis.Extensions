@@ -41,8 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- This is used byt moq but it seems that is not present into the github pipeline with net6.0 -->
-    <PackageReference Include="Castle.Core" Version="5.1.1" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.categories" Version="2.0.6" />
     <PackageReference Include="Moq" Version="4.18.4" />

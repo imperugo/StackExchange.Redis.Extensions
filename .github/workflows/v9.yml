@@ -52,7 +52,7 @@ jobs:
           REDIS_HOST: localhost
 
       - name: Run .NET 6 Tests
-        run: dotnet test -f net6.0 --verbosity quiet
+        run: dotnet test -f net6.0
         shell: bash
         env:
           REDIS_HOST: localhost
