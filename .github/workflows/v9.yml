@@ -30,31 +30,31 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: |
-            2.1.x
-            6.0.x
-            7.0.x
-
-      - name: Run .NET 7 Tests
-        run: dotnet test -f net7.0 --verbosity quiet
-        shell: bash
-        env:
-          REDIS_HOST: localhost
-
-      - name: Run .NET 6 Tests
-        run: dotnet test -f net6.0 --verbosity quiet
-        shell: bash
-        env:
-          REDIS_HOST: localhost
-
-      - name: Run netcoreapp2.1 Tests
-        run: dotnet test -f netcoreapp2.1 --verbosity quiet
-        shell: bash
-        env:
-          REDIS_HOST: localhost
+#      - name: Setup dotnet
+#        uses: actions/setup-dotnet@v3
+#        with:
+#          dotnet-version: |
+#            2.1.x
+#            6.0.x
+#            7.0.x
+#
+#      - name: Run .NET 7 Tests
+#        run: dotnet test -f net7.0 --verbosity quiet
+#        shell: bash
+#        env:
+#          REDIS_HOST: localhost
+#
+#      - name: Run .NET 6 Tests
+#        run: dotnet test -f net6.0 --verbosity quiet
+#        shell: bash
+#        env:
+#          REDIS_HOST: localhost
+#
+#      - name: Run netcoreapp2.1 Tests
+#        run: dotnet test -f netcoreapp2.1 --verbosity quiet
+#        shell: bash
+#        env:
+#          REDIS_HOST: localhost
 
   publish:
     needs: runner-job

@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net6.0;net7.0;</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">netcoreapp3.1;net6.0;net7.0;</TargetFrameworks>
-    <TargetFrameworks Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' ">netcoreapp3.1;net6.0;net7.0;</TargetFrameworks>
-    <TargetFrameworks Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' ">net6.0;net7.0;</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;netcoreapp3.1;net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">netstandard2.1;netcoreapp3.1;net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' ">netstandard2.1;netcoreapp3.1;net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' ">netstandard2.1;net6.0;net7.0</TargetFrameworks>
     <Title>StackExchange.Redis.Extensions.AspNetCore is a library that has a set of extensions method fpr ASP.NET Core.</Title>
     <Summary>StackExchange.Redis.Extensions.AspNetCore is a library that has a set of extensions method fpr ASP.NET Core with the scope to simply the library configuration into the dependency injection</Summary>
     <Description>StackExchange.Redis.Extensions.AspNetCore is a library that has a set of extensions method fpr ASP.NET Core</Description>
@@ -16,6 +16,10 @@
     <AssemblyOriginatorKeyFile>..\..\StackExchange.Redis.Extensions.Core.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+  </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
