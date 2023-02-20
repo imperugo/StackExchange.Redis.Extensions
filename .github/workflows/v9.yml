@@ -50,8 +50,8 @@ jobs:
         env:
           REDIS_HOST: localhost
 
-      - name: Run netcoreapp2.0 Tests
-        run: dotnet test -f netcoreapp2.0 --verbosity quiet
+      - name: Run netcoreapp2.1 Tests
+        run: dotnet test -f netcoreapp2.1 --verbosity quiet
         shell: bash
         env:
           REDIS_HOST: localhost
