@@ -8,7 +8,7 @@ jobs:
   # Label of the container job
   runner-job:
     # You must use a Linux environment when using service containers or container jobs
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     # Service containers to run with `runner-job`
     services:
@@ -28,22 +28,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Setup .NET Core 2.0
-        uses: actions/setup-dotnet@v1
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 2.0.x
-
-      - name: Setup .NET Core 6.0
-        uses: actions/setup-dotnet@v1
-        with:
-            dotnet-version: 6.0.x
-
-      - name: Setup .NET Core 7.0
-        uses: actions/setup-dotnet@v1
-        with:
-            dotnet-version: 7.0.x
+          dotnet-version: |
+            2.1.x
+            6.0.x
+            7.0.x
 
       - name: Run .NET 7 Tests
         run: dotnet test -f net7.0 --verbosity quiet
@@ -69,22 +62,15 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Setup .NET Core 2.0
-        uses: actions/setup-dotnet@v1
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 2.0.x
-
-      - name: Setup .NET Core 6.0
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 6.0.x
-
-      - name: Setup .NET Core 7.0
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 7.0.x
+          dotnet-version: |
+            2.1.x
+            6.0.x
+            7.0.x
 
       - name: Build with dotnet
         run: ./NuGetPack.bat
