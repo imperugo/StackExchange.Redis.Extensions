@@ -23,6 +23,10 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+    # Environment variable used by the `client.js` script to create a new Redis client.
+    env:
+      # The hostname used to communicate with the Redis service container
+      REDIS_HOST: redis
 
     steps:
       - name: Checkout repository
