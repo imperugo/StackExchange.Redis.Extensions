@@ -18,5 +18,6 @@ In order to prevent conflict between **StackExchange.Redis** serializer and what
 * MsgPack
 * Protobuf-net
 * UTF8Json
-* Binary
+* MemoryPack
+* Jil
 * System.Text.Json

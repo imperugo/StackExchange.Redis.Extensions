@@ -13,22 +13,27 @@ All you need to do is this:
 /// <param name="services">The service collection.</param>
 /// <param name="redisConfiguration">The redis configration.</param>
 /// <typeparam name="T">The typof of serializer. <see cref="ISerializer" />.</typeparam>
-public static IServiceCollection AddStackExchangeRedisExtensions<T>(this IServiceCollection services, RedisConfiguration redisConfiguration)
-    where T : class, ISerializer, new()
-{
-    services.AddSingleton<IRedisCacheClient, RedisCacheClient>();
-    services.AddSingleton<IRedisCacheConnectionPoolManager, RedisCacheConnectionPoolManager>();
-    services.AddSingleton<ISerializer, T>();
-
-    services.AddSingleton((provider) =>
+public static IServiceCollection AddStackExchangeRedisExtensions<T>(
+        this IServiceCollection services,
+        Func<IServiceProvider, IEnumerable<RedisConfiguration>> redisConfigurationFactory)
+        where T : class, ISerializer
     {
-        return provider.GetRequiredService<IRedisCacheClient>().GetDbFromConfiguration();
-    });
+        services.AddSingleton<IRedisClientFactory, RedisClientFactory>();
+        services.AddSingleton<ISerializer, T>();
 
-    services.AddSingleton(redisConfiguration);
+        services.AddSingleton((provider) => provider
+            .GetRequiredService<IRedisClientFactory>()
+            .GetDefaultRedisClient());
 
-    return services;
-}
+        services.AddSingleton((provider) => provider
+            .GetRequiredService<IRedisClientFactory>()
+            .GetDefaultRedisClient()
+            .GetDefaultDatabase());
+
+        services.AddSingleton(redisConfigurationFactory);
+
+        return services;
+    }
 ```
 
 There are two important things to know in this code block:
