@@ -45,13 +45,22 @@ jobs:
         with:
             dotnet-version: 7.0.x
 
-      - name: Build with dotnet
-        run: ./build.sh
+      - name: Run .NET 7 Tests
+        run: dotnet test -f net7.0 --verbosity quiet
         shell: bash
-
-        # Environment variable used by the `client.js` script to create a new Redis client.
         env:
-          # The hostname used to communicate with the Redis service container
+          REDIS_HOST: localhost
+
+      - name: Run .NET 6 Tests
+        run: dotnet test -f net6.0 --verbosity quiet
+        shell: bash
+        env:
+          REDIS_HOST: localhost
+
+      - name: Run netcoreapp2.0 Tests
+        run: dotnet test -f netcoreapp2.0 --verbosity quiet
+        shell: bash
+        env:
           REDIS_HOST: localhost
 
   publish:
