@@ -23,6 +23,8 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory).ruleset</CodeAnalysisRuleSet>
     <RepositoryUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</RepositoryUrl>
+
+    <SuppressTfmSupportBuildWarnings Condition="$(TargetFramework.StartsWith('netcore'))">>true</SuppressTfmSupportBuildWarnings>
   </PropertyGroup>
 
   <!-- Packages stuff -->
