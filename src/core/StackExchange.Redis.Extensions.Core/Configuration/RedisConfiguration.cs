@@ -18,6 +18,7 @@ public class RedisConfiguration
 {
     private ConfigurationOptions? options;
     private string keyPrefix = string.Empty;
+    private string? user;
     private string? password;
     private bool allowAdmin;
     private bool ssl;
@@ -153,6 +154,20 @@ public class RedisConfiguration
         set
         {
             keyPrefix = value;
+            ResetConfigurationOptions();
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the redis user.
+    /// </summary>
+    public string? User
+    {
+        get => user;
+
+        set
+        {
+            user = value;
             ResetConfigurationOptions();
         }
     }
@@ -377,7 +392,8 @@ public class RedisConfiguration
                         AbortOnConnectFail = AbortOnConnectFail,
                         ConfigurationChannel = ConfigurationChannel!,
                         SslProtocols = sslProtocols,
-                        ChannelPrefix = KeyPrefix
+                        ChannelPrefix = KeyPrefix,
+                        User = User
                     };
 
                     if (IsSentinelCluster)
