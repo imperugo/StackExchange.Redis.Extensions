@@ -421,7 +421,7 @@ public partial class RedisDatabase : IRedisDatabase
             long nextCursor = 0;
             do
             {
-                var redisResult = await Database.ExecuteAsync("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000").ConfigureAwait(false);
+                var redisResult = await unused.ExecuteAsync("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000").ConfigureAwait(false);
                 var innerResult = (RedisResult[])redisResult!;
 
                 nextCursor = long.Parse((string)innerResult[0]!);
