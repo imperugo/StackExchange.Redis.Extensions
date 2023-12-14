@@ -73,6 +73,51 @@ public partial class RedisDatabase
     }
 
     /// <inheritdoc/>
+    public async Task<IDictionary<string, T?>> HashGetAllAsyncAtOneTimeAsync<T>(string hashKey, string[] keys, CommandFlags commandFlags = CommandFlags.None)
+    {
+        var luascript = "local results = {};local insert = table.insert;local rcall = redis.call;for i=1,table.getn(KEYS) do  local value = rcall('HGET','" + hashKey + "', KEYS[i])  if value then insert(results, KEYS[i]) insert(results, value) end end; return results;";
+
+        var list = new List<RedisKey>();
+
+        foreach (var key in keys)
+            list.Add(new RedisKey(key));
+
+        var redisKeys = list.ToArray();
+
+        var data = await Database.ScriptEvaluateAsync(luascript, redisKeys, flags: commandFlags).ConfigureAwait(false);
+
+        var dictionary = new Dictionary<string, T?>();
+
+        if (data is null)
+            return dictionary;
+
+        var redisValues = ((RedisValue[]?)data);
+
+        if (redisValues == null || redisValues.Length <= 0)
+            return dictionary;
+
+        for (var i = 0; i < redisValues.Length; i += 2)
+        {
+            var key = redisValues[i];
+
+            if (key.HasValue == false)
+                continue;
+
+            var redisValue = redisValues[i + 1];
+
+            if (redisValue.HasValue == false)
+                continue;
+
+#pragma warning disable CS8604 // Possible null reference argument.
+            var value = Serializer.Deserialize<T?>(redisValue);
+            dictionary.Add(key, value);
+#pragma warning restore CS8604 // Possible null reference argument.
+        }
+
+        return dictionary;
+    }
+
+    /// <inheritdoc/>
     public async Task<IDictionary<string, T?>> HashGetAllAsync<T>(string hashKey, CommandFlags commandFlags = CommandFlags.None)
     {
         return (await Database.HashGetAllAsync(hashKey, commandFlags).ConfigureAwait(false))
