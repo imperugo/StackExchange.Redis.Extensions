@@ -7,18 +7,12 @@ Than instruments all the connections.
 
 ```csharp
 services
-    .AddOpenTelemetry()
-    .WithTracing(b =>
+    .AddRedisInstrumentation()
+    .ConfigureRedisInstrumentation((sp, instrumentation) =>
     {
-        // Do your stuff here
-    
-        b.AddInstrumentation((sp, traceProvider) =>
-        {
-            // Iterate all connection and add the instrumentation
-            foreach (var connection in sp.GetRequiredService<IRedisClient>().ConnectionPoolManager.GetConnections())
-                b.AddRedisInstrumentation(connection, opt => opt.SetVerboseDatabaseStatements = true);
-    
-            return traceProvider;
-        });
+        var redisClient = sp.GetRequiredService<IRedisClient>();
+
+        foreach (var connection in redisClient.ConnectionPoolManager.GetConnections())
+            instrumentation.AddConnection(connection);
     });
 ```
