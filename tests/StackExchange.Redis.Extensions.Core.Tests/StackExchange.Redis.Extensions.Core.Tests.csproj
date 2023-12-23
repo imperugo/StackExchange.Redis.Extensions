@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;net6.0;net7.0;;net8.0</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">netcoreapp2.1;net6.0;net7.0;net8.0;net472;</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">netcoreapp2.1;net6.0;net7.0;net8.0;</TargetFrameworks>
     <TargetFrameworks Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' ">netcoreapp2.1;net6.0;net7.0;net8.0;</TargetFrameworks>
     <TargetFrameworks Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' ">net6.0;net7.0;net8.0;</TargetFrameworks>
     <IsPackable>false</IsPackable>
@@ -32,12 +32,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net472'">
-    <Reference Include="System.Runtime" Version="4.0.0.0" />
-    <Reference Include="System.Threading.Tasks" Version="4.0.0.0" />
-    <Reference Include="System.Collections" Version="4.0.0.0" />
   </ItemGroup>
 
   <ItemGroup>

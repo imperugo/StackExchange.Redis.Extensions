@@ -8,8 +8,8 @@
     <!--
     <VersionSuffix>pre</VersionSuffix>
     -->
-    <TargetFrameworks>netstandard2.1;netcoreapp2.1;net6.0;net7.0;net8.0;net472;</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">netstandard2.1;netcoreapp2.1;net6.0;net7.0;net472;</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;netcoreapp2.1;net6.0;net7.0;net8.0;</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">netstandard2.1;netcoreapp2.1;net6.0;net7.0;</TargetFrameworks>
     <TargetFrameworks Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' ">netstandard2.1;netcoreapp2.1;net6.0;net7.0;net8.0;</TargetFrameworks>
     <TargetFrameworks Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' ">netstandard2.1;net6.0;net7.0;net8.0;</TargetFrameworks>
     <IncludeSource>True</IncludeSource>
