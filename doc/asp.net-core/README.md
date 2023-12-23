@@ -48,7 +48,7 @@ Remember to install also you favorite serializer.
 ```csharp
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
-    app.UserRedisInformation();
+    app.UseRedisInformation();
 }
 ```
 
