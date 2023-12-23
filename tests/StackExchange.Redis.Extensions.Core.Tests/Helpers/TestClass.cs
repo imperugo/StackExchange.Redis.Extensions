@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-#if NET7_0
+#if NET8_0 || NET7_0
 using MemoryPack;
 #endif
 
@@ -12,7 +12,7 @@ namespace StackExchange.Redis.Extensions.Tests.Helpers;
 
 [Serializable]
 [DataContract]
-#if NET7_0
+#if NET8_0 || NET7_0
 [MemoryPackable]
 public partial class TestClass<T> : IEquatable<TestClass<T>>
 {
