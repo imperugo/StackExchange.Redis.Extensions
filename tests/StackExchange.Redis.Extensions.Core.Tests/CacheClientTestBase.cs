@@ -153,11 +153,11 @@ public abstract partial class CacheClientTestBase : IDisposable
     [Fact]
     public async Task Add_Complex_Item_To_Redis_Database_Async()
     {
-        var testobject = new TestClass<DateTime>();
+        var testClass = new TestClass<DateTime>();
 
         var added = await Sut
             .GetDefaultDatabase()
-            .AddAsync("my Key", testobject)
+            .AddAsync("my Key", testClass)
             ;
 
         var redisValue = await db.StringGetAsync("my Key");
@@ -168,8 +168,8 @@ public abstract partial class CacheClientTestBase : IDisposable
 
         Assert.True(db.KeyExists("my Key"));
         Assert.NotNull(obj);
-        Assert.Equal(testobject.Key, obj.Key);
-        Assert.Equal(testobject.Value.ToUniversalTime(), obj.Value.ToUniversalTime());
+        Assert.Equal(testClass.Key, obj.Key);
+        Assert.Equal(testClass.Value.ToUniversalTime(), obj.Value.ToUniversalTime());
     }
 
     [Fact]

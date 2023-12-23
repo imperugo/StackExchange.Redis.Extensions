@@ -58,12 +58,6 @@ jobs:
         env:
           REDIS_HOST: localhost
 
-      - name: Run netcoreapp2.1 Tests
-        run: dotnet test -f netcoreapp2.1 --verbosity quiet
-        shell: bash
-        env:
-          REDIS_HOST: localhost
-
   publish:
     needs: runner-job
     name: Publish Nuget Packages
