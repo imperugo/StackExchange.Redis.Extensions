@@ -41,7 +41,7 @@ jobs:
             8.0.x
 
       - name: Run .NET 8 Tests
-        run: dotnet test -f net8.0 --verbosity quiet
+        run: dotnet test -f net8.0
         shell: bash
         env:
           REDIS_HOST: localhost
