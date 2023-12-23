@@ -16,7 +16,7 @@ namespace StackExchange.Redis.Extensions.Tests.Helpers;
 [MemoryPackable]
 public partial class TestClass<T> : IEquatable<TestClass<T>>
 {
-[MemoryPackConstructor]
+    [MemoryPackConstructor]
 #else
 public class TestClass<T> : IEquatable<TestClass<T>>
 {

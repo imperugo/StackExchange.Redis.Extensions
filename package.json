@@ -1,0 +1,28 @@
+{
+  "name": "StackExchange.Redis.Extensions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.cs": "dotnet format --include"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:imperugo/StackExchange.Redis.Extensions.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/imperugo/StackExchange.Redis.Extensions/issues"
+  },
+  "homepage": "https://github.com/imperugo/StackExchange.Redis.Extensions#readme",
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0"
+  }
+}

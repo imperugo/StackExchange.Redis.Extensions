@@ -38,6 +38,13 @@ jobs:
             2.1.x
             6.0.x
             7.0.x
+            8.0.x
+
+      - name: Run .NET 8 Tests
+        run: dotnet test -f net8.0 --verbosity quiet
+        shell: bash
+        env:
+          REDIS_HOST: localhost
 
       - name: Run .NET 7 Tests
         run: dotnet test -f net7.0 --verbosity quiet
@@ -72,6 +79,7 @@ jobs:
             2.1.x
             6.0.x
             7.0.x
+            8.0.x
 
       - name: Build with dotnet
         run: ./NuGetPack.bat

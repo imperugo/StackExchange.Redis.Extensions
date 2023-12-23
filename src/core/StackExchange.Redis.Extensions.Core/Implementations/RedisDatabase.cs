@@ -202,7 +202,8 @@ public partial class RedisDatabase : IRedisDatabase
     }
 
     /// <inheritdoc/>
-    public async Task<IDictionary<string, T?>> GetAllAsync<T>(HashSet<string> keys, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)    {
+    public async Task<IDictionary<string, T?>> GetAllAsync<T>(HashSet<string> keys, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)
+    {
         var tsk1 = GetAllAsync<T>(keys, flag);
         var tsk2 = UpdateExpiryAllAsync(keys, expiresAt);
 
@@ -212,7 +213,8 @@ public partial class RedisDatabase : IRedisDatabase
     }
 
     /// <inheritdoc/>
-    public async Task<IDictionary<string, T?>> GetAllAsync<T>(HashSet<string> keys, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None)    {
+    public async Task<IDictionary<string, T?>> GetAllAsync<T>(HashSet<string> keys, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None)
+    {
         var tsk1 = GetAllAsync<T>(keys, flag);
         var tsk2 = UpdateExpiryAllAsync(keys, expiresIn);
 
@@ -323,7 +325,7 @@ public partial class RedisDatabase : IRedisDatabase
     }
 
     /// <inheritdoc/>
-    public Task<long> SetAddAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items)
+    public Task<long> SetAddAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[]? items)
     {
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("key cannot be empty.", nameof(key));
@@ -421,7 +423,7 @@ public partial class RedisDatabase : IRedisDatabase
             long nextCursor = 0;
             do
             {
-                var redisResult = await Database.ExecuteAsync("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000").ConfigureAwait(false);
+                var redisResult = await unused.ExecuteAsync("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000").ConfigureAwait(false);
                 var innerResult = (RedisResult[])redisResult!;
 
                 nextCursor = long.Parse((string)innerResult[0]!);
@@ -508,7 +510,7 @@ public partial class RedisDatabase : IRedisDatabase
         {
             var x = data[i];
 
-            result.Add(x.Key, x.InfoValue);
+            result.TryAdd(x.Key, x.InfoValue);
         }
 
         return result;
@@ -519,7 +521,7 @@ public partial class RedisDatabase : IRedisDatabase
         var data = new List<InfoDetail>();
         var category = string.Empty;
 
-        var lines = info.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+        var lines = info.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
 
         foreach (var line in lines.Where(x => !string.IsNullOrWhiteSpace(x)))
         {
