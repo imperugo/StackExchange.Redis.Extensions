@@ -102,8 +102,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     {
         var response = await Sut
             .GetDefaultDatabase()
-            .GetInfoAsync()
-            ;
+            .GetInfoAsync();
 
         Assert.NotNull(response);
         Assert.True(response.Count > 0);
