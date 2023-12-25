@@ -47,7 +47,7 @@ public partial class RedisDatabase
 #if NET8_0 || NET7_0 || NET6_0
         var concurrent = new ConcurrentDictionary<string, T?>();
 
-        await Parallel.ForEachAsync(keys, async (key, token) =>
+        await Parallel.ForEachAsync(keys, async (key, _) =>
         {
             var result = await HashGetAsync<T>(hashKey, key, commandFlags);
             concurrent.TryAdd(key, result);
@@ -83,13 +83,13 @@ public partial class RedisDatabase
     }
 
     /// <inheritdoc/>
-    public Task<long> HashIncerementByAsync(string hashKey, string key, long value, CommandFlags commandFlags = CommandFlags.None)
+    public Task<long> HashIncrementByAsync(string hashKey, string key, long value, CommandFlags commandFlags = CommandFlags.None)
     {
         return Database.HashIncrementAsync(hashKey, key, value, commandFlags);
     }
 
     /// <inheritdoc/>
-    public Task<double> HashIncerementByAsync(string hashKey, string key, double value, CommandFlags commandFlags = CommandFlags.None)
+    public Task<double> HashIncrementByAsync(string hashKey, string key, double value, CommandFlags commandFlags = CommandFlags.None)
     {
         return Database.HashIncrementAsync(hashKey, key, value, commandFlags);
     }

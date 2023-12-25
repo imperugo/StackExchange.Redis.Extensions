@@ -340,7 +340,7 @@ public abstract partial class CacheClientTestBase
 
         // act
         Assert.False(db.HashExists(hashKey, entryKey));
-        var result = await Sut.GetDefaultDatabase().HashIncerementByAsync(hashKey, entryKey, incBy);
+        var result = await Sut.GetDefaultDatabase().HashIncrementByAsync(hashKey, entryKey, incBy);
 
         // assert
         Assert.Equal(incBy, result);
@@ -360,7 +360,7 @@ public abstract partial class CacheClientTestBase
         Assert.True(db.HashSet(hashKey, entryKey, entryValue));
 
         // act
-        var result = await Sut.GetDefaultDatabase().HashIncerementByAsync(hashKey, entryKey, incBy);
+        var result = await Sut.GetDefaultDatabase().HashIncrementByAsync(hashKey, entryKey, incBy);
 
         // assert
         const int expected = entryValue + incBy;
@@ -378,7 +378,7 @@ public abstract partial class CacheClientTestBase
 
         // act
         Assert.False(db.HashExists(hashKey, entryKey));
-        var result = await Sut.GetDefaultDatabase().HashIncerementByAsync(hashKey, entryKey, incBy);
+        var result = await Sut.GetDefaultDatabase().HashIncrementByAsync(hashKey, entryKey, incBy);
 
         // assert
         Assert.Equal(incBy, result);
@@ -398,7 +398,7 @@ public abstract partial class CacheClientTestBase
         Assert.True(db.HashSet(hashKey, entryKey, entryValue));
 
         // act
-        var result = await Sut.GetDefaultDatabase().HashIncerementByAsync(hashKey, entryKey, incBy);
+        var result = await Sut.GetDefaultDatabase().HashIncrementByAsync(hashKey, entryKey, incBy);
 
         // assert
         const double expected = entryValue + incBy;

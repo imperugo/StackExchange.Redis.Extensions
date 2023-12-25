@@ -105,7 +105,7 @@ public partial interface IRedisDatabase
     /// <param name="key">Key of the entry</param>
     /// <param name="value">the value at field after the increment operation</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    Task<long> HashIncerementByAsync(string hashKey, string key, long value, CommandFlags flag = CommandFlags.None);
+    Task<long> HashIncrementByAsync(string hashKey, string key, long value, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Increment the specified field of an hash stored at key, and representing a floating point number, by the specified increment.
@@ -126,7 +126,7 @@ public partial interface IRedisDatabase
     /// <param name="value">the value at field after the increment operation</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>the value at field after the increment operation.</returns>
-    Task<double> HashIncerementByAsync(string hashKey, string key, double value, CommandFlags flag = CommandFlags.None);
+    Task<double> HashIncrementByAsync(string hashKey, string key, double value, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Returns all field names in the hash stored at key.
