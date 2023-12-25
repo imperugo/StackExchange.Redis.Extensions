@@ -44,7 +44,7 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public async Task<IDictionary<string, T?>> HashGetAsync<T>(string hashKey, string[] keys, CommandFlags commandFlags = CommandFlags.None)
     {
-#if NET8_0 || NET7_0 || NET6_0
+#if NET6_0_OR_GREATER
         var concurrent = new ConcurrentDictionary<string, T?>();
 
         await Parallel.ForEachAsync(keys, async (key, _) =>
