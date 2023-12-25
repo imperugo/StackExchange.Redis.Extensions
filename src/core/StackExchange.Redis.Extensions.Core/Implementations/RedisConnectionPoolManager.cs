@@ -21,7 +21,6 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
     private readonly IStateAwareConnection[] connections;
     private readonly RedisConfiguration redisConfiguration;
     private readonly ILogger<RedisConnectionPoolManager> logger;
-    private readonly Random random = new();
     private bool isDisposed;
 
     /// <summary>
@@ -71,7 +70,12 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
         switch (redisConfiguration.ConnectionSelectionStrategy)
         {
             case ConnectionSelectionStrategy.RoundRobin:
-                var nextIdx = random.Next(0, redisConfiguration.PoolSize);
+                var nextIdx
+#if NET6_0_OR_GREATER
+                = Random.Shared.Next(0, redisConfiguration.PoolSize);
+#else
+                = new Random().Next(0, redisConfiguration.PoolSize);
+#endif
                 connection = connections[nextIdx];
                 break;
 
