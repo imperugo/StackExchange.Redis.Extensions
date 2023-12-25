@@ -17,7 +17,7 @@
     <PackageReference Include="xunit" Version="2.6.4" />
     <PackageReference Include="xunit.categories" Version="2.0.8" />
     <PackageReference Include="Moq" Version="4.18.4" />
-    <PackageReference Include="Divergic.Logging.Xunit" Version="4.2.0" />
+    <PackageReference Include="Divergic.Logging.Xunit" Version="4.3.0" />
     <PackageReference Include="coverlet.collector" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

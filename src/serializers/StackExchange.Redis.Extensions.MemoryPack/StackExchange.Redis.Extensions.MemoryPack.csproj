@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MemoryPack" Version="1.9.16" />
+    <PackageReference Include="MemoryPack" Version="1.10.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 
@@ -16,10 +16,10 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <PackageReference Include="MemoryPack.Core" Version="1.9.16" />
+    <PackageReference Include="MemoryPack.Core" Version="1.10.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-    <PackageReference Include="MemoryPack.Core" Version="1.9.16" />
+    <PackageReference Include="MemoryPack.Core" Version="1.10.0" />
   </ItemGroup>
 </Project>
