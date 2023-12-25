@@ -6,6 +6,7 @@
 * [OpenTelemetry](openTelemetry.md)
 * [Multiple Redis Server](multipleServers.md)
 * [Configuration](configuration/README.md)
+  * [Connection Pool](configuration/connection-pool.md) 
   * [C# Configuration](configuration/c-configuration.md)
   * [Json Configuration](configuration/json-configuration.md)
   * [XML Configuration](configuration/xml-configuration.md)

@@ -33,11 +33,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "items", "items", "{0C036AC5
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
 		Directory.Build.props = Directory.Build.props
-		build.sh = build.sh
 		README.md = README.md
 		NuGetPack.bat = NuGetPack.bat
 		packages.md = packages.md
-		build.bat = build.bat
 		CONTRIBUTING.md = CONTRIBUTING.md
 		LICENSE = LICENSE
 		.editorconfig = .editorconfig
@@ -48,6 +46,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.MsgPack", "src\serializers\StackExchange.Redis.Extensions.MsgPack\StackExchange.Redis.Extensions.MsgPack.csproj", "{2C0B426B-D436-4F67-A6A9-89CE81376195}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.MemoryPack", "src\serializers\StackExchange.Redis.Extensions.MemoryPack\StackExchange.Redis.Extensions.MemoryPack.csproj", "{22F296E8-ECAB-4904-9BA6-D5F20511B072}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.ServiceStack", "src\serializers\StackExchange.Redis.Extensions.ServiceStack\StackExchange.Redis.Extensions.ServiceStack.csproj", "{97C7072F-1DC9-4778-8DC5-82A4DEF79396}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -182,6 +182,18 @@ Global
 		{22F296E8-ECAB-4904-9BA6-D5F20511B072}.Release|x64.Build.0 = Release|Any CPU
 		{22F296E8-ECAB-4904-9BA6-D5F20511B072}.Release|x86.ActiveCfg = Release|Any CPU
 		{22F296E8-ECAB-4904-9BA6-D5F20511B072}.Release|x86.Build.0 = Release|Any CPU
+		{97C7072F-1DC9-4778-8DC5-82A4DEF79396}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97C7072F-1DC9-4778-8DC5-82A4DEF79396}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97C7072F-1DC9-4778-8DC5-82A4DEF79396}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{97C7072F-1DC9-4778-8DC5-82A4DEF79396}.Debug|x64.Build.0 = Debug|Any CPU
+		{97C7072F-1DC9-4778-8DC5-82A4DEF79396}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{97C7072F-1DC9-4778-8DC5-82A4DEF79396}.Debug|x86.Build.0 = Debug|Any CPU
+		{97C7072F-1DC9-4778-8DC5-82A4DEF79396}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97C7072F-1DC9-4778-8DC5-82A4DEF79396}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97C7072F-1DC9-4778-8DC5-82A4DEF79396}.Release|x64.ActiveCfg = Release|Any CPU
+		{97C7072F-1DC9-4778-8DC5-82A4DEF79396}.Release|x64.Build.0 = Release|Any CPU
+		{97C7072F-1DC9-4778-8DC5-82A4DEF79396}.Release|x86.ActiveCfg = Release|Any CPU
+		{97C7072F-1DC9-4778-8DC5-82A4DEF79396}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9F9CBFE0-44DE-11EA-A8DD-B7FC9A10F453} = {8C4063C0-44DE-11EA-A8DD-B7FC9A10F453}
@@ -197,5 +209,6 @@ Global
 		{39272F4E-08B3-432B-A67B-BBFB398E5B8B} = {84A7F7A8-EE6E-472A-A564-9C8AD6A07947}
 		{2C0B426B-D436-4F67-A6A9-89CE81376195} = {95A26DA0-44DE-11EA-A8DD-B7FC9A10F453}
 		{22F296E8-ECAB-4904-9BA6-D5F20511B072} = {95A26DA0-44DE-11EA-A8DD-B7FC9A10F453}
+		{97C7072F-1DC9-4778-8DC5-82A4DEF79396} = {95A26DA0-44DE-11EA-A8DD-B7FC9A10F453}
 	EndGlobalSection
 EndGlobal

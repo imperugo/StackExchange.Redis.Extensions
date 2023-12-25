@@ -18,6 +18,7 @@ public class RedisConfiguration
 {
     private ConfigurationOptions? options;
     private string keyPrefix = string.Empty;
+    private string? user;
     private string? password;
     private bool allowAdmin;
     private bool ssl;
@@ -33,6 +34,7 @@ public class RedisConfiguration
     private string? configurationChannel;
     private string? connectionString;
     private string? serviceName;
+    private int? connectRetry;
     private SslProtocols? sslProtocols;
     private Func<ProfilingSession>? profilingSessionProvider;
     private int workCount = Environment.ProcessorCount * 2;
@@ -78,6 +80,20 @@ public class RedisConfiguration
         set
         {
             workCount = value;
+            ResetConfigurationOptions();
+        }
+    }
+
+    /// <summary>
+    /// The number of times to repeat the initial connect cycle if no servers respond promptly.
+    /// </summary>
+    public int? ConnectRetry
+    {
+        get => connectRetry;
+
+        set
+        {
+            connectRetry = value;
             ResetConfigurationOptions();
         }
     }
@@ -153,6 +169,20 @@ public class RedisConfiguration
         set
         {
             keyPrefix = value;
+            ResetConfigurationOptions();
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the redis user.
+    /// </summary>
+    public string? User
+    {
+        get => user;
+
+        set
+        {
+            user = value;
             ResetConfigurationOptions();
         }
     }
@@ -377,8 +407,12 @@ public class RedisConfiguration
                         AbortOnConnectFail = AbortOnConnectFail,
                         ConfigurationChannel = ConfigurationChannel!,
                         SslProtocols = sslProtocols,
-                        ChannelPrefix = KeyPrefix
+                        ChannelPrefix = new RedisChannel(KeyPrefix, RedisChannel.PatternMode.Auto),
+                        User = User
                     };
+
+                    if (ConnectRetry != null)
+                        newOptions.ConnectRetry = ConnectRetry.Value;
 
                     if (IsSentinelCluster)
                     {
@@ -393,7 +427,7 @@ public class RedisConfiguration
                 if (ExcludeCommands != null)
                 {
                     newOptions.CommandMap = CommandMap.Create(
-                        new(ExcludeCommands),
+                        [.. ExcludeCommands],
                         false);
                 }
 

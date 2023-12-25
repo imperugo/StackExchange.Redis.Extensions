@@ -272,8 +272,7 @@ public partial interface IRedisDatabase
     /// <param name="key">The cache key.</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <param name="items">Name of the member.</param>
-    Task<long> SetAddAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items)
-       ;
+    Task<long> SetAddAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items);
 
     /// <summary>
     ///     Run SREM command http://redis.io/commands/srem"
@@ -282,8 +281,7 @@ public partial interface IRedisDatabase
     /// <param name="key">The cache key.</param>
     /// <param name="item">The object to store into redis</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    Task<bool> SetRemoveAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
-       ;
+    Task<bool> SetRemoveAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Run SREM command http://redis.io/commands/srem
@@ -292,8 +290,7 @@ public partial interface IRedisDatabase
     /// <param name="key">The cache key.</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <param name="items">The items to store into Redis.</param>
-    Task<long> SetRemoveAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items)
-       ;
+    Task<long> SetRemoveAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items);
 
     /// <summary>
     ///     Run SMEMBERS command see http://redis.io/commands/SMEMBERS

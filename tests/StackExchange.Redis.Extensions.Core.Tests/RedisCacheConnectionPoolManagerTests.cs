@@ -38,10 +38,9 @@ public class RedisCacheConnectionPoolManagerTests : IDisposable
         {
             AbortOnConnectFail = true,
             KeyPrefix = "MyPrefix__",
-            Hosts = new RedisHost[]
-            {
+            Hosts = [
                 new() { Host = redisHost, Port = 6379 }
-            },
+            ],
             AllowAdmin = true,
             ConnectTimeout = 3000,
             Database = 0,
@@ -61,7 +60,7 @@ public class RedisCacheConnectionPoolManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task Equeue_Parallels_Calls_Should_Use_All_The_Pool_Async()
+    public async Task Enqueue_Parallels_Calls_Should_Use_All_The_Pool_Async()
     {
         const string cacheKey = "my cache key";
         const int maxNumberOfIterations = 10000;
@@ -71,10 +70,9 @@ public class RedisCacheConnectionPoolManagerTests : IDisposable
         await sut
             .GetConnection()
             .GetDatabase(0)
-            .StringSetAsync(cacheKey, "my cache value")
-            .ConfigureAwait(false);
+            .StringSetAsync(cacheKey, "my cache value");
 
-        Parallel.For(0, maxNumberOfIterations, (i, state) =>
+        Parallel.For(0, maxNumberOfIterations, (i, _) =>
         {
             try
             {
@@ -103,7 +101,6 @@ public class RedisCacheConnectionPoolManagerTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    /// <inheritdoc/>
     protected virtual void Dispose(bool disposing)
     {
         if (isDisposed)

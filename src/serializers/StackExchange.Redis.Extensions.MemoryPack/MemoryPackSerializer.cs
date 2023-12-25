@@ -2,8 +2,6 @@
 
 using System;
 
-using MemoryPack;
-
 using StackExchange.Redis.Extensions.Core;
 
 namespace StackExchange.Redis.Extensions.MemoryPack;
@@ -11,7 +9,7 @@ namespace StackExchange.Redis.Extensions.MemoryPack;
 /// <summary>
 /// JSon.Net implementation of <see cref="ISerializer"/>
 /// </summary>
-public class MemoryPackSerializer: ISerializer
+public class MemoryPackSerializer : ISerializer
 {
     /// <inheritdoc/>
     public byte[] Serialize<T>(T? item)

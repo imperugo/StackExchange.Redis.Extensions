@@ -1,15 +1,13 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
-#if NET8_0 || NET7_0
-using StackExchange.Redis.Extensions.MemoryPack;
+using StackExchange.Redis.Extensions.ServiceStack;
 
 namespace StackExchange.Redis.Extensions.Core.Tests.Serializers;
 
-public class MemoryPackTest : CacheClientTestBase
+public class ServiceStackTest : CacheClientTestBase
 {
-    public MemoryPackTest()
-        : base(new MemoryPackSerializer())
+    public ServiceStackTest()
+        : base(new ServiceStackJsonSerializer() { })
     {
     }
 }
-#endif

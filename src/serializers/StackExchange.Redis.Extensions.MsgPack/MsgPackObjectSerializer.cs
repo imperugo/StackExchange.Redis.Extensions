@@ -21,7 +21,7 @@ public class MsgPackObjectSerializer : ISerializer
     /// Initializes a new instance of the <see cref="MsgPackObjectSerializer"/> class.
     /// </summary>
     public MsgPackObjectSerializer()
-        : this(null, null)
+        : this(null)
     {
     }
 
