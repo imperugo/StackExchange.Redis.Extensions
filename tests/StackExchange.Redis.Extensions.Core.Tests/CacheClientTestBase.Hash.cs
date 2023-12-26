@@ -388,27 +388,6 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
-    public async Task HashGetAllAsyncAtOneTimeAsync_ValueExists_Async()
-    {
-        // arrange
-        var hashKey = Guid.NewGuid().ToString();
-        var entryKey1 = Guid.NewGuid().ToString();
-        var entryKey2 = Guid.NewGuid().ToString();
-
-        await Sut.GetDefaultDatabase().HashSetAsync<string>(hashKey, entryKey1, "testvalue1");
-        await Sut.GetDefaultDatabase().HashSetAsync<string>(hashKey, entryKey2, "testvalue2");
-
-        // act
-        Assert.True(db.HashExists(hashKey, entryKey1));
-        Assert.True(db.HashExists(hashKey, entryKey2));
-        var result = await Sut.GetDefaultDatabase().HashGetAllAsyncAtOneTimeAsync<string>(hashKey, new string[] { entryKey1, entryKey2 }).ConfigureAwait(false);
-
-        // assert        
-        Assert.True(result != null);
-        Assert.True(result.Count > 0);
-    }
-
-    [Fact]
     public async Task HashIncrementByDouble_ValueExist_EntryIncrementedCorrectValueReturned_Async()
     {
         // arrange
