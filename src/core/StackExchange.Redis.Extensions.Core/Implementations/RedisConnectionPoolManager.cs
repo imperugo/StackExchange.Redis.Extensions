@@ -27,10 +27,11 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
     /// Initializes a new instance of the <see cref="RedisConnectionPoolManager"/> class.
     /// </summary>
     /// <param name="redisConfiguration">The redis configuration.</param>
-    /// <param name="logger">The logger.</param>
+    /// <param name="logger">The logger. If null will create one from redisConfiguration.LoggerFactory if factory provided</param>
     public RedisConnectionPoolManager(RedisConfiguration redisConfiguration, ILogger<RedisConnectionPoolManager>? logger = null)
     {
         this.redisConfiguration = redisConfiguration ?? throw new ArgumentNullException(nameof(redisConfiguration));
+        logger ??= redisConfiguration.LoggerFactory?.CreateLogger<RedisConnectionPoolManager>();
         this.logger = logger ?? NullLogger<RedisConnectionPoolManager>.Instance;
 
         lock (@lock)
