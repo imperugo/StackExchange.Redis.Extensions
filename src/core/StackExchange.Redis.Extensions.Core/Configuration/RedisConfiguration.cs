@@ -4,6 +4,8 @@ using System;
 using System.Net.Security;
 using System.Security.Authentication;
 
+using Microsoft.Extensions.Logging;
+
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Implementations;
 using StackExchange.Redis.Extensions.Core.Models;
@@ -39,6 +41,8 @@ public class RedisConfiguration
     private Func<ProfilingSession>? profilingSessionProvider;
     private int workCount = Environment.ProcessorCount * 2;
     private ConnectionSelectionStrategy connectionSelectionStrategy = ConnectionSelectionStrategy.LeastLoaded;
+    private ILoggerFactory? loggerFactory;
+    private SocketManager.SocketManagerOptions socketManagerOptions = SocketManager.SocketManagerOptions.None;
 
     /// <summary>
     /// A RemoteCertificateValidationCallback delegate responsible for validating the certificate supplied by the remote party; note
@@ -370,6 +374,34 @@ public class RedisConfiguration
     }
 
     /// <summary>
+    /// Gets or sets redis LoggerFactory for using it with ConnectionMultiplexer and RedisConnectionPoolManager if logger not specified for last one.
+    /// </summary>
+    public ILoggerFactory? LoggerFactory
+    {
+        get => loggerFactory;
+
+        set
+        {
+            loggerFactory = value;
+            ResetConfigurationOptions();
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets redis SocketManagerOptions to attach to ConnectionMultiplexer.
+    /// </summary>
+    public SocketManager.SocketManagerOptions SocketManagerOptions
+    {
+        get => socketManagerOptions;
+
+        set
+        {
+            socketManagerOptions = value;
+            ResetConfigurationOptions();
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the factory for <see cref="IStateAwareConnection"/> creation
     /// </summary>
     /// <returns>>If property is not set, default <see cref="IStateAwareConnection"/> will be resolved</returns>
@@ -431,8 +463,11 @@ public class RedisConfiguration
                         false);
                 }
 
-                if (WorkCount > 0)
-                    newOptions.SocketManager = new(GetType().Name, WorkCount);
+                if (LoggerFactory != null)
+                    newOptions.LoggerFactory = LoggerFactory;
+
+                if (WorkCount > 0 || SocketManagerOptions != SocketManager.SocketManagerOptions.None)
+                    newOptions.SocketManager = new(GetType().Name, WorkCount, SocketManagerOptions);
 
                 newOptions.CertificateValidation += CertificateValidation;
                 options = newOptions;
