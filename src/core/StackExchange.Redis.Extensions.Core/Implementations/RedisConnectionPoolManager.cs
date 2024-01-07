@@ -4,6 +4,31 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
+/* Unmerged change from project 'StackExchange.Redis.Extensions.Core(net6.0)'
+Before:
+using System.Linq;
+using System.Threading.Tasks;
+After:
+using System.Threading.Tasks;
+*/
+
+/* Unmerged change from project 'StackExchange.Redis.Extensions.Core(net7.0)'
+Before:
+using System.Linq;
+using System.Threading.Tasks;
+After:
+using System.Threading.Tasks;
+*/
+
+/* Unmerged change from project 'StackExchange.Redis.Extensions.Core(net8.0)'
+Before:
+using System.Linq;
+using System.Threading.Tasks;
+After:
+using System.Threading.Tasks;
+*/
+using System.Threading.Tasks;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -81,7 +106,7 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
                 break;
 
             case ConnectionSelectionStrategy.LeastLoaded:
-                connection = connections.MinBy(x => x.TotalOutstanding());
+                connection = ValueLengthExtensions.MinBy(connections, x => x.TotalOutstanding());
                 break;
 
             default:
@@ -128,14 +153,14 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
 
     private void EmitConnections()
     {
-        for (var i = 0; i < redisConfiguration.PoolSize; i++)
+        Parallel.For(0, redisConfiguration.PoolSize, index =>
         {
             var multiplexer = ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions);
 
             if (redisConfiguration.ProfilingSessionProvider != null)
                 multiplexer.RegisterProfiler(redisConfiguration.ProfilingSessionProvider);
 
-            connections[i] = redisConfiguration.StateAwareConnectionFactory(multiplexer, logger);
-        }
+            connections[index] = redisConfiguration.StateAwareConnectionFactory(multiplexer, logger);
+        });
     }
 }

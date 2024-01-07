@@ -48,7 +48,7 @@ public abstract partial class CacheClientTestBase : IDisposable
             AllowAdmin = true,
             ConnectTimeout = 3000,
             Database = 0,
-            PoolSize = 1,
+            PoolSize = 5,
             ConnectionSelectionStrategy = ConnectionSelectionStrategy.LeastLoaded,
             ServerEnumerationStrategy = new()
             {

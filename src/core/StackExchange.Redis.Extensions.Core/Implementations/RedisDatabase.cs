@@ -435,7 +435,7 @@ public partial class RedisDatabase : IRedisDatabase
         }
 
         return !string.IsNullOrEmpty(keyPrefix)
-            ? keys.Select(k => k.Substring(keyPrefix.Length))
+            ? keys.Select(k => k[keyPrefix.Length..])
             : keys;
     }
 
@@ -509,7 +509,6 @@ public partial class RedisDatabase : IRedisDatabase
         for (var i = 0; i < data.Length; i++)
         {
             var x = data[i];
-
             result.TryAdd(x.Key, x.InfoValue);
         }
 
