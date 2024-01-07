@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using StackExchange.Redis.Extensions.Tests.Helpers;
+using StackExchange.Redis.KeyspaceIsolation;
 
 using Xunit;
 

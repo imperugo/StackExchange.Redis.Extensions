@@ -80,6 +80,21 @@ public partial interface IRedisDatabase
     Task<IDictionary<string, T?>> HashGetAsync<T>(string hashKey, string[] keys, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
+    ///     Returns the values associated with the specified fields in the hash stored at key.
+    ///     This is the fastest option to get values with multiple keys since it uses lua script on Redis.
+    ///     There are no network round trips against Redis.It works at one time on Redis.
+    /// </summary>
+    /// <remarks>
+    ///     Time complexity: O(N) where N is the number of fields being requested.
+    /// </remarks>
+    /// <typeparam name="T">Type of the returned value</typeparam>
+    /// <param name="hashKey">Key of the hash</param>
+    /// <param name="keys">Keys to retrieve from the hash</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>list of values associated with the given fields, in the same order as they are requested.</returns>
+    Task<IDictionary<string, T?>> HashGetAllAsyncAtOneTimeAsync<T>(string hashKey, string[] keys, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
     ///     Returns all fields and values of the hash stored at key. In the returned value,
     ///     every field name is followed by its value, so the length of the reply is twice the size of the hash.
     /// </summary>
