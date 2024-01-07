@@ -4,7 +4,7 @@
   <!-- General information -->
   <PropertyGroup>
     <Authors>Ugo Lattanzi</Authors>
-    <VersionPrefix>10.0.2</VersionPrefix>
+    <VersionPrefix>10.1.0</VersionPrefix>
     <!--
     <VersionSuffix>pre</VersionSuffix>
     -->
@@ -35,8 +35,10 @@
         - StackExchange.Redis.Extensions.Newtonsoft
         - StackExchange.Redis.Extensions.System.Text.Json
         - StackExchange.Redis.Extensions.Jil
+        - StackExchange.Redis.Extensions.MemoryPack
         - StackExchange.Redis.Extensions.MsgPack
         - StackExchange.Redis.Extensions.Protobuf
+        - StackExchange.Redis.Extensions.ServiceStack
         - StackExchange.Redis.Extensions.Utf8Json
     </Description>
     <PackageReleaseNotes>
@@ -104,15 +106,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Roslynator.Analyzers" Version="4.7.0">
+    <PackageReference Include="Roslynator.Analyzers" Version="4.8.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.7.0">
+    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.8.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.7.0">
+    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.8.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
