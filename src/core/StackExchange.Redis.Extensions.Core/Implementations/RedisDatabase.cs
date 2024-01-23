@@ -411,14 +411,7 @@ public partial class RedisDatabase : IRedisDatabase
         pattern = $"{keyPrefix}{pattern}";
         var keys = new HashSet<string>();
 
-        var servers = ServerIteratorFactory
-            .GetServers(connectionPoolManager.GetConnection(), serverEnumerationStrategy)
-            .ToArray();
-
-        if (servers.Length == 0)
-            throw new("No server found to serve the KEYS command.");
-
-        foreach (var unused in servers)
+        foreach (var unused in ServerIteratorFactory.GetServers(connectionPoolManager.GetConnection(), serverEnumerationStrategy))
         {
             long nextCursor = 0;
             do
