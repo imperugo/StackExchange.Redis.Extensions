@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Title>Use Bebop serialization with StackExchange.Redis.</Title>
+    <Summary>Use Bebop serialization with StackExchange.Redis.</Summary>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="bebop" Version="2.2.6" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
+  </ItemGroup>
+</Project>
