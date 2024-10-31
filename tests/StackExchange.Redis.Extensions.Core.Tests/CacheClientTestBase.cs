@@ -13,6 +13,7 @@ using Moq;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Implementations;
+using StackExchange.Redis.Extensions.Core.Tests.Helpers;
 using StackExchange.Redis.Extensions.Tests.Extensions;
 using StackExchange.Redis.Extensions.Tests.Helpers;
 
@@ -36,29 +37,8 @@ public abstract partial class CacheClientTestBase : IDisposable
 
     internal CacheClientTestBase(ISerializer serializer)
     {
-        var redisConfiguration = new RedisConfiguration()
-        {
-            AbortOnConnectFail = false,
-            KeyPrefix = "MyPrefix__",
-            Hosts = [
-                new RedisHost
-                {
-                    Host = "localhost",
-                    Port = 6379
-                }
-            ],
-            AllowAdmin = true,
-            ConnectTimeout = 3000,
-            Database = 0,
-            PoolSize = 5,
-            ConnectionSelectionStrategy = ConnectionSelectionStrategy.LeastLoaded,
-            ServerEnumerationStrategy = new()
-            {
-                Mode = ServerEnumerationStrategy.ModeOptions.All,
-                TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
-                UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
-            }
-        };
+        var redisConfiguration = RedisConfigurationForTest.CreateBasicConfig();
+        redisConfiguration.ConnectionSelectionStrategy = ConnectionSelectionStrategy.LeastLoaded;
 
         var moqLogger = new Mock<ILogger<RedisConnectionPoolManager>>();
 
