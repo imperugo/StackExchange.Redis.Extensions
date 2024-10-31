@@ -57,7 +57,7 @@ public class MsgPackObjectSerializer : ISerializer
             return encoding.GetBytes(item.ToString() ?? string.Empty);
 
         if (item == null)
-            return Array.Empty<byte>();
+            return [];
 
         var serializer = MessagePackSerializer.Get(item.GetType());
 
