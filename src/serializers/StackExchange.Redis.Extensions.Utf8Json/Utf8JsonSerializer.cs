@@ -1,7 +1,5 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
-using System;
-
 using StackExchange.Redis.Extensions.Core;
 
 using Utf8Json;
@@ -17,7 +15,7 @@ public class Utf8JsonSerializer : ISerializer
     public byte[] Serialize<T>(T? item)
     {
         return item == null
-            ? Array.Empty<byte>()
+            ? []
             : JsonSerializer.Serialize(item);
     }
 

@@ -53,11 +53,11 @@ public class MsgPackObjectSerializer : ISerializer
     /// <inheritdoc/>
     public byte[] Serialize<T>(T? item)
     {
-        if (item is string)
-            return encoding.GetBytes(item.ToString() ?? string.Empty);
-
-        if (item == null)
+        if (item is null)
             return [];
+
+        if (item is string str)
+            return encoding.GetBytes(str);
 
         var serializer = MessagePackSerializer.Get(item.GetType());
 

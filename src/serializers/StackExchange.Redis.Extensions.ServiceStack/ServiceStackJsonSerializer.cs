@@ -1,7 +1,5 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
-using System;
-
 using ServiceStack.Text;
 
 using StackExchange.Redis.Extensions.Core;
@@ -41,7 +39,7 @@ public class ServiceStackJsonSerializer : ISerializer
     public byte[] Serialize<T>(T? item)
     {
         if (item == null)
-            return Array.Empty<byte>();
+            return [];
 
         var json = JsonSerializer.SerializeToString(item);
         return JsConfig.UTF8Encoding.GetBytes(json);

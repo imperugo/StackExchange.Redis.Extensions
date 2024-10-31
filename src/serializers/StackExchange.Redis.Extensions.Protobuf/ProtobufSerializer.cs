@@ -1,6 +1,5 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
-using System;
 using System.IO;
 
 using ProtoBuf;
@@ -18,7 +17,7 @@ public class ProtobufSerializer : ISerializer
     public byte[] Serialize<T>(T? item)
     {
         if (item == null)
-            return Array.Empty<byte>();
+            return [];
 
         using var ms = new MemoryStream();
 
