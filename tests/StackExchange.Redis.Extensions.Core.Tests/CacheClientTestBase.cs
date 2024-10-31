@@ -25,10 +25,12 @@ namespace StackExchange.Redis.Extensions.Core.Tests;
 [Collection("Redis")]
 public abstract partial class CacheClientTestBase : IDisposable
 {
+#pragma warning disable CA1859
     private readonly IRedisClient sut;
     private readonly IDatabase db;
     private readonly ISerializer serializer;
     private readonly IRedisConnectionPoolManager connectionPoolManager;
+#pragma warning restore CA1859
     private bool isDisposed;
     private IntPtr nativeResource = Marshal.AllocHGlobal(100);
 
@@ -227,7 +229,7 @@ public abstract partial class CacheClientTestBase : IDisposable
             .GetAllAsync<string>(keys)
             ;
 
-        Assert.True(result.Count == 4);
+        Assert.Equal(4, result.Count);
         Assert.Equal(result[values[0].Key], values[0].Value);
         Assert.Equal(result[values[1].Key], values[1].Value);
         Assert.Equal(result[values[2].Key], values[2].Value);
@@ -362,7 +364,7 @@ public abstract partial class CacheClientTestBase : IDisposable
             .GetDefaultDatabase()
             .SearchKeysAsync("*")
             )
-            .OrderBy(k => k);
+            .Order();
 
         Assert.Equal(10, keys.Count());
     }
@@ -388,7 +390,7 @@ public abstract partial class CacheClientTestBase : IDisposable
             .GetDefaultDatabase()
             .SearchKeysAsync("*myKey*")
             )
-            .OrderBy(k => k)
+            .Order()
             .ToList();
 
         Assert.Equal(10, keys.Count);
@@ -486,7 +488,7 @@ public abstract partial class CacheClientTestBase : IDisposable
         var members = await db.SetMembersAsync("MySet");
         var itemsLeft = members.Select(m => serializer.Deserialize<string>(m)).ToArray();
 
-        Assert.True(itemsLeft.Length == 4);
+        Assert.Equal(4, itemsLeft.Length);
         Assert.DoesNotContain(itemsLeft, l => l == result);
     }
 
@@ -532,12 +534,11 @@ public abstract partial class CacheClientTestBase : IDisposable
             Assert.Contains(values, v => v.Value == r);
 
         var members = await db
-            .SetMembersAsync("MySet")
-            ;
+            .SetMembersAsync("MySet");
 
         var itemsLeft = members.Select(m => serializer.Deserialize<string>(m)).ToArray();
 
-        Assert.True(itemsLeft.Length == 2);
+        Assert.Equal(2, itemsLeft.Length);
 
         foreach (var r in result)
             Assert.DoesNotContain(itemsLeft, l => l == r);
@@ -1178,7 +1179,7 @@ public abstract partial class CacheClientTestBase : IDisposable
         var keys = new List<string> { key };
 
         await Sut.GetDefaultDatabase().AddAllAsync(values, originalTime);
-        await Sut.GetDefaultDatabase().GetAllAsync<TestClass<string>>(keys.ToHashSet(), testTime);
+        await Sut.GetDefaultDatabase().GetAllAsync<TestClass<string>>([.. keys], testTime);
         var resultValue = await db.StringGetWithExpiryAsync(key);
 
         Assert.True(originalTime < resultValue.Expiry!.Value);
