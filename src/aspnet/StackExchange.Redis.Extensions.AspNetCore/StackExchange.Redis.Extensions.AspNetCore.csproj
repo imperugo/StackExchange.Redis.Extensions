@@ -13,19 +13,7 @@
     <AssemblyOriginatorKeyFile>..\..\StackExchange.Redis.Extensions.Core.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net9.0'">
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
-  </ItemGroup>
   
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0'">
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
-  </ItemGroup>
-
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="..\..\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />

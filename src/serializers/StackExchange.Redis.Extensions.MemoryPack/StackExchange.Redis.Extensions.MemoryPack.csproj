@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
     <Title>Use the MemoryPack serialization with StackExchange.Redis.</Title>
     <Summary>Use the MemoryPack serialization with StackExchange.Redis.</Summary>
     <Nullable>enable</Nullable>
