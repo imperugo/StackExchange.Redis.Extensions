@@ -1,19 +1,20 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace StackExchange.Redis.Extensions.System.Text.Json.Converters;
 
-internal class TimeSpanNullableConverter : JsonConverter<TimeSpan?>
+internal sealed class TimeSpanNullableConverter : JsonConverter<TimeSpan?>
 {
     public override TimeSpan? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var value = reader.GetString();
 
         if (value?.Length > 0)
-            return TimeSpan.Parse(value);
+            return TimeSpan.Parse(value, CultureInfo.InvariantCulture);
 
         return null;
     }

@@ -1,6 +1,7 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -41,7 +42,7 @@ public class MsgPackObjectSerializer : ISerializer
     public T? Deserialize<T>(byte[] serializedObject)
     {
         if (typeof(T) == typeof(string))
-            return (T)Convert.ChangeType(encoding.GetString(serializedObject), typeof(T));
+            return (T)Convert.ChangeType(encoding.GetString(serializedObject), typeof(T), CultureInfo.InvariantCulture);
 
         var serializer = MessagePackSerializer.Get<T>();
 

@@ -13,28 +13,13 @@ using StackExchange.Redis.Extensions.Core.Models;
 
 namespace StackExchange.Redis.Extensions.AspNetCore.Middlewares;
 
-internal class RedisInformationMiddleware
+internal sealed class RedisInformationMiddleware(
+    RequestDelegate next,
+    RedisMiddlewareAccessOptions options,
+    ILogger<RedisInformationMiddleware> logger,
+    IRedisClientFactory redisClientFactory,
+    IRedisDatabase redisDatabase)
 {
-    private readonly ILogger<RedisInformationMiddleware> logger;
-    private readonly RequestDelegate next;
-    private readonly IRedisClientFactory redisClientFactory;
-    private readonly IRedisDatabase redisDatabase;
-    private readonly RedisMiddlewareAccessOptions options;
-
-    public RedisInformationMiddleware(
-        RequestDelegate next,
-        RedisMiddlewareAccessOptions options,
-        ILogger<RedisInformationMiddleware> logger,
-        IRedisClientFactory redisClientFactory,
-        IRedisDatabase redisDatabase)
-    {
-        this.next = next;
-        this.options = options;
-        this.logger = logger;
-        this.redisClientFactory = redisClientFactory;
-        this.redisDatabase = redisDatabase;
-    }
-
 #pragma warning disable RCS1046
     public async Task Invoke(HttpContext context)
 #pragma warning restore RCS1046

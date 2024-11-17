@@ -6,9 +6,9 @@ namespace StackExchange.Redis.Extensions.Core.Tests.Helpers
 {
     internal static class RedisConfigurationForTest
     {
-        private const string DEFAULT_HOST = "localhost"; // Or use LAN IP: 192.168.*.*
+        private const string DEFAULT_HOST = "127.0.0.1";
 
-        public static RedisConfiguration CreateBasicConfig(string targetHost = default) => new()
+        public static RedisConfiguration CreateBasicConfig(string? targetHost = default) => new()
         {
             AbortOnConnectFail = false,
             KeyPrefix = "MyPrefix__",
@@ -19,10 +19,9 @@ namespace StackExchange.Redis.Extensions.Core.Tests.Helpers
                     Port = 6379
                 }
             ],
-            // Password = "hello_world",
             AllowAdmin = true,
             ConnectTimeout = 3000,
-            Database = 0, // DO NOT change.
+            Database = 0,
             PoolSize = 5,
             ServerEnumerationStrategy = new()
             {

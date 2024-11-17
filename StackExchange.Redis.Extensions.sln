@@ -40,7 +40,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "items", "items", "{0C036AC5
 		LICENSE = LICENSE
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		.ruleset = .ruleset
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchange.Redis.Extensions.MsgPack", "src\serializers\StackExchange.Redis.Extensions.MsgPack\StackExchange.Redis.Extensions.MsgPack.csproj", "{2C0B426B-D436-4F67-A6A9-89CE81376195}"

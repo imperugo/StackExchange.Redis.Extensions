@@ -15,22 +15,22 @@ public partial class RedisDatabase
         string key,
         T value,
         double score,
-        CommandFlags commandFlags = CommandFlags.None)
+        CommandFlags flag = CommandFlags.None)
     {
         var entryBytes = Serializer.Serialize(value);
 
-        return Database.SortedSetAddAsync(key, entryBytes, score, commandFlags);
+        return Database.SortedSetAddAsync(key, entryBytes, score, flag);
     }
 
     /// <inheritdoc/>
     public Task<bool> SortedSetRemoveAsync<T>(
         string key,
         T value,
-        CommandFlags commandFlags = CommandFlags.None)
+        CommandFlags flag = CommandFlags.None)
     {
         var entryBytes = Serializer.Serialize(value);
 
-        return Database.SortedSetRemoveAsync(key, entryBytes, commandFlags);
+        return Database.SortedSetRemoveAsync(key, entryBytes, flag);
     }
 
     /// <inheritdoc/>
@@ -42,9 +42,9 @@ public partial class RedisDatabase
         Order order = Order.Ascending,
         long skip = 0L,
         long take = -1L,
-        CommandFlags commandFlags = CommandFlags.None)
+        CommandFlags flag = CommandFlags.None)
     {
-        var result = await Database.SortedSetRangeByScoreAsync(key, start, stop, exclude, order, skip, take, commandFlags).ConfigureAwait(false);
+        var result = await Database.SortedSetRangeByScoreAsync(key, start, stop, exclude, order, skip, take, flag).ConfigureAwait(false);
 
         return result.Select(m => m == RedisValue.Null ? default : Serializer.Deserialize<T>(m!));
     }
@@ -59,8 +59,14 @@ public partial class RedisDatabase
     {
         var result = await Database.SortedSetRangeByRankWithScoresAsync(key, start, stop, order, commandFlags).ConfigureAwait(false);
 
-        return result
-            .Select(x => new ScoreRankResult<T>(Serializer.Deserialize<T>(x.Element!), x.Score))
-            .ToArray();
+        var list = new ScoreRankResult<T>[result.Length];
+
+        for (var i = 0; i < result.Length; i++)
+        {
+            var x = result[i];
+            list[i] = new ScoreRankResult<T>(Serializer.Deserialize<T>(x.Element!), x.Score);
+        }
+
+        return list;
     }
 }

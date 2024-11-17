@@ -1,0 +1,7 @@
+# Title    : Call async methods when in an async method
+# Category : Usage
+# Help Link: https://github.com/Microsoft/vs-threading/blob/main/doc/analyzers/VSTHRD103.md
+# Redundant: CA1849
+dotnet_diagnostic.VSTHRD103.severity = none
+
+dotnet_diagnostic.IDE1006.severity = none

@@ -4,23 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-#if NET7_0_OR_GREATER
 using MemoryPack;
-#endif
 
-namespace StackExchange.Redis.Extensions.Tests.Helpers;
+namespace StackExchange.Redis.Extensions.Core.Tests.Helpers;
+
+#nullable disable
 
 [Serializable]
 [DataContract]
-#if NET7_0_OR_GREATER
 [MemoryPackable]
 public partial class TestClass<T> : IEquatable<TestClass<T>>
 {
     [MemoryPackConstructor]
-#else
-public class TestClass<T> : IEquatable<TestClass<T>>
-{
-#endif
     public TestClass()
     {
     }
@@ -60,14 +55,17 @@ public class TestClass<T> : IEquatable<TestClass<T>>
         if (ReferenceEquals(this, other))
             return true;
 
-        return string.Equals(Key, other.Key) && EqualityComparer<T>.Default.Equals(Value, other.Value);
+        return string.Equals(Key, other.Key, StringComparison.Ordinal) && EqualityComparer<T>.Default.Equals(Value, other.Value);
     }
 
     public override int GetHashCode()
     {
         unchecked
         {
-            return ((Key?.GetHashCode() ?? 0) * 397) ^ EqualityComparer<T>.Default.GetHashCode(Value);
+            var keyHash = Key?.GetHashCode(StringComparison.Ordinal) ?? 0;
+            var valueHash = EqualityComparer<T>.Default.GetHashCode(Value!);
+
+            return (keyHash * 397) ^ valueHash;
         }
     }
 }

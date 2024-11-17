@@ -1,123 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
 
-  <!-- General information -->
-  <PropertyGroup>
-    <Authors>Ugo Lattanzi</Authors>
-    <VersionPrefix>10.2.0</VersionPrefix>
-    <!--
-    <VersionSuffix>pre</VersionSuffix>
-    -->
-    <TargetFrameworks>netstandard2.1;net8.0;</TargetFrameworks>
-    <IncludeSource>True</IncludeSource>
-    <IncludeSymbols>True</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <NoDefaultExcludes>true</NoDefaultExcludes>
-    <Copyright>Ugo Lattanzi</Copyright>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory).ruleset</CodeAnalysisRuleSet>
-    <RepositoryUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</RepositoryUrl>
+    <!-- General information -->
+    <PropertyGroup>
+        <Authors>Ugo Lattanzi</Authors>
+        <VersionPrefix>10.2.0</VersionPrefix>
+        <!--
+        <VersionSuffix>pre</VersionSuffix>
+        -->
+        <TargetFrameworks>netstandard2.1;net8.0;net9.0</TargetFrameworks>
+        <Nullable>enable</Nullable>
+        <IncludeSource>True</IncludeSource>
+        <IncludeSymbols>True</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <NoDefaultExcludes>true</NoDefaultExcludes>
+        <Copyright>Ugo Lattanzi</Copyright>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+        <RepositoryUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</RepositoryUrl>
 
-    <SuppressTfmSupportBuildWarnings Condition="$(TargetFramework.StartsWith('netcore'))">>true</SuppressTfmSupportBuildWarnings>
-  </PropertyGroup>
+        <SuppressTfmSupportBuildWarnings Condition="$(TargetFramework.StartsWith('netcore'))">>true</SuppressTfmSupportBuildWarnings>
+    </PropertyGroup>
 
-  <!-- Packages stuff -->
-  <PropertyGroup>
-    <Title>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis in order to make your life easier</Title>
-    <Summary>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis in order to make your life easier</Summary>
-    <Description>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis allowing you a set of functionality needed by common applications.
+    <!-- Packages stuff -->
+    <PropertyGroup>
+        <Title>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis in order to make your life easier</Title>
+        <Summary>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis in order to make your life easier</Summary>
+        <Description>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis allowing you a set of functionality needed by common applications.
 
-        To store complex data It requires one of the following implementations:
+            To store complex data It requires one of the following implementations:
 
-        - StackExchange.Redis.Extensions.Newtonsoft
-        - StackExchange.Redis.Extensions.System.Text.Json
-        - StackExchange.Redis.Extensions.Jil
-        - StackExchange.Redis.Extensions.MemoryPack
-        - StackExchange.Redis.Extensions.MsgPack
-        - StackExchange.Redis.Extensions.Protobuf
-        - StackExchange.Redis.Extensions.ServiceStack
-        - StackExchange.Redis.Extensions.Utf8Json
-    </Description>
-    <PackageReleaseNotes>
-        - Multiple redis instances
-        - Connection pooling (LeastLoaded or RoundRobin)
-        - Added support to .NET Standard
-        - Bugfixing
-        - improving performances;
-        - Add an object to Redis;
-        - Change ISerializer interface (more info here https://github.com/imperugo/StackExchange.Redis.Extensions/issues/2)
-        - Update StackExchange.Redis to latest version;
-        - Changed Flush method;
-        - Remove an object from Redis;
-        - Search Keys into Redis;
-        - Retrieve multiple object with a single roundtrip;
-        - Store multiple object with a single roundtrip;
-        - Get Redis Server information;
-        - Set Add;
-        - Set AddAdd;
-        - SetRemove;
-        - SetRemoveAll;
-        - Set Member;
-        - Pub/Sub events;
-        - Save;
-        - Async methods;
-        - Hash methods;
-        - Tags support;
-        - Support for Keyspace isolation;
-    </PackageReleaseNotes>
-    <PackageProjectUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</PackageProjectUrl>
-    <PackageTags>Async Redis NoSQL Client Distributed Cache PubSub Messaging</PackageTags>
-  </PropertyGroup>
+            - StackExchange.Redis.Extensions.Newtonsoft
+            - StackExchange.Redis.Extensions.System.Text.Json
+            - StackExchange.Redis.Extensions.Jil
+            - StackExchange.Redis.Extensions.MemoryPack
+            - StackExchange.Redis.Extensions.MsgPack
+            - StackExchange.Redis.Extensions.Protobuf
+            - StackExchange.Redis.Extensions.ServiceStack
+            - StackExchange.Redis.Extensions.Utf8Json
+        </Description>
+        <PackageReleaseNotes>
+            - Multiple redis instances
+            - Connection pooling (LeastLoaded or RoundRobin)
+            - Added support to .NET Standard
+            - Bugfixing
+            - improving performances;
+            - Add an object to Redis;
+            - Change ISerializer interface (more info here https://github.com/imperugo/StackExchange.Redis.Extensions/issues/2)
+            - Update StackExchange.Redis to latest version;
+            - Changed Flush method;
+            - Remove an object from Redis;
+            - Search Keys into Redis;
+            - Retrieve multiple object with a single roundtrip;
+            - Store multiple object with a single roundtrip;
+            - Get Redis Server information;
+            - Set Add;
+            - Set AddAdd;
+            - SetRemove;
+            - SetRemoveAll;
+            - Set Member;
+            - Pub/Sub events;
+            - Save;
+            - Async methods;
+            - Hash methods;
+            - Tags support;
+            - Support for Keyspace isolation;
+        </PackageReleaseNotes>
+        <PackageProjectUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</PackageProjectUrl>
+        <PackageTags>Async Redis NoSQL Client Distributed Cache PubSub Messaging</PackageTags>
+    </PropertyGroup>
 
-  <!-- Repo -->
-  <PropertyGroup>
-    <RepositoryUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
-  </PropertyGroup>
+    <!-- Repo -->
+    <PropertyGroup>
+        <RepositoryUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</RepositoryUrl>
+        <RepositoryType>Git</RepositoryType>
+    </PropertyGroup>
 
-  <!-- LICENSE -->
-  <PropertyGroup>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-  </PropertyGroup>
+    <!-- LICENSE -->
+    <PropertyGroup>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
 
-  <!-- LANGUAGE -->
-  <PropertyGroup>
-    <LangVersion>preview</LangVersion>
-    <Features>strict</Features>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
+    <!-- LANGUAGE -->
+    <PropertyGroup>
+        <LangVersion>preview</LangVersion>
+        <Features>strict</Features>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.SuppressMessage">
-      <_Parameter1>Style</_Parameter1>
-      <_Parameter2>IDE0017:Simplify object initialization</_Parameter2>
-    </AssemblyAttribute>
-  </ItemGroup>
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.SuppressMessage">
+            <_Parameter1>Style</_Parameter1>
+            <_Parameter2>IDE0017:Simplify object initialization</_Parameter2>
+        </AssemblyAttribute>
+    </ItemGroup>
 
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.SuppressMessage">
-      <_Parameter1>Style</_Parameter1>
-      <_Parameter2>IDE0066:Use 'switch' expression</_Parameter2>
-    </AssemblyAttribute>
-  </ItemGroup>
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.SuppressMessage">
+            <_Parameter1>Style</_Parameter1>
+            <_Parameter2>IDE0066:Use 'switch' expression</_Parameter2>
+        </AssemblyAttribute>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Roslynator.Analyzers" Version="4.12.9">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.12.9">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.12.9">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="AspNetCoreAnalyzers"
+                          Version="0.3.0"
+                          PrivateAssets="all"
+                          IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
+
+        <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers"
+                          Version="17.12.19"
+                          PrivateAssets="all"
+                          IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
+
+        <PackageReference Include="Roslynator.Analyzers"
+                          Version="[4.12.9,5.0)"
+                          PrivateAssets="all"
+                          IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
+
+        <PackageReference Include="Roslynator.CodeAnalysis.Analyzers"
+                          Version="[4.12.9,5.0)"
+                          PrivateAssets="all"
+                          IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
+
+        <PackageReference Include="Roslynator.Formatting.Analyzers"
+                          Version="[4.12.9,5.0)"
+                          PrivateAssets="all"
+                          IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
+
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers"
+                          Version="[3.11.00,4.0)"
+                          PrivateAssets="all"
+                          IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
+
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp"
+                          Version="4.12.0-3.final"
+                          PrivateAssets="all"
+                          IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
+    </ItemGroup>
 
 </Project>

@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using StackExchange.Redis.Extensions.Tests.Helpers;
-
 using Xunit;
 
 using static System.Linq.Enumerable;
@@ -20,7 +18,7 @@ public abstract partial class CacheClientTestBase
         // arrange
         var hashKey = Guid.NewGuid().ToString();
         var entryKey = Guid.NewGuid().ToString();
-        var entryValue = new TestClass<DateTime>("test", DateTime.UtcNow);
+        var entryValue = new Helpers.TestClass<DateTime>("test", DateTime.UtcNow);
 
         // act
         var res = await Sut.GetDefaultDatabase().HashSetAsync(hashKey, entryKey, entryValue, true);
@@ -29,7 +27,7 @@ public abstract partial class CacheClientTestBase
         Assert.True(res);
 
         var redisValue = await db.HashGetAsync(hashKey, entryKey);
-        var data = serializer.Deserialize<TestClass<DateTime>>(redisValue);
+        var data = serializer.Deserialize<Helpers.TestClass<DateTime>>(redisValue!);
 
         Assert.Equal(entryValue, data);
     }
@@ -40,8 +38,8 @@ public abstract partial class CacheClientTestBase
         // arrange
         var hashKey = Guid.NewGuid().ToString();
         var entryKey = Guid.NewGuid().ToString();
-        var entryValue = new TestClass<DateTime>("test1", DateTime.UtcNow);
-        var initialValue = new TestClass<DateTime>("test2", DateTime.UtcNow);
+        var entryValue = new Helpers.TestClass<DateTime>("test1", DateTime.UtcNow);
+        var initialValue = new Helpers.TestClass<DateTime>("test2", DateTime.UtcNow);
         var initRes = await Sut.GetDefaultDatabase().HashSetAsync(hashKey, entryKey, initialValue);
 
         // act
@@ -51,7 +49,7 @@ public abstract partial class CacheClientTestBase
         Assert.True(initRes);
         Assert.False(res);
         var redisValue = await db.HashGetAsync(hashKey, entryKey);
-        var data = serializer.Deserialize<TestClass<DateTime>>(redisValue);
+        var data = serializer.Deserialize<Helpers.TestClass<DateTime>>(redisValue!);
         Assert.Equal(initialValue, data);
     }
 
@@ -61,9 +59,9 @@ public abstract partial class CacheClientTestBase
         // arrange
         var hashKey = Guid.NewGuid().ToString();
         var entryKey = Guid.NewGuid().ToString();
-        var entryValue = new TestClass<DateTime>("test1", DateTime.UtcNow);
-        var initialValue = new TestClass<DateTime>("test2", DateTime.UtcNow);
-        var initRes = Sut.GetDefaultDatabase().Database.HashSet(hashKey, entryKey, serializer.Serialize(initialValue));
+        var entryValue = new Helpers.TestClass<DateTime>("test1", DateTime.UtcNow);
+        var initialValue = new Helpers.TestClass<DateTime>("test2", DateTime.UtcNow);
+        var initRes = await Sut.GetDefaultDatabase().Database.HashSetAsync(hashKey, entryKey, serializer.Serialize(initialValue));
 
         // act
         var res = await Sut.GetDefaultDatabase().HashSetAsync(hashKey, entryKey, entryValue);
@@ -71,7 +69,8 @@ public abstract partial class CacheClientTestBase
         // assert
         Assert.True(initRes, "Initial value was not set");
         Assert.False(res); // NOTE: HSET returns: 1 if new field was created and value set, or 0 if field existed and value set. reference: http://redis.io/commands/HSET
-        var data = serializer.Deserialize<TestClass<DateTime>>(Sut.GetDefaultDatabase().Database.HashGet(hashKey, entryKey));
+        var hg = await Sut.GetDefaultDatabase().Database.HashGetAsync(hashKey, entryKey);
+        var data = serializer.Deserialize<Helpers.TestClass<DateTime>>(hg!);
         Assert.Equal(entryValue, data);
     }
 
@@ -80,7 +79,7 @@ public abstract partial class CacheClientTestBase
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
-        var values = Range(0, 100).Select(_ => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow));
+        var values = Range(0, 100).Select(_ => new Helpers.TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow));
         var map = values.ToDictionary(_ => Guid.NewGuid().ToString());
 
         // act
@@ -88,15 +87,15 @@ public abstract partial class CacheClientTestBase
         await Task.Delay(500);
 
         // assert
-        var data = db
-            .HashGet(hashKey, map.Keys.Select(x => (RedisValue)x).ToArray())
+        var data = (await db
+            .HashGetAsync(hashKey, map.Keys.Select(x => (RedisValue)x).ToArray()))
             .ToList()
-            .ConvertAll(x => serializer.Deserialize<TestClass<DateTime>>(x));
+            .ConvertAll(x => serializer.Deserialize<Helpers.TestClass<DateTime>>(x!));
 
         Assert.Equal(map.Count, data.Count);
 
         foreach (var val in data)
-            Assert.True(map.ContainsValue(val), $"result map doesn't contain value: {val}");
+            Assert.True(map.ContainsValue(val!), $"result map doesn't contain value: {val}");
     }
 
     [Fact]
@@ -105,9 +104,9 @@ public abstract partial class CacheClientTestBase
         // arrange
         var hashKey = Guid.NewGuid().ToString();
         var entryKey = Guid.NewGuid().ToString();
-        var entryValue = new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow);
+        var entryValue = new Helpers.TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow);
 
-        Assert.True(db.HashSet(hashKey, entryKey, Sut.GetDefaultDatabase().Serializer.Serialize(entryValue)), "Failed setting test value into redis");
+        Assert.True(await db.HashSetAsync(hashKey, entryKey, Sut.GetDefaultDatabase().Serializer.Serialize(entryValue)), "Failed setting test value into redis");
 
         // act
         var result = await Sut.GetDefaultDatabase().HashDeleteAsync(hashKey, entryKey);
@@ -139,8 +138,8 @@ public abstract partial class CacheClientTestBase
         var hashKey = Guid.NewGuid().ToString();
         var values
             = Range(0, 1000)
-                .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
-                .ToDictionary(x => x.Key);
+                .Select(x => new Helpers.TestClass<int>(Guid.NewGuid().ToString(), x))
+                .ToDictionary(x => x.Key!);
 
         await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray());
 
@@ -163,13 +162,13 @@ public abstract partial class CacheClientTestBase
 
         var valuesDelete
             = Range(0, 1000)
-                .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
-                .ToDictionary(x => x.Key);
+                .Select(x => new Helpers.TestClass<int>(Guid.NewGuid().ToString(), x))
+                .ToDictionary(x => x.Key!);
 
         var valuesKeep
             = Range(0, 1000)
-                .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
-                .ToDictionary(x => x.Key);
+                .Select(x => new Helpers.TestClass<int>(Guid.NewGuid().ToString(), x))
+                .ToDictionary(x => x.Key!);
 
         await db.HashSetAsync(hashKey, valuesDelete.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray());
         await db.HashSetAsync(hashKey, valuesKeep.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray());
@@ -187,7 +186,7 @@ public abstract partial class CacheClientTestBase
         Assert.DoesNotContain(dbValues, x => x.IsNull);
         Assert.Equal(1000, await db.HashLengthAsync(hashKey));
         Assert.Equal(1000, dbValues.Length);
-        Assert.All(dbValues, x => Assert.True(valuesKeep.ContainsKey(Sut.GetDefaultDatabase().Serializer.Deserialize<TestClass<int>>(x).Key)));
+        Assert.All(dbValues, x => Assert.True(valuesKeep.ContainsKey(Sut.GetDefaultDatabase().Serializer.Deserialize<Helpers.TestClass<int>>(x!)!.Key!)));
     }
 
     [Fact]
@@ -196,7 +195,7 @@ public abstract partial class CacheClientTestBase
         // arrange
         var hashKey = Guid.NewGuid().ToString();
         var entryKey = Guid.NewGuid().ToString();
-        var entryValue = new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow);
+        var entryValue = new Helpers.TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow);
         Assert.True(await db.HashSetAsync(hashKey, entryKey, Sut.GetDefaultDatabase().Serializer.Serialize(entryValue)), "Failed setting test value into redis");
 
         // act
@@ -241,8 +240,8 @@ public abstract partial class CacheClientTestBase
         var hashKey = Guid.NewGuid().ToString();
         var values
             = Range(0, 1000)
-                .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
-                .ToDictionary(x => x.Key);
+                .Select(x => new Helpers.TestClass<int>(Guid.NewGuid().ToString(), x))
+                .ToDictionary(x => x.Key!);
 
         await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray());
 
@@ -280,17 +279,17 @@ public abstract partial class CacheClientTestBase
         var hashKey = Guid.NewGuid().ToString();
         var values
             = Range(0, 1000)
-                .Select(_ => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
-                .ToDictionary(x => x.Key);
+                .Select(_ => new Helpers.TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
+                .ToDictionary(x => x.Key!);
 
         await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray());
 
         // act
-        var result = await Sut.GetDefaultDatabase().HashValuesAsync<TestClass<DateTime>>(hashKey);
+        var result = await Sut.GetDefaultDatabase().HashValuesAsync<Helpers.TestClass<DateTime>>(hashKey);
 
         // assert
         Assert.NotNull(result);
-        var collection = result as IList<TestClass<DateTime>> ?? result.ToList();
+        var collection = result as IList<Helpers.TestClass<DateTime>> ?? result.ToList()!;
         Assert.NotEmpty(collection);
         Assert.Equal(values.Count, collection.Count);
 
@@ -318,8 +317,8 @@ public abstract partial class CacheClientTestBase
         var hashKey = Guid.NewGuid().ToString();
         var values
             = Range(0, 1000)
-                .Select(x => new TestClass<int>(Guid.NewGuid().ToString(), x))
-                .ToDictionary(x => x.Key);
+                .Select(x => new Helpers.TestClass<int>(Guid.NewGuid().ToString(), x))
+                .ToDictionary(x => x.Key!);
 
         await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray());
 
@@ -339,13 +338,13 @@ public abstract partial class CacheClientTestBase
         const int incBy = 1;
 
         // act
-        Assert.False(db.HashExists(hashKey, entryKey));
+        Assert.False(await db.HashExistsAsync(hashKey, entryKey));
         var result = await Sut.GetDefaultDatabase().HashIncrementByAsync(hashKey, entryKey, incBy);
 
         // assert
         Assert.Equal(incBy, result);
         Assert.True(await Sut.GetDefaultDatabase().HashExistsAsync(hashKey, entryKey));
-        Assert.Equal(incBy, db.HashGet(hashKey, entryKey));
+        Assert.Equal(incBy, await db.HashGetAsync(hashKey, entryKey));
     }
 
     [Fact]
@@ -357,7 +356,7 @@ public abstract partial class CacheClientTestBase
         const int entryValue = 15;
         const int incBy = 1;
 
-        Assert.True(db.HashSet(hashKey, entryKey, entryValue));
+        Assert.True(await db.HashSetAsync(hashKey, entryKey, entryValue));
 
         // act
         var result = await Sut.GetDefaultDatabase().HashIncrementByAsync(hashKey, entryKey, incBy);
@@ -377,7 +376,7 @@ public abstract partial class CacheClientTestBase
         const double incBy = 0.9;
 
         // act
-        Assert.False(db.HashExists(hashKey, entryKey));
+        Assert.False(await db.HashExistsAsync(hashKey, entryKey));
         var result = await Sut.GetDefaultDatabase().HashIncrementByAsync(hashKey, entryKey, incBy);
 
         // assert
@@ -395,7 +394,7 @@ public abstract partial class CacheClientTestBase
         const double entryValue = 14.3;
         const double incBy = 9.7;
 
-        Assert.True(db.HashSet(hashKey, entryKey, entryValue));
+        Assert.True(await db.HashSetAsync(hashKey, entryKey, entryValue));
 
         // act
         var result = await Sut.GetDefaultDatabase().HashIncrementByAsync(hashKey, entryKey, incBy);
@@ -403,7 +402,7 @@ public abstract partial class CacheClientTestBase
         // assert
         const double expected = entryValue + incBy;
         Assert.Equal(expected, result);
-        Assert.Equal(expected, db.HashGet(hashKey, entryKey));
+        Assert.Equal(expected, await db.HashGetAsync(hashKey, entryKey));
     }
 
     [Fact]
@@ -427,13 +426,13 @@ public abstract partial class CacheClientTestBase
         var hashKey = Guid.NewGuid().ToString();
         var values
             = Range(0, 1000)
-                .Select(_ => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
-                .ToDictionary(x => x.Key);
+                .Select(_ => new Helpers.TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
+                .ToDictionary(x => x.Key!);
 
         await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray());
 
         // act
-        var result = Sut.GetDefaultDatabase().HashScan<TestClass<DateTime>>(hashKey, "*");
+        var result = Sut.GetDefaultDatabase().HashScan<Helpers.TestClass<DateTime>>(hashKey, "*");
 
         // assert
         Assert.NotNull(result);
@@ -442,8 +441,8 @@ public abstract partial class CacheClientTestBase
 
         foreach (var key in values.Keys)
         {
-            Assert.True(resultEnum.ContainsKey(key));
-            Assert.Equal(values[key], resultEnum[key]);
+            Assert.True(resultEnum.ContainsKey(key!));
+            Assert.Equal(values[key], resultEnum[key!]);
         }
     }
 
@@ -454,23 +453,23 @@ public abstract partial class CacheClientTestBase
         var hashKey = Guid.NewGuid().ToString();
         var values
             = Range(0, 1000)
-                .Select(_ => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
-                .ToDictionary(x => x.Key);
+                .Select(_ => new Helpers.TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow))
+                .ToDictionary(x => x.Key!);
 
         await db.HashSetAsync(hashKey, values.Select(x => new HashEntry(x.Key, Sut.GetDefaultDatabase().Serializer.Serialize(x.Value))).ToArray());
 
         // act
-        var result = Sut.GetDefaultDatabase().HashScan<TestClass<DateTime>>(hashKey, "2*");
+        var result = Sut.GetDefaultDatabase().HashScan<Helpers.TestClass<DateTime>>(hashKey, "2*");
 
         // assert
         Assert.NotNull(result);
         var resultEnum = result.ToDictionary(x => x.Key, x => x.Value);
-        Assert.Equal(values.Keys.Count(x => x.StartsWith("2", StringComparison.Ordinal)), resultEnum.Count);
+        Assert.Equal(values.Keys.Count(x => x!.StartsWith('2')), resultEnum.Count);
 
-        foreach (var key in values.Keys.Where(x => x.StartsWith("2", StringComparison.Ordinal)))
+        foreach (var key in values.Keys.Where(x => x!.StartsWith('2')))
         {
-            Assert.True(resultEnum.ContainsKey(key));
-            Assert.Equal(values[key], resultEnum[key]);
+            Assert.True(resultEnum.ContainsKey(key!));
+            Assert.Equal(values[key], resultEnum[key!]);
         }
     }
 }

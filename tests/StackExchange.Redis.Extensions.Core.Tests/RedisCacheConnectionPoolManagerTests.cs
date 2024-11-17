@@ -29,7 +29,7 @@ public class RedisCacheConnectionPoolManagerTests : IDisposable
 
         this.output = output;
 
-        var configuration = RedisConfigurationForTest.CreateBasicConfig(Environment.GetEnvironmentVariable("REDIS_HOST"));
+        var configuration = RedisConfigurationForTest.CreateBasicConfig(Environment.GetEnvironmentVariable("REDIS_HOST")!);
 
         var logger = output.BuildLoggerFor<RedisConnectionPoolManager>();
 

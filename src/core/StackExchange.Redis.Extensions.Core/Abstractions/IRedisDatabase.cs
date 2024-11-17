@@ -221,10 +221,10 @@ public partial interface IRedisDatabase
     /// </summary>
     /// <typeparam name="T">The type of the expected object.</typeparam>
     /// <param name="items">The items.</param>
-    /// <param name="expiresIn">Time until expiration.</param>
+    /// <param name="expiresAt">Time until expiration.</param>
     /// <param name="when">The condition (Always is the default value).</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    Task<bool> AddAllAsync<T>(Tuple<string, T>[] items, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None);
+    Task<bool> AddAllAsync<T>(Tuple<string, T>[] items, TimeSpan expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     Run SADD command http://redis.io/commands/sadd

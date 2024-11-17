@@ -42,7 +42,7 @@ public class NewtonsoftSerializer(JsonSerializerSettings? settings) : ISerialize
         if (item == null)
             return [];
 
-        var type = item?.GetType();
+        var type = item.GetType();
         var jsonString = JsonConvert.SerializeObject(item, type, settings);
         return encoding.GetBytes(jsonString);
     }

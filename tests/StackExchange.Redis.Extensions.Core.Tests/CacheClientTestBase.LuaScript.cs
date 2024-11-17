@@ -35,9 +35,9 @@ public class CacheClientTestBase_WithoutKeyPrefixForLuaScript : IDisposable
 
         var moqLogger = new Mock<ILogger<RedisConnectionPoolManager>>();
 
-        this.serializer = new NewtonsoftSerializer();
+        serializer = new NewtonsoftSerializer();
         connectionPoolManager = new RedisConnectionPoolManager(redisConfiguration, moqLogger.Object);
-        Sut = new RedisClient(connectionPoolManager, this.serializer, redisConfiguration);
+        Sut = new RedisClient(connectionPoolManager, serializer, redisConfiguration);
         db = Sut.GetDefaultDatabase().Database;
     }
 
@@ -84,11 +84,11 @@ public class CacheClientTestBase_WithoutKeyPrefixForLuaScript : IDisposable
         await Sut.GetDefaultDatabase().HashSetAsync(hashKey, entryKey2, "testvalue2");
 
         // act
-        Assert.True(db.HashExists(hashKey, entryKey1));
-        Assert.True(db.HashExists(hashKey, entryKey2));
+        Assert.True(await db.HashExistsAsync(hashKey, entryKey1));
+        Assert.True(await db.HashExistsAsync(hashKey, entryKey2));
         var result = await Sut.GetDefaultDatabase().HashGetAllAsyncAtOneTimeAsync<string>(hashKey, [entryKey1, entryKey2]);
 
-        // assert        
+        // assert
         Assert.NotNull(result);
         Assert.True(result.Count > 0);
     }
