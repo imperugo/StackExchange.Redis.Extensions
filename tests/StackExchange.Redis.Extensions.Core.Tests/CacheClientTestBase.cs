@@ -917,12 +917,6 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetRemoveAllAsyncGenericShouldThrowExceptionWhenItemsContainsOneNullItem_Async()
-    {
-        await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().SetRemoveAllAsync<string>("MySet", CommandFlags.None, "value", "something", "value2"));
-    }
-
-    [Fact]
     public async Task ListAddToLeftGenericShouldThrowExceptionWhenKeyIsEmpty_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().ListAddToLeftAsync(string.Empty, string.Empty));

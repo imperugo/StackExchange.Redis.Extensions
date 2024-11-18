@@ -14,7 +14,7 @@ public abstract partial class CacheClientTestBase
     [Fact]
     public async Task Add_Item_To_Sorted_Set_Async()
     {
-        var testClass = new Helpers.TestClass<DateTime>();
+        var testClass = new Helpers.TestClass<DateTime>() { Value = DateTime.Now };
 
         var added = await Sut.GetDefaultDatabase().SortedSetAddAsync("my Key", testClass, 0);
 
