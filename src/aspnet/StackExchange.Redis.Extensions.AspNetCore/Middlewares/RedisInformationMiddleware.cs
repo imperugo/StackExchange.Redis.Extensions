@@ -1,7 +1,7 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -67,14 +67,15 @@ internal sealed class RedisInformationMiddleware(
 
     private bool IsClientAllowed(HttpContext context)
     {
-        if (options.AllowedIPs == null)
-            return true;
+        // Make `AllowFunction` higher priority so that users can use `AllowedIPs` in their own logic.
+        var allowFunc = options.AllowFunction;
+        if (allowFunc != null)
+            return allowFunc.Invoke(context);
 
-        if (options.AllowedIPs.Any(x => x.Equals(context.Connection.RemoteIpAddress)))
-            return true;
+        var allowIPs = options.AllowedIPs;
 
-        if (options.AllowFunction != null)
-            return options.AllowFunction(context);
+        if (allowIPs is { Length: > 0 })
+            return Array.Exists(allowIPs, p => p.Equals(context.Connection.RemoteIpAddress));
 
         return false;
     }
