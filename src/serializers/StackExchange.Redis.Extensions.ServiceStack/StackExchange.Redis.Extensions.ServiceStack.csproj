@@ -1,12 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Title>Use the Protobuf-net serialization with StackExchange.Redis.</Title>
-    <Summary>Use the Protobuf-net serialization with StackExchange.Redis.</Summary>
+    <Title>Use the ServiceStack.Text serialization with StackExchange.Redis.</Title>
+    <Summary>Use the ServiceStack.Text serialization with StackExchange.Redis.</Summary>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ServiceStack.Text" Version="[8.4.0,9.0.0)" />
+    <PackageReference Include="ServiceStack.Text" Version="[8.5.*,9.0.0)" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 

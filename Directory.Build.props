@@ -107,37 +107,37 @@
 
     <ItemGroup>
         <PackageReference Include="AspNetCoreAnalyzers"
-                          Version="0.3.0"
+                          Version="0.3.*"
                           PrivateAssets="all"
                           IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
 
         <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers"
-                          Version="17.12.19"
+                          Version="17.12.*"
                           PrivateAssets="all"
                           IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
 
         <PackageReference Include="Roslynator.Analyzers"
-                          Version="[4.12.9,5.0)"
+                          Version="[4.12.*,5.0)"
                           PrivateAssets="all"
                           IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
 
         <PackageReference Include="Roslynator.CodeAnalysis.Analyzers"
-                          Version="[4.12.9,5.0)"
+                          Version="[4.12.*,5.0)"
                           PrivateAssets="all"
                           IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
 
         <PackageReference Include="Roslynator.Formatting.Analyzers"
-                          Version="[4.12.9,5.0)"
+                          Version="[4.12.*,5.0)"
                           PrivateAssets="all"
                           IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
 
         <PackageReference Include="Microsoft.CodeAnalysis.Analyzers"
-                          Version="[3.11.00,4.0)"
+                          Version="[3.11.*,4.0)"
                           PrivateAssets="all"
                           IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
 
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp"
-                          Version="4.12.0-3.final"
+                          Version="4.12.0"
                           PrivateAssets="all"
                           IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
     </ItemGroup>
