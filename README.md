@@ -1,4 +1,4 @@
-**StackExchange.Redis.Extensions** is a library that extends [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) allowing you a set of functionality needed by common applications. The library is signed and completely compatible with the **.NET Standard 2.0, .NET Framework 4.6.1, .NET Framework 4.7.2, .NET Core 3.x, .NET 5.0, .NET 6.0** 
+**StackExchange.Redis.Extensions** is a library that extends [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) allowing you a set of functionality needed by common applications. The library is signed and completely compatible with the **.NET Standard 2.0, .NET Framework 4.6.2+, .NET 8.0+** 
 
 
 

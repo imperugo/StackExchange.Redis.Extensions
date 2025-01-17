@@ -15,7 +15,7 @@ From now, you have two endpoint availables:
 
 **edis information "/redis/connectionInfo"**
 
-```csharp
+```json
 {
   "RequiredPoolSize": 5,
   "ActiveConnections": 1,
@@ -26,7 +26,7 @@ From now, you have two endpoint availables:
 
 **Redis information "/redis/info"**
 
-```csharp
+```json
 {
   "redis_version": "5.0.7",
   "redis_git_sha1": "00000000",
@@ -161,11 +161,16 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     app.UserRedisInformation(x =>
     {
         x.AllowedIPs = Array.Empty<IPAddress>();
+        // `AllowFunction` has higher priority than `AllowedIPs` if not null.
         x.AllowFunction = (HttpContext ctx) =>
         {
-            // My custom logic
+            // My custom logic.
             return true;
         };
     });
 }
 ```
+
+**Warnings**: 
+
+Since 11.0, the `RedisInformationMiddleware` has some break changes. See [issue#430](https://github.com/imperugo/StackExchange.Redis.Extensions/issues/430) for details.
