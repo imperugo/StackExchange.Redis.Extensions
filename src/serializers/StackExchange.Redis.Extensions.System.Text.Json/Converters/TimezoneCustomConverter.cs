@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace StackExchange.Redis.Extensions.System.Text.Json.Converters;
 
-internal class TimezoneCustomConverter : JsonConverter<TimeZoneInfo>
+internal sealed class TimezoneCustomConverter : JsonConverter<TimeZoneInfo>
 {
     public override TimeZoneInfo Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

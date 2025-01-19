@@ -4,10 +4,4 @@ using StackExchange.Redis.Extensions.ServiceStack;
 
 namespace StackExchange.Redis.Extensions.Core.Tests.Serializers;
 
-public class ServiceStackTest : CacheClientTestBase
-{
-    public ServiceStackTest()
-        : base(new ServiceStackJsonSerializer() { })
-    {
-    }
-}
+public class ServiceStackTest() : CacheClientTestBase(new ServiceStackJsonSerializer() { });

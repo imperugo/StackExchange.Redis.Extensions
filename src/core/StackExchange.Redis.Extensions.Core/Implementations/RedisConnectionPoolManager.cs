@@ -3,7 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-
+using System.Globalization;
+using System.Security.Cryptography;
 /* Unmerged change from project 'StackExchange.Redis.Extensions.Core(net6.0)'
 Before:
 using System.Linq;
@@ -98,7 +99,7 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
             case ConnectionSelectionStrategy.RoundRobin:
                 var nextIdx
 #if NET6_0_OR_GREATER
-                = Random.Shared.Next(0, redisConfiguration.PoolSize);
+                = RandomNumberGenerator.GetInt32(0, redisConfiguration.PoolSize);
 #else
                 = new Random().Next(0, redisConfiguration.PoolSize);
 #endif
@@ -114,7 +115,7 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
         }
 
         if (logger.IsEnabled(LogLevel.Debug))
-            logger.LogDebug("Using connection {HashCode} with {OutStanding} outstanding!", connection.Connection.GetHashCode().ToString(), connection.TotalOutstanding().ToString());
+            logger.LogDebug("Using connection {HashCode} with {OutStanding} outstanding!", connection.Connection.GetHashCode().ToString(CultureInfo.InvariantCulture), connection.TotalOutstanding().ToString(CultureInfo.InvariantCulture));
 
         return connection.Connection;
     }

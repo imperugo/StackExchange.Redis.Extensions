@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using StackExchange.Redis.Extensions.Core.Helpers;
-using StackExchange.Redis.Extensions.Tests.Helpers;
 
 using Xunit;
 
@@ -20,7 +19,7 @@ public abstract partial class CacheClientTestBase
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
-        var testClass = new TestClass<string>(testKey, testValue);
+        var testClass = new Helpers.TestClass<string>(testKey, testValue);
         var testTags = new HashSet<string> { "test_tag" };
 
         var addResult = await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, tags: testTags);
@@ -34,7 +33,7 @@ public abstract partial class CacheClientTestBase
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
-        var testClass = new TestClass<string>(testKey, testValue);
+        var testClass = new Helpers.TestClass<string>(testKey, testValue);
         const string testTag = "test_tag";
 
         await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, tags: [testTag]);
@@ -50,13 +49,13 @@ public abstract partial class CacheClientTestBase
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
-        var testClass = new TestClass<string>(testKey, testValue);
+        var testClass = new Helpers.TestClass<string>(testKey, testValue);
         const string testTag = "test_tag";
 
         await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, tags: [testTag]);
 
         var tags = await db.SetMembersAsync(TagHelper.GenerateTagKey(testTag));
-        var deserialized = tags.Length > 0 ? serializer.Deserialize<string>(tags[0]) : string.Empty;
+        var deserialized = tags.Length > 0 ? serializer.Deserialize<string>(tags[0]!) : string.Empty;
 
         Assert.Equal(testKey, deserialized);
     }
@@ -67,7 +66,7 @@ public abstract partial class CacheClientTestBase
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
-        var testClass = new TestClass<string>(testKey, testValue);
+        var testClass = new Helpers.TestClass<string>(testKey, testValue);
         var testTags = new HashSet<string> { "test_tag" };
 
         var addResult = await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, TimeSpan.FromSeconds(1), tags: testTags);
@@ -81,7 +80,7 @@ public abstract partial class CacheClientTestBase
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
-        var testClass = new TestClass<string>(testKey, testValue);
+        var testClass = new Helpers.TestClass<string>(testKey, testValue);
         const string testTag = "test_tag";
 
         await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, TimeSpan.FromSeconds(1), tags: [testTag]);
@@ -97,13 +96,13 @@ public abstract partial class CacheClientTestBase
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
-        var testClass = new TestClass<string>(testKey, testValue);
+        var testClass = new Helpers.TestClass<string>(testKey, testValue);
         const string testTag = "test_tag";
 
         await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, TimeSpan.FromSeconds(1), tags: [testTag]);
 
         var tags = await db.SetMembersAsync(TagHelper.GenerateTagKey(testTag));
-        var deserialized = serializer.Deserialize<string>(tags[0]);
+        var deserialized = serializer.Deserialize<string>(tags[0]!);
 
         Assert.Equal(testKey, deserialized);
     }
@@ -114,7 +113,7 @@ public abstract partial class CacheClientTestBase
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
-        var testClass = new TestClass<string>(testKey, testValue);
+        var testClass = new Helpers.TestClass<string>(testKey, testValue);
         var testTags = new HashSet<string> { "test_tag" };
 
         var addResult = await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, DateTimeOffset.UtcNow, tags: testTags);
@@ -128,7 +127,7 @@ public abstract partial class CacheClientTestBase
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
-        var testClass = new TestClass<string>(testKey, testValue);
+        var testClass = new Helpers.TestClass<string>(testKey, testValue);
         const string testTag = "test_tag";
 
         await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, DateTimeOffset.UtcNow, tags: [testTag]);
@@ -144,13 +143,13 @@ public abstract partial class CacheClientTestBase
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
-        var testClass = new TestClass<string>(testKey, testValue);
+        var testClass = new Helpers.TestClass<string>(testKey, testValue);
         const string testTag = "test_tag";
 
         await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, DateTimeOffset.UtcNow, tags: [testTag]);
 
         var tags = await db.SetMembersAsync(TagHelper.GenerateTagKey(testTag));
-        var deserialized = serializer.Deserialize<string>(tags[0]);
+        var deserialized = serializer.Deserialize<string>(tags[0]!);
 
         Assert.Equal(testKey, deserialized);
     }
@@ -161,12 +160,12 @@ public abstract partial class CacheClientTestBase
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
-        var testClass = new TestClass<string>(testKey, testValue);
+        var testClass = new Helpers.TestClass<string>(testKey, testValue);
         const string testTag = "test_tag";
 
         await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, tags: [testTag]);
 
-        var result = await Sut.GetDefaultDatabase().GetByTagAsync<TestClass<string>>(testTag);
+        var result = await Sut.GetDefaultDatabase().GetByTagAsync<Helpers.TestClass<string>>(testTag);
 
         Assert.Single(result);
     }
@@ -177,12 +176,12 @@ public abstract partial class CacheClientTestBase
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
-        var testClass = new TestClass<string>(testKey, testValue);
+        var testClass = new Helpers.TestClass<string>(testKey, testValue);
         const string testTag = "test_tag";
 
         await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, tags: [testTag]);
 
-        var result = await Sut.GetDefaultDatabase().GetByTagAsync<TestClass<string>>(testTag);
+        var result = await Sut.GetDefaultDatabase().GetByTagAsync<Helpers.TestClass<string>>(testTag);
 
         Assert.Equal(testClass, result.First());
     }
@@ -204,7 +203,7 @@ public abstract partial class CacheClientTestBase
     {
         const string testKey = "test_key";
         const string testValue = "test_value";
-        var testClass = new TestClass<string>(testKey, testValue);
+        var testClass = new Helpers.TestClass<string>(testKey, testValue);
         const string testTag = "test_tag";
 
         await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, tags: [testTag]);

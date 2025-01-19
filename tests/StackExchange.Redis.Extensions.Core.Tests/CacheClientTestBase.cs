@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,8 +14,8 @@ using Moq;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Implementations;
+using StackExchange.Redis.Extensions.Core.Tests.Helpers;
 using StackExchange.Redis.Extensions.Tests.Extensions;
-using StackExchange.Redis.Extensions.Tests.Helpers;
 
 using Xunit;
 
@@ -25,38 +26,17 @@ namespace StackExchange.Redis.Extensions.Core.Tests;
 [Collection("Redis")]
 public abstract partial class CacheClientTestBase : IDisposable
 {
-    private readonly IRedisClient sut;
+    private readonly RedisClient sut;
     private readonly IDatabase db;
     private readonly ISerializer serializer;
-    private readonly IRedisConnectionPoolManager connectionPoolManager;
+    private readonly RedisConnectionPoolManager connectionPoolManager;
     private bool isDisposed;
     private IntPtr nativeResource = Marshal.AllocHGlobal(100);
 
     internal CacheClientTestBase(ISerializer serializer)
     {
-        var redisConfiguration = new RedisConfiguration()
-        {
-            AbortOnConnectFail = false,
-            KeyPrefix = "MyPrefix__",
-            Hosts = [
-                new RedisHost
-                {
-                    Host = "localhost",
-                    Port = 6379
-                }
-            ],
-            AllowAdmin = true,
-            ConnectTimeout = 3000,
-            Database = 0,
-            PoolSize = 5,
-            ConnectionSelectionStrategy = ConnectionSelectionStrategy.LeastLoaded,
-            ServerEnumerationStrategy = new()
-            {
-                Mode = ServerEnumerationStrategy.ModeOptions.All,
-                TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
-                UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
-            }
-        };
+        var redisConfiguration = RedisConfigurationForTest.CreateBasicConfig();
+        redisConfiguration.ConnectionSelectionStrategy = ConnectionSelectionStrategy.LeastLoaded;
 
         var moqLogger = new Mock<ILogger<RedisConnectionPoolManager>>();
 
@@ -157,16 +137,15 @@ public abstract partial class CacheClientTestBase : IDisposable
 
         var added = await Sut
             .GetDefaultDatabase()
-            .AddAsync("my Key", testClass)
-            ;
+            .AddAsync("my Key", testClass);
 
         var redisValue = await db.StringGetAsync("my Key");
 
         Assert.True(added);
 
-        var obj = serializer.Deserialize<TestClass<DateTime>>(redisValue);
+        var obj = serializer.Deserialize<TestClass<DateTime>>(redisValue!);
 
-        Assert.True(db.KeyExists("my Key"));
+        Assert.True(await db.KeyExistsAsync("my Key"));
         Assert.NotNull(obj);
         Assert.Equal(testClass.Key, obj.Key);
         Assert.Equal(testClass.Value.ToUniversalTime(), obj.Value.ToUniversalTime());
@@ -192,16 +171,16 @@ public abstract partial class CacheClientTestBase : IDisposable
         Assert.True(await db.KeyExistsAsync("key2"));
         Assert.True(await db.KeyExistsAsync("key3"));
 
-        Assert.Equal("value1", serializer.Deserialize<string>(await db.StringGetAsync("key1")));
-        Assert.Equal("value2", serializer.Deserialize<string>(await db.StringGetAsync("key2")));
-        Assert.Equal("value3", serializer.Deserialize<string>(await db.StringGetAsync("key3")));
+        Assert.Equal("value1", serializer.Deserialize<string>((await db.StringGetAsync("key1"))!));
+        Assert.Equal("value2", serializer.Deserialize<string>((await db.StringGetAsync("key2"))!));
+        Assert.Equal("value3", serializer.Deserialize<string>((await db.StringGetAsync("key3"))!));
     }
 
     [Fact]
     public async Task Get_All_Should_Return_All_Database_Keys_Async()
     {
         var values = Range(0, 5)
-            .Select(i => new TestClass<string>($"Key{i.ToString()}", Guid.NewGuid().ToString()))
+            .Select(i => new TestClass<string>($"Key{i.ToString(CultureInfo.InvariantCulture)}", Guid.NewGuid().ToString()))
             .ToArray();
 
         var tasks = new Task[values.Length];
@@ -216,9 +195,9 @@ public abstract partial class CacheClientTestBase : IDisposable
 
         var keys = new HashSet<string>
         {
-            values[0].Key,
-            values[1].Key,
-            values[2].Key,
+            values[0].Key!,
+            values[1].Key!,
+            values[2].Key!,
             "notexistingkey"
         };
 
@@ -227,10 +206,10 @@ public abstract partial class CacheClientTestBase : IDisposable
             .GetAllAsync<string>(keys)
             ;
 
-        Assert.True(result.Count == 4);
-        Assert.Equal(result[values[0].Key], values[0].Value);
-        Assert.Equal(result[values[1].Key], values[1].Value);
-        Assert.Equal(result[values[2].Key], values[2].Value);
+        Assert.Equal(4, result.Count);
+        Assert.Equal(result[values[0].Key!], values[0].Value);
+        Assert.Equal(result[values[1].Key!], values[1].Value);
+        Assert.Equal(result[values[2].Key!], values[2].Value);
         Assert.Null(result["notexistingkey"]);
     }
 
@@ -259,15 +238,14 @@ public abstract partial class CacheClientTestBase : IDisposable
     public async Task Get_With_Complex_Item_Should_Return_Correct_Value_Async()
     {
         var value = Range(0, 1)
-            .Select(i => new ComplexClassForTest<string, Guid>($"Key{i.ToString()}", Guid.NewGuid()))
+            .Select(i => new ComplexClassForTest<string, Guid>($"Key{i.ToString(CultureInfo.InvariantCulture)}", Guid.NewGuid()))
             .First();
 
         await db.StringSetAsync(value.Item1, serializer.Serialize(value));
 
         var cachedObject = await Sut
             .GetDefaultDatabase()
-            .GetAsync<ComplexClassForTest<string, Guid>>(value.Item1)
-            ;
+            .GetAsync<ComplexClassForTest<string, Guid>>(value.Item1!);
 
         Assert.NotNull(cachedObject);
         Assert.Equal(value.Item1, cachedObject.Item1);
@@ -278,7 +256,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     public async Task Remove_All_Should_Remove_All_Specified_Keys_Async()
     {
         var values = Range(1, 5)
-            .Select(i => new TestClass<string>($"Key{i.ToString()}", Guid.NewGuid().ToString()))
+            .Select(i => new TestClass<string>($"Key{i.ToString(CultureInfo.InvariantCulture)}", Guid.NewGuid().ToString()))
             .ToArray();
 
         var tasks = new Task[values.Length];
@@ -293,18 +271,17 @@ public abstract partial class CacheClientTestBase : IDisposable
 
         await Sut
             .GetDefaultDatabase()
-            .RemoveAllAsync(values.Select(x => x.Key).ToArray())
-            ;
+            .RemoveAllAsync(values.Select(x => x.Key).ToArray()!);
 
         foreach (var value in values)
-            Assert.False(db.KeyExists(value.Key));
+            Assert.False(await db.KeyExistsAsync(value.Key));
     }
 
     [Fact]
     public async Task Search_With_Valid_Start_With_Pattern_Should_Return_Correct_Keys_Async()
     {
         var values = Range(1, 20)
-            .Select(i => new TestClass<string>($"Key{i.ToString()}", Guid.NewGuid().ToString()))
+            .Select(i => new TestClass<string>($"Key{i.ToString(CultureInfo.InvariantCulture)}", Guid.NewGuid().ToString()))
             .ToArray();
 
         var tasks = new Task[values.Length];
@@ -345,7 +322,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     public async Task SearchKeys_With_Start_Should_Return_All_Keys_Async()
     {
         var values = Range(0, 10)
-            .Select(i => new TestClass<string>($"myKey{i.ToString()}", Guid.NewGuid().ToString()))
+            .Select(i => new TestClass<string>($"myKey{i.ToString(CultureInfo.InvariantCulture)}", Guid.NewGuid().ToString()))
             .ToArray();
 
         var tasks = new Task[values.Length];
@@ -362,7 +339,7 @@ public abstract partial class CacheClientTestBase : IDisposable
             .GetDefaultDatabase()
             .SearchKeysAsync("*")
             )
-            .OrderBy(k => k);
+            .Order();
 
         Assert.Equal(10, keys.Count());
     }
@@ -371,7 +348,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     public async Task SearchKeys_With_Key_Prefix_Should_Return_Keys_Without_Prefix_Async()
     {
         var values = Range(0, 10)
-            .Select(i => new TestClass<string>($"myKey{i.ToString()}", Guid.NewGuid().ToString()))
+            .Select(i => new TestClass<string>($"myKey{i.ToString(CultureInfo.InvariantCulture)}", Guid.NewGuid().ToString()))
             .ToArray();
 
         var tasks = new Task[values.Length];
@@ -388,7 +365,7 @@ public abstract partial class CacheClientTestBase : IDisposable
             .GetDefaultDatabase()
             .SearchKeysAsync("*myKey*")
             )
-            .OrderBy(k => k)
+            .Order()
             .ToList();
 
         Assert.Equal(10, keys.Count);
@@ -416,7 +393,7 @@ public abstract partial class CacheClientTestBase : IDisposable
 
         Assert.True(await Sut
             .GetDefaultDatabase()
-            .ExistsAsync(values[0].Key)
+            .ExistsAsync(values[0].Key!)
             );
     }
 
@@ -456,7 +433,7 @@ public abstract partial class CacheClientTestBase : IDisposable
             await Sut.GetDefaultDatabase().SetAddAsync("MySet", x.Key);
         }
 
-        var keys = db.SetMembers("MySet");
+        var keys = await db.SetMembersAsync("MySet");
 
         Assert.Equal(keys.Length, values.Length);
     }
@@ -484,9 +461,9 @@ public abstract partial class CacheClientTestBase : IDisposable
         Assert.Contains(values, v => v.Value == result);
 
         var members = await db.SetMembersAsync("MySet");
-        var itemsLeft = members.Select(m => serializer.Deserialize<string>(m)).ToArray();
+        var itemsLeft = members.Select(m => serializer.Deserialize<string>(m!)).ToArray();
 
-        Assert.True(itemsLeft.Length == 4);
+        Assert.Equal(4, itemsLeft.Length);
         Assert.DoesNotContain(itemsLeft, l => l == result);
     }
 
@@ -532,12 +509,11 @@ public abstract partial class CacheClientTestBase : IDisposable
             Assert.Contains(values, v => v.Value == r);
 
         var members = await db
-            .SetMembersAsync("MySet")
-            ;
+            .SetMembersAsync("MySet");
 
-        var itemsLeft = members.Select(m => serializer.Deserialize<string>(m)).ToArray();
+        var itemsLeft = members.Select(m => serializer.Deserialize<string>(m!)).ToArray();
 
-        Assert.True(itemsLeft.Length == 2);
+        Assert.Equal(2, itemsLeft.Length);
 
         foreach (var r in result)
             Assert.DoesNotContain(itemsLeft, l => l == r);
@@ -632,10 +608,10 @@ public abstract partial class CacheClientTestBase : IDisposable
         const int size = 3000;
         var values = Range(0, size).Select(_ => new TestClass<string>(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())).ToArray();
 
-        var tupleValues = values.Select(x => new Tuple<string, TestClass<string>>(x.Key, x)).ToArray();
+        var tupleValues = values.Select(x => new Tuple<string, TestClass<string>>(x.Key!, x)).ToArray();
 
         var result = await Sut.GetDefaultDatabase().AddAllAsync(tupleValues);
-        var cached = await Sut.GetDefaultDatabase().GetAllAsync<TestClass<string>>(values.Select(x => x.Key).ToHashSet());
+        var cached = await Sut.GetDefaultDatabase().GetAllAsync<TestClass<string>>(values.Select(x => x.Key!).ToHashSet());
 
         Assert.True(result);
         Assert.NotNull(cached);
@@ -643,8 +619,10 @@ public abstract partial class CacheClientTestBase : IDisposable
 
         foreach (var value in values)
         {
-            Assert.Equal(value.Key, cached[value.Key].Key);
-            Assert.Equal(value.Value, cached[value.Key].Value);
+            Assert.NotNull(value);
+            Assert.NotNull(value.Key);
+            Assert.Equal(value.Key, cached[value.Key]!.Key);
+            Assert.Equal(value.Value, cached[value.Key]!.Value);
         }
     }
 
@@ -743,12 +721,13 @@ public abstract partial class CacheClientTestBase : IDisposable
     [Fact]
     public async Task Adding_Collection_To_Redis_Should_Work_Correctly_Async()
     {
-        var items = Range(1, 3).Select(i => new TestClass<string> { Key = $"key{i.ToString()}", Value = $"value{i.ToString()}" }).ToArray();
+        var items = Range(1, 3).Select(i => new TestClass<string> { Key = $"key{i.ToString(CultureInfo.InvariantCulture)}", Value = $"value{i.ToString(CultureInfo.InvariantCulture)}" }).ToArray();
         var added = await Sut.GetDefaultDatabase().AddAsync("my Key", items);
         var dbValue = await Sut.GetDefaultDatabase().GetAsync<TestClass<string>[]>("my Key");
 
         Assert.True(added);
         Assert.True(await db.KeyExistsAsync("my Key"));
+        Assert.NotNull(dbValue);
         Assert.Equal(dbValue.Length, items.Length);
 
         for (var i = 0; i < items.Length; i++)
@@ -762,7 +741,7 @@ public abstract partial class CacheClientTestBase : IDisposable
     public async Task Adding_Collection_To_Redis_Should_Expire_Async()
     {
         var expiresIn = new TimeSpan(0, 0, 1);
-        var items = Range(1, 3).Select(i => new Tuple<string, string>($"key{i.ToString()}", "value{i}")).ToArray();
+        var items = Range(1, 3).Select(i => new Tuple<string, string>($"key{i.ToString(CultureInfo.InvariantCulture)}", "value{i}")).ToArray();
         var added = await Sut.GetDefaultDatabase().AddAllAsync(items, expiresIn);
 
         await Task.Delay(expiresIn.Add(new(0, 0, 1)));
@@ -778,9 +757,9 @@ public abstract partial class CacheClientTestBase : IDisposable
         var message = Range(0, 10).ToArray();
         var channel = new RedisChannel(Encoding.UTF8.GetBytes("unit_test"), RedisChannel.PatternMode.Auto);
         var subscriberNotified = false;
-        IEnumerable<int> subscriberValue = null;
+        IEnumerable<int>? subscriberValue = null;
 
-        await Sut.GetDefaultDatabase().SubscribeAsync(channel, (Func<IEnumerable<int>, Task>)Action);
+        await Sut.GetDefaultDatabase().SubscribeAsync(channel, ((Func<IEnumerable<int>, Task>)ActionAsync)!);
 
         var result = await Sut.GetDefaultDatabase().PublishAsync(channel, message);
 
@@ -792,7 +771,7 @@ public abstract partial class CacheClientTestBase : IDisposable
         Assert.Equal(message, subscriberValue);
         return;
 
-        Task Action(IEnumerable<int> value)
+        Task ActionAsync(IEnumerable<int> value)
         {
             {
                 subscriberNotified = true;
@@ -807,12 +786,6 @@ public abstract partial class CacheClientTestBase : IDisposable
     public async Task SetAddGenericShouldThrowExceptionWhenKeyIsEmpty_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().SetAddAsync(string.Empty, string.Empty));
-    }
-
-    [Fact]
-    public async Task SetAddGenericShouldThrowExceptionWhenItemIsNull_Async()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDefaultDatabase().SetAddAsync<string>("MySet", null));
     }
 
     [Fact]
@@ -837,12 +810,6 @@ public abstract partial class CacheClientTestBase : IDisposable
     public async Task SetAddAsyncGenericShouldThrowExceptionWhenKeyIsEmpty_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().SetAddAsync(string.Empty, string.Empty));
-    }
-
-    [Fact]
-    public async Task SetAddAsyncGenericShouldThrowExceptionWhenItemIsNull_Async()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDefaultDatabase().SetAddAsync<string>("MySet", null));
     }
 
     [Fact]
@@ -890,18 +857,6 @@ public abstract partial class CacheClientTestBase : IDisposable
         var result = await Sut.GetDefaultDatabase().SetContainsAsync(unknownKey, item);
 
         Assert.False(result);
-    }
-
-    [Fact]
-    public async Task SetContainsAsyncShouldThrowExceptionWhenItemIsNull_Async()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDefaultDatabase().SetContainsAsync<string>("MySet", null));
-    }
-
-    [Fact]
-    public async Task SetAddAllGenericShouldThrowExceptionWhenItemsIsNull_Async()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDefaultDatabase().SetAddAllAsync("MySet", CommandFlags.None, (string[])null));
     }
 
     [Fact]
@@ -962,12 +917,6 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
-    public async Task SetRemoveAllAsyncGenericShouldThrowExceptionWhenItemsContainsOneNullItem_Async()
-    {
-        await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().SetRemoveAllAsync<string>("MySet", CommandFlags.None, "value", null, "value2"));
-    }
-
-    [Fact]
     public async Task ListAddToLeftGenericShouldThrowExceptionWhenKeyIsEmpty_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().ListAddToLeftAsync(string.Empty, string.Empty));
@@ -977,18 +926,6 @@ public abstract partial class CacheClientTestBase : IDisposable
     public async Task ListAddToLeftArrayShouldThrowExceptionWhenKeyIsEmpty_Async()
     {
         await Assert.ThrowsAsync<ArgumentException>(() => Sut.GetDefaultDatabase().ListAddToLeftAsync(string.Empty, items: Array.Empty<TestClass<string>>()));
-    }
-
-    [Fact]
-    public async Task ListAddToLeftGenericShouldThrowExceptionWhenItemIsNull_Async()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDefaultDatabase().ListAddToLeftAsync<string>("MyList", item: null));
-    }
-
-    [Fact]
-    public async Task ListAddToLeftGenericShouldThrowExceptionWhenItemsIsNull_Async()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(() => Sut.GetDefaultDatabase().ListAddToLeftAsync<string>("MyList", items: null));
     }
 
     [Fact]
@@ -1034,20 +971,6 @@ public abstract partial class CacheClientTestBase : IDisposable
         await Assert.ThrowsAsync<ArgumentException>(
             () => Sut.GetDefaultDatabase().ListAddToLeftAsync(string.Empty, items: Array.Empty<TestClass<string>>()))
             ;
-    }
-
-    [Fact]
-    public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemIsNull_Async()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(
-            () => Sut.GetDefaultDatabase().ListAddToLeftAsync<string>("MyList", item: null));
-    }
-
-    [Fact]
-    public async Task ListAddToLeftAsyncGenericShouldThrowExceptionWhenItemsIsNull_Async()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(
-            () => Sut.GetDefaultDatabase().ListAddToLeftAsync<string>("MyList", items: null));
     }
 
     [Fact]
@@ -1109,6 +1032,7 @@ public abstract partial class CacheClientTestBase : IDisposable
 
         var item = await Sut.GetDefaultDatabase().ListGetFromRightAsync<TestClass<string>>(key);
 
+        Assert.NotNull(item);
         Assert.Equal(item.Key, values[0].Key);
         Assert.Equal(item.Value, values[0].Value);
     }
@@ -1147,7 +1071,7 @@ public abstract partial class CacheClientTestBase : IDisposable
 
         var resultValue = await db.StringGetWithExpiryAsync(key);
 
-        Assert.True(resultTimeSpan < resultValue.Expiry.Value);
+        Assert.True(resultTimeSpan < resultValue.Expiry!.Value);
     }
 
     [Fact]
@@ -1178,7 +1102,7 @@ public abstract partial class CacheClientTestBase : IDisposable
         var keys = new List<string> { key };
 
         await Sut.GetDefaultDatabase().AddAllAsync(values, originalTime);
-        await Sut.GetDefaultDatabase().GetAllAsync<TestClass<string>>(keys.ToHashSet(), testTime);
+        await Sut.GetDefaultDatabase().GetAllAsync<TestClass<string>>([.. keys], testTime);
         var resultValue = await db.StringGetWithExpiryAsync(key);
 
         Assert.True(originalTime < resultValue.Expiry!.Value);

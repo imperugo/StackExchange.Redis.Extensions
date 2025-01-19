@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace StackExchange.Redis.Extensions.System.Text.Json.Converters;
 
-internal class StringToIntCustomConverter : JsonConverter<int?>
+internal sealed class StringToIntCustomConverter : JsonConverter<int?>
 {
     public override int? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

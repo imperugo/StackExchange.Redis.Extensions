@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 
 using StackExchange.Redis.Extensions.Core.Abstractions;
-using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Implementations;
+using StackExchange.Redis.Extensions.Core.Tests.Helpers;
 using StackExchange.Redis.Extensions.Newtonsoft;
 using StackExchange.Redis.Extensions.Tests.Extensions;
 
@@ -20,43 +20,24 @@ namespace StackExchange.Redis.Extensions.Core.Tests;
 
 public class CacheClientTestBase_WithoutKeyPrefixForLuaScript : IDisposable
 {
+#pragma warning disable CA1859
     private readonly IDatabase db;
     private readonly ISerializer serializer;
     private readonly IRedisConnectionPoolManager connectionPoolManager;
+#pragma warning restore CA1859
     private bool isDisposed;
     private IntPtr nativeResource = Marshal.AllocHGlobal(100);
 
     public CacheClientTestBase_WithoutKeyPrefixForLuaScript()
     {
-        var redisConfiguration = new RedisConfiguration()
-        {
-            AbortOnConnectFail = true,
-            KeyPrefix = "",
-            Hosts = new[]
-            {
-                new RedisHost
-                {
-                    Host = "localhost",
-                    Port = 6379
-                }
-            },
-            AllowAdmin = true,
-            ConnectTimeout = 3000,
-            Database = 0,
-            PoolSize = 5,
-            ServerEnumerationStrategy = new()
-            {
-                Mode = ServerEnumerationStrategy.ModeOptions.All,
-                TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
-                UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
-            }
-        };
+        var redisConfiguration = RedisConfigurationForTest.CreateBasicConfig();
+        redisConfiguration.KeyPrefix = string.Empty;
 
         var moqLogger = new Mock<ILogger<RedisConnectionPoolManager>>();
 
-        this.serializer = new NewtonsoftSerializer();
+        serializer = new NewtonsoftSerializer();
         connectionPoolManager = new RedisConnectionPoolManager(redisConfiguration, moqLogger.Object);
-        Sut = new RedisClient(connectionPoolManager, this.serializer, redisConfiguration);
+        Sut = new RedisClient(connectionPoolManager, serializer, redisConfiguration);
         db = Sut.GetDefaultDatabase().Database;
     }
 
@@ -99,15 +80,15 @@ public class CacheClientTestBase_WithoutKeyPrefixForLuaScript : IDisposable
         var entryKey1 = Guid.NewGuid().ToString();
         var entryKey2 = Guid.NewGuid().ToString();
 
-        await Sut.GetDefaultDatabase().HashSetAsync<string>(hashKey, entryKey1, "testvalue1");
-        await Sut.GetDefaultDatabase().HashSetAsync<string>(hashKey, entryKey2, "testvalue2");
+        await Sut.GetDefaultDatabase().HashSetAsync(hashKey, entryKey1, "testvalue1");
+        await Sut.GetDefaultDatabase().HashSetAsync(hashKey, entryKey2, "testvalue2");
 
         // act
-        Assert.True(db.HashExists(hashKey, entryKey1));
-        Assert.True(db.HashExists(hashKey, entryKey2));
-        var result = await Sut.GetDefaultDatabase().HashGetAllAsyncAtOneTimeAsync<string>(hashKey, new string[] { entryKey1, entryKey2 });
+        Assert.True(await db.HashExistsAsync(hashKey, entryKey1));
+        Assert.True(await db.HashExistsAsync(hashKey, entryKey2));
+        var result = await Sut.GetDefaultDatabase().HashGetAllAsyncAtOneTimeAsync<string>(hashKey, [entryKey1, entryKey2]);
 
-        // assert        
+        // assert
         Assert.NotNull(result);
         Assert.True(result.Count > 0);
     }

@@ -1,25 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net7.0</TargetFrameworks>
     <Title>Use the MemoryPack serialization with StackExchange.Redis.</Title>
     <Summary>Use the MemoryPack serialization with StackExchange.Redis.</Summary>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MemoryPack" Version="1.10.0" />
+    <PackageReference Include="MemoryPack" Version="[1.21.3,2.0.0)" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.12.19" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <PackageReference Include="MemoryPack.Core" Version="1.10.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-    <PackageReference Include="MemoryPack.Core" Version="1.10.0" />
   </ItemGroup>
 </Project>

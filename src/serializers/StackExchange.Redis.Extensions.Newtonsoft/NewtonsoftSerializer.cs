@@ -1,6 +1,5 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
-using System;
 using System.Text;
 
 using Newtonsoft.Json;
@@ -12,7 +11,11 @@ namespace StackExchange.Redis.Extensions.Newtonsoft;
 /// <summary>
 /// JSon.Net implementation of <see cref="ISerializer"/>
 /// </summary>
-public class NewtonsoftSerializer : ISerializer
+/// <remarks>
+/// Initializes a new instance of the <see cref="NewtonsoftSerializer"/> class.
+/// </remarks>
+/// <param name="settings">The settings.</param>
+public class NewtonsoftSerializer(JsonSerializerSettings? settings) : ISerializer
 {
     /// <summary>
     /// Encoding to use to convert string to byte[] and the other way around.
@@ -23,32 +26,23 @@ public class NewtonsoftSerializer : ISerializer
     /// </remarks>
     private static readonly Encoding encoding = Encoding.UTF8;
 
-    private readonly JsonSerializerSettings settings;
+    private readonly JsonSerializerSettings settings = settings ?? new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NewtonsoftSerializer"/> class.
     /// </summary>
     public NewtonsoftSerializer()
-        : this(null)
+        : this(default)
     {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="NewtonsoftSerializer"/> class.
-    /// </summary>
-    /// <param name="settings">The settings.</param>
-    public NewtonsoftSerializer(JsonSerializerSettings? settings)
-    {
-        this.settings = settings ?? new JsonSerializerSettings();
     }
 
     /// <inheritdoc/>
     public byte[] Serialize<T>(T? item)
     {
         if (item == null)
-            return Array.Empty<byte>();
+            return [];
 
-        var type = item?.GetType();
+        var type = item.GetType();
         var jsonString = JsonConvert.SerializeObject(item, type, settings);
         return encoding.GetBytes(jsonString);
     }

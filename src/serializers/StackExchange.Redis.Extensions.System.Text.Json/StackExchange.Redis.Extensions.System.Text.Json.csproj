@@ -6,11 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="8.0.1" />
+
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+
+    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.12.19" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+    <PackageReference Include="System.Text.Json" Version="9.0.1" />
   </ItemGroup>
 </Project>

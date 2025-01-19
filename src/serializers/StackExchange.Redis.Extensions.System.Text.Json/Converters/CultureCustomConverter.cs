@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace StackExchange.Redis.Extensions.System.Text.Json.Converters;
 
-internal class CultureCustomConverter : JsonConverter<CultureInfo>
+internal sealed class CultureCustomConverter : JsonConverter<CultureInfo>
 {
     public override CultureInfo Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

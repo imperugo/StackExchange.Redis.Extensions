@@ -13,11 +13,11 @@ namespace StackExchange.Redis.Extensions.Core.Implementations;
 public partial class RedisDatabase
 {
     /// <inheritdoc/>
-    public async Task<IEnumerable<T?>> GetByTagAsync<T>(string tag, CommandFlags commandFlags = CommandFlags.None)
+    public async Task<IEnumerable<T?>> GetByTagAsync<T>(string tag, CommandFlags flag = CommandFlags.None)
     {
         var tagKey = TagHelper.GenerateTagKey(tag);
 
-        var keys = await SetMembersAsync<string>(tagKey, commandFlags).ConfigureAwait(false);
+        var keys = await SetMembersAsync<string>(tagKey, flag).ConfigureAwait(false);
 
         if (keys.Length == 0)
             return Enumerable.Empty<T>();
@@ -27,19 +27,19 @@ public partial class RedisDatabase
         foreach (var key in keys)
             hashKeys.Add(key);
 
-        var result = await GetAllAsync<T>(hashKeys, commandFlags).ConfigureAwait(false);
+        var result = await GetAllAsync<T>(hashKeys, flag).ConfigureAwait(false);
 
         return result.Values;
     }
 
     /// <inheritdoc/>
-    public async Task<long> RemoveByTagAsync(string tag, CommandFlags commandFlags = CommandFlags.None)
+    public async Task<long> RemoveByTagAsync(string tag, CommandFlags flag = CommandFlags.None)
     {
         var tagKey = TagHelper.GenerateTagKey(tag);
 
-        var keys = await SetMembersAsync<string>(tagKey, commandFlags).ConfigureAwait(false);
+        var keys = await SetMembersAsync<string>(tagKey, flag).ConfigureAwait(false);
 
-        return await RemoveAllAsync(keys, commandFlags).ConfigureAwait(false);
+        return await RemoveAllAsync(keys, flag).ConfigureAwait(false);
     }
 
     private Task<bool> ExecuteAddWithTagsAsync(

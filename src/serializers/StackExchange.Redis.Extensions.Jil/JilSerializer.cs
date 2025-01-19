@@ -26,7 +26,7 @@ public class JilSerializer : ISerializer
             false,
             DateTimeFormat.ISO8601,
             true,
-            UnspecifiedDateTimeKindBehavior.IsLocal))
+            UnspecifiedDateTimeKindBehavior.IsUTC))
     {
     }
 
@@ -35,8 +35,12 @@ public class JilSerializer : ISerializer
     /// </summary>
     public JilSerializer(Options options)
     {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(options);
+#else
         if (options == null)
             throw new ArgumentNullException(nameof(options));
+#endif
 
         JSON.SetDefaultOptions(options);
     }

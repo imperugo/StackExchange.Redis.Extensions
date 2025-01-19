@@ -4,23 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-#if NET7_0_OR_GREATER
 using MemoryPack;
-#endif
 
-namespace StackExchange.Redis.Extensions.Tests.Helpers;
+#nullable disable
+
+namespace StackExchange.Redis.Extensions.Core.Tests.Helpers;
 
 [Serializable]
 [DataContract]
-#if NET7_0_OR_GREATER
 [MemoryPackable]
 public partial class ComplexClassForTest<T, TK> : IEquatable<ComplexClassForTest<T, TK>>
 {
     [MemoryPackConstructor]
-#else
-public class ComplexClassForTest<T, TK> : IEquatable<ComplexClassForTest<T, TK>>
-{
-#endif
     public ComplexClassForTest()
     {
     }
@@ -67,7 +62,10 @@ public class ComplexClassForTest<T, TK> : IEquatable<ComplexClassForTest<T, TK>>
     {
         unchecked
         {
-            return (EqualityComparer<T>.Default.GetHashCode(Item1) * 397) ^ EqualityComparer<TK>.Default.GetHashCode(Item2);
+            var item1Hash = Item1 != null ? EqualityComparer<T>.Default.GetHashCode(Item1) : 0;
+            var item2Hash = Item2 != null ? EqualityComparer<TK>.Default.GetHashCode(Item2) : 0;
+
+            return (item1Hash * 397) ^ item2Hash;
         }
     }
 }

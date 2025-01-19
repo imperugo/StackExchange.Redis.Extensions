@@ -9,7 +9,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations;
 public partial class RedisDatabase
 {
     /// <inheritdoc/>
-    public Task<long> ListAddToLeftAsync<T>(string key, T item, When when = When.Always, CommandFlags flags = CommandFlags.None)
+    public Task<long> ListAddToLeftAsync<T>(string key, T item, When when = When.Always, CommandFlags flag = CommandFlags.None)
     {
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("key cannot be empty.", nameof(key));
@@ -19,11 +19,11 @@ public partial class RedisDatabase
 
         var serializedItem = Serializer.Serialize(item);
 
-        return Database.ListLeftPushAsync(key, serializedItem, when, flags);
+        return Database.ListLeftPushAsync(key, serializedItem, when, flag);
     }
 
     /// <inheritdoc/>
-    public Task<long> ListAddToLeftAsync<T>(string key, T[] items, CommandFlags flags = CommandFlags.None)
+    public Task<long> ListAddToLeftAsync<T>(string key, T[] items, CommandFlags flag = CommandFlags.None)
     {
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("key cannot be empty.", nameof(key));
@@ -33,16 +33,16 @@ public partial class RedisDatabase
 
         var serializedItems = items.Select(x => (RedisValue)Serializer.Serialize(x)).ToArray();
 
-        return Database.ListLeftPushAsync(key, serializedItems, flags);
+        return Database.ListLeftPushAsync(key, serializedItems, flag);
     }
 
     /// <inheritdoc/>
-    public async Task<T?> ListGetFromRightAsync<T>(string key, CommandFlags flags = CommandFlags.None)
+    public async Task<T?> ListGetFromRightAsync<T>(string key, CommandFlags flag = CommandFlags.None)
     {
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("key cannot be empty.", nameof(key));
 
-        var item = await Database.ListRightPopAsync(key, flags).ConfigureAwait(false);
+        var item = await Database.ListRightPopAsync(key, flag).ConfigureAwait(false);
 
         if (item == RedisValue.Null)
             return default;

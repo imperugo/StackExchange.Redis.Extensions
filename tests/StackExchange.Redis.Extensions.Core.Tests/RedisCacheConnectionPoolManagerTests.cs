@@ -5,8 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Implementations;
+using StackExchange.Redis.Extensions.Core.Tests.Helpers;
 using StackExchange.Redis.Extensions.Tests.Extensions;
 
 using Xunit;
@@ -22,11 +22,6 @@ public class RedisCacheConnectionPoolManagerTests : IDisposable
 
     public RedisCacheConnectionPoolManagerTests(ITestOutputHelper output)
     {
-        var redisHost = Environment.GetEnvironmentVariable("REDIS_HOST");
-
-        if (string.IsNullOrEmpty(redisHost))
-            redisHost = "localhost";
-
         // See more info here: https://gist.github.com/JonCole/e65411214030f0d823cb#file-threadpool-md
         // Everything started from here https://gist.github.com/JonCole/925630df72be1351b21440625ff2671f#file-redis-bestpractices-stackexchange-redis-md
         ThreadPool.GetMaxThreads(out var maxThread, out var maxIoThread);
@@ -34,24 +29,7 @@ public class RedisCacheConnectionPoolManagerTests : IDisposable
 
         this.output = output;
 
-        var configuration = new RedisConfiguration
-        {
-            AbortOnConnectFail = true,
-            KeyPrefix = "MyPrefix__",
-            Hosts = [
-                new() { Host = redisHost, Port = 6379 }
-            ],
-            AllowAdmin = true,
-            ConnectTimeout = 3000,
-            Database = 0,
-            PoolSize = 5,
-            ServerEnumerationStrategy = new()
-            {
-                Mode = ServerEnumerationStrategy.ModeOptions.All,
-                TargetRole = ServerEnumerationStrategy.TargetRoleOptions.Any,
-                UnreachableServerAction = ServerEnumerationStrategy.UnreachableServerActionOptions.Throw
-            }
-        };
+        var configuration = RedisConfigurationForTest.CreateBasicConfig(Environment.GetEnvironmentVariable("REDIS_HOST")!);
 
         var logger = output.BuildLoggerFor<RedisConnectionPoolManager>();
 
