@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 /* Unmerged change from project 'StackExchange.Redis.Extensions.Core(net6.0)'
 Before:
@@ -107,7 +109,7 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
                 break;
 
             case ConnectionSelectionStrategy.LeastLoaded:
-                connection = ValueLengthExtensions.MinBy(connections, x => x.TotalOutstanding());
+                connection = connections.MinBy(x => x.TotalOutstanding());
                 break;
 
             default:
@@ -133,8 +135,12 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
         var activeConnections = 0;
         var invalidConnections = 0;
 
-        foreach (var connection in connections)
+        ref var searchSpace = ref MemoryMarshal.GetReference(connections.AsSpan());
+
+        for (var i = 0; i < connections.Length; i++)
         {
+            ref var connection = ref Unsafe.Add(ref searchSpace, i);
+
             if (!connection.IsConnected())
             {
                 invalidConnections++;

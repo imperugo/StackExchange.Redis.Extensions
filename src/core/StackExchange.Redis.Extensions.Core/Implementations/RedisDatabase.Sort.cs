@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using StackExchange.Redis.Extensions.Core.Helpers;
 using StackExchange.Redis.Extensions.Core.Models;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations;
@@ -59,14 +60,6 @@ public partial class RedisDatabase
     {
         var result = await Database.SortedSetRangeByRankWithScoresAsync(key, start, stop, order, commandFlags).ConfigureAwait(false);
 
-        var list = new ScoreRankResult<T>[result.Length];
-
-        for (var i = 0; i < result.Length; i++)
-        {
-            var x = result[i];
-            list[i] = new ScoreRankResult<T>(Serializer.Deserialize<T>(x.Element!), x.Score);
-        }
-
-        return list;
+        return result.ToFastArray(x => new ScoreRankResult<T>(Serializer.Deserialize<T>(x.Element!), x.Score));
     }
 }

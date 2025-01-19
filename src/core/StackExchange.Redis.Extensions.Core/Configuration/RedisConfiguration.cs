@@ -28,7 +28,7 @@ public class RedisConfiguration
     private int syncTimeout = 1000;
     private bool abortOnConnectFail;
     private int database;
-    private RedisHost[] hosts = Array.Empty<RedisHost>();
+    private RedisHost[] hosts = [];
     private ServerEnumerationStrategy serverEnumerationStrategy = new();
     private uint maxValueLength;
     private int poolSize = 5;

@@ -20,12 +20,11 @@ public partial class RedisDatabase
         var keys = await SetMembersAsync<string>(tagKey, flag).ConfigureAwait(false);
 
         if (keys.Length == 0)
-            return Enumerable.Empty<T>();
+            return [];
 
         var hashKeys = new HashSet<string>();
 
-        foreach (var key in keys)
-            hashKeys.Add(key);
+        keys.FastIteration((key, _) => hashKeys.Add(key));
 
         var result = await GetAllAsync<T>(hashKeys, flag).ConfigureAwait(false);
 

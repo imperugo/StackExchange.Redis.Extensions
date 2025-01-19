@@ -45,7 +45,7 @@ public abstract partial class CacheClientTestBase
         await Sut.GetDefaultDatabase().SortedSetAddAsync("my Key", entryValueFirst, 1);
         await Sut.GetDefaultDatabase().SortedSetAddAsync("my Key", entryValueLast, 2);
 
-        List<SortedSetEntry> results = new();
+        List<SortedSetEntry> results = [];
 
         await foreach (var r in db.SortedSetScanAsync("my Key"))
             results.Add(r);
@@ -70,7 +70,7 @@ public abstract partial class CacheClientTestBase
 
         Assert.True(removed);
 
-        List<SortedSetEntry> results = new();
+        List<SortedSetEntry> results = [];
 
         await foreach (var r in db.SortedSetScanAsync("my Key"))
             results.Add(r);

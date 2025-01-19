@@ -4,7 +4,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+
+using StackExchange.Redis.Extensions.Core.Helpers;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations;
 
@@ -65,8 +69,13 @@ public partial class RedisDatabase
 
         var result = new Dictionary<string, T?>();
 
+        ref var searchSpace = ref MemoryMarshal.GetReference(tasks.AsSpan());
+
         for (var i = 0; i < tasks.Length; i++)
-            result.Add(keys[i], tasks[i].Result);
+        {
+            ref var task = ref Unsafe.Add(ref searchSpace, i);
+            result.Add(keys[i], task.Result);
+        }
 
         return result;
 #endif
@@ -77,12 +86,7 @@ public partial class RedisDatabase
     {
         var luascript = "local results = {};local insert = table.insert;local rcall = redis.call;for i=1,table.getn(KEYS) do  local value = rcall('HGET','" + hashKey + "', KEYS[i])  if value then insert(results, KEYS[i]) insert(results, value) end end; return results;";
 
-        var list = new List<RedisKey>();
-
-        foreach (var key in keys)
-            list.Add(new RedisKey(key));
-
-        var redisKeys = list.ToArray();
+        var redisKeys = keys.ToFastArray(key => new RedisKey(key));
 
         var data = await Database.ScriptEvaluateAsync(luascript, redisKeys, flags: flag).ConfigureAwait(false);
 
@@ -93,12 +97,14 @@ public partial class RedisDatabase
 
         var redisValues = ((RedisValue[]?)data);
 
-        if (redisValues == null || redisValues.Length <= 0)
+        ref var searchSpaceRedisValue = ref MemoryMarshal.GetReference(redisValues.AsSpan());
+
+        if (redisValues is not { Length: > 0 })
             return dictionary;
 
         for (var i = 0; i < redisValues.Length; i += 2)
         {
-            var key = redisValues[i];
+            ref var key = ref Unsafe.Add(ref searchSpaceRedisValue, i);
 
             if (key.HasValue == false)
                 continue;
