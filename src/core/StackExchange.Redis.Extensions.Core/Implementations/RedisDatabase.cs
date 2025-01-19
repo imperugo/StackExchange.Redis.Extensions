@@ -4,11 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Extensions;
+using StackExchange.Redis.Extensions.Core.Helpers;
 using StackExchange.Redis.Extensions.Core.Models;
 using StackExchange.Redis.Extensions.Core.ServerIteration;
 using StackExchange.Redis.KeyspaceIsolation;
@@ -82,8 +85,13 @@ public partial class RedisDatabase : IRedisDatabase
     {
         var redisKeys = new RedisKey[keys.Length];
 
+        ref var searchSpace = ref MemoryMarshal.GetReference(keys.AsSpan());
+
         for (var i = 0; i < keys.Length; i++)
-            redisKeys[i] = (RedisKey)keys[i];
+        {
+            ref var key = ref Unsafe.Add(ref searchSpace, i);
+            redisKeys[i] = (RedisKey)key;
+        }
 
         return Database.KeyDeleteAsync(redisKeys, flag);
     }
@@ -178,14 +186,7 @@ public partial class RedisDatabase : IRedisDatabase
         if (keys.Count == 0)
             return new Dictionary<string, T?>(0, StringComparer.Ordinal);
 
-        var redisKeys = new RedisKey[keys.Count];
-
-        var i = 0;
-        foreach (var key in keys)
-        {
-            redisKeys[i] = (RedisKey)key;
-            i++;
-        }
+        var redisKeys = keys.ToFastArray(key => (RedisKey)key);
 
         var result = await Database.StringGetAsync(redisKeys, flag).ConfigureAwait(false);
 
@@ -243,15 +244,13 @@ public partial class RedisDatabase : IRedisDatabase
             .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
             .ToArray();
 
-        var tasks = new Task[values.Length];
         await Database.StringSetAsync(values, when, flag).ConfigureAwait(false);
 
-        for (var i = 0; i < values.Length; i++)
-            tasks[i] = Database.KeyExpireAsync(values[i].Key, expiresAt.UtcDateTime, flag);
+        var tasks = values.ToFastArray(value => Database.KeyExpireAsync(value.Key, expiresAt.UtcDateTime, flag));
 
         await Task.WhenAll(tasks).ConfigureAwait(false);
 
-        return ((Task<bool>)tasks[0]).Result;
+        return tasks[0].Result;
     }
 
     /// <inheritdoc/>
@@ -262,15 +261,13 @@ public partial class RedisDatabase : IRedisDatabase
             .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
             .ToArray();
 
-        var tasks = new Task[values.Length];
         await Database.StringSetAsync(values, when, flag).ConfigureAwait(false);
 
-        for (var i = 0; i < values.Length; i++)
-            tasks[i] = Database.KeyExpireAsync(values[i].Key, expiresAt, flag);
+        var tasks = values.ToFastArray(value => Database.KeyExpireAsync(value.Key, expiresAt, flag));
 
         await Task.WhenAll(tasks).ConfigureAwait(false);
 
-        return ((Task<bool>)tasks[0]).Result;
+        return tasks[0].Result;
     }
 
     /// <inheritdoc/>
@@ -392,18 +389,9 @@ public partial class RedisDatabase : IRedisDatabase
         var members = await Database.SetMembersAsync(key, flag).ConfigureAwait(false);
 
         if (members.Length == 0)
-            return Array.Empty<T>();
+            return [];
 
-        var result = new T[members.Length];
-
-        for (var i = 0; i < members.Length; i++)
-        {
-            var m = members[i];
-
-            result[i] = Serializer.Deserialize<T>(m!)!;
-        }
-
-        return result;
+        return members.ToFastArray(m => Serializer.Deserialize<T>(m!)!);
     }
 
     /// <inheritdoc/>
@@ -440,9 +428,13 @@ public partial class RedisDatabase : IRedisDatabase
 
         var tasks = new List<Task>(endPoints.Length);
 
+        ref var searchSpace = ref MemoryMarshal.GetReference(endPoints.AsSpan());
+
         for (var i = 0; i < endPoints.Length; i++)
         {
-            var server = Database.Multiplexer.GetServer(endPoints[i]);
+            ref var endpoint = ref Unsafe.Add(ref searchSpace, i);
+
+            var server = Database.Multiplexer.GetServer(endpoint);
 
             if (!server.IsReplica)
                 tasks.Add(server.FlushDatabaseAsync(Database.Database));
@@ -456,10 +448,7 @@ public partial class RedisDatabase : IRedisDatabase
     {
         var endPoints = Database.Multiplexer.GetEndPoints();
 
-        var tasks = new Task[endPoints.Length];
-
-        for (var i = 0; i < endPoints.Length; i++)
-            tasks[i] = Database.Multiplexer.GetServer(endPoints[i]).SaveAsync(saveType, flag);
+        var tasks = endPoints.ToFastArray(endpoint => Database.Multiplexer.GetServer(endpoint).SaveAsync(saveType, flag));
 
         return Task.WhenAll(tasks);
     }
@@ -480,7 +469,7 @@ public partial class RedisDatabase : IRedisDatabase
         var info = (await Database.ScriptEvaluateAsync("return redis.call('INFO')").ConfigureAwait(false)).ToString();
 
         return string.IsNullOrEmpty(info)
-            ? Array.Empty<InfoDetail>()
+            ? []
             : ParseCategorizedInfo(info);
     }
 
@@ -500,9 +489,11 @@ public partial class RedisDatabase : IRedisDatabase
 
         var result = new Dictionary<string, string>();
 
+        ref var searchSpace = ref MemoryMarshal.GetReference(data.AsSpan());
+
         for (var i = 0; i < data.Length; i++)
         {
-            var x = data[i];
+            ref var x = ref Unsafe.Add(ref searchSpace, i);
             result.TryAdd(x.Key, x.InfoValue);
         }
 
@@ -514,24 +505,7 @@ public partial class RedisDatabase : IRedisDatabase
         var data = new List<InfoDetail>();
         var category = string.Empty;
 
-        foreach (var line in info.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries))
-        {
-            if (line[0] == '#')
-            {
-                category = line.Replace("#", string.Empty, StringComparison.Ordinal).Trim();
-                continue;
-            }
-
-            var idx = line.IndexOf(':', StringComparison.Ordinal);
-
-            if (idx > 0)
-            {
-                var key = line.Substring(0, idx);
-                var infoValue = line.Substring(idx + 1).Trim();
-
-                data.Add(new(category, key, infoValue));
-            }
-        }
+        info.AsSpan().EnumerateLines(ref data, ref category);
 
         return data.ToArray();
     }

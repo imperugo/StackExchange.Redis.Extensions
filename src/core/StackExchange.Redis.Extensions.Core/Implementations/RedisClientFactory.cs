@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -36,9 +38,11 @@ public class RedisClientFactory : IRedisClientFactory
         if (redisConfigurations.Length == 1)
             redisConfigurations[0].IsDefault = true;
 
+        ref var searchSpace = ref MemoryMarshal.GetReference(redisConfigurations.AsSpan());
+
         for (var i = 0; i < redisConfigurations.Length; i++)
         {
-            var configuration = redisConfigurations[i];
+            ref var configuration = ref Unsafe.Add(ref searchSpace, i);
 
             if (configuration.IsDefault && hasDefaultConfigured)
                 throw new ArgumentException("There is more than one default configuration. Only one default configuration is allowed.");
@@ -70,7 +74,7 @@ public class RedisClientFactory : IRedisClientFactory
 
         for (var i = 0; i < redisConfigurations.Length; i++)
         {
-            var configuration = redisConfigurations[i];
+            ref var configuration = ref Unsafe.Add(ref searchSpace, i);
 
             var poolManager = new RedisConnectionPoolManager(configuration, poolManagerLogger);
 

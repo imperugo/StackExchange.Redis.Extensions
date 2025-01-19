@@ -1,8 +1,9 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
+
+using StackExchange.Redis.Extensions.Core.Helpers;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations;
 
@@ -31,7 +32,7 @@ public partial class RedisDatabase
         if (items == null)
             throw new ArgumentNullException(nameof(items), "item cannot be null.");
 
-        var serializedItems = items.Select(x => (RedisValue)Serializer.Serialize(x)).ToArray();
+        var serializedItems = items.ToFastArray(item => (RedisValue)Serializer.Serialize(item));
 
         return Database.ListLeftPushAsync(key, serializedItems, flag);
     }

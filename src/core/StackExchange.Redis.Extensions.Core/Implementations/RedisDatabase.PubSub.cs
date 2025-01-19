@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using StackExchange.Redis.Extensions.Core.Helpers;
+
 namespace StackExchange.Redis.Extensions.Core.Implementations;
 
 public partial class RedisDatabase
@@ -67,25 +69,13 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(HashSet<string> keys, DateTimeOffset expiresAt, CommandFlags flag = CommandFlags.None)
     {
-        var tasks = new Task<bool>[keys.Count];
-
-        var i = 0;
-        foreach (var key in keys)
-        {
-            tasks[i] = UpdateExpiryAsync(key, expiresAt.UtcDateTime, flag);
-            i++;
-        }
+        var tasks = keys.ToFastArray(key => UpdateExpiryAsync(key, expiresAt.UtcDateTime, flag));
 
         await Task.WhenAll(tasks).ConfigureAwait(false);
 
         var results = new Dictionary<string, bool>(keys.Count, StringComparer.Ordinal);
 
-        i = 0;
-        foreach (var key in keys)
-        {
-            results.Add(key, tasks[i].Result);
-            i++;
-        }
+        keys.FastIteration((key, i) => results.Add(key, tasks[i].Result));
 
         return results;
     }
@@ -93,25 +83,13 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public async Task<IDictionary<string, bool>> UpdateExpiryAllAsync(HashSet<string> keys, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None)
     {
-        var tasks = new Task<bool>[keys.Count];
-
-        var i = 0;
-        foreach (var key in keys)
-        {
-            tasks[i] = UpdateExpiryAsync(key, expiresIn, flag);
-            i++;
-        }
+        var tasks = keys.ToFastArray(key => UpdateExpiryAsync(key, expiresIn, flag));
 
         await Task.WhenAll(tasks).ConfigureAwait(false);
 
         var results = new Dictionary<string, bool>(keys.Count, StringComparer.Ordinal);
 
-        i = 0;
-        foreach (var key in keys)
-        {
-            results.Add(key, tasks[i].Result);
-            i++;
-        }
+        keys.FastIteration((key, i) => results.Add(key, tasks[i].Result));
 
         return results;
     }

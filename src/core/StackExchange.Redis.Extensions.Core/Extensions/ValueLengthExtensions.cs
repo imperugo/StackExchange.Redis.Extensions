@@ -25,14 +25,14 @@ internal static class ValueLengthExtensions
     public static byte[] OfValueSize<T>(this T? value, ISerializer serializer, uint maxValueLength, string key)
     {
         return value == null
-            ? Array.Empty<byte>()
+            ? []
             : serializer.Serialize(value).CheckLength(maxValueLength, key);
     }
 
     private static byte[] SerializeItem<T>(this T? item, ISerializer serializer)
     {
         return item == null
-            ? Array.Empty<byte>()
+            ? []
             : serializer.Serialize(item);
     }
 
