@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="protobuf-net" Version="[3.2.45,4.0.0)" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.12.19" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles" />
   </ItemGroup>
 
   <ItemGroup>
