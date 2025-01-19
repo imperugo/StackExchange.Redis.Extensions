@@ -50,11 +50,11 @@ public class RedisCacheConnectionPoolManagerTests : IDisposable
             .GetDatabase(0)
             .StringSetAsync(cacheKey, "my cache value");
 
-        Parallel.For(0, maxNumberOfIterations, (i, _) =>
+        await Parallel.ForAsync(0, maxNumberOfIterations, async (i, _) =>
         {
             try
             {
-                sut
+                await sut
                     .GetConnection()
                     .GetDatabase(0)
                     .StringGetAsync(cacheKey);
