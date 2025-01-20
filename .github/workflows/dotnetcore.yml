@@ -9,9 +9,7 @@ jobs:
   # Label of the container job
   runner-job:
     # You must use a Linux environment when using service containers or container jobs
-    runs-on:
-      group: ubuntu-runners
-      labels: ubuntu-22.04-16core
+    runs-on: ubuntu-22.04
 
     # Service containers to run with `runner-job`
     services:
