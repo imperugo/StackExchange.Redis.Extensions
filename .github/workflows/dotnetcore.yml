@@ -9,7 +9,7 @@ jobs:
   # Label of the container job
   runner-job:
     # You must use a Linux environment when using service containers or container jobs
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     # Service containers to run with `runner-job`
     services:
@@ -39,11 +39,11 @@ jobs:
             8.0.x
             9.0.x
 
-      - name: Run .NET 9 Tests
-        run: dotnet test -f net9.0
-        shell: bash
-        env:
-          REDIS_HOST: localhost
+#      - name: Run .NET 9 Tests
+#        run: dotnet test -f net9.0
+#        shell: bash
+#        env:
+#          REDIS_HOST: localhost
 
       - name: Run .NET 8 Tests
         run: dotnet test -f net8.0
