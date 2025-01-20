@@ -92,9 +92,6 @@ public partial class RedisDatabase
 
         var dictionary = new Dictionary<string, T?>();
 
-        if (data is null)
-            return dictionary;
-
         var redisValues = ((RedisValue[]?)data);
 
         ref var searchSpaceRedisValue = ref MemoryMarshal.GetReference(redisValues.AsSpan());
@@ -166,15 +163,21 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public Task HashSetAsync<T>(string hashKey, IDictionary<string, T> values, CommandFlags flag = CommandFlags.None)
     {
-        var entries = values.Select(kv => new HashEntry(kv.Key, Serializer.Serialize(kv.Value)));
+        var entries = new HashEntry[values.Count];
+        var i = 0;
 
-        return Database.HashSetAsync(hashKey, entries.ToArray(), flag);
+        foreach (var (key, value) in values)
+            entries[i++] = new HashEntry(key, Serializer.Serialize(value));
+
+        return Database.HashSetAsync(hashKey, entries, flag);
     }
 
     /// <inheritdoc/>
     public async Task<IEnumerable<T?>> HashValuesAsync<T>(string hashKey, CommandFlags flag = CommandFlags.None)
     {
-        return (await Database.HashValuesAsync(hashKey, flag).ConfigureAwait(false)).Select(x => Serializer.Deserialize<T>(x!));
+        return (await Database.HashValuesAsync(hashKey, flag)
+            .ConfigureAwait(false))
+            .ToFastArray(x => Serializer.Deserialize<T>(x!));
     }
 
     /// <inheritdoc/>

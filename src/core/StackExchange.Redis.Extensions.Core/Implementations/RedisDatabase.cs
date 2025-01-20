@@ -83,15 +83,7 @@ public partial class RedisDatabase : IRedisDatabase
     /// <inheritdoc/>
     public Task<long> RemoveAllAsync(string[] keys, CommandFlags flag = CommandFlags.None)
     {
-        var redisKeys = new RedisKey[keys.Length];
-
-        ref var searchSpace = ref MemoryMarshal.GetReference(keys.AsSpan());
-
-        for (var i = 0; i < keys.Length; i++)
-        {
-            ref var key = ref Unsafe.Add(ref searchSpace, i);
-            redisKeys[i] = (RedisKey)key;
-        }
+        var redisKeys = keys.ToFastArray(key => (RedisKey)key);
 
         return Database.KeyDeleteAsync(redisKeys, flag);
     }
@@ -334,13 +326,12 @@ public partial class RedisDatabase : IRedisDatabase
         if (items.Any(item => item == null))
             throw new ArgumentException("items cannot contains any null item.", nameof(items));
 
+        var values = items.ToFastArray(item => (RedisValue)Serializer.Serialize(item));
+
         return Database
             .SetAddAsync(
                 key,
-                items
-                    .Select(item => Serializer.Serialize(item))
-                    .Select(x => (RedisValue)x)
-                    .ToArray(),
+                values,
                 flag);
     }
 
@@ -370,17 +361,17 @@ public partial class RedisDatabase : IRedisDatabase
         if (items.Any(item => item == null))
             throw new ArgumentException("items cannot contains any null item.", nameof(items));
 
-        return Database.SetRemoveAsync(key, items
-            .Select(item => Serializer.Serialize(item))
-            .Select(x => (RedisValue)x)
-            .ToArray(), flag);
+        var values = items.ToFastArray(item => (RedisValue)Serializer.Serialize(item));
+
+        return Database.SetRemoveAsync(key, values, flag);
     }
 
     /// <inheritdoc/>
     public async Task<string[]> SetMemberAsync(string memberName, CommandFlags flag = CommandFlags.None)
     {
         var members = await Database.SetMembersAsync(memberName, flag).ConfigureAwait(false);
-        return members.Select(x => x.ToString()).ToArray();
+
+        return members.ToFastArray(x => x.ToString());
     }
 
     /// <inheritdoc/>
@@ -489,13 +480,7 @@ public partial class RedisDatabase : IRedisDatabase
 
         var result = new Dictionary<string, string>();
 
-        ref var searchSpace = ref MemoryMarshal.GetReference(data.AsSpan());
-
-        for (var i = 0; i < data.Length; i++)
-        {
-            ref var x = ref Unsafe.Add(ref searchSpace, i);
-            result.TryAdd(x.Key, x.InfoValue);
-        }
+        data.FastIteration((x, _) => result.TryAdd(x.Key, x.InfoValue));
 
         return result;
     }
