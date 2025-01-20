@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using StackExchange.Redis.Extensions.Core.Helpers;
 using StackExchange.Redis.Extensions.Core.Tests.Helpers;
 
 using Xunit;
@@ -88,13 +89,13 @@ public abstract partial class CacheClientTestBase
         await Sut.GetDefaultDatabase().HashSetAsync(hashKey, map);
         await Task.Delay(1000);
 
-        // assert
-        var data = (await db
-            .HashGetAsync(hashKey, map.Keys.Select(x => (RedisValue)x).ToArray()))
-            .ToList()
-            .ConvertAll(x => serializer.Deserialize<TestClass<DateTime>>(x!));
+        var keys = map.Keys.ToFastArray(x => (RedisValue)x);
 
-        Assert.Equal(map.Count, data.Count);
+        // assert
+        var data = (await db.HashGetAsync(hashKey, keys))
+            .ToFastArray(x => serializer.Deserialize<TestClass<DateTime>>(x!));
+
+        Assert.Equal(map.Count, data.Length);
 
         foreach (var val in data)
             Assert.True(map.ContainsValue(val!), $"result map doesn't contain value: {val}");
@@ -443,8 +444,8 @@ public abstract partial class CacheClientTestBase
 
         foreach (var key in values.Keys)
         {
-            Assert.True(resultEnum.ContainsKey(key!));
-            Assert.Equal(values[key], resultEnum[key!]);
+            Assert.True(resultEnum.ContainsKey(key));
+            Assert.Equal(values[key], resultEnum[key]);
         }
     }
 
@@ -466,12 +467,12 @@ public abstract partial class CacheClientTestBase
         // assert
         Assert.NotNull(result);
         var resultEnum = result.ToDictionary(x => x.Key, x => x.Value);
-        Assert.Equal(values.Keys.Count(x => x!.StartsWith('2')), resultEnum.Count);
+        Assert.Equal(values.Keys.Count(x => x.StartsWith('2')), resultEnum.Count);
 
-        foreach (var key in values.Keys.Where(x => x!.StartsWith('2')))
+        foreach (var key in values.Keys.Where(x => x.StartsWith('2')))
         {
-            Assert.True(resultEnum.ContainsKey(key!));
-            Assert.Equal(values[key], resultEnum[key!]);
+            Assert.True(resultEnum.ContainsKey(key));
+            Assert.Equal(values[key], resultEnum[key]);
         }
     }
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-
     <!-- General information -->
     <PropertyGroup>
         <Authors>Ugo Lattanzi</Authors>
@@ -89,6 +88,12 @@
         <Features>strict</Features>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>$(MSBuildProjectName).Tests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
 
     <ItemGroup>
         <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.SuppressMessage">

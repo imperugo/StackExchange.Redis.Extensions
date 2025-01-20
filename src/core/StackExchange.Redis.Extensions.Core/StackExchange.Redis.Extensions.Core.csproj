@@ -2,8 +2,6 @@
 
   <!-- Assembly signing -->
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\..\StackExchange.Redis.Extensions.Core.snk</AssemblyOriginatorKeyFile>
-    <SignAssembly>true</SignAssembly>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 

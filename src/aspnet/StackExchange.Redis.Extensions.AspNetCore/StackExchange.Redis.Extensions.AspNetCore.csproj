@@ -8,12 +8,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <!-- Assembly signing -->
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\..\StackExchange.Redis.Extensions.Core.snk</AssemblyOriginatorKeyFile>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="..\..\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
