@@ -9,14 +9,16 @@ jobs:
   # Label of the container job
   runner-job:
     # You must use a Linux environment when using service containers or container jobs
-    runs-on: ubuntu-latest
+    runs-on:
+      group: ubuntu-runners
+      labels: ubuntu-22.04-16core
 
     # Service containers to run with `runner-job`
     services:
       # Label used to access the service container
       redis:
         # Docker Hub image
-        image: redis
+        image: redis:latest
         # Set health checks to wait until redis has started
         options: >-
           --health-cmd "redis-cli ping"
