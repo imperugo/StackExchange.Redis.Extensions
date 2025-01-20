@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using StackExchange.Redis.Extensions.Core.Tests.Helpers;
+
 using Xunit;
 
 using static System.Linq.Enumerable;
@@ -79,18 +81,18 @@ public abstract partial class CacheClientTestBase
     {
         // arrange
         var hashKey = Guid.NewGuid().ToString();
-        var values = Range(0, 100).Select(_ => new Helpers.TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow));
+        var values = Range(0, 100).Select(_ => new TestClass<DateTime>(Guid.NewGuid().ToString(), DateTime.UtcNow));
         var map = values.ToDictionary(_ => Guid.NewGuid().ToString());
 
         // act
         await Sut.GetDefaultDatabase().HashSetAsync(hashKey, map);
-        await Task.Delay(500);
+        await Task.Delay(1000);
 
         // assert
         var data = (await db
             .HashGetAsync(hashKey, map.Keys.Select(x => (RedisValue)x).ToArray()))
             .ToList()
-            .ConvertAll(x => serializer.Deserialize<Helpers.TestClass<DateTime>>(x!));
+            .ConvertAll(x => serializer.Deserialize<TestClass<DateTime>>(x!));
 
         Assert.Equal(map.Count, data.Count);
 
