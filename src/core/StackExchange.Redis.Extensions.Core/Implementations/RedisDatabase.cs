@@ -97,7 +97,7 @@ public partial class RedisDatabase : IRedisDatabase
 
         return !valueBytes.HasValue
             ? default
-            : Serializer.Deserialize<T>(valueBytes!);
+            : Serializer.Deserialize<T>(valueBytes);
     }
 
     /// <inheritdoc/>
@@ -189,7 +189,7 @@ public partial class RedisDatabase : IRedisDatabase
             var value = result[index];
             dict.Add(redisKeys[index]!, value == RedisValue.Null
                 ? default
-                : Serializer.Deserialize<T>(value!));
+                : Serializer.Deserialize<T>(value));
         }
 
         return dict;
@@ -286,7 +286,7 @@ public partial class RedisDatabase : IRedisDatabase
 
         return item == RedisValue.Null
             ? default
-            : Serializer.Deserialize<T>(item!);
+            : Serializer.Deserialize<T>(item);
     }
 
     /// <inheritdoc/>
@@ -297,7 +297,7 @@ public partial class RedisDatabase : IRedisDatabase
 
         var items = await Database.SetPopAsync(key, count, flag).ConfigureAwait(false);
 
-        return items.Select(item => item == RedisValue.Null ? default : Serializer.Deserialize<T>(item!));
+        return items.Select(item => item == RedisValue.Null ? default : Serializer.Deserialize<T>(item));
     }
 
     /// <inheritdoc/>
@@ -382,7 +382,7 @@ public partial class RedisDatabase : IRedisDatabase
         if (members.Length == 0)
             return [];
 
-        return members.ToFastArray(m => Serializer.Deserialize<T>(m!)!);
+        return members.ToFastArray(m => Serializer.Deserialize<T>(m)!);
     }
 
     /// <inheritdoc/>

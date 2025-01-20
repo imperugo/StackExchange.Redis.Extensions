@@ -27,8 +27,11 @@ public class ProtobufSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public T? Deserialize<T>(byte[] serializedObject)
+    public T? Deserialize<T>(byte[]? serializedObject)
     {
+        if (serializedObject == null)
+            return default;
+
         using var ms = new MemoryStream(serializedObject);
 
         return Serializer.Deserialize<T>(ms);

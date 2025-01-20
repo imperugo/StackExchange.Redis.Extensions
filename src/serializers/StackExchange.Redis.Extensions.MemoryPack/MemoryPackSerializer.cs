@@ -18,8 +18,11 @@ public class MemoryPackSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public T? Deserialize<T>(byte[] serializedObject)
+    public T? Deserialize<T>(byte[]? serializedObject)
     {
+        if (serializedObject == null)
+            return default;
+
         return global::MemoryPack.MemoryPackSerializer.Deserialize<T>(serializedObject);
     }
 }

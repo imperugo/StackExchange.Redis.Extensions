@@ -141,7 +141,7 @@ public abstract partial class CacheClientTestBase : IDisposable
 
         Assert.True(added);
 
-        var obj = serializer.Deserialize<TestClass<DateTime>>(redisValue!);
+        var obj = serializer.Deserialize<TestClass<DateTime>>(redisValue);
 
         Assert.True(await db.KeyExistsAsync("my Key"));
         Assert.NotNull(obj);
@@ -169,9 +169,9 @@ public abstract partial class CacheClientTestBase : IDisposable
         Assert.True(await db.KeyExistsAsync("key2"));
         Assert.True(await db.KeyExistsAsync("key3"));
 
-        Assert.Equal("value1", serializer.Deserialize<string>((await db.StringGetAsync("key1"))!));
-        Assert.Equal("value2", serializer.Deserialize<string>((await db.StringGetAsync("key2"))!));
-        Assert.Equal("value3", serializer.Deserialize<string>((await db.StringGetAsync("key3"))!));
+        Assert.Equal("value1", serializer.Deserialize<string>((await db.StringGetAsync("key1"))));
+        Assert.Equal("value2", serializer.Deserialize<string>((await db.StringGetAsync("key2"))));
+        Assert.Equal("value3", serializer.Deserialize<string>((await db.StringGetAsync("key3"))));
     }
 
     [Fact]
@@ -406,7 +406,7 @@ public abstract partial class CacheClientTestBase : IDisposable
         Assert.Contains(values, v => v.Value == result);
 
         var members = await db.SetMembersAsync("MySet");
-        var itemsLeft = members.Select(m => serializer.Deserialize<string>(m!)).ToArray();
+        var itemsLeft = members.Select(m => serializer.Deserialize<string>(m)).ToArray();
 
         Assert.Equal(4, itemsLeft.Length);
         Assert.DoesNotContain(itemsLeft, l => l == result);
@@ -448,7 +448,7 @@ public abstract partial class CacheClientTestBase : IDisposable
 
         var members = await db.SetMembersAsync("MySet");
 
-        var itemsLeft = members.ToFastArray(m => serializer.Deserialize<string>(m!));
+        var itemsLeft = members.ToFastArray(m => serializer.Deserialize<string>(m));
 
         Assert.Equal(2, itemsLeft.Length);
 

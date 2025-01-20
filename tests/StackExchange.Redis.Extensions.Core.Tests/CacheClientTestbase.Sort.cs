@@ -28,7 +28,7 @@ public abstract partial class CacheClientTestBase
 
         Assert.True(added);
 
-        var obj = serializer.Deserialize<Helpers.TestClass<DateTime>>(result!.Value.Element!);
+        var obj = serializer.Deserialize<Helpers.TestClass<DateTime>>(result!.Value.Element);
 
         Assert.NotNull(obj);
         Assert.Equal(testClass.Key, obj.Key);
@@ -52,8 +52,8 @@ public abstract partial class CacheClientTestBase
 
         Assert.NotEmpty(results);
 
-        var dataFirst = serializer.Deserialize<Helpers.TestClass<DateTime>>(results[0].Element!);
-        var dataLast = serializer.Deserialize<Helpers.TestClass<DateTime>>(results[1].Element!);
+        var dataFirst = serializer.Deserialize<Helpers.TestClass<DateTime>>(results[0].Element);
+        var dataLast = serializer.Deserialize<Helpers.TestClass<DateTime>>(results[1].Element);
 
         Assert.Equal(entryValueFirst.Value, dataFirst!.Value);
         Assert.Equal(entryValueLast.Value, dataLast!.Value);
@@ -251,7 +251,7 @@ public abstract partial class CacheClientTestBase
 
         Assert.Equal(defaultScore, added);
         Assert.Equal(defaultScore + nextScore, result!.Value.Score);
-        var obj = serializer.Deserialize<Helpers.TestClass<DateTime>>(result.Value.Element!);
+        var obj = serializer.Deserialize<Helpers.TestClass<DateTime>>(result.Value.Element);
 
         Assert.NotNull(obj);
         Assert.Equal(testClass.Value.ToUniversalTime(), obj.Value.ToUniversalTime());

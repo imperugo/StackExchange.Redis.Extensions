@@ -28,7 +28,7 @@ public partial class RedisDatabase
         return sub.SubscribeAsync(channel, Handler, flag);
 
         void Handler(RedisChannel redisChannel, RedisValue value) =>
-            _ = handler(Serializer.Deserialize<T>(value!)).ConfigureAwait(false);
+            _ = handler(Serializer.Deserialize<T>(value)).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -38,7 +38,7 @@ public partial class RedisDatabase
             throw new ArgumentNullException(nameof(handler));
 
         var sub = connectionPoolManager.GetConnection().GetSubscriber();
-        return sub.UnsubscribeAsync(channel, (_, value) => handler(Serializer.Deserialize<T>(value!)), flag);
+        return sub.UnsubscribeAsync(channel, (_, value) => handler(Serializer.Deserialize<T>(value)), flag);
     }
 
     /// <inheritdoc/>

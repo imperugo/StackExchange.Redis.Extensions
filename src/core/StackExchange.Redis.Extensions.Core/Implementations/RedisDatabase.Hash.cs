@@ -42,7 +42,7 @@ public partial class RedisDatabase
     {
         var redisValue = await Database.HashGetAsync(hashKey, key, flag).ConfigureAwait(false);
 
-        return redisValue.HasValue ? Serializer.Deserialize<T>(redisValue!) : default;
+        return redisValue.HasValue ? Serializer.Deserialize<T>(redisValue) : default;
     }
 
     /// <inheritdoc/>
@@ -126,7 +126,7 @@ public partial class RedisDatabase
         return (await Database.HashGetAllAsync(hashKey, flag).ConfigureAwait(false))
             .ToDictionary(
                 x => x.Name.ToString(),
-                x => Serializer.Deserialize<T>(x.Value!),
+                x => Serializer.Deserialize<T>(x.Value),
                 StringComparer.Ordinal);
     }
 
@@ -177,12 +177,12 @@ public partial class RedisDatabase
     {
         return (await Database.HashValuesAsync(hashKey, flag)
             .ConfigureAwait(false))
-            .ToFastArray(x => Serializer.Deserialize<T>(x!));
+            .ToFastArray(x => Serializer.Deserialize<T>(x));
     }
 
     /// <inheritdoc/>
     public Dictionary<string, T?> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags flag = CommandFlags.None)
     {
-        return Database.HashScan(hashKey, pattern, pageSize, flag).ToDictionary(x => x.Name.ToString(), x => Serializer.Deserialize<T>(x.Value!), StringComparer.Ordinal);
+        return Database.HashScan(hashKey, pattern, pageSize, flag).ToDictionary(x => x.Name.ToString(), x => Serializer.Deserialize<T>(x.Value), StringComparer.Ordinal);
     }
 }

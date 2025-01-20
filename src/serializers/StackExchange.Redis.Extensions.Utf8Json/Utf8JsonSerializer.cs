@@ -20,8 +20,8 @@ public class Utf8JsonSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public T? Deserialize<T>(byte[] serializedObject)
+    public T? Deserialize<T>(byte[]? serializedObject)
     {
-        return JsonSerializer.Deserialize<T>(serializedObject);
+        return JsonSerializer.Deserialize<T?>(serializedObject);
     }
 }

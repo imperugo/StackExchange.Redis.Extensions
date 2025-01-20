@@ -55,7 +55,7 @@ public abstract partial class CacheClientTestBase
         await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, tags: [testTag]);
 
         var tags = await db.SetMembersAsync(TagHelper.GenerateTagKey(testTag));
-        var deserialized = tags.Length > 0 ? serializer.Deserialize<string>(tags[0]!) : string.Empty;
+        var deserialized = tags.Length > 0 ? serializer.Deserialize<string>(tags[0]) : string.Empty;
 
         Assert.Equal(testKey, deserialized);
     }
@@ -102,7 +102,7 @@ public abstract partial class CacheClientTestBase
         await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, TimeSpan.FromSeconds(1), tags: [testTag]);
 
         var tags = await db.SetMembersAsync(TagHelper.GenerateTagKey(testTag));
-        var deserialized = serializer.Deserialize<string>(tags[0]!);
+        var deserialized = serializer.Deserialize<string>(tags[0]);
 
         Assert.Equal(testKey, deserialized);
     }
@@ -149,7 +149,7 @@ public abstract partial class CacheClientTestBase
         await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, DateTimeOffset.UtcNow, tags: [testTag]);
 
         var tags = await db.SetMembersAsync(TagHelper.GenerateTagKey(testTag));
-        var deserialized = serializer.Deserialize<string>(tags[0]!);
+        var deserialized = serializer.Deserialize<string>(tags[0]);
 
         Assert.Equal(testKey, deserialized);
     }

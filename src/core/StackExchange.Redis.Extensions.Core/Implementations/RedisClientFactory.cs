@@ -59,10 +59,8 @@ public class RedisClientFactory : IRedisClientFactory
                 defaultConnectionName = configuration.Name;
             }
 
-            if (hashSet.Contains(configuration.Name!))
+            if (!hashSet.Add(configuration.Name))
                 throw new ArgumentException($"{nameof(RedisConfiguration.Name)} must be unique");
-
-            hashSet.Add(configuration.Name!);
         }
 
         if (!hasDefaultConfigured)

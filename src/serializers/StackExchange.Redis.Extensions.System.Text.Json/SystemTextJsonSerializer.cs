@@ -23,8 +23,11 @@ public class SystemTextJsonSerializer(JsonSerializerOptions defaultSerializer) :
     }
 
     /// <inheritdoc/>
-    public T? Deserialize<T>(byte[] serializedObject)
+    public T? Deserialize<T>(byte[]? serializedObject)
     {
+        if (serializedObject == null)
+            return default;
+
         return JsonSerializer.Deserialize<T>(serializedObject, defaultSerializer);
     }
 

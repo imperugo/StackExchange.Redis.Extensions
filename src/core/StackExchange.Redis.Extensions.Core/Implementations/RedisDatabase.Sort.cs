@@ -47,7 +47,7 @@ public partial class RedisDatabase
     {
         var result = await Database.SortedSetRangeByScoreAsync(key, start, stop, exclude, order, skip, take, flag).ConfigureAwait(false);
 
-        return result.Select(m => m == RedisValue.Null ? default : Serializer.Deserialize<T>(m!));
+        return result.Select(m => m == RedisValue.Null ? default : Serializer.Deserialize<T>(m));
     }
 
     /// <inheritdoc/>
@@ -60,6 +60,6 @@ public partial class RedisDatabase
     {
         var result = await Database.SortedSetRangeByRankWithScoresAsync(key, start, stop, order, commandFlags).ConfigureAwait(false);
 
-        return result.ToFastArray(x => new ScoreRankResult<T>(Serializer.Deserialize<T>(x.Element!), x.Score));
+        return result.ToFastArray(x => new ScoreRankResult<T>(Serializer.Deserialize<T>(x.Element), x.Score));
     }
 }

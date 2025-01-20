@@ -29,8 +29,11 @@ public class ServiceStackJsonSerializer : ISerializer
     }
 
     /// <inheritdoc/>
-    public T Deserialize<T>(byte[] serializedObject)
+    public T? Deserialize<T>(byte[]? serializedObject)
     {
+        if (serializedObject == null)
+            return default;
+
         var json = JsConfig.UTF8Encoding.GetString(serializedObject);
         return JsonSerializer.DeserializeFromString<T>(json);
     }

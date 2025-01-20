@@ -32,7 +32,7 @@ public class NewtonsoftSerializer(JsonSerializerSettings? settings) : ISerialize
     /// Initializes a new instance of the <see cref="NewtonsoftSerializer"/> class.
     /// </summary>
     public NewtonsoftSerializer()
-        : this(default)
+        : this(null)
     {
     }
 
@@ -48,8 +48,11 @@ public class NewtonsoftSerializer(JsonSerializerSettings? settings) : ISerialize
     }
 
     /// <inheritdoc/>
-    public T? Deserialize<T>(byte[] serializedObject)
+    public T? Deserialize<T>(byte[]? serializedObject)
     {
+        if (serializedObject == null)
+            return default;
+
         var jsonString = encoding.GetString(serializedObject);
         return JsonConvert.DeserializeObject<T>(jsonString, settings)!;
     }
