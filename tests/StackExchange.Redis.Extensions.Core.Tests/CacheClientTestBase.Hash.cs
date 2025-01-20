@@ -87,7 +87,6 @@ public abstract partial class CacheClientTestBase
 
         // act
         await Sut.GetDefaultDatabase().HashSetAsync(hashKey, map);
-        await Task.Delay(1000);
 
         var keys = map.Keys.ToFastArray(x => (RedisValue)x);
 

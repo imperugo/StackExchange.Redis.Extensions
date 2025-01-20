@@ -54,6 +54,6 @@ public class NewtonsoftSerializer(JsonSerializerSettings? settings) : ISerialize
             return default;
 
         var jsonString = encoding.GetString(serializedObject);
-        return JsonConvert.DeserializeObject<T>(jsonString, settings)!;
+        return JsonConvert.DeserializeObject<T>(jsonString, settings);
     }
 }
