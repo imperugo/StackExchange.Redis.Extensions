@@ -393,13 +393,13 @@ public partial class RedisDatabase : IRedisDatabase
 
         foreach (var unused in ServerIteratorFactory.GetServers(connectionPoolManager.GetConnection(), serverEnumerationStrategy))
         {
-            long nextCursor = 0;
+            ulong nextCursor = 0;
             do
             {
                 var redisResult = await unused.ExecuteAsync("SCAN", nextCursor.ToString(CultureInfo.InvariantCulture), "MATCH", pattern, "COUNT", "1000").ConfigureAwait(false);
                 var innerResult = (RedisResult[])redisResult!;
 
-                nextCursor = long.Parse((string)innerResult[0]!, CultureInfo.InvariantCulture);
+                nextCursor = ulong.Parse((string)innerResult[0]!, CultureInfo.InvariantCulture);
 
                 var resultLines = ((string[])innerResult[1]!).ToArray();
                 keys.UnionWith(resultLines);
