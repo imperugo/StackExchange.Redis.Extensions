@@ -275,6 +275,15 @@ public partial interface IRedisDatabase
     Task<long> SetAddAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items);
 
     /// <summary>
+    ///     Run SADD command http://redis.io/commands/sadd
+    /// </summary>
+    /// <typeparam name="T">The type of the expected object.</typeparam>
+    /// <param name="key">The cache key.</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <param name="items">Name of the member.</param>
+    Task<long> SetAddAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params ReadOnlySpan<T> items);
+
+    /// <summary>
     ///     Run SREM command http://redis.io/commands/srem"
     /// </summary>
     /// <typeparam name="T">The type of the expected object.</typeparam>
@@ -291,6 +300,15 @@ public partial interface IRedisDatabase
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <param name="items">The items to store into Redis.</param>
     Task<long> SetRemoveAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items);
+
+    /// <summary>
+    ///     Run SREM command http://redis.io/commands/srem
+    /// </summary>
+    /// <typeparam name="T">The type of the expected object.</typeparam>
+    /// <param name="key">The cache key.</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <param name="items">The items to store into Redis.</param>
+    Task<long> SetRemoveAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params ReadOnlySpan<T> items);
 
     /// <summary>
     ///     Run SMEMBERS command see http://redis.io/commands/SMEMBERS
