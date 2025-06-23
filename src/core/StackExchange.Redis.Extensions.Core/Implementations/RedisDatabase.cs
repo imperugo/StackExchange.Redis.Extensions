@@ -323,8 +323,27 @@ public partial class RedisDatabase : IRedisDatabase
         if (items == null)
             throw new ArgumentNullException(nameof(items), "items cannot be null.");
 
-        if (items.Any(item => item == null))
-            throw new ArgumentException("items cannot contains any null item.", nameof(items));
+        ExceptionThrowHelper.ThrowIfExistsNullElement(items, nameof(items));
+
+        var values = items.ToFastArray(item => (RedisValue)Serializer.Serialize(item));
+
+        return Database
+            .SetAddAsync(
+                key,
+                values,
+                flag);
+    }
+
+    /// <inheritdoc/>
+    public Task<long> SetAddAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params ReadOnlySpan<T> items)
+    {
+#if NET8_0_OR_GREATER
+        ArgumentException.ThrowIfNullOrEmpty(key);
+#else
+        if (string.IsNullOrEmpty(key))
+            throw new ArgumentException("key cannot be empty.", nameof(key));
+#endif
+        ExceptionThrowHelper.ThrowIfExistsNullElement(items, nameof(items));
 
         var values = items.ToFastArray(item => (RedisValue)Serializer.Serialize(item));
 
@@ -358,8 +377,23 @@ public partial class RedisDatabase : IRedisDatabase
         if (items == null)
             throw new ArgumentNullException(nameof(items), "items cannot be null.");
 
-        if (items.Any(item => item == null))
-            throw new ArgumentException("items cannot contains any null item.", nameof(items));
+        ExceptionThrowHelper.ThrowIfExistsNullElement(items, nameof(items));
+
+        var values = items.ToFastArray(item => (RedisValue)Serializer.Serialize(item));
+
+        return Database.SetRemoveAsync(key, values, flag);
+    }
+
+    /// <inheritdoc/>
+    public Task<long> SetRemoveAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params ReadOnlySpan<T> items)
+    {
+#if NET8_0_OR_GREATER
+        ArgumentException.ThrowIfNullOrEmpty(key);
+#else
+        if (string.IsNullOrEmpty(key))
+            throw new ArgumentException("key cannot be empty.", nameof(key));
+#endif
+        ExceptionThrowHelper.ThrowIfExistsNullElement(items, nameof(items));
 
         var values = items.ToFastArray(item => (RedisValue)Serializer.Serialize(item));
 

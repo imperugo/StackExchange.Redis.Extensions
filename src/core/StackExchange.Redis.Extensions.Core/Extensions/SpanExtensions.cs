@@ -47,4 +47,28 @@ internal static class SpanExtensions
             }
         }
     }
+
+    public static bool Any<T>(this ReadOnlySpan<T> span, Predicate<T> condition)
+    {
+        for (var i = 0; i < span.Length; i++)
+        {
+            if (condition(span[i]))
+                return true;
+        }
+
+        return false;
+    }
+
+    public static TResult[] ToFastArray<TSource, TResult>(this ReadOnlySpan<TSource> span, Func<TSource, TResult> action)
+    {
+        if (span.IsEmpty)
+            return [];
+
+        var result = new TResult[span.Length];
+
+        for (var i = 0; i < span.Length; i++)
+            result[i] = action.Invoke(span[i]);
+
+        return result;
+    }
 }
