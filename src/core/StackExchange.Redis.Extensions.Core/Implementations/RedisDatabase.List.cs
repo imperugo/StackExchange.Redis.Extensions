@@ -12,11 +12,16 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public Task<long> ListAddToLeftAsync<T>(string key, T item, When when = When.Always, CommandFlags flag = CommandFlags.None)
     {
+#if NET8_0_OR_GREATER
+        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(item);
+#else
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("key cannot be empty.", nameof(key));
 
         if (item == null)
             throw new ArgumentNullException(nameof(item), "item cannot be null.");
+#endif
 
         var serializedItem = Serializer.Serialize(item);
 
@@ -26,11 +31,16 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public Task<long> ListAddToLeftAsync<T>(string key, T[] items, CommandFlags flag = CommandFlags.None)
     {
+#if NET8_0_OR_GREATER
+        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(items);
+#else
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("key cannot be empty.", nameof(key));
 
         if (items == null)
             throw new ArgumentNullException(nameof(items), "item cannot be null.");
+#endif
 
         var serializedItems = items.ToFastArray(item => (RedisValue)Serializer.Serialize(item));
 
@@ -40,8 +50,12 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public async Task<T?> ListGetFromRightAsync<T>(string key, CommandFlags flag = CommandFlags.None)
     {
+#if NET8_0_OR_GREATER
+        ArgumentException.ThrowIfNullOrEmpty(key);
+#else
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("key cannot be empty.", nameof(key));
+#endif
 
         var item = await Database.ListRightPopAsync(key, flag).ConfigureAwait(false);
 

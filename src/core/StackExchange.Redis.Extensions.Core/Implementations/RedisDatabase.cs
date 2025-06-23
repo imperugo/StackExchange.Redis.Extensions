@@ -265,11 +265,16 @@ public partial class RedisDatabase : IRedisDatabase
     /// <inheritdoc/>
     public Task<bool> SetAddAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
     {
+#if NET8_0_OR_GREATER
+        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(item);
+#else
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("key cannot be empty.", nameof(key));
 
         if (item == null)
             throw new ArgumentNullException(nameof(item), "item cannot be null.");
+#endif
 
         var serializedObject = Serializer.Serialize(item);
 
@@ -279,8 +284,12 @@ public partial class RedisDatabase : IRedisDatabase
     /// <inheritdoc/>
     public async Task<T?> SetPopAsync<T>(string key, CommandFlags flag = CommandFlags.None)
     {
+#if NET8_0_OR_GREATER
+        ArgumentException.ThrowIfNullOrEmpty(key);
+#else
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("key cannot be empty.", nameof(key));
+#endif
 
         var item = await Database.SetPopAsync(key, flag).ConfigureAwait(false);
 
@@ -292,8 +301,12 @@ public partial class RedisDatabase : IRedisDatabase
     /// <inheritdoc/>
     public async Task<IEnumerable<T?>> SetPopAsync<T>(string key, long count, CommandFlags flag = CommandFlags.None)
     {
+#if NET8_0_OR_GREATER
+        ArgumentException.ThrowIfNullOrEmpty(key);
+#else
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("key cannot be empty.", nameof(key));
+#endif
 
         var items = await Database.SetPopAsync(key, count, flag).ConfigureAwait(false);
 
@@ -303,11 +316,16 @@ public partial class RedisDatabase : IRedisDatabase
     /// <inheritdoc/>
     public Task<bool> SetContainsAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
     {
+#if NET8_0_OR_GREATER
+        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(item);
+#else
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("key cannot be empty.", nameof(key));
 
         if (item == null)
             throw new ArgumentNullException(nameof(item), "item cannot be null.");
+#endif
 
         var serializedObject = Serializer.Serialize(item);
 
@@ -317,11 +335,16 @@ public partial class RedisDatabase : IRedisDatabase
     /// <inheritdoc/>
     public Task<long> SetAddAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[]? items)
     {
+#if NET8_0_OR_GREATER
+        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(items);
+#else
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("key cannot be empty.", nameof(key));
 
         if (items == null)
             throw new ArgumentNullException(nameof(items), "items cannot be null.");
+#endif
 
         ExceptionThrowHelper.ThrowIfExistsNullElement(items, nameof(items));
 
@@ -357,11 +380,16 @@ public partial class RedisDatabase : IRedisDatabase
     /// <inheritdoc/>
     public Task<bool> SetRemoveAsync<T>(string key, T item, CommandFlags flag = CommandFlags.None)
     {
+#if NET8_0_OR_GREATER
+        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(item);
+#else
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("key cannot be empty.", nameof(key));
 
         if (item == null)
             throw new ArgumentNullException(nameof(item), "item cannot be null.");
+#endif
 
         var serializedObject = Serializer.Serialize(item);
 
@@ -371,11 +399,16 @@ public partial class RedisDatabase : IRedisDatabase
     /// <inheritdoc/>
     public Task<long> SetRemoveAllAsync<T>(string key, CommandFlags flag = CommandFlags.None, params T[] items)
     {
+#if NET8_0_OR_GREATER
+        ArgumentException.ThrowIfNullOrEmpty(key);
+        ArgumentNullException.ThrowIfNull(items);
+#else
         if (string.IsNullOrEmpty(key))
             throw new ArgumentException("key cannot be empty.", nameof(key));
 
         if (items == null)
             throw new ArgumentNullException(nameof(items), "items cannot be null.");
+#endif
 
         ExceptionThrowHelper.ThrowIfExistsNullElement(items, nameof(items));
 
