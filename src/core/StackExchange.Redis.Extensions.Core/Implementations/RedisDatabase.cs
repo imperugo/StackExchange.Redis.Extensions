@@ -559,6 +559,6 @@ public partial class RedisDatabase : IRedisDatabase
 
         info.AsSpan().EnumerateLines(ref data, ref category);
 
-        return data.ToArray();
+        return [.. data];
     }
 }

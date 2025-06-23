@@ -1,7 +1,6 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -49,7 +48,7 @@ public partial class RedisDatabase
     public async Task<IDictionary<string, T?>> HashGetAsync<T>(string hashKey, string[] keys, CommandFlags flag = CommandFlags.None)
     {
 #if NET6_0_OR_GREATER
-        var concurrent = new ConcurrentDictionary<string, T?>();
+        var concurrent = new System.Collections.Concurrent.ConcurrentDictionary<string, T?>();
 
         await Parallel.ForEachAsync(keys, async (key, _) =>
         {
@@ -92,7 +91,7 @@ public partial class RedisDatabase
 
         var dictionary = new Dictionary<string, T?>();
 
-        var redisValues = ((RedisValue[]?)data);
+        var redisValues = (RedisValue[]?)data;
 
         ref var searchSpaceRedisValue = ref MemoryMarshal.GetReference(redisValues.AsSpan());
 
@@ -103,12 +102,12 @@ public partial class RedisDatabase
         {
             ref var key = ref Unsafe.Add(ref searchSpaceRedisValue, i);
 
-            if (key.HasValue == false)
+            if (!key.HasValue)
                 continue;
 
             var redisValue = redisValues[i + 1];
 
-            if (redisValue.HasValue == false)
+            if (!redisValue.HasValue)
                 continue;
 
 #pragma warning disable CS8604 // Possible null reference argument.
