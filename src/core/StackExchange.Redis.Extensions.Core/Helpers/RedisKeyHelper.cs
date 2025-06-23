@@ -31,46 +31,33 @@ internal static class GenericsExtensions
         }
     }
 
-    public static TResult[] ToFastArray<TSource, TResult>(this ICollection<TSource>? request, Func<TSource, TResult> action)
+    public static TResult[] ToFastArray<TSource, TResult>(this TSource[]? source, Func<TSource, TResult> action)
     {
-        if (request == null)
+        if (source is not { Length: > 0 })
             return [];
 
-        var result = new TResult[request.Count];
+        var result = new TResult[source.Length];
+        for (var i = 0; i < source.Length; i++)
+            result[i] = action.Invoke(source[i]);
 
-        if (request is TSource[] sourceArray)
+        return result;
+    }
+
+    public static TResult[] ToFastArray<TSource, TResult>(this ICollection<TSource>? source, Func<TSource, TResult> action)
+    {
+        if (source is null)
+            return [];
+
+        var srcCnt = source.Count;
+        if (srcCnt == 0)
+            return [];
+
+        var result = new TResult[srcCnt];
+        var i = 0;
+        foreach (var item in source)
         {
-            ref var searchSpace = ref MemoryMarshal.GetReference(sourceArray.AsSpan());
-
-            for (var i = 0; i < sourceArray.Length; i++)
-            {
-                ref var r = ref Unsafe.Add(ref searchSpace, i);
-
-                result[i] = action.Invoke(r);
-            }
-        }
-        /*
-
-         This could be helpful when we drop old frameworks
-
-        else if (request is List<TSource> sourceList)
-        {
-            var span = CollectionsMarshal.AsSpan(sourceList);
-            ref var searchSpace = ref MemoryMarshal.GetReference(span);
-
-            for (var i = 0; i < span.Length; i++)
-            {
-                ref var r = ref Unsafe.Add(ref searchSpace, i);
-
-                result[i] =  action.Invoke(r);
-            }
-        }
-        */
-        else
-        {
-            var i = 0;
-            foreach (var r in request)
-                result[i++] = action.Invoke(r);
+            result[i] = action.Invoke(item);
+            i++;
         }
 
         return result;
