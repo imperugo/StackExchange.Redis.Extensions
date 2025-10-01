@@ -36,6 +36,7 @@ public class RedisConfiguration
     private string? configurationChannel;
     private string? connectionString;
     private string? serviceName;
+    private bool disableSentinelCommandmapper;
     private int? connectRetry;
     private SslProtocols? sslProtocols;
     private Func<ProfilingSession>? profilingSessionProvider;
@@ -112,6 +113,20 @@ public class RedisConfiguration
         set
         {
             serviceName = value;
+            ResetConfigurationOptions();
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the disableSentinelCommandmapper used in case of Sentinel.
+    /// </summary>
+    public bool DisableSentinelCommandmapper
+    {
+        get => disableSentinelCommandmapper;
+
+        set
+        {
+            disableSentinelCommandmapper = value;
             ResetConfigurationOptions();
         }
     }
@@ -449,7 +464,11 @@ public class RedisConfiguration
                     if (IsSentinelCluster)
                     {
                         newOptions.ServiceName = ServiceName;
-                        newOptions.CommandMap = CommandMap.Sentinel;
+
+                        if (!DisableSentinelCommandmapper)
+                            newOptions.CommandMap = CommandMap.Sentinel;
+                        else
+                            newOptions.CommandMap = CommandMap.SSDB;
                     }
 
                     foreach (var redisHost in Hosts)
