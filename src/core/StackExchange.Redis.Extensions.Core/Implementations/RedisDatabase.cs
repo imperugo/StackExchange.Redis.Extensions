@@ -8,6 +8,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Extensions;
@@ -26,6 +29,7 @@ public partial class RedisDatabase : IRedisDatabase
     private readonly string keyPrefix;
     private readonly uint maxValueLength;
     private readonly int dbNumber;
+    private readonly ILogger logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RedisDatabase"/> class.
@@ -36,13 +40,15 @@ public partial class RedisDatabase : IRedisDatabase
     /// <param name="dbNumber">The database to use.</param>
     /// <param name="maxvalueLength">The max lenght of the cache object.</param>
     /// <param name="keyPrefix">The key prefix.</param>
+    /// <param name="logger">The logger.</param>
     public RedisDatabase(
         IRedisConnectionPoolManager connectionPoolManager,
         ISerializer serializer,
         ServerEnumerationStrategy serverEnumerationStrategy,
         int dbNumber,
         uint maxvalueLength,
-        string? keyPrefix = null)
+        string? keyPrefix = null,
+        ILogger<RedisDatabase>? logger = null)
     {
         Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
         this.connectionPoolManager = connectionPoolManager ?? throw new ArgumentNullException(nameof(connectionPoolManager));
@@ -50,6 +56,7 @@ public partial class RedisDatabase : IRedisDatabase
         this.dbNumber = dbNumber;
         this.keyPrefix = keyPrefix ?? string.Empty;
         maxValueLength = maxvalueLength;
+        this.logger = logger ?? (ILogger)NullLogger<RedisDatabase>.Instance;
     }
 
     /// <inheritdoc/>

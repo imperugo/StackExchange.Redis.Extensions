@@ -109,15 +109,44 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
                 = new Random().Next(0, redisConfiguration.PoolSize);
 #endif
                 connection = connections[nextIdx];
+
+                if (!connection.IsConnected())
+                {
+                    // Selected connection is disconnected, try to find a connected one
+                    for (var i = 0; i < connections.Length; i++)
+                    {
+                        if (connections[i].IsConnected())
+                        {
+                            connection = connections[i];
+                            break;
+                        }
+                    }
+                }
+
                 break;
 
             case ConnectionSelectionStrategy.LeastLoaded:
-                connection = connections.MinBy(x => x.TotalOutstanding());
+                // Prefer connected connections; fall back to any if all are disconnected
+                IStateAwareConnection? candidate = null;
+
+                for (var i = 0; i < connections.Length; i++)
+                {
+                    if (!connections[i].IsConnected())
+                        continue;
+
+                    if (candidate == null || connections[i].TotalOutstanding() < candidate.TotalOutstanding())
+                        candidate = connections[i];
+                }
+
+                connection = candidate ?? connections.MinBy(x => x.TotalOutstanding());
                 break;
 
             default:
                 throw new InvalidEnumArgumentException(nameof(redisConfiguration.ConnectionSelectionStrategy), (int)redisConfiguration.ConnectionSelectionStrategy, typeof(ConnectionSelectionStrategy));
         }
+
+        if (!connection.IsConnected() && logger.IsEnabled(LogLevel.Warning))
+            logger.LogWarning("All Redis connections are disconnected. Using connection {HashCode} in degraded mode.", connection.Connection.GetHashCode().ToString(CultureInfo.InvariantCulture));
 
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("Using connection {HashCode} with {OutStanding} outstanding!", connection.Connection.GetHashCode().ToString(CultureInfo.InvariantCulture), connection.TotalOutstanding().ToString(CultureInfo.InvariantCulture));

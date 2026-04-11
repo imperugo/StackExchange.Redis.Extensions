@@ -1,5 +1,7 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
+using Microsoft.Extensions.Logging;
+
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 
@@ -9,6 +11,7 @@ namespace StackExchange.Redis.Extensions.Core.Implementations;
 public class RedisClient : IRedisClient
 {
     private readonly RedisConfiguration redisConfiguration;
+    private readonly ILogger<RedisDatabase>? databaseLogger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RedisClient"/> class.
@@ -24,6 +27,7 @@ public class RedisClient : IRedisClient
         ConnectionPoolManager = connectionPoolManager;
         Serializer = serializer;
         this.redisConfiguration = redisConfiguration;
+        databaseLogger = redisConfiguration.LoggerFactory?.CreateLogger<RedisDatabase>();
     }
 
     /// <inheritdoc/>
@@ -92,7 +96,8 @@ public class RedisClient : IRedisClient
             redisConfiguration.ServerEnumerationStrategy,
             dbNumber,
             redisConfiguration.MaxValueLength,
-            keyPrefix);
+            keyPrefix,
+            databaseLogger);
     }
 
     /// <inheritdoc/>
