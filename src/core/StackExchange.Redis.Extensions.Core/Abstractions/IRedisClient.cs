@@ -106,7 +106,7 @@ public interface IRedisClient
     /// <summary>
     /// Gets an instance of the Redis database for the database 16.
     /// </summary>
-    /// <returns>An instance of <see cref="ISerializer"/>.</returns>
+    /// <returns>An instance of <see cref="IRedisDatabase"/>.</returns>
     IRedisDatabase Db16 { get; }
 
     /// <summary>
@@ -116,9 +116,9 @@ public interface IRedisClient
     ISerializer Serializer { get; }
 
     /// <summary>
-    /// Returns an instance a Redis databse for the specific database;
+    /// Returns an instance a Redis database for the specific database;
     /// </summary>
-    /// <param name="dbNumber">The databse number.</param>
+    /// <param name="dbNumber">The database number.</param>
     /// <param name="keyPrefix">The key prefix.</param>
     /// <returns>An instance of <see cref="IRedisDatabase"/>.</returns>
     IRedisDatabase GetDb(int dbNumber, string? keyPrefix = null);

@@ -25,49 +25,46 @@
 
     <!-- Packages stuff -->
     <PropertyGroup>
-        <Title>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis in order to make your life easier</Title>
-        <Summary>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis in order to make your life easier</Summary>
-        <Description>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis allowing you a set of functionality needed by common applications.
+        <Title>StackExchange.Redis.Extensions — high-level Redis client with serialization, pooling, and typed APIs</Title>
+        <Summary>Extends StackExchange.Redis with object serialization, connection pooling, Pub/Sub, Streams, GeoSpatial, Hash field expiry, compression, and ASP.NET Core integration.</Summary>
+        <Description>StackExchange.Redis.Extensions is a library that extends StackExchange.Redis with higher-level APIs for common application scenarios.
 
-            To store complex data It requires one of the following implementations:
+Features:
+- Store and retrieve complex .NET objects with pluggable serialization
+- Connection pooling with LeastLoaded and RoundRobin strategies
+- Pub/Sub messaging with typed handlers and error logging
+- Redis Streams with consumer group support
+- GeoSpatial indexes (GEOADD, GEOSEARCH, GEODIST)
+- Hash field expiry (Redis 7.4+ HEXPIRE/HSETEX)
+- Transparent compression (LZ4, Snappy, Zstd, GZip, Brotli)
+- Azure Managed Identity support
+- ASP.NET Core DI integration
+- Multiple named Redis instances
+- Tags, Sets, Lists, Sorted Sets, key search
 
-            - StackExchange.Redis.Extensions.Newtonsoft
-            - StackExchange.Redis.Extensions.System.Text.Json
-            - StackExchange.Redis.Extensions.MemoryPack
-            - StackExchange.Redis.Extensions.MsgPack
-            - StackExchange.Redis.Extensions.Protobuf
-            - StackExchange.Redis.Extensions.ServiceStack
-            - StackExchange.Redis.Extensions.Utf8Json
+Serializer packages (pick one): System.Text.Json, Newtonsoft, MemoryPack, MsgPack, Protobuf, ServiceStack, Utf8Json.
         </Description>
         <PackageReleaseNotes>
-            - Multiple redis instances
-            - Connection pooling (LeastLoaded or RoundRobin)
-            - Added support to .NET Standard
-            - Bugfixing
-            - improving performances;
-            - Add an object to Redis;
-            - Change ISerializer interface (more info here https://github.com/imperugo/StackExchange.Redis.Extensions/issues/2)
-            - Update StackExchange.Redis to latest version;
-            - Changed Flush method;
-            - Remove an object from Redis;
-            - Search Keys into Redis;
-            - Retrieve multiple object with a single roundtrip;
-            - Store multiple object with a single roundtrip;
-            - Get Redis Server information;
-            - Set Add;
-            - Set AddAdd;
-            - SetRemove;
-            - SetRemoveAll;
-            - Set Member;
-            - Pub/Sub events;
-            - Save;
-            - Async methods;
-            - Hash methods;
-            - Tags support;
-            - Support for Keyspace isolation;
+v12.0.0:
+- Added .NET 10 target framework
+- Added GeoSpatial API (GEOADD, GEOSEARCH, GEODIST, GEOPOS, GEOHASH)
+- Added Redis Streams API (XADD, XREAD, XREADGROUP, XACK, consumer groups)
+- Added Hash field expiry (HEXPIRE, HSETEX, HPTTL, HPERSIST) for Redis 7.4+
+- Added transparent compression support with pluggable ICompressor
+- Added compression packages: LZ4, Snappy, Zstandard, GZip, Brotli
+- Added Azure Managed Identity support via ConfigurationOptionsAsyncHandler
+- Added CertificateSelection, ClientName, KeepAlive configuration properties
+- Fixed SyncTimeout default from 1000ms to 5000ms
+- Fixed Sentinel CommandMap blocking data commands (EVAL, GET, SET)
+- Fixed AddAllAsync TTL race condition (now atomic per key)
+- Fixed pool resilience: GetConnection skips disconnected connections
+- Fixed PubSub handler silently swallowing exceptions
+- Upgraded to StackExchange.Redis 2.12.14
+- Upgraded to ConnectAsync (SE.Redis best practice)
+- Replaced Moq with NSubstitute
         </PackageReleaseNotes>
         <PackageProjectUrl>https://github.com/imperugo/StackExchange.Redis.Extensions</PackageProjectUrl>
-        <PackageTags>Async Redis NoSQL Client Distributed Cache PubSub Messaging</PackageTags>
+        <PackageTags>Redis Cache Async NoSQL Distributed PubSub Streams GeoSpatial Compression Serialization DependencyInjection</PackageTags>
     </PropertyGroup>
 
     <!-- Repo -->

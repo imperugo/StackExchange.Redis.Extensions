@@ -59,7 +59,7 @@ public partial interface IRedisDatabase
     /// <param name="take">Take count</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>
-    ///     True if the object has been removed. Otherwise false
+    ///     The list of elements in the specified score range.
     /// </returns>
     Task<IEnumerable<T?>> SortedSetRangeByScoreAsync<T>(string key, double start = double.NegativeInfinity, double stop = double.PositiveInfinity, Exclude exclude = Exclude.None, Order order = Order.Ascending, long skip = 0L, long take = -1L, CommandFlags flag = CommandFlags.None);
 
@@ -76,7 +76,7 @@ public partial interface IRedisDatabase
     /// <param name="order">Order of sorted set</param>
     /// <param name="commandFlags">Behaviour markers associated with a given command</param>
     /// <returns>
-    ///     True if the object has been removed. Otherwise false
+    ///     The list of elements in the specified rank range along with their scores.
     /// </returns>
     Task<IEnumerable<ScoreRankResult<T>>> SortedSetRangeByRankWithScoresAsync<T>(string key, long start = 0L, long stop = -1L, Order order = Order.Ascending, CommandFlags commandFlags = CommandFlags.None);
 

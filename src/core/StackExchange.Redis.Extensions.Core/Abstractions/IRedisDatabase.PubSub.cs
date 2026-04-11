@@ -15,8 +15,9 @@ public partial interface IRedisDatabase
     /// </summary>
     /// <typeparam name="T">The type of the expected object.</typeparam>
     /// <param name="channel">The pub/sub channel name</param>
-    /// <param name="message">The messange to send.</param>
+    /// <param name="message">The message to send.</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>The number of clients that received the message.</returns>
     Task<long> PublishAsync<T>(RedisChannel channel, T message, CommandFlags flag = CommandFlags.None);
 
     /// <summary>

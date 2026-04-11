@@ -444,7 +444,7 @@ public class RedisConfiguration
     /// </summary>
     /// <returns>>If property is not set, default <see cref="IStateAwareConnection"/> will be resolved</returns>
     /// <remarks>
-    ///     Proprerty is optional.
+    ///     Property is optional.
     ///     Property should be assined by invocation code only once. (We are not doing additional checks in the property itself in order to prevent any possible issues during serialization)
     /// </remarks>
     public StateAwareConnectionResolver StateAwareConnectionFactory { get; set; } = (cm, logger) => new RedisConnectionPoolManager.StateAwareConnection(cm, logger);
@@ -467,7 +467,7 @@ public class RedisConfiguration
     /// <summary>
     /// Gets the Redis configuration options
     /// </summary>
-    /// <value>An instanfe of <see cref="ConfigurationOptions" />.</value>
+    /// <value>An instance of <see cref="ConfigurationOptions" />.</value>
     public ConfigurationOptions ConfigurationOptions
     {
         get
