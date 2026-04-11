@@ -490,10 +490,7 @@ public class RedisConfiguration
                         newOptions.KeepAlive = KeepAlive.Value;
 
                     if (IsSentinelCluster)
-                    {
                         newOptions.ServiceName = ServiceName;
-                        newOptions.CommandMap = CommandMap.Sentinel;
-                    }
 
                     foreach (var redisHost in Hosts)
                         newOptions.EndPoints.Add(redisHost.Host, redisHost.Port);

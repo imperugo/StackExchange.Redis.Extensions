@@ -236,9 +236,16 @@ public partial class RedisDatabase : IRedisDatabase
             .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
             .ToArray();
 
-        await Database.StringSetAsync(values, when, flag).ConfigureAwait(false);
+        if (values.Length == 0)
+            return false;
 
-        var tasks = values.ToFastArray(value => Database.KeyExpireAsync(value.Key, expiresAt.UtcDateTime, flag));
+        var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
+        var db = Database;
+        var batch = db.CreateBatch();
+
+        var tasks = values.ToFastArray(v => batch.StringSetAsync(v.Key, v.Value, expiration, when, flag));
+
+        batch.Execute();
 
         await Task.WhenAll(tasks).ConfigureAwait(false);
 
@@ -253,9 +260,15 @@ public partial class RedisDatabase : IRedisDatabase
             .Select(x => new KeyValuePair<RedisKey, RedisValue>(x.Key, x.Value))
             .ToArray();
 
-        await Database.StringSetAsync(values, when, flag).ConfigureAwait(false);
+        if (values.Length == 0)
+            return false;
 
-        var tasks = values.ToFastArray(value => Database.KeyExpireAsync(value.Key, expiresAt, flag));
+        var db = Database;
+        var batch = db.CreateBatch();
+
+        var tasks = values.ToFastArray(v => batch.StringSetAsync(v.Key, v.Value, expiresAt, when, flag));
+
+        batch.Execute();
 
         await Task.WhenAll(tasks).ConfigureAwait(false);
 
