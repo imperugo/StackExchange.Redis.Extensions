@@ -15,7 +15,7 @@ public interface IRedisConnectionPoolManager : IDisposable
     /// <summary>
     /// Get the Redis connection
     /// </summary>
-    /// <returns>Returns an instance of<see cref="IConnectionMultiplexer"/>.</returns>
+    /// <returns>Returns an instance of <see cref="IConnectionMultiplexer"/>.</returns>
     IConnectionMultiplexer GetConnection();
 
     /// <summary>
@@ -27,5 +27,6 @@ public interface IRedisConnectionPoolManager : IDisposable
     /// <summary>
     ///     Gets the information about the connection pool
     /// </summary>
+    /// <returns>An instance of <see cref="ConnectionPoolInformation"/> with details about the connection pool.</returns>
     ConnectionPoolInformation GetConnectionInformation();
 }

@@ -38,7 +38,7 @@ public partial interface IRedisDatabase
     /// <param name="hashKey">Key of the hash</param>
     /// <param name="keys">Keys to retrieve from the hash</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    /// <returns>Tthe number of fields that were removed from the hash, not including specified but non existing fields.</returns>
+    /// <returns>The number of fields that were removed from the hash, not including specified but non existing fields.</returns>
     Task<long> HashDeleteAsync(string hashKey, string[] keys, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
@@ -50,6 +50,7 @@ public partial interface IRedisDatabase
     /// <param name="hashKey">The key of the hash in redis</param>
     /// <param name="key">The key of the field in the hash</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>True if the hash contains the specified field, false if the hash or field does not exist.</returns>
     Task<bool> HashExistsAsync(string hashKey, string key, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
@@ -119,8 +120,9 @@ public partial interface IRedisDatabase
     /// </remarks>
     /// <param name="hashKey">Key of the hash</param>
     /// <param name="key">Key of the entry</param>
-    /// <param name="value">the value at field after the increment operation</param>
+    /// <param name="value">The amount to increment by</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>The value at field after the increment operation.</returns>
     Task<long> HashIncrementByAsync(string hashKey, string key, long value, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
@@ -139,9 +141,9 @@ public partial interface IRedisDatabase
     /// </remarks>
     /// <param name="hashKey">Key of the hash</param>
     /// <param name="key">Key of the entry</param>
-    /// <param name="value">the value at field after the increment operation</param>
+    /// <param name="value">The amount to increment by</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    /// <returns>the value at field after the increment operation.</returns>
+    /// <returns>The value at field after the increment operation.</returns>
     Task<double> HashIncrementByAsync(string hashKey, string key, double value, CommandFlags flag = CommandFlags.None);
 
     /// <summary>

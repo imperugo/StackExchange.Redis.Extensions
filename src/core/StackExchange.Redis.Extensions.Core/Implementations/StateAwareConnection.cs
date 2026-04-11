@@ -5,6 +5,7 @@ using System;
 using Microsoft.Extensions.Logging;
 
 using StackExchange.Redis.Extensions.Core.Abstractions;
+using StackExchange.Redis.Extensions.Core.Logging;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations;
 
@@ -51,24 +52,16 @@ public sealed partial class RedisConnectionPoolManager
             Connection.Dispose();
         }
 
-        private void ConnectionFailed(object? sender, ConnectionFailedEventArgs e)
-        {
-            logger.LogError(e.Exception, "Redis connection error {FailureType}", e.FailureType.ToString());
-        }
+        private void ConnectionFailed(object? sender, ConnectionFailedEventArgs e) =>
+            LogMessages.ConnectionFailed(logger, e.Exception, e.FailureType.ToString());
 
-        private void ConnectionRestored(object? sender, ConnectionFailedEventArgs e)
-        {
-            logger.LogInformation("Redis connection error restored");
-        }
+        private void ConnectionRestored(object? sender, ConnectionFailedEventArgs e) =>
+            LogMessages.ConnectionRestored(logger, e.EndPoint?.ToString() ?? "unknown");
 
-        private void InternalError(object? sender, InternalErrorEventArgs e)
-        {
-            logger.LogError(e.Exception, "Redis internal error {Origin}", e.Origin);
-        }
+        private void InternalError(object? sender, InternalErrorEventArgs e) =>
+            LogMessages.InternalError(logger, e.Exception, e.Origin ?? "unknown");
 
-        private void ErrorMessage(object? sender, RedisErrorEventArgs e)
-        {
-            logger.LogError("Redis error: {Message}", e.Message);
-        }
+        private void ErrorMessage(object? sender, RedisErrorEventArgs e) =>
+            LogMessages.ServerError(logger, e.Message);
     }
 }
