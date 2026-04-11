@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-using Moq;
+using NSubstitute;
 
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
@@ -39,10 +39,10 @@ public abstract partial class CacheClientTestBase : IDisposable
         var redisConfiguration = RedisConfigurationForTest.CreateBasicConfig();
         redisConfiguration.ConnectionSelectionStrategy = ConnectionSelectionStrategy.LeastLoaded;
 
-        var moqLogger = new Mock<ILogger<RedisConnectionPoolManager>>();
+        var logger = Substitute.For<ILogger<RedisConnectionPoolManager>>();
 
         this.serializer = serializer;
-        connectionPoolManager = new RedisConnectionPoolManager(redisConfiguration, moqLogger.Object);
+        connectionPoolManager = new RedisConnectionPoolManager(redisConfiguration, logger);
         sut = new RedisClient(connectionPoolManager, this.serializer, redisConfiguration);
         db = sut.GetDefaultDatabase().Database;
     }
