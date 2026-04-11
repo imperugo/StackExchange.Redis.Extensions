@@ -314,6 +314,7 @@ Full documentation is available in the [doc/](doc/) folder:
 **Features**
 - [Usage Guide](doc/usage/README.md) — Add, Get, Replace, Bulk operations
 - [GeoSpatial Indexes](doc/geospatial.md)
+- [VectorSet — AI/ML Similarity Search](doc/vectorset.md) (Redis 8.0+)
 - [Redis Streams](doc/streams.md)
 - [Pub/Sub Messaging](doc/pubsub.md)
 - [Hash Field Expiry](doc/hash-field-expiry.md) (Redis 7.4+)
