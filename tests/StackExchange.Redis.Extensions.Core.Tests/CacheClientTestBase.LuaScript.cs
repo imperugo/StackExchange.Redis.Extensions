@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-using Moq;
+using NSubstitute;
 
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Implementations;
@@ -33,10 +33,10 @@ public class CacheClientTestBase_WithoutKeyPrefixForLuaScript : IDisposable
         var redisConfiguration = RedisConfigurationForTest.CreateBasicConfig();
         redisConfiguration.KeyPrefix = string.Empty;
 
-        var moqLogger = new Mock<ILogger<RedisConnectionPoolManager>>();
+        var logger = Substitute.For<ILogger<RedisConnectionPoolManager>>();
 
         serializer = new NewtonsoftSerializer();
-        connectionPoolManager = new RedisConnectionPoolManager(redisConfiguration, moqLogger.Object);
+        connectionPoolManager = new RedisConnectionPoolManager(redisConfiguration, logger);
         Sut = new RedisClient(connectionPoolManager, serializer, redisConfiguration);
         db = Sut.GetDefaultDatabase().Database;
     }
