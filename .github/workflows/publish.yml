@@ -1,0 +1,118 @@
+name: Publish NuGet Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g. 12.0.0). Leave empty to use VersionPrefix from Directory.Build.props.'
+        required: false
+        type: string
+      skip-tests:
+        description: 'Skip test execution (use only if tests already passed on CI)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  test:
+    if: ${{ !inputs.skip-tests }}
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:latest
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: Run .NET 10 Tests
+        run: dotnet test -f net10.0 --verbosity normal
+        env:
+          REDIS_HOST: localhost
+
+      - name: Run .NET 9 Tests
+        run: dotnet test -f net9.0 --verbosity normal
+        env:
+          REDIS_HOST: localhost
+
+  publish:
+    needs: [test]
+    if: ${{ always() && (needs.test.result == 'success' || inputs.skip-tests) }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ -n "$INPUT_VERSION" ]; then
+            echo "version=$INPUT_VERSION" >> "$GITHUB_OUTPUT"
+          else
+            VERSION=$(grep -oP '(?<=<VersionPrefix>)[^<]+' Directory.Build.props)
+            echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+
+      - name: Pack all NuGet packages
+        run: dotnet pack -c Release -o ./packages /p:Version="$PKG_VERSION"
+        env:
+          PKG_VERSION: ${{ steps.version.outputs.version }}
+
+      - name: Publish to NuGet
+        run: |
+          for f in ./packages/*.nupkg; do
+            echo "Publishing $(basename "$f")"
+            dotnet nuget push "$f" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          done
+        env:
+          NUGET_API_KEY: ${{ secrets.NuGetApiKey }}
+
+      - name: Create Git tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag -a "v$TAG_VERSION" -m "v$TAG_VERSION"
+          git push origin "v$TAG_VERSION"
+        env:
+          TAG_VERSION: ${{ steps.version.outputs.version }}
+
+      - name: Summary
+        run: |
+          echo "## Published v$PKG_VERSION" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Packages" >> "$GITHUB_STEP_SUMMARY"
+          for f in ./packages/*.nupkg; do
+            echo "- $(basename "$f")" >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Tag" >> "$GITHUB_STEP_SUMMARY"
+          echo "Created tag v$PKG_VERSION" >> "$GITHUB_STEP_SUMMARY"
+        env:
+          PKG_VERSION: ${{ steps.version.outputs.version }}
