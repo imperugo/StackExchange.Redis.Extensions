@@ -134,6 +134,27 @@ using var results = await redis.VectorSetSimilaritySearchAsync("clothing",
     VectorSetSimilaritySearchRequest.ByVector(searchEmb) with { Count = 20 });
 ```
 
+## API Reference
+
+| Method | Redis Command | Returns |
+|--------|--------------|---------|
+| `VectorSetAddAsync(key, request)` | VADD | `Task<bool>` |
+| `VectorSetSimilaritySearchAsync(key, query)` | VSIM | `Task<Lease<VectorSetSimilaritySearchResult>?>` (dispose!) |
+| `VectorSetRemoveAsync(key, member)` | VREM | `Task<bool>` |
+| `VectorSetContainsAsync(key, member)` | VCONTAINS | `Task<bool>` |
+| `VectorSetLengthAsync(key)` | VCARD | `Task<long>` |
+| `VectorSetDimensionAsync(key)` | VDIM | `Task<long>` |
+| `VectorSetGetAttributesJsonAsync(key, member)` | VGETATTR | `Task<string?>` |
+| `VectorSetSetAttributesJsonAsync(key, member, json)` | VSETATTR | `Task<bool>` |
+| `VectorSetInfoAsync(key)` | VINFO | `Task<VectorSetInfo?>` |
+| `VectorSetRandomMemberAsync(key)` | VRANDMEMBER | `Task<RedisValue>` |
+| `VectorSetRandomMembersAsync(key, count)` | VRANDMEMBER | `Task<RedisValue[]>` |
+| `VectorSetGetApproximateVectorAsync(key, member)` | VGETAPPROX | `Task<Lease<float>?>` (dispose!) |
+| `VectorSetGetLinksAsync(key, member)` | VLINKS | `Task<Lease<RedisValue>?>` (dispose!) |
+| `VectorSetGetLinksWithScoresAsync(key, member)` | VLINKS WITHSCORES | `Task<Lease<VectorSetLink>?>` (dispose!) |
+
+**SE.Redis types used:** `VectorSetAddRequest.Member(member, vector)`, `VectorSetSimilaritySearchRequest.ByVector(vector)`, `Lease<T>` (IDisposable — always use `using`).
+
 ## Performance Notes
 
 - VectorSet uses HNSW (Hierarchical Navigable Small World) algorithm internally

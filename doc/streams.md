@@ -157,3 +157,24 @@ foreach (var entry in entries)
 ```
 
 > **Note:** For advanced operations (XCLAIM, XAUTOCLAIM, XINFO), use `redis.Database` to access the underlying StackExchange.Redis `IDatabase` directly.
+
+## API Reference
+
+| Method | Redis Command | Returns |
+|--------|--------------|---------|
+| `StreamAddAsync<T>(key, fieldName, value, ...)` | XADD | `Task<RedisValue>` (message ID) |
+| `StreamAddAsync(key, entries, ...)` | XADD | `Task<RedisValue>` (message ID) |
+| `StreamLengthAsync(key)` | XLEN | `Task<long>` |
+| `StreamTrimAsync(key, maxLength, ...)` | XTRIM | `Task<long>` (entries removed) |
+| `StreamDeleteAsync(key, messageIds)` | XDEL | `Task<long>` (entries deleted) |
+| `StreamRangeAsync(key, minId, maxId, count, order)` | XRANGE/XREVRANGE | `Task<StreamEntry[]>` |
+| `StreamReadAsync(key, position, count)` | XREAD | `Task<StreamEntry[]>` |
+| `StreamCreateConsumerGroupAsync(key, groupName, position, createStream)` | XGROUP CREATE | `Task<bool>` |
+| `StreamConsumerGroupSetPositionAsync(key, groupName, position)` | XGROUP SETID | `Task<bool>` |
+| `StreamDeleteConsumerGroupAsync(key, groupName)` | XGROUP DESTROY | `Task<bool>` |
+| `StreamDeleteConsumerAsync(key, groupName, consumerName)` | XGROUP DELCONSUMER | `Task<long>` |
+| `StreamReadGroupAsync(key, groupName, consumerName, position, count, noAck)` | XREADGROUP | `Task<StreamEntry[]>` |
+| `StreamAcknowledgeAsync(key, groupName, messageId)` | XACK | `Task<long>` |
+| `StreamAcknowledgeAsync(key, groupName, messageIds)` | XACK | `Task<long>` |
+| `StreamPendingAsync(key, groupName)` | XPENDING | `Task<StreamPendingInfo>` |
+| `StreamPendingMessagesAsync(key, groupName, count, consumerName, ...)` | XPENDING | `Task<StreamPendingMessageInfo[]>` |

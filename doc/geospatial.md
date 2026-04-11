@@ -93,3 +93,23 @@ graph LR
 ```
 
 > **Note:** Geo members are string identifiers (e.g., store names, IDs). Coordinates are stored internally by Redis as sorted set scores. If you need to associate complex objects with a location, store them under a key derived from the member name.
+
+## API Reference
+
+| Method | Redis Command | Parameters | Returns |
+|--------|--------------|------------|---------|
+| `GeoAddAsync(key, longitude, latitude, member)` | GEOADD | `string key, double lon, double lat, string member` | `Task<bool>` |
+| `GeoAddAsync(key, value)` | GEOADD | `string key, GeoEntry value` | `Task<bool>` |
+| `GeoAddAsync(key, values)` | GEOADD | `string key, GeoEntry[] values` | `Task<long>` |
+| `GeoRemoveAsync(key, member)` | ZREM | `string key, string member` | `Task<bool>` |
+| `GeoDistanceAsync(key, member1, member2, unit)` | GEODIST | `string key, string m1, string m2, GeoUnit unit` | `Task<double?>` |
+| `GeoHashAsync(key, member)` | GEOHASH | `string key, string member` | `Task<string?>` |
+| `GeoHashAsync(key, members)` | GEOHASH | `string key, string[] members` | `Task<string?[]>` |
+| `GeoPositionAsync(key, member)` | GEOPOS | `string key, string member` | `Task<GeoPosition?>` |
+| `GeoPositionAsync(key, members)` | GEOPOS | `string key, string[] members` | `Task<GeoPosition?[]>` |
+| `GeoRadiusAsync(key, member, radius, ...)` | GEORADIUS | by member | `Task<GeoRadiusResult[]>` |
+| `GeoRadiusAsync(key, lon, lat, radius, ...)` | GEORADIUS | by coordinates | `Task<GeoRadiusResult[]>` |
+| `GeoSearchAsync(key, member, shape, ...)` | GEOSEARCH | by member + shape | `Task<GeoRadiusResult[]>` |
+| `GeoSearchAsync(key, lon, lat, shape, ...)` | GEOSEARCH | by coordinates + shape | `Task<GeoRadiusResult[]>` |
+| `GeoSearchAndStoreAsync(src, dst, member, shape, ...)` | GEOSEARCHSTORE | by member | `Task<long>` |
+| `GeoSearchAndStoreAsync(src, dst, lon, lat, shape, ...)` | GEOSEARCHSTORE | by coordinates | `Task<long>` |
