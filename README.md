@@ -2,7 +2,11 @@
 
 **StackExchange.Redis.Extensions** is a library that extends [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis), making it easier to work with Redis in .NET applications. It wraps the base library with serialization, connection pooling, and higher-level APIs so you can store and retrieve complex objects without writing boilerplate code.
 
-![.NET Core](https://github.com/imperugo/StackExchange.Redis.Extensions/actions/workflows/dotnetcore.yml/badge.svg)
+[![CI](https://github.com/imperugo/StackExchange.Redis.Extensions/actions/workflows/ci.yml/badge.svg)](https://github.com/imperugo/StackExchange.Redis.Extensions/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/imperugo/StackExchange.Redis.Extensions/actions/workflows/codeql.yml/badge.svg)](https://github.com/imperugo/StackExchange.Redis.Extensions/actions/workflows/codeql.yml)
+[![NuGet](https://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Core.svg?style=flat&label=NuGet)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Core/)
+![Tests](https://img.shields.io/badge/tests-970%2B%20passing-brightgreen)
+![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-blue)
 
 ## Features
 
@@ -132,13 +136,13 @@ public class MyService(IRedisDatabase redis)
 
 ### Compressors (optional)
 
-| Package | Algorithm | Dependency | Best for |
-|---------|----------|------------|----------|
-| Compression.LZ4 | LZ4 | K4os.Compression.LZ4 | Lowest latency |
-| Compression.Snappier | Snappy | Snappier | Low latency |
-| Compression.ZstdSharp | Zstandard | ZstdSharp.Port | Best ratio/speed balance |
-| Compression.GZip | GZip | None (BCL) | Wide compatibility |
-| Compression.Brotli | Brotli | None (BCL) | Best ratio for text |
+| Package | Algorithm | Best for | NuGet |
+|---------|----------|----------|-------|
+| Compression.LZ4 | LZ4 | Lowest latency | [![NuGet](https://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Compression.LZ4.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Compression.LZ4/) |
+| Compression.Snappier | Snappy | Low latency | [![NuGet](https://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Compression.Snappier.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Compression.Snappier/) |
+| Compression.ZstdSharp | Zstandard | Best ratio/speed | [![NuGet](https://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Compression.ZstdSharp.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Compression.ZstdSharp/) |
+| Compression.GZip | GZip | Wide compatibility | [![NuGet](https://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Compression.GZip.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Compression.GZip/) |
+| Compression.Brotli | Brotli | Best ratio for text | [![NuGet](https://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Compression.Brotli.svg?style=flat)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Compression.Brotli/) |
 
 ## Usage Examples
 
