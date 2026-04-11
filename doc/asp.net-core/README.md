@@ -1,54 +1,60 @@
 # ASP.NET Core
 
-If you are running into ASP.NET Core application, there is a specific package that you can use in order to make StackExchange.Redis.Extensions configuration easier.
+If you are running an ASP.NET Core application, there is a specific package that makes StackExchange.Redis.Extensions configuration easier.
 
-{% tabs %}
-{% tab title="PackageManager" %}
-```bash
-Install-Package StackExchange.Redis.Extensions.AspNetCore
-```
-{% endtab %}
+### Install
 
-{% tab title=".NET Cli" %}
 ```bash
 dotnet add package StackExchange.Redis.Extensions.AspNetCore
 ```
-{% endtab %}
 
-{% tab title="Package Reference" %}
 ```xml
-<PackageReference Include="StackExchange.Redis.Extensions.AspNetCore" Version="6.1.0" />
+<PackageReference Include="StackExchange.Redis.Extensions.AspNetCore" Version="12.*" />
 ```
-{% endtab %}
 
-{% tab title="Paket cli" %}
-```bash
-paket add StackExchange.Redis.Extensions.AspNetCore
-```
-{% endtab %}
-{% endtabs %}
+### Program.cs
 
-### Startup.cs
-
-Into your startup class,&#x20;
+Register the library in your `Program.cs` using the minimal hosting model:
 
 ```csharp
-public void ConfigureServices(IServiceCollection services)
-{
-    // Retrieve the configuration fro your json/xml file
+var builder = WebApplication.CreateBuilder(args);
 
-    services.AddStackExchangeRedisExtensions<NewtonsoftSerializer>(conf);
-}I
+var redisConfiguration = builder.Configuration
+    .GetSection("Redis")
+    .Get<RedisConfiguration>();
+
+builder.Services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(redisConfiguration);
+
+var app = builder.Build();
+
+app.UseRedisInformation();
+
+app.Run();
 ```
 
 {% hint style="info" %}
-Remember to install also you favorite serializer.
+Remember to install your preferred serializer package as well (e.g., `StackExchange.Redis.Extensions.System.Text.Json`).
 {% endhint %}
 
+### Adding Compression (optional)
+
+You can optionally enable transparent compression by calling `AddRedisCompression` right after `AddStackExchangeRedisExtensions`:
+
 ```csharp
-public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-{
-    app.UseRedisInformation();
-}
+builder.Services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(redisConfiguration);
+builder.Services.AddRedisCompression<LZ4Compressor>();
 ```
 
+See the [Compression](../compressors.md) page for all available compressors and configuration options.
+
+### Injecting IRedisDatabase
+
+Once registered, you can inject `IRedisDatabase` directly into your controllers, services, or minimal API handlers:
+
+```csharp
+app.MapGet("/users/{key}", async (string key, IRedisDatabase redis) =>
+{
+    var user = await redis.GetAsync<User>(key);
+    return user is not null ? Results.Ok(user) : Results.NotFound();
+});
+```

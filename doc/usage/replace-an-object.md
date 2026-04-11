@@ -1,27 +1,36 @@
 # Replace an object
 
-Create your instance:
+All the examples below assume you have `IRedisDatabase` injected via dependency injection:
 
 ```csharp
-var user = new User()
+public class MyService(IRedisDatabase redis)
 {
-	Username = "imperugo",
-	Firstname = "Ugo",
-	Lastname = "Lattanzi",
-	Twitter = "@imperugo"
-	Blog = "http://tostring.it",
-	Company = new Company 
-	{
-		Name = "My Super Company",
-		Vat = "IT12345678911",
-		Address = "somewhere road 12"
-	}
+    // use redis directly
 }
 ```
 
-Replacing an object is pretty easy.
+### Create your instance
 
 ```csharp
-bool added = await cacheClient.Db0.ReplaceAsync("my cache key", user, DateTimeOffset.Now.AddMinutes(10));
+var user = new User
+{
+    Username = "imperugo",
+    FirstName = "Ugo",
+    LastName = "Lattanzi",
+    Email = "ugo@example.com",
+    Company = new Company
+    {
+        Name = "My Super Company",
+        Vat = "IT12345678911",
+        Address = "somewhere road 12"
+    }
+};
 ```
 
+### Replace the object
+
+Replacing an object is straightforward:
+
+```csharp
+bool replaced = await redis.ReplaceAsync("my-cache-key", user, TimeSpan.FromMinutes(10));
+```

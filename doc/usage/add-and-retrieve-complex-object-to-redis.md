@@ -1,43 +1,50 @@
 # Add, retrieve and remove complex object
 
-Create your instance:
+All the examples below assume you have `IRedisDatabase` injected via dependency injection:
 
 ```csharp
-var user = new User()
+public class MyService(IRedisDatabase redis)
 {
-	Username = "imperugo",
-	Firstname = "Ugo",
-	Lastname = "Lattanzi",
-	Twitter = "@imperugo"
-	Blog = "http://tostring.it",
-	Company = new Company 
-	{
-		Name = "My Super Company",
-		Vat = "IT12345678911",
-		Address = "somewhere road 12"
-	}
+    // use redis directly
 }
 ```
 
-Add object to Redis
+### Create your instance
 
 ```csharp
-bool added = await cacheClient.Db0.AddAsync("my cache key", user, DateTimeOffset.Now.AddMinutes(10));
+var user = new User
+{
+    Username = "imperugo",
+    FirstName = "Ugo",
+    LastName = "Lattanzi",
+    Email = "ugo@example.com",
+    Company = new Company
+    {
+        Name = "My Super Company",
+        Vat = "IT12345678911",
+        Address = "somewhere road 12"
+    }
+};
 ```
 
-Retrieve the object:
+### Add object to Redis
 
 ```csharp
-var userFromCache = await cacheClient.Db0.GetAsync<User>("my cache key");
+bool added = await redis.AddAsync("my-cache-key", user, TimeSpan.FromMinutes(10));
+```
+
+### Retrieve the object
+
+```csharp
+var userFromCache = await redis.GetAsync<User>("my-cache-key");
 ```
 
 {% hint style="info" %}
-Note that is possible to change the expires time of the item also when you are retrieving it. In fact the method GetAsync offers two overloads that accept DateTimeOffset or TimeSpan in order to change the expiration time of the item without submit it again.
+It is possible to update the expiry time of the item when retrieving it. The `GetAsync` method offers overloads that accept `DateTimeOffset` or `TimeSpan` to change the expiration without re-submitting the value.
 {% endhint %}
 
-Remove and object
+### Remove the object
 
 ```csharp
-bool removed = await cacheClient.Db0.RemoveAsync<User>("my cache key");
+bool removed = await redis.RemoveAsync("my-cache-key");
 ```
-

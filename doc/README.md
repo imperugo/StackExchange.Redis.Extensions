@@ -10,7 +10,6 @@
 * [Configuration Overview](configuration/README.md)
   * [JSON Configuration](configuration/json-configuration.md)
   * [C# Configuration](configuration/c-configuration.md)
-  * [Connection String](configuration/connectionstring-configuration.md)
   * [Connection Pool](configuration/connection-pool.md)
 
 ## Serializers
@@ -21,7 +20,6 @@
   * [MemoryPack](serializers/memoryPack.md)
   * [MsgPack](serializers/msgpack.md)
   * [Protobuf](serializers/protobuf.md)
-  * [Utf8Json](serializers/utf8.md)
 
 ## Compression
 

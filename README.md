@@ -294,20 +294,32 @@ All values stored in Redis go through the configured `ISerializer`. This means:
 
 Full documentation is available in the [doc/](doc/) folder:
 
+**Getting Started**
 - [Setup & Installation](doc/setup-1.md)
 - [Dependency Injection](doc/dependency-injection.md)
-- [Configuration](doc/configuration/README.md)
-- [Serializers](doc/serializers/README.md)
-- [Compressors](doc/compressors.md)
-- [Usage Guide](doc/usage/README.md)
-- [GeoSpatial](doc/geospatial.md)
-- [Streams](doc/streams.md)
-- [Pub/Sub](doc/pubsub.md)
-- [Hash Field Expiry](doc/hash-field-expiry.md)
+- [ASP.NET Core Integration](doc/asp.net-core/README.md)
+
+**Configuration**
+- [Configuration Overview](doc/configuration/README.md) — [JSON](doc/configuration/json-configuration.md) | [C#](doc/configuration/c-configuration.md) | [Connection Pool](doc/configuration/connection-pool.md)
+
+**Serializers**
+- [Serializers Overview](doc/serializers/README.md) — [System.Text.Json](doc/serializers/system.text.json.md) | [Newtonsoft](doc/serializers/newtonsoft-json.net.md) | [MemoryPack](doc/serializers/memoryPack.md) | [MsgPack](doc/serializers/msgpack.md) | [Protobuf](doc/serializers/protobuf.md)
+
+**Features**
+- [Usage Guide](doc/usage/README.md) — Add, Get, Replace, Bulk operations
+- [GeoSpatial Indexes](doc/geospatial.md)
+- [Redis Streams](doc/streams.md)
+- [Pub/Sub Messaging](doc/pubsub.md)
+- [Hash Field Expiry](doc/hash-field-expiry.md) (Redis 7.4+)
+- [Compression](doc/compressors.md) — GZip, Brotli, LZ4, Snappy, Zstandard
+
+**Advanced**
+- [Logging & Diagnostics](doc/logging.md)
 - [Multiple Redis Servers](doc/multipleServers.md)
 - [Azure Managed Identity](doc/azure-managed-identity.md)
 - [OpenTelemetry](doc/openTelemetry.md)
-- [ASP.NET Core Middleware](doc/asp.net-core/README.md)
+- [Redis Information Middleware](doc/asp.net-core/expose-redis-information.md)
+- [NuGet Packages](doc/packages.md)
 
 ## Contributing
 
