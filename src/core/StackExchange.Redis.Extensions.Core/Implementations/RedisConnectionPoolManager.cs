@@ -163,9 +163,13 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
 
     private async Task EmitConnectionsAsync()
     {
+        var baseOpts = redisConfiguration.ConfigurationOptions;
+
         for (var index = 0; index < redisConfiguration.PoolSize; index++)
         {
-            var opts = redisConfiguration.ConfigurationOptions;
+            var opts = redisConfiguration.ConfigurationOptionsAsyncHandler != null
+                ? ConfigurationOptions.Parse(baseOpts.ToString())
+                : baseOpts;
 
             if (redisConfiguration.ConfigurationOptionsAsyncHandler != null)
                 opts = await redisConfiguration.ConfigurationOptionsAsyncHandler(opts).ConfigureAwait(false);

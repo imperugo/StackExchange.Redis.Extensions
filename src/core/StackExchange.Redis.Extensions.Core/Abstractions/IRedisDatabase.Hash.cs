@@ -217,7 +217,7 @@ public partial interface IRedisDatabase
     /// <param name="expiry">The expiration time for the field</param>
     /// <param name="when">Condition for the set operation</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    /// <returns>The number of fields set.</returns>
+    /// <returns>Returns 1 if the field was set, 0 if the condition was not met.</returns>
     Task<RedisValue> HashSetWithExpiryAsync<T>(string hashKey, string field, T value, TimeSpan expiry, When when = When.Always, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
@@ -230,7 +230,7 @@ public partial interface IRedisDatabase
     /// <param name="expiry">The absolute expiration time for the field</param>
     /// <param name="when">Condition for the set operation</param>
     /// <param name="flag">Behaviour markers associated with a given command</param>
-    /// <returns>The number of fields set.</returns>
+    /// <returns>Returns 1 if the field was set, 0 if the condition was not met.</returns>
     Task<RedisValue> HashSetWithExpiryAsync<T>(string hashKey, string field, T value, DateTime expiry, When when = When.Always, CommandFlags flag = CommandFlags.None);
 
     /// <summary>

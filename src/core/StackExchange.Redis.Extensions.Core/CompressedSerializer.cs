@@ -25,6 +25,9 @@ public class CompressedSerializer : ISerializer
     /// <param name="compressor">The compressor to use for compression/decompression.</param>
     public CompressedSerializer(ISerializer inner, ICompressor compressor)
     {
+        if (inner is CompressedSerializer)
+            throw new ArgumentException("Cannot wrap a CompressedSerializer inside another CompressedSerializer. This would cause double-compression and corrupt data.", nameof(inner));
+
         this.inner = inner ?? throw new ArgumentNullException(nameof(inner));
         this.compressor = compressor ?? throw new ArgumentNullException(nameof(compressor));
     }

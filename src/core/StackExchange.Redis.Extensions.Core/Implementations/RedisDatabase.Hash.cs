@@ -190,6 +190,9 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public Task<ExpireResult[]> HashFieldExpireAsync(string hashKey, string[] fields, TimeSpan expiry, ExpireWhen when = ExpireWhen.Always, CommandFlags flag = CommandFlags.None)
     {
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(fields);
+#endif
         var redisFields = new RedisValue[fields.Length];
 
         for (var i = 0; i < fields.Length; i++)
@@ -201,6 +204,9 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public Task<ExpireResult[]> HashFieldExpireAsync(string hashKey, string[] fields, DateTime expiry, ExpireWhen when = ExpireWhen.Always, CommandFlags flag = CommandFlags.None)
     {
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(fields);
+#endif
         var redisFields = new RedisValue[fields.Length];
 
         for (var i = 0; i < fields.Length; i++)
@@ -212,6 +218,9 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public Task<long[]> HashFieldGetTimeToLiveAsync(string hashKey, string[] fields, CommandFlags flag = CommandFlags.None)
     {
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(fields);
+#endif
         var redisFields = new RedisValue[fields.Length];
 
         for (var i = 0; i < fields.Length; i++)
@@ -223,6 +232,9 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public Task<PersistResult[]> HashFieldPersistAsync(string hashKey, string[] fields, CommandFlags flag = CommandFlags.None)
     {
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(fields);
+#endif
         var redisFields = new RedisValue[fields.Length];
 
         for (var i = 0; i < fields.Length; i++)
