@@ -109,10 +109,36 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
                 = new Random().Next(0, redisConfiguration.PoolSize);
 #endif
                 connection = connections[nextIdx];
+
+                if (!connection.IsConnected())
+                {
+                    // Selected connection is disconnected, try to find a connected one
+                    for (var i = 0; i < connections.Length; i++)
+                    {
+                        if (connections[i].IsConnected())
+                        {
+                            connection = connections[i];
+                            break;
+                        }
+                    }
+                }
+
                 break;
 
             case ConnectionSelectionStrategy.LeastLoaded:
-                connection = connections.MinBy(x => x.TotalOutstanding());
+                // Prefer connected connections; fall back to any if all are disconnected
+                IStateAwareConnection? candidate = null;
+
+                for (var i = 0; i < connections.Length; i++)
+                {
+                    if (!connections[i].IsConnected())
+                        continue;
+
+                    if (candidate == null || connections[i].TotalOutstanding() < candidate.TotalOutstanding())
+                        candidate = connections[i];
+                }
+
+                connection = candidate ?? connections.MinBy(x => x.TotalOutstanding());
                 break;
 
             default:

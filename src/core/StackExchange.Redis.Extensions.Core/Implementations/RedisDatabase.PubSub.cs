@@ -2,7 +2,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
 
 using StackExchange.Redis.Extensions.Core.Helpers;
 
@@ -31,8 +34,20 @@ public partial class RedisDatabase
 
         return sub.SubscribeAsync(channel, Handler, flag);
 
-        void Handler(RedisChannel redisChannel, RedisValue value) =>
-            _ = handler(Serializer.Deserialize<T>(value)).ConfigureAwait(false);
+        void Handler(RedisChannel redisChannel, RedisValue value)
+        {
+            var task = Task.Run(async () =>
+            {
+                var deserialized = Serializer.Deserialize<T>(value);
+                await handler(deserialized).ConfigureAwait(false);
+            });
+
+            task.ContinueWith(
+                t => logger.LogError(t.Exception!.InnerException, "Error processing subscription message on channel {Channel}", (string?)redisChannel),
+                CancellationToken.None,
+                TaskContinuationOptions.OnlyOnFaulted,
+                TaskScheduler.Default);
+        }
     }
 
     /// <inheritdoc/>
