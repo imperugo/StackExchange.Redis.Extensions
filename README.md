@@ -8,7 +8,12 @@
 ![Tests](https://img.shields.io/badge/tests-970%2B%20passing-brightgreen)
 ![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-blue)
 
-> **AI-Ready:** This library provides an [`llms.txt`](llms.txt) file for AI coding assistants and a [Claude Code plugin](claude-plugin/) for configuration, scaffolding, and troubleshooting.
+> **AI-Ready:** This library provides an [`llms.txt`](llms.txt) file for AI coding assistants and a Claude Code plugin for configuration, scaffolding, and troubleshooting.
+>
+> ```bash
+> claude plugin add imperugo/StackExchange.Redis.Extensions
+> ```
+> Then use `/redis-configure`, `/redis-scaffold`, or `/redis-diagnose` in Claude Code.
 
 ## Features
 
