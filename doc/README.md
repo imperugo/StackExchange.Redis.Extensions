@@ -33,6 +33,7 @@
 * [Hash Operations](usage/README.md)
 * [Hash Field Expiry](hash-field-expiry.md) (Redis 7.4+)
 * [GeoSpatial Indexes](geospatial.md)
+* [VectorSet — AI/ML Similarity Search](vectorset.md) (Redis 8.0+)
 * [Redis Streams](streams.md)
 * [Pub/Sub Messaging](pubsub.md)
 * [Custom Serializer](usage/custom-serializer.md)
