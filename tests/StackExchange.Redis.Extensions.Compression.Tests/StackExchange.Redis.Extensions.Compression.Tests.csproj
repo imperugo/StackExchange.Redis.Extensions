@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="coverlet.collector" Version="8.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
+    <ProjectReference Include="..\..\src\serializers\StackExchange.Redis.Extensions.System.Text.Json\StackExchange.Redis.Extensions.System.Text.Json.csproj" />
+    <ProjectReference Include="..\..\src\compressors\StackExchange.Redis.Extensions.Compression.GZip\StackExchange.Redis.Extensions.Compression.GZip.csproj" />
+    <ProjectReference Include="..\..\src\compressors\StackExchange.Redis.Extensions.Compression.Brotli\StackExchange.Redis.Extensions.Compression.Brotli.csproj" />
+    <ProjectReference Include="..\..\src\compressors\StackExchange.Redis.Extensions.Compression.LZ4\StackExchange.Redis.Extensions.Compression.LZ4.csproj" />
+    <ProjectReference Include="..\..\src\compressors\StackExchange.Redis.Extensions.Compression.Snappier\StackExchange.Redis.Extensions.Compression.Snappier.csproj" />
+    <ProjectReference Include="..\..\src\compressors\StackExchange.Redis.Extensions.Compression.ZstdSharp\StackExchange.Redis.Extensions.Compression.ZstdSharp.csproj" />
+  </ItemGroup>
+
+</Project>

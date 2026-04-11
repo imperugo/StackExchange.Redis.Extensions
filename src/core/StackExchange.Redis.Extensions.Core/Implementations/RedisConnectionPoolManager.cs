@@ -65,7 +65,10 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
         lock (@lock)
         {
             connections = new IStateAwareConnection[redisConfiguration.PoolSize];
-            EmitConnections();
+
+#pragma warning disable VSTHRD002 // Synchronous wait is required here because constructors cannot be async
+            EmitConnectionsAsync().GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002
         }
     }
 
@@ -85,7 +88,7 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
         {
             // free managed resources
             foreach (var connection in connections)
-                connection.Dispose();
+                connection?.Dispose();
         }
 
         isDisposed = true;
@@ -158,16 +161,36 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
         };
     }
 
-    private void EmitConnections()
+    private async Task EmitConnectionsAsync()
     {
-        Parallel.For(0, redisConfiguration.PoolSize, index =>
+        var baseOpts = redisConfiguration.ConfigurationOptions;
+
+        for (var index = 0; index < redisConfiguration.PoolSize; index++)
         {
-            var multiplexer = ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions);
+            try
+            {
+                var opts = baseOpts;
 
-            if (redisConfiguration.ProfilingSessionProvider != null)
-                multiplexer.RegisterProfiler(redisConfiguration.ProfilingSessionProvider);
+                if (redisConfiguration.ConfigurationOptionsAsyncHandler != null)
+                {
+                    opts = baseOpts.Clone();
+                    opts = await redisConfiguration.ConfigurationOptionsAsyncHandler(opts).ConfigureAwait(false);
+                }
 
-            connections[index] = redisConfiguration.StateAwareConnectionFactory(multiplexer, logger);
-        });
+                var multiplexer = await ConnectionMultiplexer.ConnectAsync(opts).ConfigureAwait(false);
+
+                if (redisConfiguration.ProfilingSessionProvider != null)
+                    multiplexer.RegisterProfiler(redisConfiguration.ProfilingSessionProvider);
+
+                connections[index] = redisConfiguration.StateAwareConnectionFactory(multiplexer, logger);
+            }
+            catch
+            {
+                for (var i = 0; i < index; i++)
+                    connections[i]?.Dispose();
+
+                throw;
+            }
+        }
     }
 }

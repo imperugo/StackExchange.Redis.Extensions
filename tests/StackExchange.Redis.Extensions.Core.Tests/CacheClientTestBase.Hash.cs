@@ -449,6 +449,69 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
+    public async Task HashSetWithExpiry_ShouldSetFieldWithTTL_Async()
+    {
+        var hashKey = Guid.NewGuid().ToString();
+        var field = Guid.NewGuid().ToString();
+        var value = new TestClass<DateTime>("test-expiry", DateTime.UtcNow);
+
+        var result = await Sut.GetDefaultDatabase().HashSetWithExpiryAsync(hashKey, field, value, TimeSpan.FromMinutes(10));
+
+        Assert.True(result);
+
+        var retrieved = await Sut.GetDefaultDatabase().HashGetAsync<TestClass<DateTime>>(hashKey, field);
+        Assert.NotNull(retrieved);
+        Assert.Equal("test-expiry", retrieved.Key);
+    }
+
+    [Fact]
+    public async Task HashFieldExpire_ShouldSetExpiryOnField_Async()
+    {
+        var hashKey = Guid.NewGuid().ToString();
+        var field = Guid.NewGuid().ToString();
+
+        await db.HashSetAsync(hashKey, field, "value");
+
+        var results = await Sut.GetDefaultDatabase().HashFieldExpireAsync(hashKey, new[] { field }, TimeSpan.FromMinutes(5));
+
+        Assert.Single(results);
+        Assert.Equal(ExpireResult.Success, results[0]);
+    }
+
+    [Fact]
+    public async Task HashFieldGetTimeToLive_ShouldReturnTTL_Async()
+    {
+        var hashKey = Guid.NewGuid().ToString();
+        var field = Guid.NewGuid().ToString();
+
+        await db.HashSetAsync(hashKey, field, "value");
+        await Sut.GetDefaultDatabase().HashFieldExpireAsync(hashKey, new[] { field }, TimeSpan.FromMinutes(5));
+
+        var ttls = await Sut.GetDefaultDatabase().HashFieldGetTimeToLiveAsync(hashKey, new[] { field });
+
+        Assert.Single(ttls);
+        Assert.True(ttls[0] > 0, "TTL should be positive");
+    }
+
+    [Fact]
+    public async Task HashFieldPersist_ShouldRemoveExpiry_Async()
+    {
+        var hashKey = Guid.NewGuid().ToString();
+        var field = Guid.NewGuid().ToString();
+
+        await db.HashSetAsync(hashKey, field, "value");
+        await Sut.GetDefaultDatabase().HashFieldExpireAsync(hashKey, new[] { field }, TimeSpan.FromMinutes(5));
+
+        var persistResults = await Sut.GetDefaultDatabase().HashFieldPersistAsync(hashKey, new[] { field });
+
+        Assert.Single(persistResults);
+        Assert.Equal(PersistResult.Success, persistResults[0]);
+
+        var ttls = await Sut.GetDefaultDatabase().HashFieldGetTimeToLiveAsync(hashKey, new[] { field });
+        Assert.Equal(-1, ttls[0]);
+    }
+
+    [Fact]
     public async Task HashScan_EntriesExistUseAsterisk_ReturnCursorToAllEntriesBeginningWithTwo_Async()
     {
         // arrange

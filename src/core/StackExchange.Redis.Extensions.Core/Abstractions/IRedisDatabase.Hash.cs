@@ -1,5 +1,6 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -205,6 +206,76 @@ public partial interface IRedisDatabase
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>list of values in the hash, or an empty list when key does not exist.</returns>
     Task<IEnumerable<T?>> HashValuesAsync<T>(string hashKey, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Sets the specified field in the hash stored at key to the given value, with an expiration time.
+    /// </summary>
+    /// <typeparam name="T">Type of the value</typeparam>
+    /// <param name="hashKey">Key of the hash</param>
+    /// <param name="field">The field to set</param>
+    /// <param name="value">The value to set</param>
+    /// <param name="expiry">The expiration time for the field</param>
+    /// <param name="when">Condition for the set operation</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>True if the field was set, false if the condition was not met.</returns>
+    Task<bool> HashSetWithExpiryAsync<T>(string hashKey, string field, T value, TimeSpan expiry, When when = When.Always, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Sets the specified field in the hash stored at key to the given value, with an absolute expiration time.
+    /// </summary>
+    /// <typeparam name="T">Type of the value</typeparam>
+    /// <param name="hashKey">Key of the hash</param>
+    /// <param name="field">The field to set</param>
+    /// <param name="value">The value to set</param>
+    /// <param name="expiry">The absolute expiration time for the field</param>
+    /// <param name="when">Condition for the set operation</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>True if the field was set, false if the condition was not met.</returns>
+    Task<bool> HashSetWithExpiryAsync<T>(string hashKey, string field, T value, DateTime expiry, When when = When.Always, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Sets the expiration time on one or more hash fields using a relative TTL.
+    ///     Requires Redis 7.4+.
+    /// </summary>
+    /// <param name="hashKey">Key of the hash</param>
+    /// <param name="fields">The fields to set expiry on</param>
+    /// <param name="expiry">The expiration time</param>
+    /// <param name="when">Condition for the expire operation</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>An array of results indicating the outcome per field.</returns>
+    Task<ExpireResult[]> HashFieldExpireAsync(string hashKey, string[] fields, TimeSpan expiry, ExpireWhen when = ExpireWhen.Always, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Sets the expiration time on one or more hash fields using an absolute timestamp.
+    ///     Requires Redis 7.4+.
+    /// </summary>
+    /// <param name="hashKey">Key of the hash</param>
+    /// <param name="fields">The fields to set expiry on</param>
+    /// <param name="expiry">The absolute expiration time</param>
+    /// <param name="when">Condition for the expire operation</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>An array of results indicating the outcome per field.</returns>
+    Task<ExpireResult[]> HashFieldExpireAsync(string hashKey, string[] fields, DateTime expiry, ExpireWhen when = ExpireWhen.Always, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Gets the remaining time to live in milliseconds for one or more hash fields.
+    ///     Requires Redis 7.4+.
+    /// </summary>
+    /// <param name="hashKey">Key of the hash</param>
+    /// <param name="fields">The fields to query</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>An array of TTL values in milliseconds per field. -1 if no expiry, -2 if field does not exist.</returns>
+    Task<long[]> HashFieldGetTimeToLiveAsync(string hashKey, string[] fields, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Removes the expiration from one or more hash fields.
+    ///     Requires Redis 7.4+.
+    /// </summary>
+    /// <param name="hashKey">Key of the hash</param>
+    /// <param name="fields">The fields to persist</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>An array of results indicating the outcome per field.</returns>
+    Task<PersistResult[]> HashFieldPersistAsync(string hashKey, string[] fields, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
     ///     iterates fields of Hash types and their associated values.
