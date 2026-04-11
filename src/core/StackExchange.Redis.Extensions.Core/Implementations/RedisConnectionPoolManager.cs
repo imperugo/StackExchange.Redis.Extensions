@@ -65,7 +65,10 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
         lock (@lock)
         {
             connections = new IStateAwareConnection[redisConfiguration.PoolSize];
-            EmitConnections();
+
+#pragma warning disable VSTHRD002 // Synchronous wait is required here because constructors cannot be async
+            EmitConnectionsAsync().GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002
         }
     }
 
@@ -158,16 +161,21 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
         };
     }
 
-    private void EmitConnections()
+    private async Task EmitConnectionsAsync()
     {
-        Parallel.For(0, redisConfiguration.PoolSize, index =>
+        for (var index = 0; index < redisConfiguration.PoolSize; index++)
         {
-            var multiplexer = ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions);
+            var opts = redisConfiguration.ConfigurationOptions;
+
+            if (redisConfiguration.ConfigurationOptionsAsyncHandler != null)
+                opts = await redisConfiguration.ConfigurationOptionsAsyncHandler(opts).ConfigureAwait(false);
+
+            var multiplexer = await ConnectionMultiplexer.ConnectAsync(opts).ConfigureAwait(false);
 
             if (redisConfiguration.ProfilingSessionProvider != null)
                 multiplexer.RegisterProfiler(redisConfiguration.ProfilingSessionProvider);
 
             connections[index] = redisConfiguration.StateAwareConnectionFactory(multiplexer, logger);
-        });
+        }
     }
 }

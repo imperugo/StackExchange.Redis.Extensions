@@ -4,6 +4,7 @@ using System;
 using System.Net.Security;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
@@ -447,6 +448,21 @@ public class RedisConfiguration
     ///     Property should be assined by invocation code only once. (We are not doing additional checks in the property itself in order to prevent any possible issues during serialization)
     /// </remarks>
     public StateAwareConnectionResolver StateAwareConnectionFactory { get; set; } = (cm, logger) => new RedisConnectionPoolManager.StateAwareConnection(cm, logger);
+
+    /// <summary>
+    /// Gets or sets an async callback to customize <see cref="ConfigurationOptions"/> before a connection is established.
+    /// This is useful for scenarios like Azure Managed Identity where async setup (e.g. token acquisition) is required.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// config.ConfigurationOptionsAsyncHandler = async opts =>
+    /// {
+    ///     await opts.ConfigureForAzureWithTokenCredentialAsync(new DefaultAzureCredential());
+    ///     return opts;
+    /// };
+    /// </code>
+    /// </example>
+    public Func<ConfigurationOptions, Task<ConfigurationOptions>>? ConfigurationOptionsAsyncHandler { get; set; }
 
     /// <summary>
     /// Gets the Redis configuration options

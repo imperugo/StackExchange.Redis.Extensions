@@ -180,6 +180,58 @@ public partial class RedisDatabase
     }
 
     /// <inheritdoc/>
+    public Task<RedisValue> HashSetWithExpiryAsync<T>(string hashKey, string field, T value, TimeSpan expiry, When when = When.Always, CommandFlags flag = CommandFlags.None) =>
+        Database.HashFieldSetAndSetExpiryAsync(hashKey, field, Serializer.Serialize(value), expiry, false, when, flag);
+
+    /// <inheritdoc/>
+    public Task<RedisValue> HashSetWithExpiryAsync<T>(string hashKey, string field, T value, DateTime expiry, When when = When.Always, CommandFlags flag = CommandFlags.None) =>
+        Database.HashFieldSetAndSetExpiryAsync(hashKey, field, Serializer.Serialize(value), expiry, when, flag);
+
+    /// <inheritdoc/>
+    public Task<ExpireResult[]> HashFieldExpireAsync(string hashKey, string[] fields, TimeSpan expiry, ExpireWhen when = ExpireWhen.Always, CommandFlags flag = CommandFlags.None)
+    {
+        var redisFields = new RedisValue[fields.Length];
+
+        for (var i = 0; i < fields.Length; i++)
+            redisFields[i] = fields[i];
+
+        return Database.HashFieldExpireAsync(hashKey, redisFields, expiry, when, flag);
+    }
+
+    /// <inheritdoc/>
+    public Task<ExpireResult[]> HashFieldExpireAsync(string hashKey, string[] fields, DateTime expiry, ExpireWhen when = ExpireWhen.Always, CommandFlags flag = CommandFlags.None)
+    {
+        var redisFields = new RedisValue[fields.Length];
+
+        for (var i = 0; i < fields.Length; i++)
+            redisFields[i] = fields[i];
+
+        return Database.HashFieldExpireAsync(hashKey, redisFields, expiry, when, flag);
+    }
+
+    /// <inheritdoc/>
+    public Task<long[]> HashFieldGetTimeToLiveAsync(string hashKey, string[] fields, CommandFlags flag = CommandFlags.None)
+    {
+        var redisFields = new RedisValue[fields.Length];
+
+        for (var i = 0; i < fields.Length; i++)
+            redisFields[i] = fields[i];
+
+        return Database.HashFieldGetTimeToLiveAsync(hashKey, redisFields, flag);
+    }
+
+    /// <inheritdoc/>
+    public Task<PersistResult[]> HashFieldPersistAsync(string hashKey, string[] fields, CommandFlags flag = CommandFlags.None)
+    {
+        var redisFields = new RedisValue[fields.Length];
+
+        for (var i = 0; i < fields.Length; i++)
+            redisFields[i] = fields[i];
+
+        return Database.HashFieldPersistAsync(hashKey, redisFields, flag);
+    }
+
+    /// <inheritdoc/>
     public Dictionary<string, T?> HashScan<T>(string hashKey, string pattern, int pageSize = 10, CommandFlags flag = CommandFlags.None)
     {
         return Database.HashScan(hashKey, pattern, pageSize, flag).ToDictionary(x => x.Name.ToString(), x => Serializer.Deserialize<T>(x.Value), StringComparer.Ordinal);
