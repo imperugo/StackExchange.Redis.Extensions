@@ -1,6 +1,5 @@
 // Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
 
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations;
@@ -25,12 +24,16 @@ public partial class RedisDatabase
         Database.VectorSetContainsAsync(key, member, flag);
 
     /// <inheritdoc/>
-    public Task<long> VectorSetLengthAsync(string key, CommandFlags flag = CommandFlags.None) =>
-        Database.VectorSetLengthAsync(key, flag).ContinueWith(t => (long)t.Result, CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
+#pragma warning disable RCS1174 // async/await required for cross-TFM int→long cast
+    public async Task<long> VectorSetLengthAsync(string key, CommandFlags flag = CommandFlags.None) =>
+        await Database.VectorSetLengthAsync(key, flag).ConfigureAwait(false);
+#pragma warning restore RCS1174
 
     /// <inheritdoc/>
-    public Task<long> VectorSetDimensionAsync(string key, CommandFlags flag = CommandFlags.None) =>
-        Database.VectorSetDimensionAsync(key, flag).ContinueWith(t => (long)t.Result, CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
+#pragma warning disable RCS1174
+    public async Task<long> VectorSetDimensionAsync(string key, CommandFlags flag = CommandFlags.None) =>
+        await Database.VectorSetDimensionAsync(key, flag).ConfigureAwait(false);
+#pragma warning restore RCS1174
 
     /// <inheritdoc/>
     public Task<string?> VectorSetGetAttributesJsonAsync(string key, string member, CommandFlags flag = CommandFlags.None) =>
@@ -47,4 +50,20 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public Task<RedisValue> VectorSetRandomMemberAsync(string key, CommandFlags flag = CommandFlags.None) =>
         Database.VectorSetRandomMemberAsync(key, flag);
+
+    /// <inheritdoc/>
+    public Task<RedisValue[]> VectorSetRandomMembersAsync(string key, long count, CommandFlags flag = CommandFlags.None) =>
+        Database.VectorSetRandomMembersAsync(key, count, flag);
+
+    /// <inheritdoc/>
+    public Task<Lease<float>?> VectorSetGetApproximateVectorAsync(string key, string member, CommandFlags flag = CommandFlags.None) =>
+        Database.VectorSetGetApproximateVectorAsync(key, member, flag);
+
+    /// <inheritdoc/>
+    public Task<Lease<RedisValue>?> VectorSetGetLinksAsync(string key, string member, CommandFlags flag = CommandFlags.None) =>
+        Database.VectorSetGetLinksAsync(key, member, flag);
+
+    /// <inheritdoc/>
+    public Task<Lease<VectorSetLink>?> VectorSetGetLinksWithScoresAsync(string key, string member, CommandFlags flag = CommandFlags.None) =>
+        Database.VectorSetGetLinksWithScoresAsync(key, member, flag);
 }

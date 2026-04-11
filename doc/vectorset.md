@@ -22,30 +22,35 @@ graph LR
 var embedding = await aiModel.GetEmbeddingAsync("Red running shoes, size 42");
 
 await redis.VectorSetAddAsync("products",
-    VectorSetAddRequest.Create("shoe-123", embedding));
+    VectorSetAddRequest.Member("shoe-123", embedding));
 
 // Add with JSON attributes (metadata)
 await redis.VectorSetAddAsync("products",
-    VectorSetAddRequest.Create("shoe-456", embedding)
-        .WithAttributes("""{"category":"shoes","price":79.99,"brand":"Nike"}"""));
+    VectorSetAddRequest.Member("shoe-456", embedding, 
+        attributes: """{"category":"shoes","price":79.99,"brand":"Nike"}"""));
 ```
 
 ## Similarity Search
+
+The search returns a `Lease<T>` which **must be disposed** after use to return pooled memory.
 
 ```csharp
 // Find the 5 most similar items to a query vector
 var queryEmbedding = await aiModel.GetEmbeddingAsync("comfortable sneakers for running");
 
-var results = await redis.VectorSetSimilaritySearchAsync("products",
-    VectorSetSimilaritySearchRequest.Create(queryEmbedding, count: 5));
+using var results = await redis.VectorSetSimilaritySearchAsync("products",
+    VectorSetSimilaritySearchRequest.ByVector(queryEmbedding) with { Count = 5 });
 
-foreach (var result in results)
+if (results is not null)
 {
-    Console.WriteLine($"{result.Member}: score={result.Score:F4}");
+    foreach (var result in results.Span)
+    {
+        Console.WriteLine($"{result.Member}: score={result.Score:F4}");
 
-    // Get attributes for each result
-    var attrs = await redis.VectorSetGetAttributesJsonAsync("products", result.Member!);
-    Console.WriteLine($"  Attributes: {attrs}");
+        // Get attributes for each result
+        var attrs = await redis.VectorSetGetAttributesJsonAsync("products", result.Member!);
+        Console.WriteLine($"  Attributes: {attrs}");
+    }
 }
 ```
 
@@ -64,8 +69,18 @@ var dims = await redis.VectorSetDimensionAsync("products");
 // Get a random member
 var random = await redis.VectorSetRandomMemberAsync("products");
 
+// Get multiple random members
+var randoms = await redis.VectorSetRandomMembersAsync("products", 5);
+
 // Get info about the VectorSet
 var info = await redis.VectorSetInfoAsync("products");
+
+// Get the approximate vector for a member
+using var vector = await redis.VectorSetGetApproximateVectorAsync("products", "shoe-123");
+
+// Get HNSW graph neighbors
+var links = await redis.VectorSetGetLinksAsync("products", "shoe-123");
+var linksWithScores = await redis.VectorSetGetLinksWithScoresAsync("products", "shoe-123");
 
 // Remove a member
 await redis.VectorSetRemoveAsync("products", "shoe-123");
@@ -91,29 +106,32 @@ foreach (var doc in documents)
 {
     var embedding = await aiModel.GetEmbeddingAsync(doc.Content);
     await redis.VectorSetAddAsync("docs",
-        VectorSetAddRequest.Create(doc.Id, embedding)
-            .WithAttributes($"""{{ "title": "{doc.Title}" }}"""));
+        VectorSetAddRequest.Member(doc.Id, embedding,
+            attributes: $"""{{ "title": "{doc.Title}" }}"""));
 }
 
 // Query: find relevant context for a prompt
-var queryEmb = await aiModel.GetEmbeddingAsync(userQuestion);
-var context = await redis.VectorSetSimilaritySearchAsync("docs",
-    VectorSetSimilaritySearchRequest.Create(queryEmb, count: 3));
+using var context = await redis.VectorSetSimilaritySearchAsync("docs",
+    VectorSetSimilaritySearchRequest.ByVector(queryEmb) with { Count = 3 });
 ```
 
 ### Recommendations
 ```csharp
 // Find products similar to what the user just viewed
-var viewedProduct = await redis.VectorSetGetApproximateVectorAsync("products", productId);
-// Use the vector to find similar items
+using var vector = await redis.VectorSetGetApproximateVectorAsync("products", viewedProductId);
+if (vector is not null)
+{
+    using var similar = await redis.VectorSetSimilaritySearchAsync("products",
+        VectorSetSimilaritySearchRequest.ByVector(vector.Span.ToArray()) with { Count = 10 });
+}
 ```
 
 ### Semantic Search
 ```csharp
 // Search by meaning, not keywords
 var searchEmb = await aiModel.GetEmbeddingAsync("something warm for winter");
-var results = await redis.VectorSetSimilaritySearchAsync("clothing",
-    VectorSetSimilaritySearchRequest.Create(searchEmb, count: 20));
+using var results = await redis.VectorSetSimilaritySearchAsync("clothing",
+    VectorSetSimilaritySearchRequest.ByVector(searchEmb) with { Count = 20 });
 ```
 
 ## Performance Notes
@@ -122,3 +140,4 @@ var results = await redis.VectorSetSimilaritySearchAsync("clothing",
 - Approximate nearest neighbor search — extremely fast even with millions of vectors
 - Memory efficient compared to external vector databases
 - Vectors are stored directly in Redis — no external index to maintain
+- `Lease<T>` return types use pooled memory — always dispose after use

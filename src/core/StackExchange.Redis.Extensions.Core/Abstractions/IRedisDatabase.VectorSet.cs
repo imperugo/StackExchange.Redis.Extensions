@@ -96,4 +96,40 @@ public partial interface IRedisDatabase
     /// <param name="flag">Behaviour markers associated with a given command.</param>
     /// <returns>A random member, or null if the VectorSet is empty.</returns>
     Task<RedisValue> VectorSetRandomMemberAsync(string key, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Returns multiple random members from the VectorSet stored at key.
+    /// </summary>
+    /// <param name="key">The key of the VectorSet.</param>
+    /// <param name="count">The number of random members to return.</param>
+    /// <param name="flag">Behaviour markers associated with a given command.</param>
+    /// <returns>An array of random members.</returns>
+    Task<RedisValue[]> VectorSetRandomMembersAsync(string key, long count, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Returns the approximate vector for a member in the VectorSet.
+    /// </summary>
+    /// <param name="key">The key of the VectorSet.</param>
+    /// <param name="member">The member to retrieve the vector for.</param>
+    /// <param name="flag">Behaviour markers associated with a given command.</param>
+    /// <returns>The approximate vector as a Lease of floats. Must be disposed after use. Null if member not found.</returns>
+    Task<Lease<float>?> VectorSetGetApproximateVectorAsync(string key, string member, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Returns the links (neighbors) for a member in the VectorSet's HNSW graph.
+    /// </summary>
+    /// <param name="key">The key of the VectorSet.</param>
+    /// <param name="member">The member to retrieve links for.</param>
+    /// <param name="flag">Behaviour markers associated with a given command.</param>
+    /// <returns>The linked member names. The returned Lease must be disposed after use.</returns>
+    Task<Lease<RedisValue>?> VectorSetGetLinksAsync(string key, string member, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Returns the links (neighbors) with similarity scores for a member in the VectorSet's HNSW graph.
+    /// </summary>
+    /// <param name="key">The key of the VectorSet.</param>
+    /// <param name="member">The member to retrieve links for.</param>
+    /// <param name="flag">Behaviour markers associated with a given command.</param>
+    /// <returns>The links with scores. The returned Lease must be disposed after use.</returns>
+    Task<Lease<VectorSetLink>?> VectorSetGetLinksWithScoresAsync(string key, string member, CommandFlags flag = CommandFlags.None);
 }
