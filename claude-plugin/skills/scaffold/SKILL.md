@@ -52,14 +52,14 @@ public class OrderProcessor(IRedisDatabase redis)
 
         while (!ct.IsCancellationRequested)
         {
-            var entries = await redis.StreamReadGroupAsync("orders", "processors", "worker-1", ">", count: 10);
+            var entries = await redis.StreamReadGroupAsync("orders", "processors", "worker-1", ">", count: 10); // ">" = read only new messages
 
             foreach (var entry in entries)
             {
                 try
                 {
                     // Process message
-                    await redis.StreamAcknowledgeAsync("orders", "processors", entry.Id!);
+                    await redis.StreamAcknowledgeAsync("orders", "processors", entry.Id.ToString());
                 }
                 catch
                 {

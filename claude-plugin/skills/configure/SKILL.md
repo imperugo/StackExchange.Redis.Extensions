@@ -25,8 +25,8 @@ When the user asks to:
 ### NuGet packages required
 - `StackExchange.Redis.Extensions.Core` — always required
 - `StackExchange.Redis.Extensions.AspNetCore` — for DI registration
-- One serializer: `System.Text.Json` (recommended), `Newtonsoft`, `MemoryPack`, `MsgPack`, `Protobuf`
-- Optional compressor: `Compression.LZ4` (fastest), `Compression.ZstdSharp` (best ratio), `Compression.GZip` (no deps)
+- One serializer: `System.Text.Json` (recommended), `Newtonsoft`, `MemoryPack`, `MsgPack`, `Protobuf`, `ServiceStack`, `Utf8Json`
+- Optional compressor: `Compression.LZ4` (fastest), `Compression.Snappier`, `Compression.ZstdSharp` (best ratio), `Compression.GZip` (no deps), `Compression.Brotli` (best ratio for text)
 
 ### appsettings.json structure
 ```json
@@ -104,7 +104,7 @@ builder.Services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(confi
 |----------|-------------|
 | General purpose | System.Text.Json |
 | Legacy JSON.NET compatibility | Newtonsoft |
-| Maximum performance (binary) | MemoryPack (net7.0+) |
+| Maximum performance (binary) | MemoryPack (net8.0+) |
 | Cross-language compatibility | Protobuf or MsgPack |
 
 ### Compressor selection guide

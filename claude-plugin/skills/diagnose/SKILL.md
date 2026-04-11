@@ -60,7 +60,7 @@ When the user reports:
 3. **Compression migration** — enabling compression makes old (uncompressed) data unreadable
    - Error: `InvalidOperationException: Failed to decompress data from Redis`
    - Fix: flush the database or read old data without compression first
-4. **Value type quirk** — `GetAsync<int>()` returns 0 (not null) for missing keys. Use `GetAsync<int?>()` instead.
+4. **Value type quirk** — `GetAsync<int>()` returns 0 (not null) for missing keys because `default(int)` is `0`. Use `GetAsync<int?>()` to distinguish missing keys from actual zero values.
 
 ### Pub/Sub Not Receiving Messages
 **Check:**
@@ -73,7 +73,7 @@ When the user reports:
 **Symptoms:** All operations fail, logs show EventId 1003
 
 **Check:**
-1. **Pool health** — `redis.ConnectionPoolManager.GetConnectionInformation()`
+1. **Pool health** — inject `IRedisClient` and call `client.ConnectionPoolManager.GetConnectionInformation()`
 2. **Redis server overloaded** — check `INFO clients` on Redis
 3. **Network partition** — the pool skips disconnected connections automatically and logs warnings
 4. **Dispose pattern** — ensure IRedisConnectionPoolManager is not disposed prematurely
@@ -87,7 +87,7 @@ When the user reports:
 2. **Check outstanding commands** — pool info shows outstanding count per connection
 3. **Use compression** for large objects — LZ4 adds ~1ms latency but reduces network 5-10x
 4. **Use AddAllAsync** for bulk writes instead of loop of AddAsync
-5. **Use GetAllAsync** with HashSet<string> for bulk reads
+5. **Use GetAllAsync** for bulk reads (note: requires `HashSet<string>` for keys, not arrays)
 
 ## Logging Reference
 

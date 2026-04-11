@@ -25,7 +25,7 @@ StackExchange.Redis.Extensions wraps the base StackExchange.Redis client library
 - [Redis Streams](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/streams.md): XADD, XREAD, consumer groups, XACK
 - [Pub/Sub Messaging](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/pubsub.md): Typed publish/subscribe with error handling
 - [Hash Field Expiry](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/hash-field-expiry.md): Per-field TTL with HSETEX, HEXPIRE (Redis 7.4+)
-- [Compression](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/compressors.md): LZ4, Snappy, Zstandard, GZip, Brotli
+- [Compression](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/compressors.md): LZ4, Snappier, Zstandard, GZip, Brotli
 
 ## Serializers
 
