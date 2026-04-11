@@ -140,7 +140,7 @@ public class RedisConfiguration
     }
 
     /// <summary>
-    /// Gets or sets the time in seconds at which to send a heartbeat. A value of -1 means use the default from StackExchange.Redis.
+    /// Gets or sets the time in seconds at which to send a heartbeat. A value of -1 (default) means use the StackExchange.Redis default; 0 disables keepalive.
     /// </summary>
     public int? KeepAlive
     {
@@ -486,7 +486,7 @@ public class RedisConfiguration
                     if (ClientName != null)
                         newOptions.ClientName = ClientName;
 
-                    if (KeepAlive is > 0)
+                    if (KeepAlive is >= 0)
                         newOptions.KeepAlive = KeepAlive.Value;
 
                     if (IsSentinelCluster)

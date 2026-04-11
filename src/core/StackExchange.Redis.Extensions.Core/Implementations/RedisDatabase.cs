@@ -240,6 +240,10 @@ public partial class RedisDatabase : IRedisDatabase
             return false;
 
         var expiration = expiresAt.UtcDateTime.Subtract(DateTime.UtcNow);
+
+        if (expiration <= TimeSpan.Zero)
+            return false;
+
         var db = Database;
         var batch = db.CreateBatch();
 
@@ -249,7 +253,7 @@ public partial class RedisDatabase : IRedisDatabase
 
         await Task.WhenAll(tasks).ConfigureAwait(false);
 
-        return tasks[0].Result;
+        return Array.TrueForAll(tasks, t => t.Result);
     }
 
     /// <inheritdoc/>
@@ -272,7 +276,7 @@ public partial class RedisDatabase : IRedisDatabase
 
         await Task.WhenAll(tasks).ConfigureAwait(false);
 
-        return tasks[0].Result;
+        return Array.TrueForAll(tasks, t => t.Result);
     }
 
     /// <inheritdoc/>
