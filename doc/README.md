@@ -40,6 +40,7 @@
 
 ## Advanced
 
+* [Migration Guide: v11 → v12](migration-v11-to-v12.md)
 * [Logging & Diagnostics](logging.md)
 * [Multiple Redis Servers](multipleServers.md)
 * [Azure Managed Identity](azure-managed-identity.md)

@@ -3,7 +3,7 @@
     <!-- General information -->
     <PropertyGroup>
         <Authors>Ugo Lattanzi</Authors>
-        <VersionPrefix>12.0.0</VersionPrefix>
+        <VersionPrefix>12.1.0</VersionPrefix>
         <!--
         <VersionSuffix>pre</VersionSuffix>
         -->
@@ -46,6 +46,15 @@ Features:
 Serializer packages (pick one): System.Text.Json, Newtonsoft, MemoryPack, MsgPack, Protobuf, ServiceStack, Utf8Json.
         </Description>
         <PackageReleaseNotes>
+v12.1.0:
+- Added VectorSet API for AI/ML similarity search (Redis 8.0+): VADD, VSIM, VREM, VCONTAINS, VCARD, VDIM, VGETATTR, VSETATTR, VINFO, VRANDMEMBER, VLINKS
+- Added llms.txt for AI coding assistant documentation indexing
+- Added Claude Code plugin with configure, scaffold, and diagnose skills
+- Added complete API reference tables to all feature documentation
+- Added SECURITY.md with GitHub Private Vulnerability Reporting
+- Added CodeQL Advanced security analysis workflow
+- Added CI workflow for automated testing on push/PR
+
 v12.0.0:
 - Added .NET 10 target framework
 - Added GeoSpatial API (GEOADD, GEOSEARCH, GEODIST, GEOPOS, GEOHASH)

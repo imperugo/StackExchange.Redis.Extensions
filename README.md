@@ -326,6 +326,7 @@ Full documentation is available in the [doc/](doc/) folder:
 - [Compression](doc/compressors.md) — GZip, Brotli, LZ4, Snappy, Zstandard
 
 **Advanced**
+- [Migration Guide: v11 → v12](doc/migration-v11-to-v12.md)
 - [Logging & Diagnostics](doc/logging.md)
 - [Multiple Redis Servers](doc/multipleServers.md)
 - [Azure Managed Identity](doc/azure-managed-identity.md)
