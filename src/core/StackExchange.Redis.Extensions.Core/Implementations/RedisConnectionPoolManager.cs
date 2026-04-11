@@ -35,9 +35,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
+using System.Diagnostics;
+
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Extensions;
+using StackExchange.Redis.Extensions.Core.Logging;
 using StackExchange.Redis.Extensions.Core.Models;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations;
@@ -86,7 +89,8 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
 
         if (disposing)
         {
-            // free managed resources
+            LogMessages.PoolDisposing(logger, connections.Length);
+
             foreach (var connection in connections)
                 connection?.Dispose();
         }
@@ -145,11 +149,10 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
                 throw new InvalidEnumArgumentException(nameof(redisConfiguration.ConnectionSelectionStrategy), (int)redisConfiguration.ConnectionSelectionStrategy, typeof(ConnectionSelectionStrategy));
         }
 
-        if (!connection.IsConnected() && logger.IsEnabled(LogLevel.Warning))
-            logger.LogWarning("All Redis connections are disconnected. Using connection {HashCode} in degraded mode.", connection.Connection.GetHashCode().ToString(CultureInfo.InvariantCulture));
+        if (!connection.IsConnected())
+            LogMessages.AllConnectionsDisconnected(logger, connection.Connection.GetHashCode());
 
-        if (logger.IsEnabled(LogLevel.Debug))
-            logger.LogDebug("Using connection {HashCode} with {OutStanding} outstanding!", connection.Connection.GetHashCode().ToString(CultureInfo.InvariantCulture), connection.TotalOutstanding().ToString(CultureInfo.InvariantCulture));
+        LogMessages.ConnectionSelected(logger, connection.Connection.GetHashCode(), connection.TotalOutstanding());
 
         return connection.Connection;
     }
@@ -192,7 +195,11 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
 
     private async Task EmitConnectionsAsync()
     {
+        var sw = Stopwatch.StartNew();
         var baseOpts = redisConfiguration.ConfigurationOptions;
+
+        if (redisConfiguration.ConfigurationOptionsAsyncHandler != null)
+            LogMessages.UsingAsyncConfigHandler(logger);
 
         for (var index = 0; index < redisConfiguration.PoolSize; index++)
         {
@@ -215,11 +222,17 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
             }
             catch
             {
+                LogMessages.PoolInitializationFailed(logger, index, redisConfiguration.PoolSize, index);
+
                 for (var i = 0; i < index; i++)
                     connections[i]?.Dispose();
 
                 throw;
             }
         }
+
+        sw.Stop();
+        var endpoint = baseOpts.EndPoints.Count > 0 ? baseOpts.EndPoints[0].ToString()! : "unknown";
+        LogMessages.PoolInitialized(logger, redisConfiguration.PoolSize, endpoint, sw.ElapsedMilliseconds);
     }
 }

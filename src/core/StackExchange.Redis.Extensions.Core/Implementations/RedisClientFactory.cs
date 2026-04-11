@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.Core.Logging;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations;
 
@@ -77,6 +78,8 @@ public class RedisClientFactory : IRedisClientFactory
             var poolManager = new RedisConnectionPoolManager(configuration, poolManagerLogger);
 
             redisCacheClients.Add(configuration.Name!, new RedisClient(poolManager, serializer, configuration));
+
+            LogMessages.ClientCreated(redisClientFactoryLogger, configuration.Name!, configuration.Database);
         }
     }
 

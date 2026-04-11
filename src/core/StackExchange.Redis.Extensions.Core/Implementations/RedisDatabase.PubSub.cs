@@ -5,9 +5,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.Extensions.Logging;
-
 using StackExchange.Redis.Extensions.Core.Helpers;
+using StackExchange.Redis.Extensions.Core.Logging;
 
 namespace StackExchange.Redis.Extensions.Core.Implementations;
 
@@ -43,7 +42,7 @@ public partial class RedisDatabase
             });
 
             task.ContinueWith(
-                t => logger.LogError(t.Exception, "Error processing subscription message on channel {Channel}", (string?)redisChannel),
+                t => LogMessages.SubscriptionHandlerError(logger, t.Exception, (string?)redisChannel ?? "unknown"),
                 CancellationToken.None,
                 TaskContinuationOptions.OnlyOnFaulted,
                 TaskScheduler.Default);

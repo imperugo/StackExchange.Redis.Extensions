@@ -41,6 +41,7 @@
 
 ## Advanced
 
+* [Logging & Diagnostics](logging.md)
 * [Multiple Redis Servers](multipleServers.md)
 * [Azure Managed Identity](azure-managed-identity.md)
 * [OpenTelemetry](openTelemetry.md)
