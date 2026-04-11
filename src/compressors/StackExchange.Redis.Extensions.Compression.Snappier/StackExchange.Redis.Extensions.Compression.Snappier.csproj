@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Title>Snappy compression for StackExchange.Redis.Extensions.</Title>
+    <Summary>Snappy compression for StackExchange.Redis.Extensions using Snappier.</Summary>
+    <Description>Provides a Snappy ICompressor implementation for use with StackExchange.Redis.Extensions.Core's CompressedSerializer. Snappy prioritizes speed over compression ratio, similar to LZ4.</Description>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Snappier" Version="[1.1.*,2.0)" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.201" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
+  </ItemGroup>
+</Project>

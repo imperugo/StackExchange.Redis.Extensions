@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Title>GZip compression for StackExchange.Redis.Extensions.</Title>
+    <Summary>GZip compression for StackExchange.Redis.Extensions. No additional dependencies required.</Summary>
+    <Description>Provides a GZip ICompressor implementation for use with StackExchange.Redis.Extensions.Core's CompressedSerializer. Uses System.IO.Compression from the BCL — no external dependencies.</Description>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.201" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
+  </ItemGroup>
+</Project>

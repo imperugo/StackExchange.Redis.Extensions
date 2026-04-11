@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Title>Zstandard compression for StackExchange.Redis.Extensions.</Title>
+    <Summary>Zstandard compression for StackExchange.Redis.Extensions using ZstdSharp.</Summary>
+    <Description>Provides a Zstandard ICompressor implementation for use with StackExchange.Redis.Extensions.Core's CompressedSerializer. Zstd offers an excellent balance between compression ratio and speed.</Description>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ZstdSharp.Port" Version="[0.8.*,1.0)" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.201" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\StackExchange.Redis.Extensions.Core\StackExchange.Redis.Extensions.Core.csproj" />
+  </ItemGroup>
+</Project>
