@@ -1,0 +1,42 @@
+# StackExchange.Redis.Extensions
+
+> A .NET library that extends StackExchange.Redis with object serialization, connection pooling, and higher-level APIs for Redis operations including Pub/Sub, Streams, GeoSpatial, VectorSet, Hash field expiry, and transparent compression.
+
+StackExchange.Redis.Extensions wraps the base StackExchange.Redis client library to make it easier to work with Redis in .NET applications. It supports .NET Standard 2.1, .NET 8, .NET 9, and .NET 10. All values are automatically serialized/deserialized through a pluggable ISerializer interface. Connection pooling with LeastLoaded and RoundRobin strategies is built-in.
+
+## Core Documentation
+
+- [README — Quick Start, Architecture, Configuration](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/README.md): Full getting started guide with DI setup, usage examples, and configuration reference table
+- [Setup & Installation](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/setup-1.md): Package installation and basic setup
+- [Dependency Injection](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/dependency-injection.md): ASP.NET Core DI registration
+
+## Configuration
+
+- [JSON Configuration](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/configuration/json-configuration.md): appsettings.json configuration
+- [C# Configuration](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/configuration/c-configuration.md): Programmatic RedisConfiguration setup
+- [Connection Pool](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/configuration/connection-pool.md): Pool size, strategies, health monitoring
+
+## Features
+
+- [Usage Guide](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/usage/add-and-retrieve-complex-object-to-redis.md): Add, retrieve, and remove objects
+- [Work with Multiple Items](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/usage/work-with-multiple-items.md): Bulk operations with AddAllAsync
+- [GeoSpatial Indexes](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/geospatial.md): GEOADD, GEOSEARCH, GEODIST, GEOPOS
+- [VectorSet — AI/ML Similarity Search](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/vectorset.md): VADD, VSIM for RAG, recommendations, semantic search (Redis 8.0+)
+- [Redis Streams](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/streams.md): XADD, XREAD, consumer groups, XACK
+- [Pub/Sub Messaging](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/pubsub.md): Typed publish/subscribe with error handling
+- [Hash Field Expiry](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/hash-field-expiry.md): Per-field TTL with HSETEX, HEXPIRE (Redis 7.4+)
+- [Compression](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/compressors.md): LZ4, Snappy, Zstandard, GZip, Brotli
+
+## Serializers
+
+- [Serializers Overview](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/serializers/README.md): ISerializer interface and available implementations
+- [System.Text.Json](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/serializers/system.text.json.md): Recommended serializer
+- [Custom Serializer](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/usage/custom-serializer.md): Implement your own ISerializer
+
+## Advanced
+
+- [Azure Managed Identity](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/azure-managed-identity.md): ConfigurationOptionsAsyncHandler for Azure Cache
+- [Multiple Redis Servers](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/multipleServers.md): Named Redis instances with IRedisClientFactory
+- [Logging & Diagnostics](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/logging.md): Source-generated logging, event IDs, filtering
+- [OpenTelemetry](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/openTelemetry.md): Distributed tracing integration
+- [ASP.NET Core Middleware](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/asp.net-core/README.md): Integration and middleware setup
