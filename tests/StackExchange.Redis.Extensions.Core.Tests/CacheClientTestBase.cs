@@ -636,6 +636,86 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
+    public async Task AddAllAsync_WithExpiry_EmptyItems_ShouldReturnFalse_Async()
+    {
+        var emptyItems = Array.Empty<Tuple<string, string>>();
+
+        var resultTimeSpan = await Sut.GetDefaultDatabase().AddAllAsync(emptyItems, TimeSpan.FromMinutes(5));
+        var resultDateTimeOffset = await Sut.GetDefaultDatabase().AddAllAsync(emptyItems, DateTimeOffset.UtcNow.AddMinutes(5));
+
+        Assert.False(resultTimeSpan);
+        Assert.False(resultDateTimeOffset);
+    }
+
+    [Fact]
+    public async Task AddAllAsync_WithDateTimeOffsetExpiry_PastDate_ShouldReturnFalse_Async()
+    {
+        var items = new Tuple<string, string>[]
+        {
+            new(Guid.NewGuid().ToString(), "value1"),
+            new(Guid.NewGuid().ToString(), "value2"),
+        };
+
+        var result = await Sut.GetDefaultDatabase().AddAllAsync(items, DateTimeOffset.UtcNow.AddMinutes(-5));
+
+        Assert.False(result);
+
+        foreach (var item in items)
+        {
+            var exists = await Sut.GetDefaultDatabase().ExistsAsync(item.Item1);
+            Assert.False(exists);
+        }
+    }
+
+    [Fact]
+    public async Task AddAllAsync_WithDateTimeOffsetExpiry_ShouldSetTTL_Async()
+    {
+        var key1 = Guid.NewGuid().ToString();
+        var key2 = Guid.NewGuid().ToString();
+        var items = new Tuple<string, string>[]
+        {
+            new(key1, "value1"),
+            new(key2, "value2"),
+        };
+
+        var result = await Sut.GetDefaultDatabase().AddAllAsync(items, DateTimeOffset.UtcNow.AddMinutes(10));
+
+        Assert.True(result);
+
+        var ttl1 = await db.KeyTimeToLiveAsync(key1);
+        var ttl2 = await db.KeyTimeToLiveAsync(key2);
+
+        Assert.NotNull(ttl1);
+        Assert.NotNull(ttl2);
+        Assert.True(ttl1.Value.TotalSeconds > 0);
+        Assert.True(ttl2.Value.TotalSeconds > 0);
+    }
+
+    [Fact]
+    public async Task AddAllAsync_WithTimeSpanExpiry_ShouldSetTTL_Async()
+    {
+        var key1 = Guid.NewGuid().ToString();
+        var key2 = Guid.NewGuid().ToString();
+        var items = new Tuple<string, string>[]
+        {
+            new(key1, "value1"),
+            new(key2, "value2"),
+        };
+
+        var result = await Sut.GetDefaultDatabase().AddAllAsync(items, TimeSpan.FromMinutes(10));
+
+        Assert.True(result);
+
+        var ttl1 = await db.KeyTimeToLiveAsync(key1);
+        var ttl2 = await db.KeyTimeToLiveAsync(key2);
+
+        Assert.NotNull(ttl1);
+        Assert.NotNull(ttl2);
+        Assert.True(ttl1.Value.TotalSeconds > 0);
+        Assert.True(ttl2.Value.TotalSeconds > 0);
+    }
+
+    [Fact]
     public async Task Adding_Collection_To_Redis_Should_Work_Correctly_Async()
     {
         var items = Range(1, 3).Select(i => new TestClass<string> { Key = $"key{i.ToString(CultureInfo.InvariantCulture)}", Value = $"value{i.ToString(CultureInfo.InvariantCulture)}" }).ToArray();
