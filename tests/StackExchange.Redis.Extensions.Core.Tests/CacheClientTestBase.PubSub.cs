@@ -39,6 +39,7 @@ public abstract partial class CacheClientTestBase
     {
         var channel = new RedisChannel(Guid.NewGuid().ToString(), RedisChannel.PatternMode.Literal);
         var secondMessageReceived = new TaskCompletionSource<bool>();
+        var firstHandlerCompleted = new TaskCompletionSource<bool>();
         var callCount = 0;
 
         await Sut.GetDefaultDatabase().SubscribeAsync<string>(channel, _ =>
@@ -46,7 +47,10 @@ public abstract partial class CacheClientTestBase
             var count = Interlocked.Increment(ref callCount);
 
             if (count == 1)
+            {
+                firstHandlerCompleted.TrySetResult(true);
                 throw new InvalidOperationException("Simulated handler failure");
+            }
 
             secondMessageReceived.TrySetResult(true);
             return Task.CompletedTask;
@@ -54,7 +58,11 @@ public abstract partial class CacheClientTestBase
 
         // First message — handler throws, should be logged not crash
         await Sut.GetDefaultDatabase().PublishAsync(channel, "msg1");
-        await Task.Delay(200);
+
+        // Wait for first handler to complete before sending second message
+        using var cts1 = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        cts1.Token.Register(() => firstHandlerCompleted.TrySetCanceled());
+        await firstHandlerCompleted.Task;
 
         // Second message — handler should still be active
         await Sut.GetDefaultDatabase().PublishAsync(channel, "msg2");

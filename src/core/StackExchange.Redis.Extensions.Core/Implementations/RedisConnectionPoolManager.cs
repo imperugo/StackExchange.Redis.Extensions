@@ -145,6 +145,9 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
                 throw new InvalidEnumArgumentException(nameof(redisConfiguration.ConnectionSelectionStrategy), (int)redisConfiguration.ConnectionSelectionStrategy, typeof(ConnectionSelectionStrategy));
         }
 
+        if (!connection.IsConnected() && logger.IsEnabled(LogLevel.Warning))
+            logger.LogWarning("All Redis connections are disconnected. Using connection {HashCode} in degraded mode.", connection.Connection.GetHashCode().ToString(CultureInfo.InvariantCulture));
+
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("Using connection {HashCode} with {OutStanding} outstanding!", connection.Connection.GetHashCode().ToString(CultureInfo.InvariantCulture), connection.TotalOutstanding().ToString(CultureInfo.InvariantCulture));
 

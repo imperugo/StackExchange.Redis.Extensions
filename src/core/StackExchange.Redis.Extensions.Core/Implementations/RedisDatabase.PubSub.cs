@@ -43,7 +43,7 @@ public partial class RedisDatabase
             });
 
             task.ContinueWith(
-                t => logger.LogError(t.Exception!.InnerException, "Error processing subscription message on channel {Channel}", (string?)redisChannel),
+                t => logger.LogError(t.Exception, "Error processing subscription message on channel {Channel}", (string?)redisChannel),
                 CancellationToken.None,
                 TaskContinuationOptions.OnlyOnFaulted,
                 TaskScheduler.Default);
