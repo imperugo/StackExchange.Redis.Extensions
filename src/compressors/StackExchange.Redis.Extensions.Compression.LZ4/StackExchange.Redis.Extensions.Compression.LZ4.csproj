@@ -3,6 +3,7 @@
     <Title>LZ4 compression for StackExchange.Redis.Extensions.</Title>
     <Summary>LZ4 compression for StackExchange.Redis.Extensions. Extremely fast compression/decompression.</Summary>
     <Description>Provides an LZ4 ICompressor implementation for use with StackExchange.Redis.Extensions.Core's CompressedSerializer. LZ4 offers the best compression/decompression speed, ideal for caching scenarios where latency matters more than compression ratio.</Description>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 

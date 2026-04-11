@@ -457,7 +457,7 @@ public abstract partial class CacheClientTestBase
 
         var result = await Sut.GetDefaultDatabase().HashSetWithExpiryAsync(hashKey, field, value, TimeSpan.FromMinutes(10));
 
-        Assert.True(result.HasValue);
+        Assert.True(result);
 
         var retrieved = await Sut.GetDefaultDatabase().HashGetAsync<TestClass<DateTime>>(hashKey, field);
         Assert.NotNull(retrieved);

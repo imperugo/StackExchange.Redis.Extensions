@@ -48,6 +48,19 @@ public class CompressedSerializer : ISerializer
         if (serializedObject is not { Length: > 0 })
             return default;
 
-        return inner.Deserialize<T>(compressor.Decompress(serializedObject));
+        byte[] decompressed;
+
+        try
+        {
+            decompressed = compressor.Decompress(serializedObject);
+        }
+#pragma warning disable CA1031 // Intentional catch-all to wrap with actionable context
+        catch (Exception ex)
+#pragma warning restore CA1031
+        {
+            throw new InvalidOperationException("Failed to decompress data from Redis. This may indicate the data was stored before compression was enabled. Consider migrating existing data or disabling compression temporarily to read legacy entries.", ex);
+        }
+
+        return inner.Deserialize<T>(decompressed);
     }
 }

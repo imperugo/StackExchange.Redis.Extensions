@@ -180,19 +180,25 @@ public partial class RedisDatabase
     }
 
     /// <inheritdoc/>
-    public Task<RedisValue> HashSetWithExpiryAsync<T>(string hashKey, string field, T value, TimeSpan expiry, When when = When.Always, CommandFlags flag = CommandFlags.None) =>
-        Database.HashFieldSetAndSetExpiryAsync(hashKey, field, Serializer.Serialize(value), expiry, false, when, flag);
+    public async Task<bool> HashSetWithExpiryAsync<T>(string hashKey, string field, T value, TimeSpan expiry, When when = When.Always, CommandFlags flag = CommandFlags.None)
+    {
+        var result = await Database.HashFieldSetAndSetExpiryAsync(hashKey, field, Serializer.Serialize(value), expiry, false, when, flag).ConfigureAwait(false);
+        return result == 1;
+    }
 
     /// <inheritdoc/>
-    public Task<RedisValue> HashSetWithExpiryAsync<T>(string hashKey, string field, T value, DateTime expiry, When when = When.Always, CommandFlags flag = CommandFlags.None) =>
-        Database.HashFieldSetAndSetExpiryAsync(hashKey, field, Serializer.Serialize(value), expiry, when, flag);
+    public async Task<bool> HashSetWithExpiryAsync<T>(string hashKey, string field, T value, DateTime expiry, When when = When.Always, CommandFlags flag = CommandFlags.None)
+    {
+        var result = await Database.HashFieldSetAndSetExpiryAsync(hashKey, field, Serializer.Serialize(value), expiry, when, flag).ConfigureAwait(false);
+        return result == 1;
+    }
 
     /// <inheritdoc/>
     public Task<ExpireResult[]> HashFieldExpireAsync(string hashKey, string[] fields, TimeSpan expiry, ExpireWhen when = ExpireWhen.Always, CommandFlags flag = CommandFlags.None)
     {
-#if NET8_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(fields);
-#endif
+        if (fields is null)
+            throw new ArgumentNullException(nameof(fields));
+
         var redisFields = new RedisValue[fields.Length];
 
         for (var i = 0; i < fields.Length; i++)
@@ -204,9 +210,9 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public Task<ExpireResult[]> HashFieldExpireAsync(string hashKey, string[] fields, DateTime expiry, ExpireWhen when = ExpireWhen.Always, CommandFlags flag = CommandFlags.None)
     {
-#if NET8_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(fields);
-#endif
+        if (fields is null)
+            throw new ArgumentNullException(nameof(fields));
+
         var redisFields = new RedisValue[fields.Length];
 
         for (var i = 0; i < fields.Length; i++)
@@ -218,9 +224,9 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public Task<long[]> HashFieldGetTimeToLiveAsync(string hashKey, string[] fields, CommandFlags flag = CommandFlags.None)
     {
-#if NET8_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(fields);
-#endif
+        if (fields is null)
+            throw new ArgumentNullException(nameof(fields));
+
         var redisFields = new RedisValue[fields.Length];
 
         for (var i = 0; i < fields.Length; i++)
@@ -232,9 +238,9 @@ public partial class RedisDatabase
     /// <inheritdoc/>
     public Task<PersistResult[]> HashFieldPersistAsync(string hashKey, string[] fields, CommandFlags flag = CommandFlags.None)
     {
-#if NET8_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(fields);
-#endif
+        if (fields is null)
+            throw new ArgumentNullException(nameof(fields));
+
         var redisFields = new RedisValue[fields.Length];
 
         for (var i = 0; i < fields.Length; i++)

@@ -3,6 +3,7 @@
     <Title>Zstandard compression for StackExchange.Redis.Extensions.</Title>
     <Summary>Zstandard compression for StackExchange.Redis.Extensions using ZstdSharp.</Summary>
     <Description>Provides a Zstandard ICompressor implementation for use with StackExchange.Redis.Extensions.Core's CompressedSerializer. Zstd offers an excellent balance between compression ratio and speed.</Description>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 

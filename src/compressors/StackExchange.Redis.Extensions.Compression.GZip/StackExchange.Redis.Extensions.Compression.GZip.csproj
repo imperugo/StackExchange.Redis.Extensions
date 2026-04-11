@@ -3,6 +3,7 @@
     <Title>GZip compression for StackExchange.Redis.Extensions.</Title>
     <Summary>GZip compression for StackExchange.Redis.Extensions. No additional dependencies required.</Summary>
     <Description>Provides a GZip ICompressor implementation for use with StackExchange.Redis.Extensions.Core's CompressedSerializer. Uses System.IO.Compression from the BCL — no external dependencies.</Description>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 

@@ -88,7 +88,7 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
         {
             // free managed resources
             foreach (var connection in connections)
-                connection.Dispose();
+                connection?.Dispose();
         }
 
         isDisposed = true;
@@ -167,19 +167,30 @@ public sealed partial class RedisConnectionPoolManager : IRedisConnectionPoolMan
 
         for (var index = 0; index < redisConfiguration.PoolSize; index++)
         {
-            var opts = redisConfiguration.ConfigurationOptionsAsyncHandler != null
-                ? ConfigurationOptions.Parse(baseOpts.ToString())
-                : baseOpts;
+            try
+            {
+                var opts = baseOpts;
 
-            if (redisConfiguration.ConfigurationOptionsAsyncHandler != null)
-                opts = await redisConfiguration.ConfigurationOptionsAsyncHandler(opts).ConfigureAwait(false);
+                if (redisConfiguration.ConfigurationOptionsAsyncHandler != null)
+                {
+                    opts = baseOpts.Clone();
+                    opts = await redisConfiguration.ConfigurationOptionsAsyncHandler(opts).ConfigureAwait(false);
+                }
 
-            var multiplexer = await ConnectionMultiplexer.ConnectAsync(opts).ConfigureAwait(false);
+                var multiplexer = await ConnectionMultiplexer.ConnectAsync(opts).ConfigureAwait(false);
 
-            if (redisConfiguration.ProfilingSessionProvider != null)
-                multiplexer.RegisterProfiler(redisConfiguration.ProfilingSessionProvider);
+                if (redisConfiguration.ProfilingSessionProvider != null)
+                    multiplexer.RegisterProfiler(redisConfiguration.ProfilingSessionProvider);
 
-            connections[index] = redisConfiguration.StateAwareConnectionFactory(multiplexer, logger);
+                connections[index] = redisConfiguration.StateAwareConnectionFactory(multiplexer, logger);
+            }
+            catch
+            {
+                for (var i = 0; i < index; i++)
+                    connections[i]?.Dispose();
+
+                throw;
+            }
         }
     }
 }
