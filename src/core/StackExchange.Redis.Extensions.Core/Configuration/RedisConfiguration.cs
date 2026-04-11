@@ -3,6 +3,7 @@
 using System;
 using System.Net.Security;
 using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 
 using Microsoft.Extensions.Logging;
 
@@ -25,7 +26,7 @@ public class RedisConfiguration
     private bool allowAdmin;
     private bool ssl;
     private int connectTimeout = 5000;
-    private int syncTimeout = 1000;
+    private int syncTimeout = 5000;
     private bool abortOnConnectFail;
     private int database;
     private RedisHost[] hosts = [];
@@ -36,6 +37,8 @@ public class RedisConfiguration
     private string? configurationChannel;
     private string? connectionString;
     private string? serviceName;
+    private string? clientName;
+    private int? keepAlive = -1;
     private int? connectRetry;
     private SslProtocols? sslProtocols;
     private Func<ProfilingSession>? profilingSessionProvider;
@@ -49,6 +52,12 @@ public class RedisConfiguration
     /// that this cannot be specified in the configuration-string.
     /// </summary>
     public event RemoteCertificateValidationCallback? CertificateValidation;
+
+    /// <summary>
+    /// A LocalCertificateSelectionCallback delegate responsible for selecting the certificate used for authentication; note
+    /// that this cannot be specified in the configuration-string.
+    /// </summary>
+    public event LocalCertificateSelectionCallback? CertificateSelection;
 
     /// <summary>
     /// Indicate if the current configuration is the default;
@@ -112,6 +121,34 @@ public class RedisConfiguration
         set
         {
             serviceName = value;
+            ResetConfigurationOptions();
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the client name to use for all connections.
+    /// </summary>
+    public string? ClientName
+    {
+        get => clientName;
+
+        set
+        {
+            clientName = value;
+            ResetConfigurationOptions();
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the time in seconds at which to send a heartbeat. A value of -1 (default) means use the StackExchange.Redis default; 0 disables keepalive.
+    /// </summary>
+    public int? KeepAlive
+    {
+        get => keepAlive;
+
+        set
+        {
+            keepAlive = value;
             ResetConfigurationOptions();
         }
     }
@@ -446,11 +483,14 @@ public class RedisConfiguration
                     if (ConnectRetry != null)
                         newOptions.ConnectRetry = ConnectRetry.Value;
 
+                    if (ClientName != null)
+                        newOptions.ClientName = ClientName;
+
+                    if (KeepAlive is >= 0)
+                        newOptions.KeepAlive = KeepAlive.Value;
+
                     if (IsSentinelCluster)
-                    {
                         newOptions.ServiceName = ServiceName;
-                        newOptions.CommandMap = CommandMap.Sentinel;
-                    }
 
                     foreach (var redisHost in Hosts)
                         newOptions.EndPoints.Add(redisHost.Host, redisHost.Port);
@@ -470,6 +510,7 @@ public class RedisConfiguration
                     newOptions.SocketManager = new(GetType().Name, WorkCount, SocketManagerOptions);
 
                 newOptions.CertificateValidation += CertificateValidation;
+                newOptions.CertificateSelection += CertificateSelection;
                 options = newOptions;
             }
 
