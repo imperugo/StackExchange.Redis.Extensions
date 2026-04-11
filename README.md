@@ -8,6 +8,13 @@
 ![Tests](https://img.shields.io/badge/tests-970%2B%20passing-brightgreen)
 ![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-blue)
 
+> **AI-Ready:** This library provides an [`llms.txt`](llms.txt) file for AI coding assistants and a Claude Code plugin for configuration, scaffolding, and troubleshooting.
+>
+> ```bash
+> claude plugin add imperugo/StackExchange.Redis.Extensions
+> ```
+> Then use `/redis-configure`, `/redis-scaffold`, or `/redis-diagnose` in Claude Code.
+
 ## Features
 
 - Store and retrieve complex .NET objects with automatic serialization
@@ -312,12 +319,14 @@ Full documentation is available in the [doc/](doc/) folder:
 **Features**
 - [Usage Guide](doc/usage/README.md) — Add, Get, Replace, Bulk operations
 - [GeoSpatial Indexes](doc/geospatial.md)
+- [VectorSet — AI/ML Similarity Search](doc/vectorset.md) (Redis 8.0+)
 - [Redis Streams](doc/streams.md)
 - [Pub/Sub Messaging](doc/pubsub.md)
 - [Hash Field Expiry](doc/hash-field-expiry.md) (Redis 7.4+)
 - [Compression](doc/compressors.md) — GZip, Brotli, LZ4, Snappy, Zstandard
 
 **Advanced**
+- [Migration Guide: v11 → v12](doc/migration-v11-to-v12.md)
 - [Logging & Diagnostics](doc/logging.md)
 - [Multiple Redis Servers](doc/multipleServers.md)
 - [Azure Managed Identity](doc/azure-managed-identity.md)

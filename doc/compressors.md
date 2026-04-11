@@ -16,13 +16,24 @@ graph LR
 
 ## Available Compressors
 
-| Package | Algorithm | Speed | Ratio | Dependencies |
-|---------|----------|-------|-------|-------------|
-| `Compression.LZ4` | LZ4 | Fastest | Lower | K4os.Compression.LZ4 |
-| `Compression.Snappier` | Snappy | Very Fast | Lower | Snappier |
-| `Compression.ZstdSharp` | Zstandard | Fast | Good | ZstdSharp.Port |
-| `Compression.GZip` | GZip | Moderate | Good | None (BCL) |
-| `Compression.Brotli` | Brotli | Slower | Best | None (BCL) |
+| NuGet Package | Class | Algorithm | Speed | Ratio |
+|---------------|-------|----------|-------|-------|
+| `StackExchange.Redis.Extensions.Compression.LZ4` | `LZ4Compressor` | LZ4 | Fastest | Lower |
+| `StackExchange.Redis.Extensions.Compression.Snappier` | `SnappierCompressor` | Snappy | Very Fast | Lower |
+| `StackExchange.Redis.Extensions.Compression.ZstdSharp` | `ZstdSharpCompressor` | Zstandard | Fast | Good |
+| `StackExchange.Redis.Extensions.Compression.GZip` | `GZipCompressor` | GZip | Moderate | Good |
+| `StackExchange.Redis.Extensions.Compression.Brotli` | `BrotliCompressor` | Brotli | Slower | Best |
+
+### Install
+
+```bash
+# Pick one:
+dotnet add package StackExchange.Redis.Extensions.Compression.LZ4
+dotnet add package StackExchange.Redis.Extensions.Compression.Snappier
+dotnet add package StackExchange.Redis.Extensions.Compression.ZstdSharp
+dotnet add package StackExchange.Redis.Extensions.Compression.GZip
+dotnet add package StackExchange.Redis.Extensions.Compression.Brotli
+```
 
 ### Recommendations
 
