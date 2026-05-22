@@ -3,7 +3,7 @@
     <!-- General information -->
     <PropertyGroup>
         <Authors>Ugo Lattanzi</Authors>
-        <VersionPrefix>12.1.0</VersionPrefix>
+        <VersionPrefix>12.2.0</VersionPrefix>
         <!--
         <VersionSuffix>pre</VersionSuffix>
         -->
@@ -46,6 +46,10 @@ Features:
 Serializer packages (pick one): System.Text.Json, Newtonsoft, MemoryPack, MsgPack, Protobuf, ServiceStack, Utf8Json.
         </Description>
         <PackageReleaseNotes>
+v12.2.0:
+- Fixed SearchKeysAsync ignoring database number — SCAN now correctly targets the specified database instead of always scanning DB0 (#651)
+- Fixed RemoveByTagAsync not deleting the tag Set key itself, causing a slow memory leak of empty tag Sets in Redis (#650)
+
 v12.1.0:
 - Added VectorSet API for AI/ML similarity search (Redis 8.0+): VADD, VSIM, VREM, VCONTAINS, VCARD, VDIM, VGETATTR, VSETATTR, VINFO, VRANDMEMBER, VLINKS
 - Added llms.txt for AI coding assistant documentation indexing

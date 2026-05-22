@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -482,25 +481,15 @@ public partial class RedisDatabase : IRedisDatabase
         pattern = $"{keyPrefix}{pattern}";
         var keys = new HashSet<string>();
 
-        foreach (var unused in ServerIteratorFactory.GetServers(connectionPoolManager.GetConnection(), serverEnumerationStrategy))
+        foreach (var server in ServerIteratorFactory.GetServers(connectionPoolManager.GetConnection(), serverEnumerationStrategy))
         {
-            ulong nextCursor = 0;
-            do
-            {
-                var redisResult = await unused.ExecuteAsync("SCAN", nextCursor.ToString(CultureInfo.InvariantCulture), "MATCH", pattern, "COUNT", "1000").ConfigureAwait(false);
-                var innerResult = (RedisResult[])redisResult!;
-
-                nextCursor = ulong.Parse((string)innerResult[0]!, CultureInfo.InvariantCulture);
-
-                var resultLines = ((string[])innerResult[1]!).ToArray();
-                keys.UnionWith(resultLines);
-            }
-            while (nextCursor != 0);
+            await foreach (var key in server.KeysAsync(dbNumber, pattern, 1000).ConfigureAwait(false))
+                keys.Add(key!);
         }
 
         return !string.IsNullOrEmpty(keyPrefix)
-            ? keys.Select(k => k[keyPrefix.Length..])
-            : keys;
+            ? keys.Select(k => k.ToString()[keyPrefix.Length..])
+            : keys.Select(k => k.ToString());
     }
 
     /// <inheritdoc/>
