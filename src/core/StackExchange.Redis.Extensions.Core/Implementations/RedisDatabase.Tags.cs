@@ -38,7 +38,11 @@ public partial class RedisDatabase
 
         var keys = await SetMembersAsync<string>(tagKey, flag).ConfigureAwait(false);
 
-        return await RemoveAllAsync(keys, flag).ConfigureAwait(false);
+        var deletedCount = await RemoveAllAsync(keys, flag).ConfigureAwait(false);
+
+        await Database.KeyDeleteAsync(tagKey, flag).ConfigureAwait(false);
+
+        return deletedCount;
     }
 
     private Task<bool> ExecuteAddWithTagsAsync(

@@ -212,4 +212,25 @@ public abstract partial class CacheClientTestBase
 
         Assert.Equal(1, result);
     }
+
+    [Fact]
+    [Trait("Category", "Tags")]
+    public async Task RemoveByTagAsync_ShouldDeleteTagKey_Async()
+    {
+        const string testKey = "test_key";
+        const string testValue = "test_value";
+        var testClass = new Helpers.TestClass<string>(testKey, testValue);
+        const string testTag = "test_tag";
+
+        await Sut.GetDefaultDatabase().AddAsync(testKey, testClass, tags: [testTag]);
+
+        var tagKeyName = TagHelper.GenerateTagKey(testTag);
+        var tagExistsBefore = await db.KeyExistsAsync(tagKeyName);
+        Assert.True(tagExistsBefore);
+
+        await Sut.GetDefaultDatabase().RemoveByTagAsync(testTag);
+
+        var tagExistsAfter = await db.KeyExistsAsync(tagKeyName);
+        Assert.False(tagExistsAfter);
+    }
 }

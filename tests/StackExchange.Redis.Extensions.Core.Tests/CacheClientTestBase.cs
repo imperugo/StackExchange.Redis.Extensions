@@ -339,6 +339,31 @@ public abstract partial class CacheClientTestBase : IDisposable
     }
 
     [Fact]
+    public async Task SearchKeysAsync_Should_Respect_Database_Number_Async()
+    {
+        var db1 = Sut.Db1;
+        var db1Raw = db1.Database;
+
+        try
+        {
+            await db1Raw.StringSetAsync("db1_key1", "value1");
+            await db1Raw.StringSetAsync("db1_key2", "value2");
+
+            await db.StringSetAsync("db0_key1", serializer.Serialize("value_db0"));
+
+            var keysFromDb1 = (await db1.SearchKeysAsync("db1_*")).ToList();
+
+            Assert.Equal(2, keysFromDb1.Count);
+            Assert.Contains("db1_key1", keysFromDb1);
+            Assert.Contains("db1_key2", keysFromDb1);
+        }
+        finally
+        {
+            await db1Raw.ExecuteAsync("FLUSHDB");
+        }
+    }
+
+    [Fact]
     public async Task Exist_With_Valid_Object_Should_Return_The_Correct_Instance_Async()
     {
         var values = Range(0, 2)
