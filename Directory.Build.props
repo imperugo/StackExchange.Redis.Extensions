@@ -49,6 +49,7 @@ Serializer packages (pick one): System.Text.Json, Newtonsoft, MemoryPack, MsgPac
 v12.2.0:
 - Fixed SearchKeysAsync ignoring database number — SCAN now correctly targets the specified database instead of always scanning DB0 (#651)
 - Fixed RemoveByTagAsync not deleting the tag Set key itself, causing a slow memory leak of empty tag Sets in Redis (#650)
+- Upgraded Snappier to 1.3.x to fix high severity vulnerability (GHSA-pggp-6c3x-2xmx)
 
 v12.1.0:
 - Added VectorSet API for AI/ML similarity search (Redis 8.0+): VADD, VSIM, VREM, VCONTAINS, VCARD, VDIM, VGETATTR, VSETATTR, VINFO, VRANDMEMBER, VLINKS
