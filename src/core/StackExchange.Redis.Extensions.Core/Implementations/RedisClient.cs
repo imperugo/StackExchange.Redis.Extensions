@@ -108,4 +108,7 @@ public class RedisClient : IRedisClient
 
     /// <inheritdoc/>
     public IRedisConnectionPoolManager ConnectionPoolManager { get; }
+
+    /// <inheritdoc/>
+    public string Name => redisConfiguration.Name ?? "default";
 }

@@ -11,6 +11,8 @@ using Microsoft.Extensions.Logging;
 
 using NSubstitute;
 
+using StackExchange.Redis;
+
 using StackExchange.Redis.Extensions.Core.Abstractions;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.Core.Helpers;
@@ -1147,5 +1149,209 @@ public abstract partial class CacheClientTestBase : IDisposable
 
         var resultValue = await db.StringGetWithExpiryAsync(key);
         Assert.True(originalTime.Subtract(DateTime.UtcNow) < resultValue.Expiry!.Value);
+    }
+
+    [Fact]
+    public async Task SetCombineAsync_Union_Should_Return_All_Members_Async()
+    {
+        var key1 = Guid.NewGuid().ToString();
+        var key2 = Guid.NewGuid().ToString();
+
+        await Sut.GetDefaultDatabase().SetAddAsync(key1, "a");
+        await Sut.GetDefaultDatabase().SetAddAsync(key1, "b");
+        await Sut.GetDefaultDatabase().SetAddAsync(key2, "b");
+        await Sut.GetDefaultDatabase().SetAddAsync(key2, "c");
+
+        var result = await Sut.GetDefaultDatabase().SetCombineAsync<string>(SetOperation.Union, key1, key2);
+
+        Assert.Equal(3, result.Length);
+        Assert.Contains("a", result);
+        Assert.Contains("b", result);
+        Assert.Contains("c", result);
+    }
+
+    [Fact]
+    public async Task SetCombineAsync_Intersect_Should_Return_Common_Members_Async()
+    {
+        var key1 = Guid.NewGuid().ToString();
+        var key2 = Guid.NewGuid().ToString();
+
+        await Sut.GetDefaultDatabase().SetAddAsync(key1, "a");
+        await Sut.GetDefaultDatabase().SetAddAsync(key1, "b");
+        await Sut.GetDefaultDatabase().SetAddAsync(key2, "b");
+        await Sut.GetDefaultDatabase().SetAddAsync(key2, "c");
+
+        var result = await Sut.GetDefaultDatabase().SetCombineAsync<string>(SetOperation.Intersect, key1, key2);
+
+        Assert.Single(result);
+        Assert.Contains("b", result);
+    }
+
+    [Fact]
+    public async Task SetCombineAsync_Difference_Should_Return_Diff_Members_Async()
+    {
+        var key1 = Guid.NewGuid().ToString();
+        var key2 = Guid.NewGuid().ToString();
+
+        await Sut.GetDefaultDatabase().SetAddAsync(key1, "a");
+        await Sut.GetDefaultDatabase().SetAddAsync(key1, "b");
+        await Sut.GetDefaultDatabase().SetAddAsync(key2, "b");
+        await Sut.GetDefaultDatabase().SetAddAsync(key2, "c");
+
+        var result = await Sut.GetDefaultDatabase().SetCombineAsync<string>(SetOperation.Difference, key1, key2);
+
+        Assert.Single(result);
+        Assert.Contains("a", result);
+    }
+
+    [Fact]
+    public async Task SetCombineAsync_MultipleKeys_Should_Return_Correct_Union_Async()
+    {
+        var key1 = Guid.NewGuid().ToString();
+        var key2 = Guid.NewGuid().ToString();
+        var key3 = Guid.NewGuid().ToString();
+
+        await Sut.GetDefaultDatabase().SetAddAsync(key1, "a");
+        await Sut.GetDefaultDatabase().SetAddAsync(key2, "b");
+        await Sut.GetDefaultDatabase().SetAddAsync(key3, "c");
+
+        var result = await Sut.GetDefaultDatabase().SetCombineAsync<string>(SetOperation.Union, new[] { key1, key2, key3 });
+
+        Assert.Equal(3, result.Length);
+    }
+
+    [Fact]
+    public async Task SetCombineAndStoreAsync_Union_Should_Store_Result_Async()
+    {
+        var key1 = Guid.NewGuid().ToString();
+        var key2 = Guid.NewGuid().ToString();
+        var dest = Guid.NewGuid().ToString();
+
+        await Sut.GetDefaultDatabase().SetAddAsync(key1, "a");
+        await Sut.GetDefaultDatabase().SetAddAsync(key1, "b");
+        await Sut.GetDefaultDatabase().SetAddAsync(key2, "c");
+
+        var count = await Sut.GetDefaultDatabase().SetCombineAndStoreAsync(SetOperation.Union, dest, key1, key2);
+
+        Assert.Equal(3, count);
+        var members = await Sut.GetDefaultDatabase().SetMembersAsync<string>(dest);
+        Assert.Equal(3, members.Length);
+    }
+
+    [Fact]
+    public async Task SetCombineAndStoreAsync_MultipleKeys_Should_Store_Result_Async()
+    {
+        var key1 = Guid.NewGuid().ToString();
+        var key2 = Guid.NewGuid().ToString();
+        var key3 = Guid.NewGuid().ToString();
+        var dest = Guid.NewGuid().ToString();
+
+        await Sut.GetDefaultDatabase().SetAddAsync(key1, "a");
+        await Sut.GetDefaultDatabase().SetAddAsync(key2, "b");
+        await Sut.GetDefaultDatabase().SetAddAsync(key3, "c");
+
+        var count = await Sut.GetDefaultDatabase().SetCombineAndStoreAsync(SetOperation.Union, dest, new[] { key1, key2, key3 });
+
+        Assert.Equal(3, count);
+    }
+
+    [Fact]
+    public async Task StringIncrementAsync_Should_Increment_New_Key_From_Zero_Async()
+    {
+        var key = Guid.NewGuid().ToString();
+        var result = await Sut.GetDefaultDatabase().StringIncrementAsync(key);
+        Assert.Equal(1, result);
+    }
+
+    [Fact]
+    public async Task StringIncrementAsync_Should_Increment_Existing_Key_Async()
+    {
+        var key = Guid.NewGuid().ToString();
+        await Sut.GetDefaultDatabase().StringIncrementAsync(key, 5);
+        var result = await Sut.GetDefaultDatabase().StringIncrementAsync(key, 3);
+        Assert.Equal(8, result);
+    }
+
+    [Fact]
+    public async Task StringDecrementAsync_Should_Decrement_Below_Zero_Async()
+    {
+        var key = Guid.NewGuid().ToString();
+        var result = await Sut.GetDefaultDatabase().StringDecrementAsync(key, 5);
+        Assert.Equal(-5, result);
+    }
+
+    [Fact]
+    public async Task StringIncrementAsync_Double_Should_Increment_With_Fractional_Value_Async()
+    {
+        var key = Guid.NewGuid().ToString();
+        var result = await Sut.GetDefaultDatabase().StringIncrementAsync(key, 1.5);
+        Assert.Equal(1.5, result);
+        result = await Sut.GetDefaultDatabase().StringIncrementAsync(key, 2.3);
+        Assert.Equal(3.8, result, 1);
+    }
+
+    [Fact]
+    public async Task StringDecrementAsync_Double_Should_Decrement_With_Fractional_Value_Async()
+    {
+        var key = Guid.NewGuid().ToString();
+        await Sut.GetDefaultDatabase().StringIncrementAsync(key, 10.0);
+        var result = await Sut.GetDefaultDatabase().StringDecrementAsync(key, 3.5);
+        Assert.Equal(6.5, result, 1);
+    }
+
+    [Fact]
+    public async Task KeyRenameAsync_Should_Rename_Existing_Key_Async()
+    {
+        var key = Guid.NewGuid().ToString();
+        var newKey = Guid.NewGuid().ToString();
+        var value = new TestClass<string>("myKey", "my value");
+
+        await Sut.GetDefaultDatabase().AddAsync(key, value);
+        var result = await Sut.GetDefaultDatabase().KeyRenameAsync(key, newKey);
+
+        Assert.True(result);
+        Assert.False(await Sut.GetDefaultDatabase().ExistsAsync(key));
+        Assert.True(await Sut.GetDefaultDatabase().ExistsAsync(newKey));
+    }
+
+    [Fact]
+    public async Task KeyTypeAsync_String_Should_Return_String_Async()
+    {
+        var key = Guid.NewGuid().ToString();
+        await Sut.GetDefaultDatabase().AddAsync(key, "test");
+        var result = await Sut.GetDefaultDatabase().KeyTypeAsync(key);
+        Assert.Equal(RedisType.String, result);
+    }
+
+    [Fact]
+    public async Task KeyTypeAsync_Set_Should_Return_Set_Async()
+    {
+        var key = Guid.NewGuid().ToString();
+        await Sut.GetDefaultDatabase().SetAddAsync(key, "member1");
+        var result = await Sut.GetDefaultDatabase().KeyTypeAsync(key);
+        Assert.Equal(RedisType.Set, result);
+    }
+
+    [Fact]
+    public async Task KeyDumpAsync_And_KeyRestoreAsync_Should_Roundtrip_Async()
+    {
+        var sourceKey = Guid.NewGuid().ToString();
+        var destKey = Guid.NewGuid().ToString();
+
+        await Sut.GetDefaultDatabase().AddAsync(sourceKey, "test-value");
+        var dump = await Sut.GetDefaultDatabase().KeyDumpAsync(sourceKey);
+
+        Assert.NotNull(dump);
+
+        await Sut.GetDefaultDatabase().KeyRestoreAsync(destKey, dump!);
+        Assert.True(await Sut.GetDefaultDatabase().ExistsAsync(destKey));
+    }
+
+    [Fact]
+    public async Task KeyDumpAsync_NonExisting_Key_Should_Return_Null_Async()
+    {
+        var key = Guid.NewGuid().ToString();
+        var result = await Sut.GetDefaultDatabase().KeyDumpAsync(key);
+        Assert.Null(result);
     }
 }
