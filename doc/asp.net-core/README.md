@@ -47,6 +47,27 @@ builder.Services.AddRedisCompression<LZ4Compressor>();
 
 See the [Compression](../compressors.md) page for all available compressors and configuration options.
 
+### Adding Health Check (optional)
+
+Monitor the Redis connection pool status through ASP.NET Core health checks:
+
+```csharp
+builder.Services.AddHealthChecks()
+    .AddRedisExtensionsHealthCheck();
+```
+
+Returns Healthy / Degraded / Unhealthy based on pool state and PING result. See [Health Check](../health-check.md) for details.
+
+### Adding IDistributedCache (optional)
+
+Use the standard `IDistributedCache` abstraction backed by the same Redis connection:
+
+```csharp
+builder.Services.AddRedisDistributedCache();
+```
+
+See [IDistributedCache Adapter](../distributed-cache.md) for sliding expiration behavior and storage format.
+
 ### Injecting IRedisDatabase
 
 Once registered, you can inject `IRedisDatabase` directly into your controllers, services, or minimal API handlers:
