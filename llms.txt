@@ -2,7 +2,7 @@
 
 > A .NET library that extends StackExchange.Redis with object serialization, connection pooling, and higher-level APIs for Redis operations including Pub/Sub, Streams, GeoSpatial, VectorSet, Hash field expiry, and transparent compression.
 
-StackExchange.Redis.Extensions wraps the base StackExchange.Redis client library to make it easier to work with Redis in .NET applications. It supports .NET Standard 2.1, .NET 8, .NET 9, and .NET 10. All values are automatically serialized/deserialized through a pluggable ISerializer interface. Connection pooling with LeastLoaded and RoundRobin strategies is built-in.
+StackExchange.Redis.Extensions wraps the base StackExchange.Redis client library to make it easier to work with Redis in .NET applications. It supports .NET Standard 2.1, .NET 8, .NET 9, and .NET 10. All values are automatically serialized/deserialized through a pluggable ISerializer interface. Connection pooling with LeastLoaded and RoundRobin strategies is built-in. Includes IDistributedCache adapter, ASP.NET Core Health Check, .NET 8+ Keyed DI Services, atomic counters, Set Combine operations, and key management APIs.
 
 ## Core Documentation
 
@@ -26,6 +26,8 @@ StackExchange.Redis.Extensions wraps the base StackExchange.Redis client library
 - [Pub/Sub Messaging](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/pubsub.md): Typed publish/subscribe with error handling
 - [Hash Field Expiry](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/hash-field-expiry.md): Per-field TTL with HSETEX, HEXPIRE (Redis 7.4+)
 - [Compression](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/compressors.md): LZ4, Snappier, Zstandard, GZip, Brotli
+- [Health Check](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/health-check.md): ASP.NET Core health check monitoring connection pools
+- [IDistributedCache Adapter](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/distributed-cache.md): Microsoft-compatible IDistributedCache with sliding expiration
 
 ## Serializers
 
@@ -36,7 +38,7 @@ StackExchange.Redis.Extensions wraps the base StackExchange.Redis client library
 ## Advanced
 
 - [Azure Managed Identity](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/azure-managed-identity.md): ConfigurationOptionsAsyncHandler for Azure Cache
-- [Multiple Redis Servers](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/multipleServers.md): Named Redis instances with IRedisClientFactory
+- [Multiple Redis Servers](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/multipleServers.md): Named Redis instances with IRedisClientFactory and Keyed DI Services
 - [Logging & Diagnostics](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/logging.md): Source-generated logging, event IDs, filtering
 - [OpenTelemetry](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/openTelemetry.md): Distributed tracing integration
 - [ASP.NET Core Middleware](https://raw.githubusercontent.com/imperugo/StackExchange.Redis.Extensions/master/doc/asp.net-core/README.md): Integration and middleware setup

@@ -74,9 +74,27 @@ When the user reports:
 
 **Check:**
 1. **Pool health** — inject `IRedisClient` and call `client.ConnectionPoolManager.GetConnectionInformation()`
-2. **Redis server overloaded** — check `INFO clients` on Redis
-3. **Network partition** — the pool skips disconnected connections automatically and logs warnings
-4. **Dispose pattern** — ensure IRedisConnectionPoolManager is not disposed prematurely
+2. **Use health check** — register `builder.Services.AddHealthChecks().AddRedisExtensionsHealthCheck()` to monitor pool status automatically (returns Healthy/Degraded/Unhealthy)
+3. **Redis server overloaded** — check `INFO clients` on Redis
+4. **Network partition** — the pool skips disconnected connections automatically and logs warnings
+5. **Dispose pattern** — ensure IRedisConnectionPoolManager is not disposed prematurely
+
+### IDistributedCache Issues
+**Symptoms:** Data not found, expiration not working, migration issues
+
+**Check:**
+1. **Registration order** — `AddRedisDistributedCache()` must be called after `AddStackExchangeRedisExtensions<T>()`
+2. **KeyPrefix applies** — IDistributedCache goes through `IRedisDatabase.Database` which uses `WithKeyPrefix`. Cache keys are prefixed automatically.
+3. **Migration from Microsoft provider** — hash schema is compatible (`data`/`absexp`/`sldexp` fields), but key prefix format may differ (this library uses `KeyPrefix`, Microsoft uses `InstanceName`)
+4. **Sliding expiration not refreshing** — `Get` and `Refresh` both refresh the TTL. Check that `SlidingExpiration` was set in `DistributedCacheEntryOptions`
+
+### Keyed DI Not Resolving
+**Symptoms:** `[FromKeyedServices("name")]` returns null
+
+**Check:**
+1. **Config must have a Name** — `RedisConfiguration.Name` must be non-empty for keyed registration
+2. **Use eager overloads** — keyed services are only registered with the overloads that receive `RedisConfiguration` directly, NOT the `Func<IServiceProvider, ...>` overload
+3. **Name must match exactly** — `[FromKeyedServices("cache")]` must match `config.Name = "cache"` (case-sensitive)
 
 ### Performance Issues
 **Check:**
