@@ -140,7 +140,7 @@ v12.0.0:
                           IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
 
         <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers"
-                          Version="[17.14.*,18.0.0)"
+                          Version="[18.7.*,19.0.0)"
                           PrivateAssets="all"
                           IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
 
