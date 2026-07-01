@@ -86,4 +86,44 @@ public class KeyedDiTests
 
         Assert.Null(client);
     }
+
+    [Fact]
+    public void Should_Resolve_Default_Services_Alongside_Keyed()
+    {
+        var config = RedisConfigurationForTest.CreateBasicConfig();
+        config.Name = "test-redis";
+        config.IsDefault = true;
+
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(config);
+
+        using var sp = services.BuildServiceProvider();
+
+        var defaultClient = sp.GetService<IRedisClient>();
+        var keyedClient = sp.GetKeyedService<IRedisClient>("test-redis");
+
+        Assert.NotNull(defaultClient);
+        Assert.NotNull(keyedClient);
+    }
+
+    [Fact]
+    public void Should_Skip_Keyed_Registration_When_Name_Is_Empty()
+    {
+        var config = RedisConfigurationForTest.CreateBasicConfig();
+        config.Name = null;
+        config.IsDefault = true;
+
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(config);
+
+        using var sp = services.BuildServiceProvider();
+
+        var defaultClient = sp.GetService<IRedisClient>();
+        Assert.NotNull(defaultClient);
+
+        var keyedClient = sp.GetKeyedService<IRedisClient>("");
+        Assert.Null(keyedClient);
+    }
 }

@@ -110,5 +110,5 @@ public class RedisClient : IRedisClient
     public IRedisConnectionPoolManager ConnectionPoolManager { get; }
 
     /// <inheritdoc/>
-    public string Name => redisConfiguration.Name ?? "default";
+    public string Name => redisConfiguration.Name ?? IRedisClient.DefaultName;
 }

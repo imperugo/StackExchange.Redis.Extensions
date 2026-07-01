@@ -30,24 +30,44 @@ internal sealed class RedisDistributedCache : IDistributedCache
     /// <param name="redisDatabase">The Redis database to use for caching.</param>
     public RedisDistributedCache(IRedisDatabase redisDatabase)
     {
+        if (redisDatabase is null)
+            throw new ArgumentNullException(nameof(redisDatabase));
+
         db = redisDatabase.Database;
     }
 
     /// <inheritdoc/>
     public byte[]? Get(string key)
     {
+        if (key is null)
+            throw new ArgumentNullException(nameof(key));
+
         return GetAndRefresh(key, getData: true);
     }
 
     /// <inheritdoc/>
     public Task<byte[]?> GetAsync(string key, CancellationToken token = default)
     {
+        if (key is null)
+            throw new ArgumentNullException(nameof(key));
+
+        token.ThrowIfCancellationRequested();
+
         return GetAndRefreshAsync(key, getData: true);
     }
 
     /// <inheritdoc/>
     public void Set(string key, byte[] value, DistributedCacheEntryOptions options)
     {
+        if (key is null)
+            throw new ArgumentNullException(nameof(key));
+
+        if (value is null)
+            throw new ArgumentNullException(nameof(value));
+
+        if (options is null)
+            throw new ArgumentNullException(nameof(options));
+
         var absoluteExpiration = GetAbsoluteExpiration(options);
         var slidingTicks = options.SlidingExpiration?.Ticks ?? NotPresent;
 
@@ -69,6 +89,17 @@ internal sealed class RedisDistributedCache : IDistributedCache
     /// <inheritdoc/>
     public async Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default)
     {
+        if (key is null)
+            throw new ArgumentNullException(nameof(key));
+
+        if (value is null)
+            throw new ArgumentNullException(nameof(value));
+
+        if (options is null)
+            throw new ArgumentNullException(nameof(options));
+
+        token.ThrowIfCancellationRequested();
+
         var absoluteExpiration = GetAbsoluteExpiration(options);
         var slidingTicks = options.SlidingExpiration?.Ticks ?? NotPresent;
 
@@ -90,24 +121,40 @@ internal sealed class RedisDistributedCache : IDistributedCache
     /// <inheritdoc/>
     public void Remove(string key)
     {
+        if (key is null)
+            throw new ArgumentNullException(nameof(key));
+
         db.KeyDelete(key);
     }
 
     /// <inheritdoc/>
     public async Task RemoveAsync(string key, CancellationToken token = default)
     {
+        if (key is null)
+            throw new ArgumentNullException(nameof(key));
+
+        token.ThrowIfCancellationRequested();
+
         await db.KeyDeleteAsync(key).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public void Refresh(string key)
     {
+        if (key is null)
+            throw new ArgumentNullException(nameof(key));
+
         GetAndRefresh(key, getData: false);
     }
 
     /// <inheritdoc/>
     public async Task RefreshAsync(string key, CancellationToken token = default)
     {
+        if (key is null)
+            throw new ArgumentNullException(nameof(key));
+
+        token.ThrowIfCancellationRequested();
+
         await GetAndRefreshAsync(key, getData: false).ConfigureAwait(false);
     }
 
@@ -120,10 +167,7 @@ internal sealed class RedisDistributedCache : IDistributedCache
         else
             results = db.HashGet(key, [AbsoluteExpirationField, SlidingExpirationField]);
 
-        if (results.Length == 0)
-            return null;
-
-        if (getData && results[0].IsNull)
+        if (results[0].IsNull)
             return null;
 
         MapExpirationFields(results, getData, out var absExpTicks, out var sldExpTicks);
@@ -141,10 +185,7 @@ internal sealed class RedisDistributedCache : IDistributedCache
         else
             results = await db.HashGetAsync(key, [AbsoluteExpirationField, SlidingExpirationField]).ConfigureAwait(false);
 
-        if (results.Length == 0)
-            return null;
-
-        if (getData && results[0].IsNull)
+        if (results[0].IsNull)
             return null;
 
         MapExpirationFields(results, getData, out var absExpTicks, out var sldExpTicks);
@@ -205,7 +246,12 @@ internal sealed class RedisDistributedCache : IDistributedCache
     private static DateTimeOffset? GetAbsoluteExpiration(DistributedCacheEntryOptions options)
     {
         if (options.AbsoluteExpiration.HasValue)
+        {
+            if (options.AbsoluteExpiration.Value <= DateTimeOffset.UtcNow)
+                throw new ArgumentOutOfRangeException(nameof(options), options.AbsoluteExpiration.Value, "The absolute expiration value must be in the future.");
+
             return options.AbsoluteExpiration;
+        }
 
         if (options.AbsoluteExpirationRelativeToNow.HasValue)
             return DateTimeOffset.UtcNow.Add(options.AbsoluteExpirationRelativeToNow.Value);

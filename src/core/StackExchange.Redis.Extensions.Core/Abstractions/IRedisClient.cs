@@ -135,7 +135,12 @@ public interface IRedisClient
     IRedisConnectionPoolManager ConnectionPoolManager { get; }
 
     /// <summary>
+    /// The default name used when no explicit name is configured.
+    /// </summary>
+    const string DefaultName = "default";
+
+    /// <summary>
     /// Gets the name of this Redis client as defined in <see cref="Configuration.RedisConfiguration.Name"/>.
     /// </summary>
-    string Name => "default";
+    string Name => DefaultName;
 }

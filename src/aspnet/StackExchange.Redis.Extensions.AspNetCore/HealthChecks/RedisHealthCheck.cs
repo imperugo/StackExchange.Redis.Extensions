@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,11 +17,17 @@ internal sealed class RedisHealthCheck(IRedisClientFactory redisClientFactory) :
     /// <inheritdoc/>
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var data = new Dictionary<string, object>();
         var allHealthy = true;
         var anyHealthy = false;
+        var clients = redisClientFactory.GetAllClients().ToList();
 
-        foreach (var client in redisClientFactory.GetAllClients())
+        if (clients.Count == 0)
+            return HealthCheckResult.Unhealthy("No Redis clients are configured.", data: data);
+
+        foreach (var client in clients)
         {
             var name = client.Name;
             var info = client.ConnectionPoolManager.GetConnectionInformation();
@@ -34,25 +41,38 @@ internal sealed class RedisHealthCheck(IRedisClientFactory redisClientFactory) :
 
             if (info.ActiveConnections > 0)
                 anyHealthy = true;
+
+            if (info.ActiveConnections > 0)
+            {
+                try
+                {
+                    var db = client.GetDefaultDatabase().Database;
+                    var ping = await db.PingAsync().ConfigureAwait(false);
+                    data[$"{name}:ping_ms"] = ping.TotalMilliseconds;
+                }
+                catch (RedisConnectionException ex)
+                {
+                    allHealthy = false;
+                    data[$"{name}:ping"] = "connection_failed";
+                    return HealthCheckResult.Unhealthy($"Redis PING failed for '{name}': connection error.", ex, data);
+                }
+                catch (RedisException ex)
+                {
+                    allHealthy = false;
+                    data[$"{name}:ping"] = "failed";
+                    return HealthCheckResult.Unhealthy($"Redis PING failed for '{name}'.", ex, data);
+                }
+                catch (RedisTimeoutException ex)
+                {
+                    allHealthy = false;
+                    data[$"{name}:ping"] = "timed_out";
+                    return HealthCheckResult.Unhealthy($"Redis PING timed out for '{name}'.", ex, data);
+                }
+            }
         }
 
         if (!anyHealthy)
             return HealthCheckResult.Unhealthy("All Redis connections are invalid.", data: data);
-
-        try
-        {
-            var db = redisClientFactory.GetDefaultRedisDatabase().Database;
-            var ping = await db.PingAsync().ConfigureAwait(false);
-            data["ping_ms"] = ping.TotalMilliseconds;
-        }
-        catch (RedisException ex)
-        {
-            return HealthCheckResult.Unhealthy("Redis PING failed.", ex, data);
-        }
-        catch (RedisTimeoutException ex)
-        {
-            return HealthCheckResult.Unhealthy("Redis PING timed out.", ex, data);
-        }
 
         if (!allHealthy)
             return HealthCheckResult.Degraded("Some Redis connections are invalid.", data: data);
