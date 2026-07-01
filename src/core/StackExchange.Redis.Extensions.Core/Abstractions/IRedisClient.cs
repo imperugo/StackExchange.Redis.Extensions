@@ -133,4 +133,14 @@ public interface IRedisClient
     /// Returns an instance <see cref="ConnectionPoolManager"/> that handles the connection pooling.
     /// </summary>
     IRedisConnectionPoolManager ConnectionPoolManager { get; }
+
+    /// <summary>
+    /// The default name used when no explicit name is configured.
+    /// </summary>
+    const string DefaultName = "default";
+
+    /// <summary>
+    /// Gets the name of this Redis client as defined in <see cref="Configuration.RedisConfiguration.Name"/>.
+    /// </summary>
+    string Name => DefaultName;
 }

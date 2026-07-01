@@ -3,7 +3,7 @@
     <!-- General information -->
     <PropertyGroup>
         <Authors>Ugo Lattanzi</Authors>
-        <VersionPrefix>12.2.0</VersionPrefix>
+        <VersionPrefix>12.5.0</VersionPrefix>
         <!--
         <VersionSuffix>pre</VersionSuffix>
         -->
@@ -46,6 +46,14 @@ Features:
 Serializer packages (pick one): System.Text.Json, Newtonsoft, MemoryPack, MsgPack, Protobuf, ServiceStack, Utf8Json.
         </Description>
         <PackageReleaseNotes>
+v12.5.0:
+- Added IDistributedCache adapter with Hash-based storage compatible with Microsoft.Extensions.Caching.StackExchangeRedis (#632)
+- Added ASP.NET Core Health Check for Redis connection pool monitoring (#633)
+- Added StringIncrementAsync / StringDecrementAsync with long and double overloads (#634)
+- Added SetCombineAsync / SetCombineAndStoreAsync for union, intersect, and difference operations (#635)
+- Added Key Management: KeyRenameAsync, KeyTypeAsync, KeyDumpAsync, KeyRestoreAsync (#636)
+- Added .NET 8+ Keyed DI Services for named Redis clients via [FromKeyedServices] (#654)
+
 v12.2.0:
 - Fixed SearchKeysAsync ignoring database number — SCAN now correctly targets the specified database instead of always scanning DB0 (#651)
 - Fixed RemoveByTagAsync not deleting the tag Set key itself, causing a slow memory leak of empty tag Sets in Redis (#650)
@@ -132,7 +140,7 @@ v12.0.0:
                           IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
 
         <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers"
-                          Version="[17.14.*,18.0.0)"
+                          Version="[18.7.*,19.0.0)"
                           PrivateAssets="all"
                           IncludeAssets="runtime; build; native; contentfiles; analyzer"/>
 

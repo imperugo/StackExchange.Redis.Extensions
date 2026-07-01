@@ -331,6 +331,52 @@ public partial interface IRedisDatabase
     public Task<T[]> SetMembersAsync<T>(string key, CommandFlags flag = CommandFlags.None);
 
     /// <summary>
+    ///     Run SUNION/SINTER/SDIFF command. See https://redis.io/commands/sunion, https://redis.io/commands/sinter, https://redis.io/commands/sdiff
+    ///     Returns the result of the specified set operation between two sets, deserializing each member to <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the expected objects in the set</typeparam>
+    /// <param name="operation">The set operation to perform (Union, Intersect, Difference)</param>
+    /// <param name="firstKey">The key of the first set</param>
+    /// <param name="secondKey">The key of the second set</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>An array of deserialized objects resulting from the set operation</returns>
+    public Task<T[]> SetCombineAsync<T>(SetOperation operation, string firstKey, string secondKey, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Run SUNION/SINTER/SDIFF command. See https://redis.io/commands/sunion, https://redis.io/commands/sinter, https://redis.io/commands/sdiff
+    ///     Returns the result of the specified set operation between multiple sets, deserializing each member to <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the expected objects in the set</typeparam>
+    /// <param name="operation">The set operation to perform (Union, Intersect, Difference)</param>
+    /// <param name="keys">The keys of the sets to combine</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>An array of deserialized objects resulting from the set operation</returns>
+    public Task<T[]> SetCombineAsync<T>(SetOperation operation, string[] keys, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Run SUNIONSTORE/SINTERSTORE/SDIFFSTORE command. See https://redis.io/commands/sunionstore, https://redis.io/commands/sinterstore, https://redis.io/commands/sdiffstore
+    ///     Performs the specified set operation between two sets and stores the result in the destination key.
+    /// </summary>
+    /// <param name="operation">The set operation to perform (Union, Intersect, Difference)</param>
+    /// <param name="destinationKey">The key where the result will be stored</param>
+    /// <param name="firstKey">The key of the first set</param>
+    /// <param name="secondKey">The key of the second set</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>The number of elements in the resulting set</returns>
+    public Task<long> SetCombineAndStoreAsync(SetOperation operation, string destinationKey, string firstKey, string secondKey, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Run SUNIONSTORE/SINTERSTORE/SDIFFSTORE command. See https://redis.io/commands/sunionstore, https://redis.io/commands/sinterstore, https://redis.io/commands/sdiffstore
+    ///     Performs the specified set operation between multiple sets and stores the result in the destination key.
+    /// </summary>
+    /// <param name="operation">The set operation to perform (Union, Intersect, Difference)</param>
+    /// <param name="destinationKey">The key where the result will be stored</param>
+    /// <param name="keys">The keys of the sets to combine</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>The number of elements in the resulting set</returns>
+    public Task<long> SetCombineAndStoreAsync(SetOperation operation, string destinationKey, string[] keys, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
     ///     Searches the keys from Redis database
     /// </summary>
     /// <remarks>
@@ -402,4 +448,87 @@ public partial interface IRedisDatabase
     /// <param name="flag">Behaviour markers associated with a given command</param>
     /// <returns>An IDictionary object that contains the original key and the result of the operation</returns>
     public Task<IDictionary<string, bool>> UpdateExpiryAllAsync(HashSet<string> keys, TimeSpan expiresIn, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Increments the number stored at key by <paramref name="value"/>.
+    ///     If the key does not exist, it is set to 0 before performing the operation.
+    ///     Run INCRBY command https://redis.io/commands/incrby
+    /// </summary>
+    /// <param name="key">The cache key.</param>
+    /// <param name="value">The amount to increment by (default 1).</param>
+    /// <param name="flag">Behaviour markers associated with a given command.</param>
+    /// <returns>The value of key after the increment.</returns>
+    public Task<long> StringIncrementAsync(string key, long value = 1, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Decrements the number stored at key by <paramref name="value"/>.
+    ///     If the key does not exist, it is set to 0 before performing the operation.
+    ///     Run DECRBY command https://redis.io/commands/decrby
+    /// </summary>
+    /// <param name="key">The cache key.</param>
+    /// <param name="value">The amount to decrement by (default 1).</param>
+    /// <param name="flag">Behaviour markers associated with a given command.</param>
+    /// <returns>The value of key after the decrement.</returns>
+    public Task<long> StringDecrementAsync(string key, long value = 1, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Increments the floating point number stored at key by <paramref name="value"/>.
+    ///     If the key does not exist, it is set to 0 before performing the operation.
+    ///     Run INCRBYFLOAT command https://redis.io/commands/incrbyfloat
+    /// </summary>
+    /// <param name="key">The cache key.</param>
+    /// <param name="value">The amount to increment by.</param>
+    /// <param name="flag">Behaviour markers associated with a given command.</param>
+    /// <returns>The value of key after the increment.</returns>
+    public Task<double> StringIncrementAsync(string key, double value, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Decrements the floating point number stored at key by <paramref name="value"/>.
+    ///     If the key does not exist, it is set to 0 before performing the operation.
+    ///     There is no DECRBYFLOAT command; this is implemented via INCRBYFLOAT with a negated value.
+    /// </summary>
+    /// <param name="key">The cache key.</param>
+    /// <param name="value">The amount to decrement by.</param>
+    /// <param name="flag">Behaviour markers associated with a given command.</param>
+    /// <returns>The value of key after the decrement.</returns>
+    public Task<double> StringDecrementAsync(string key, double value, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Renames the specified key.
+    ///     Run RENAME command https://redis.io/commands/rename
+    /// </summary>
+    /// <param name="key">The key to rename.</param>
+    /// <param name="newKey">The new name for the key.</param>
+    /// <param name="when">The condition under which the rename should occur (Always is the default value).</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>True if the key was renamed. Otherwise false</returns>
+    public Task<bool> KeyRenameAsync(string key, string newKey, When when = When.Always, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Returns the type of the value stored at the specified key.
+    ///     Run TYPE command https://redis.io/commands/type
+    /// </summary>
+    /// <param name="key">The cache key.</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>The <see cref="RedisType"/> of the key, or <see cref="RedisType.None"/> when the key does not exist.</returns>
+    public Task<RedisType> KeyTypeAsync(string key, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Serializes the value stored at the specified key in a Redis-specific format and returns it.
+    ///     Run DUMP command https://redis.io/commands/dump
+    /// </summary>
+    /// <param name="key">The cache key.</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    /// <returns>The serialized value as a byte array, or null if the key does not exist.</returns>
+    public Task<byte[]?> KeyDumpAsync(string key, CommandFlags flag = CommandFlags.None);
+
+    /// <summary>
+    ///     Creates a key associated with a value that is obtained by deserializing the provided serialized value (obtained via DUMP).
+    ///     Run RESTORE command https://redis.io/commands/restore
+    /// </summary>
+    /// <param name="key">The cache key.</param>
+    /// <param name="value">The serialized value previously obtained using <see cref="KeyDumpAsync"/>.</param>
+    /// <param name="expiry">The optional expiry to set on the key.</param>
+    /// <param name="flag">Behaviour markers associated with a given command</param>
+    public Task KeyRestoreAsync(string key, byte[] value, TimeSpan? expiry = null, CommandFlags flag = CommandFlags.None);
 }

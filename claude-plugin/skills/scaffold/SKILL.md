@@ -15,7 +15,10 @@ When the user asks to implement:
 - VectorSet similarity search (RAG, recommendations)
 - Hash operations with per-field TTL
 - Pub/Sub messaging
-- Caching patterns (cache-aside, write-through)
+- Caching patterns (cache-aside, write-through, IDistributedCache)
+- Atomic counters (increment/decrement)
+- Set operations (union, intersect, difference)
+- Key management (rename, type, dump/restore)
 - Bulk operations
 
 ## Patterns
@@ -157,6 +160,70 @@ public async Task CacheBulkAsync(IRedisDatabase redis, Dictionary<string, Produc
 {
     var items = products.Select(p => Tuple.Create($"product:{p.Key}", p.Value)).ToArray();
     await redis.AddAllAsync(items, TimeSpan.FromHours(1));
+}
+```
+
+### Atomic Counters
+```csharp
+public class RateLimiter(IRedisDatabase redis)
+{
+    public async Task<bool> AllowRequestAsync(string clientId, int maxRequests, TimeSpan window)
+    {
+        var key = $"ratelimit:{clientId}";
+        var count = await redis.StringIncrementAsync(key);
+
+        if (count == 1)
+            await redis.UpdateExpiryAsync(key, window);
+
+        return count <= maxRequests;
+    }
+}
+```
+
+### Set Combine (Union, Intersect, Difference)
+```csharp
+public class TagService(IRedisDatabase redis)
+{
+    public async Task<string[]> GetCommonTagsAsync(string user1, string user2)
+    {
+        return await redis.SetCombineAsync<string>(
+            SetOperation.Intersect, $"user:{user1}:tags", $"user:{user2}:tags");
+    }
+
+    public async Task<long> MergeTagsAsync(string destination, params string[] sources)
+    {
+        return await redis.SetCombineAndStoreAsync(
+            SetOperation.Union, destination, sources);
+    }
+}
+```
+
+### Key Management
+```csharp
+// Rename with condition
+await redis.KeyRenameAsync("temp:data", "final:data", When.NotExists);
+
+// Check type before operations
+var type = await redis.KeyTypeAsync("my-key"); // RedisType.String, Set, Hash, ...
+
+// Dump and restore (migrate between databases)
+var dump = await redis.KeyDumpAsync("source-key");
+await redis.KeyRestoreAsync("dest-key", dump, TimeSpan.FromHours(24));
+```
+
+### IDistributedCache
+```csharp
+// Registered via: builder.Services.AddRedisDistributedCache()
+public class SessionService(IDistributedCache cache)
+{
+    public async Task SetAsync(string sessionId, byte[] data)
+    {
+        await cache.SetAsync($"session:{sessionId}", data, new DistributedCacheEntryOptions
+        {
+            SlidingExpiration = TimeSpan.FromMinutes(20),
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(4),
+        });
+    }
 }
 ```
 

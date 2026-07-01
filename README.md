@@ -5,7 +5,7 @@
 [![CI](https://github.com/imperugo/StackExchange.Redis.Extensions/actions/workflows/ci.yml/badge.svg)](https://github.com/imperugo/StackExchange.Redis.Extensions/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/imperugo/StackExchange.Redis.Extensions/actions/workflows/codeql.yml/badge.svg)](https://github.com/imperugo/StackExchange.Redis.Extensions/actions/workflows/codeql.yml)
 [![NuGet](https://img.shields.io/nuget/v/StackExchange.Redis.Extensions.Core.svg?style=flat&label=NuGet)](https://www.nuget.org/packages/StackExchange.Redis.Extensions.Core/)
-![Tests](https://img.shields.io/badge/tests-970%2B%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-1100%2B%20passing-brightgreen)
 ![.NET](https://img.shields.io/badge/.NET-8%20%7C%209%20%7C%2010-blue)
 
 > **AI-Ready:** This library provides an [`llms.txt`](llms.txt) file for AI coding assistants and a Claude Code plugin for configuration, scaffolding, and troubleshooting.
@@ -24,12 +24,16 @@
 - Hash operations with per-field expiry (Redis 7.4+)
 - GeoSpatial indexes (GEOADD, GEOSEARCH, GEODIST, etc.)
 - Redis Streams with consumer group support
-- Set, List, and Sorted Set operations
+- Set, List, and Sorted Set operations with Set Combine (union, intersect, diff)
 - Key tagging and search
+- Key management (rename, type, dump/restore)
+- Atomic counters (StringIncrement/StringDecrement)
 - Transparent compression (GZip, Brotli, LZ4, Snappy, Zstandard)
+- `IDistributedCache` adapter (Microsoft-compatible Hash schema)
+- ASP.NET Core Health Check for connection pool monitoring
 - Azure Managed Identity support
-- ASP.NET Core integration with DI
-- Multiple named Redis instances
+- ASP.NET Core integration with DI and .NET 8+ Keyed Services
+- Multiple named Redis instances with `[FromKeyedServices]` support
 - OpenTelemetry integration
 - .NET Standard 2.1, .NET 8, .NET 9, .NET 10
 
@@ -221,6 +225,102 @@ await redis.SubscribeAsync<OrderEvent>("orders:new", async order =>
 await redis.PublishAsync("orders:new", new OrderEvent { Id = 42 });
 ```
 
+### Atomic Counters
+
+```csharp
+// Increment/decrement with long (default step = 1)
+var views = await redis.StringIncrementAsync("page:views");
+var stock = await redis.StringDecrementAsync("product:123:stock");
+
+// Custom step
+await redis.StringIncrementAsync("stats:bytes", 1024);
+
+// Double precision
+await redis.StringIncrementAsync("account:balance", 49.99);
+```
+
+### Set Operations
+
+```csharp
+// Combine sets: union, intersect, difference
+var allTags = await redis.SetCombineAsync<string>(SetOperation.Union, "user:1:tags", "user:2:tags");
+var commonTags = await redis.SetCombineAsync<string>(SetOperation.Intersect, "user:1:tags", "user:2:tags");
+
+// Store result in a new key
+await redis.SetCombineAndStoreAsync(SetOperation.Union, "all:tags", new[] { "set:a", "set:b", "set:c" });
+```
+
+### Key Management
+
+```csharp
+// Rename a key
+await redis.KeyRenameAsync("old-key", "new-key");
+
+// Check key type
+var type = await redis.KeyTypeAsync("my-key"); // RedisType.String, Set, Hash, ...
+
+// Dump and restore (migrate between databases)
+var dump = await redis.KeyDumpAsync("my-key");
+await redis.KeyRestoreAsync("my-key-copy", dump, TimeSpan.FromHours(1));
+```
+
+### IDistributedCache
+
+```csharp
+// Register the IDistributedCache adapter (call after AddStackExchangeRedisExtensions)
+builder.Services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(redisConfig);
+builder.Services.AddRedisDistributedCache();
+
+// Use standard IDistributedCache anywhere
+public class MyService(IDistributedCache cache)
+{
+    public async Task CacheData()
+    {
+        await cache.SetAsync("session:abc", data, new DistributedCacheEntryOptions
+        {
+            SlidingExpiration = TimeSpan.FromMinutes(20),
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(4),
+        });
+
+        var cached = await cache.GetAsync("session:abc");
+    }
+}
+```
+
+> **Note:** Uses a Hash-based schema (`data`/`absexp`/`sldexp`) compatible with `Microsoft.Extensions.Caching.StackExchangeRedis`, enabling zero-downtime migration between providers.
+
+### Health Check
+
+```csharp
+// Register the health check
+builder.Services.AddHealthChecks()
+    .AddRedisExtensionsHealthCheck();
+
+// Returns:
+// - Healthy: all pool connections active + PING OK
+// - Degraded: some connections invalid but Redis responding
+// - Unhealthy: all connections invalid or PING fails
+```
+
+### Keyed DI Services (.NET 8+)
+
+```csharp
+// Register with named configurations
+builder.Services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(new[]
+{
+    new RedisConfiguration { Name = "cache", IsDefault = true, /* ... */ },
+    new RedisConfiguration { Name = "session", /* ... */ },
+});
+
+// Inject by name using [FromKeyedServices]
+public class MyService(
+    [FromKeyedServices("cache")] IRedisDatabase cacheDb,
+    [FromKeyedServices("session")] IRedisDatabase sessionDb)
+{
+    // Each resolves to its own Redis instance with isolated connection pool
+}
+```
+
 ### Compression
 
 ```csharp
@@ -324,11 +424,13 @@ Full documentation is available in the [doc/](doc/) folder:
 - [Pub/Sub Messaging](doc/pubsub.md)
 - [Hash Field Expiry](doc/hash-field-expiry.md) (Redis 7.4+)
 - [Compression](doc/compressors.md) — GZip, Brotli, LZ4, Snappy, Zstandard
+- [Health Check](doc/health-check.md)
+- [IDistributedCache Adapter](doc/distributed-cache.md)
 
 **Advanced**
 - [Migration Guide: v11 → v12](doc/migration-v11-to-v12.md)
 - [Logging & Diagnostics](doc/logging.md)
-- [Multiple Redis Servers](doc/multipleServers.md)
+- [Multiple Redis Servers](doc/multipleServers.md) — including Keyed DI Services
 - [Azure Managed Identity](doc/azure-managed-identity.md)
 - [OpenTelemetry](doc/openTelemetry.md)
 - [Redis Information Middleware](doc/asp.net-core/expose-redis-information.md)

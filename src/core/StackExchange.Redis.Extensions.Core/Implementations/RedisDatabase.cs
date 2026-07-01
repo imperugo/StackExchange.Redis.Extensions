@@ -476,6 +476,37 @@ public partial class RedisDatabase : IRedisDatabase
     }
 
     /// <inheritdoc/>
+    public async Task<T[]> SetCombineAsync<T>(SetOperation operation, string firstKey, string secondKey, CommandFlags flag = CommandFlags.None)
+    {
+        var members = await Database.SetCombineAsync(operation, firstKey, secondKey, flag).ConfigureAwait(false);
+
+        if (members.Length == 0)
+            return [];
+
+        return members.ToFastArray(m => Serializer.Deserialize<T>(m)!);
+    }
+
+    /// <inheritdoc/>
+    public async Task<T[]> SetCombineAsync<T>(SetOperation operation, string[] keys, CommandFlags flag = CommandFlags.None)
+    {
+        var redisKeys = keys.ToFastArray(k => (RedisKey)k);
+        var members = await Database.SetCombineAsync(operation, redisKeys, flag).ConfigureAwait(false);
+
+        if (members.Length == 0)
+            return [];
+
+        return members.ToFastArray(m => Serializer.Deserialize<T>(m)!);
+    }
+
+    /// <inheritdoc/>
+    public Task<long> SetCombineAndStoreAsync(SetOperation operation, string destinationKey, string firstKey, string secondKey, CommandFlags flag = CommandFlags.None)
+        => Database.SetCombineAndStoreAsync(operation, destinationKey, firstKey, secondKey, flag);
+
+    /// <inheritdoc/>
+    public Task<long> SetCombineAndStoreAsync(SetOperation operation, string destinationKey, string[] keys, CommandFlags flag = CommandFlags.None)
+        => Database.SetCombineAndStoreAsync(operation, destinationKey, keys.ToFastArray(k => (RedisKey)k), flag);
+
+    /// <inheritdoc/>
     public async Task<IEnumerable<string>> SearchKeysAsync(string pattern)
     {
         pattern = $"{keyPrefix}{pattern}";
@@ -550,6 +581,38 @@ public partial class RedisDatabase : IRedisDatabase
         var entryBytes = Serializer.Serialize(value);
         return Database.SortedSetIncrementAsync(key, entryBytes, score, flag);
     }
+
+    /// <inheritdoc/>
+    public Task<long> StringIncrementAsync(string key, long value = 1, CommandFlags flag = CommandFlags.None)
+        => Database.StringIncrementAsync(key, value, flag);
+
+    /// <inheritdoc/>
+    public Task<long> StringDecrementAsync(string key, long value = 1, CommandFlags flag = CommandFlags.None)
+        => Database.StringDecrementAsync(key, value, flag);
+
+    /// <inheritdoc/>
+    public Task<double> StringIncrementAsync(string key, double value, CommandFlags flag = CommandFlags.None)
+        => Database.StringIncrementAsync(key, value, flag);
+
+    /// <inheritdoc/>
+    public Task<double> StringDecrementAsync(string key, double value, CommandFlags flag = CommandFlags.None)
+        => Database.StringDecrementAsync(key, value, flag);
+
+    /// <inheritdoc/>
+    public Task<bool> KeyRenameAsync(string key, string newKey, When when = When.Always, CommandFlags flag = CommandFlags.None)
+        => Database.KeyRenameAsync(key, newKey, when, flag);
+
+    /// <inheritdoc/>
+    public Task<RedisType> KeyTypeAsync(string key, CommandFlags flag = CommandFlags.None)
+        => Database.KeyTypeAsync(key, flag);
+
+    /// <inheritdoc/>
+    public Task<byte[]?> KeyDumpAsync(string key, CommandFlags flag = CommandFlags.None)
+        => Database.KeyDumpAsync(key, flag);
+
+    /// <inheritdoc/>
+    public Task KeyRestoreAsync(string key, byte[] value, TimeSpan? expiry = null, CommandFlags flag = CommandFlags.None)
+        => Database.KeyRestoreAsync(key, value, expiry, flag);
 
     private static Dictionary<string, string> ParseInfo(string info)
     {

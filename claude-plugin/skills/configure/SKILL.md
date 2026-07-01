@@ -75,7 +75,7 @@ var config = new RedisConfiguration
 };
 ```
 
-### Multiple instances
+### Multiple instances with Keyed DI (.NET 8+)
 ```csharp
 var configs = new[]
 {
@@ -84,7 +84,30 @@ var configs = new[]
 };
 builder.Services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(configs);
 
-// Resolve: inject IRedisClientFactory, call GetRedisClient("Session")
+// Option 1: Keyed DI Services (.NET 8+)
+public class MyService(
+    [FromKeyedServices("Cache")] IRedisDatabase cacheDb,
+    [FromKeyedServices("Session")] IRedisDatabase sessionDb) { }
+
+// Option 2: Factory pattern (all TFMs)
+// inject IRedisClientFactory, call GetRedisClient("Session")
+```
+
+### Health Check
+```csharp
+builder.Services.AddHealthChecks()
+    .AddRedisExtensionsHealthCheck(
+        name: "redis",
+        tags: new[] { "db", "cache", "ready" });
+```
+
+### IDistributedCache adapter
+```csharp
+// Call after AddStackExchangeRedisExtensions
+builder.Services.AddRedisDistributedCache();
+
+// Uses Hash-based storage compatible with Microsoft.Extensions.Caching.StackExchangeRedis
+// Supports sliding expiration, absolute expiration, and refresh
 ```
 
 ### Key properties
