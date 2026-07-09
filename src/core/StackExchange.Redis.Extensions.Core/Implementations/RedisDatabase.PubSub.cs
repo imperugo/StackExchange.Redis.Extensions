@@ -50,7 +50,7 @@ public partial class RedisDatabase
     }
 
     /// <inheritdoc/>
-    public Task UnsubscribeAsync<T>(RedisChannel channel, Func<T?, Task> handler, CommandFlags flag = CommandFlags.None)
+    public async Task UnsubscribeAsync<T>(RedisChannel channel, Func<T?, Task> handler, CommandFlags flag = CommandFlags.None)
     {
 #if NET8_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(handler);
@@ -59,15 +59,23 @@ public partial class RedisDatabase
             throw new ArgumentNullException(nameof(handler));
 #endif
 
-        var sub = connectionPoolManager.GetConnection().GetSubscriber();
-        return sub.UnsubscribeAsync(channel, (_, value) => handler(Serializer.Deserialize<T>(value)), flag);
+        foreach (var connection in connectionPoolManager.GetConnections())
+        {
+            var sub = connection.GetSubscriber();
+
+            if (sub.SubscribedEndpoint(channel) is not null)
+                await sub.UnsubscribeAsync(channel, null, flag).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
-    public Task UnsubscribeAllAsync(CommandFlags flag = CommandFlags.None)
+    public async Task UnsubscribeAllAsync(CommandFlags flag = CommandFlags.None)
     {
-        var sub = connectionPoolManager.GetConnection().GetSubscriber();
-        return sub.UnsubscribeAllAsync(flag);
+        foreach (var connection in connectionPoolManager.GetConnections())
+        {
+            var sub = connection.GetSubscriber();
+            await sub.UnsubscribeAllAsync(flag).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>

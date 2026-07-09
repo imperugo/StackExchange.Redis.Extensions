@@ -3,7 +3,7 @@
     <!-- General information -->
     <PropertyGroup>
         <Authors>Ugo Lattanzi</Authors>
-        <VersionPrefix>12.5.0</VersionPrefix>
+        <VersionPrefix>12.6.0</VersionPrefix>
         <!--
         <VersionSuffix>pre</VersionSuffix>
         -->
@@ -46,6 +46,9 @@ Features:
 Serializer packages (pick one): System.Text.Json, Newtonsoft, MemoryPack, MsgPack, Protobuf, ServiceStack, Utf8Json.
         </Description>
         <PackageReleaseNotes>
+v12.6.0:
+- Fixed Pub/Sub UnsubscribeAsync and UnsubscribeAllAsync not working with connection pooling — unsubscribe now iterates the pool to find the correct multiplexer (#657)
+
 v12.5.0:
 - Added IDistributedCache adapter with Hash-based storage compatible with Microsoft.Extensions.Caching.StackExchangeRedis (#632)
 - Added ASP.NET Core Health Check for Redis connection pool monitoring (#633)

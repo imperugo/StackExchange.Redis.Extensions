@@ -35,6 +35,74 @@ public abstract partial class CacheClientTestBase
     }
 
     [Fact]
+    public async Task UnsubscribeAllAsync_ShouldStopReceivingMessages_Async()
+    {
+        var channel = new RedisChannel(Guid.NewGuid().ToString(), RedisChannel.PatternMode.Literal);
+        var received = new TaskCompletionSource<string?>();
+
+        await Sut.GetDefaultDatabase().SubscribeAsync<string>(channel, msg =>
+        {
+            received.TrySetResult(msg);
+            return Task.CompletedTask;
+        });
+
+        await Sut.GetDefaultDatabase().PublishAsync(channel, "before");
+
+        using var cts1 = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        cts1.Token.Register(() => received.TrySetCanceled());
+        Assert.Equal("before", await received.Task);
+
+        await Sut.GetDefaultDatabase().UnsubscribeAllAsync();
+
+        var receivedAfter = new TaskCompletionSource<string?>();
+
+        await Sut.GetDefaultDatabase().SubscribeAsync<string>(channel, msg =>
+        {
+            receivedAfter.TrySetResult(msg);
+            return Task.CompletedTask;
+        });
+
+        await Sut.GetDefaultDatabase().PublishAsync(channel, "after");
+
+        using var cts2 = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        cts2.Token.Register(() => receivedAfter.TrySetCanceled());
+
+        Assert.Equal("after", await receivedAfter.Task);
+
+        await Sut.GetDefaultDatabase().UnsubscribeAllAsync();
+    }
+
+    [Fact]
+    public async Task UnsubscribeAsync_ShouldStopReceivingMessages_Async()
+    {
+        var channel = new RedisChannel(Guid.NewGuid().ToString(), RedisChannel.PatternMode.Literal);
+        var messageCount = 0;
+        var firstReceived = new TaskCompletionSource<bool>();
+
+        Func<string?, Task> handler = msg =>
+        {
+            Interlocked.Increment(ref messageCount);
+            firstReceived.TrySetResult(true);
+            return Task.CompletedTask;
+        };
+
+        await Sut.GetDefaultDatabase().SubscribeAsync(channel, handler);
+
+        await Sut.GetDefaultDatabase().PublishAsync(channel, "msg1");
+
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        cts.Token.Register(() => firstReceived.TrySetCanceled());
+        await firstReceived.Task;
+
+        await Sut.GetDefaultDatabase().UnsubscribeAsync<string>(channel, handler);
+
+        await Sut.GetDefaultDatabase().PublishAsync(channel, "msg2");
+        await Task.Delay(500);
+
+        Assert.Equal(1, messageCount);
+    }
+
+    [Fact]
     public async Task SubscribeAsync_HandlerThrows_ShouldNotCrashProcess_Async()
     {
         var channel = new RedisChannel(Guid.NewGuid().ToString(), RedisChannel.PatternMode.Literal);
