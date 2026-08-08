@@ -561,9 +561,18 @@ public partial class RedisDatabase : IRedisDatabase
     {
         var info = (await Database.ScriptEvaluateAsync("return redis.call('INFO')").ConfigureAwait(false)).ToString();
 
-        return string.IsNullOrEmpty(info)
-            ? new Dictionary<string, string>()
-            : ParseInfo(info);
+        return InfoDetailsParser.ParseAsDictionary(info);
+    }
+
+    /// <inheritdoc/>
+    public async Task<Dictionary<string, string>> GetInfoAsync(string section)
+    {
+        var script = string.IsNullOrWhiteSpace(section)
+            ? "return redis.call('INFO')"
+            : $"return redis.call('INFO','{section}')";
+        var info = (await Database.ScriptEvaluateAsync(script).ConfigureAwait(false)).ToString();
+
+        return InfoDetailsParser.ParseAsDictionary(info);
     }
 
     /// <inheritdoc/>
@@ -571,9 +580,18 @@ public partial class RedisDatabase : IRedisDatabase
     {
         var info = (await Database.ScriptEvaluateAsync("return redis.call('INFO')").ConfigureAwait(false)).ToString();
 
-        return string.IsNullOrEmpty(info)
-            ? []
-            : ParseCategorizedInfo(info);
+        return InfoDetail.ParseFrom(info);
+    }
+
+    /// <inheritdoc/>
+    public async Task<InfoDetail[]> GetInfoCategorizedAsync(string section)
+    {
+        var script = string.IsNullOrWhiteSpace(section)
+            ? "return redis.call('INFO')"
+            : $"return redis.call('INFO','{section}')";
+        var info = (await Database.ScriptEvaluateAsync(script).ConfigureAwait(false)).ToString();
+
+        return InfoDetail.ParseFrom(info);
     }
 
     /// <inheritdoc/>
@@ -614,29 +632,4 @@ public partial class RedisDatabase : IRedisDatabase
     /// <inheritdoc/>
     public Task KeyRestoreAsync(string key, byte[] value, TimeSpan? expiry = null, CommandFlags flag = CommandFlags.None)
         => Database.KeyRestoreAsync(key, value, expiry, flag);
-
-    private static Dictionary<string, string> ParseInfo(string info)
-    {
-        // Call Parse Categorized Info to cut back on duplicated code.
-        var data = ParseCategorizedInfo(info);
-
-        // Return a dictionary of the Info Key and Info value
-
-        var result = new Dictionary<string, string>(data.Length);
-
-        foreach (var detail in data)
-            result.TryAdd(detail.Key, detail.InfoValue);
-
-        return result;
-    }
-
-    private static InfoDetail[] ParseCategorizedInfo(string info)
-    {
-        var data = new List<InfoDetail>();
-        var category = string.Empty;
-
-        info.AsSpan().EnumerateLines(ref data, ref category);
-
-        return [.. data];
-    }
 }

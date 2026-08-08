@@ -90,6 +90,20 @@ public abstract partial class CacheClientTestBase : IDisposable
         Assert.Equal("6379", response["tcp_port"]);
     }
 
+    [Theory]
+    [InlineData("Server", "tcp_port", "6379")]
+    [InlineData("clients", "blocked_clients", "0")]
+    public async Task Info_Section_Should_Return_Valid_Information_Async(string section, string key, string value)
+    {
+        var response = await Sut
+            .GetDefaultDatabase()
+            .GetInfoAsync(section);
+
+        Assert.NotNull(response);
+        Assert.True(response.Count > 0);
+        Assert.Equal(value, response[key]);
+    }
+
     [Fact]
     public async Task Info_Category_Should_Return_Valid_Information_Async()
     {
@@ -100,6 +114,20 @@ public abstract partial class CacheClientTestBase : IDisposable
         Assert.NotNull(response);
         Assert.NotEmpty(response);
         Assert.Equal("6379", response.Single(x => x.Key == "tcp_port").InfoValue);
+    }
+
+    [Theory]
+    [InlineData("Server", "tcp_port", "6379")]
+    [InlineData("clients", "blocked_clients", "0")]
+    public async Task Info_Section_Category_Should_Return_Valid_Information_Async(string section, string key, string value)
+    {
+        var response = await Sut
+            .GetDefaultDatabase()
+            .GetInfoCategorizedAsync(section);
+
+        Assert.NotNull(response);
+        Assert.NotEmpty(response);
+        Assert.Equal(value, response.Single(x => x.Key == key).InfoValue);
     }
 
     [Fact]
