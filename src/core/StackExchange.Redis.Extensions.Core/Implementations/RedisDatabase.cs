@@ -22,6 +22,9 @@ namespace StackExchange.Redis.Extensions.Core.Implementations;
 /// <inheritdoc/>
 public partial class RedisDatabase : IRedisDatabase
 {
+    private const string InfoScript = "return redis.call('INFO')";
+    private const string InfoSectionScript = "return redis.call('INFO', ARGV[1])";
+
     private readonly IRedisConnectionPoolManager connectionPoolManager;
     private readonly ServerEnumerationStrategy serverEnumerationStrategy;
     private readonly string keyPrefix;
@@ -559,7 +562,7 @@ public partial class RedisDatabase : IRedisDatabase
     /// <inheritdoc/>
     public async Task<Dictionary<string, string>> GetInfoAsync()
     {
-        var info = (await Database.ScriptEvaluateAsync("return redis.call('INFO')").ConfigureAwait(false)).ToString();
+        var info = (await Database.ScriptEvaluateAsync(InfoScript).ConfigureAwait(false)).ToString();
 
         return InfoDetailsParser.ParseAsDictionary(info);
     }
@@ -567,18 +570,17 @@ public partial class RedisDatabase : IRedisDatabase
     /// <inheritdoc/>
     public async Task<Dictionary<string, string>> GetInfoAsync(string section)
     {
-        var script = string.IsNullOrWhiteSpace(section)
-            ? "return redis.call('INFO')"
-            : $"return redis.call('INFO','{section}')";
-        var info = (await Database.ScriptEvaluateAsync(script).ConfigureAwait(false)).ToString();
+        if (string.IsNullOrWhiteSpace(section))
+            return await GetInfoAsync().ConfigureAwait(false);
 
+        var info = (await Database.ScriptEvaluateAsync(InfoSectionScript, values: [section]).ConfigureAwait(false)).ToString();
         return InfoDetailsParser.ParseAsDictionary(info);
     }
 
     /// <inheritdoc/>
     public async Task<InfoDetail[]> GetInfoCategorizedAsync()
     {
-        var info = (await Database.ScriptEvaluateAsync("return redis.call('INFO')").ConfigureAwait(false)).ToString();
+        var info = (await Database.ScriptEvaluateAsync(InfoScript).ConfigureAwait(false)).ToString();
 
         return InfoDetail.ParseFrom(info);
     }
@@ -586,10 +588,10 @@ public partial class RedisDatabase : IRedisDatabase
     /// <inheritdoc/>
     public async Task<InfoDetail[]> GetInfoCategorizedAsync(string section)
     {
-        var script = string.IsNullOrWhiteSpace(section)
-            ? "return redis.call('INFO')"
-            : $"return redis.call('INFO','{section}')";
-        var info = (await Database.ScriptEvaluateAsync(script).ConfigureAwait(false)).ToString();
+        if (string.IsNullOrWhiteSpace(section))
+            return await GetInfoCategorizedAsync().ConfigureAwait(false);
+
+        var info = (await Database.ScriptEvaluateAsync(InfoSectionScript, values: [section]).ConfigureAwait(false)).ToString();
 
         return InfoDetail.ParseFrom(info);
     }
