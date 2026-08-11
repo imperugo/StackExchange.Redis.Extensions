@@ -16,56 +16,6 @@ internal static class InfoDetailsParser
     private const string LineSeparator = "\r\n";
 
     /// <summary>
-    /// Parses the given info string into a list of sections, where each section contains a list of key-value pairs.
-    /// </summary>
-    /// <param name="info"></param>
-    /// <returns></returns>
-    public static List<List<KeyValuePair<string, string>>> ParseAsTreeRows(ReadOnlySpan<char> info)
-    {
-        List<List<KeyValuePair<string, string>>> sections = [];
-#if NET9_0_OR_GREATER
-        foreach (var r in info.Split(LineSeparator))
-        {
-            var line = info[r].Trim();
-            if (line.IsEmpty)
-                continue;
-
-            if (TryParseSection(line, out var section))
-                sections.Add([]);
-            else if (TryParseDetail(line, out var detail))
-                sections[^1].Add(detail);
-        }
-#else
-        var start = 0;
-        while (start < info.Length)
-        {
-            var end = info[start..].IndexOf(LineSeparator);
-            ReadOnlySpan<char> line;
-            if (end < 0)
-            {
-                line = info[start..].Trim();
-                start = info.Length;
-            }
-            else
-            {
-                line = info[start..(start + end)].Trim();
-                start += end + LineSeparator.Length;
-            }
-
-            if (line.IsEmpty)
-                continue;
-
-            if (TryParseSection(line, out var section))
-                sections.Add([]);
-            else if (TryParseDetail(line, out var detail))
-                sections[^1].Add(detail);
-        }
-
-#endif
-        return sections;
-    }
-
-    /// <summary>
     /// Parses the given info string into a flat list of tuples, where each tuple contains the section name, key, and value.
     /// </summary>
     /// <param name="info"></param>
@@ -118,7 +68,7 @@ internal static class InfoDetailsParser
     }
 
     /// <summary>
-    /// Parses the given info string into a dictionary of key-value pairs. Ingores section.
+    /// Parses the given info string into a dictionary of key-value pairs. Ingore section.
     /// </summary>
     /// <param name="info"></param>
     /// <returns></returns>
@@ -132,7 +82,7 @@ internal static class InfoDetailsParser
         {
             var line = info[r];
             if (TryParseDetail(line, out var detail))
-                dict.Add(detail.Key, detail.Value);
+                dict.TryAdd(detail.Key, detail.Value); // It's possible that `INFO` emits duplicate keys
         }
 #else
         var start = 0;
@@ -152,7 +102,7 @@ internal static class InfoDetailsParser
             }
 
             if (TryParseDetail(line, out var detail))
-                dict.Add(detail.Key, detail.Value);
+                dict.TryAdd(detail.Key, detail.Value); // It's possible that `INFO` emits duplicate keys
         }
 
 #endif
