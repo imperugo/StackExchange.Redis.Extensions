@@ -130,6 +130,28 @@ public abstract partial class CacheClientTestBase : IDisposable
         Assert.Equal(value, response.Single(x => x.Key == key).InfoValue);
     }
 
+    // The section must reach Redis as a script argument, never spliced into the script body.
+    // Interpolating it lets a caller-supplied string run arbitrary commands: the payload below
+    // closes the INFO call and chains a SET, which the canary check would then find.
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Info_Section_Should_Not_Allow_Lua_Injection_Async(bool categorized)
+    {
+        const string canary = "lua_injection_canary";
+        const string payload = "Server') and redis.call('SET','" + canary + "','pwned') --";
+
+        if (categorized)
+            await Sut.GetDefaultDatabase().GetInfoCategorizedAsync(payload);
+        else
+            await Sut.GetDefaultDatabase().GetInfoAsync(payload);
+
+        // Lua runs server-side, so an injected write lands on the unprefixed key: check the raw database.
+        var rawDatabase = db.Multiplexer.GetDatabase(db.Database);
+
+        Assert.False(await rawDatabase.KeyExistsAsync(canary), "the section parameter was interpolated into the Lua script");
+    }
+
     [Fact]
     public async Task Add_Item_To_Redis_Database_Async()
     {
