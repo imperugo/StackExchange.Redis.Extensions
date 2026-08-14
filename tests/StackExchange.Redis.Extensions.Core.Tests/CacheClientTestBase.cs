@@ -90,6 +90,20 @@ public abstract partial class CacheClientTestBase : IDisposable
         Assert.Equal("6379", response["tcp_port"]);
     }
 
+    [Theory]
+    [InlineData("Server", "tcp_port", "6379")]
+    [InlineData("clients", "blocked_clients", "0")]
+    public async Task Info_Section_Should_Return_Valid_Information_Async(string section, string key, string value)
+    {
+        var response = await Sut
+            .GetDefaultDatabase()
+            .GetInfoAsync(section);
+
+        Assert.NotNull(response);
+        Assert.True(response.Count > 0);
+        Assert.Equal(value, response[key]);
+    }
+
     [Fact]
     public async Task Info_Category_Should_Return_Valid_Information_Async()
     {
@@ -100,6 +114,42 @@ public abstract partial class CacheClientTestBase : IDisposable
         Assert.NotNull(response);
         Assert.NotEmpty(response);
         Assert.Equal("6379", response.Single(x => x.Key == "tcp_port").InfoValue);
+    }
+
+    [Theory]
+    [InlineData("Server", "tcp_port", "6379")]
+    [InlineData("clients", "blocked_clients", "0")]
+    public async Task Info_Section_Category_Should_Return_Valid_Information_Async(string section, string key, string value)
+    {
+        var response = await Sut
+            .GetDefaultDatabase()
+            .GetInfoCategorizedAsync(section);
+
+        Assert.NotNull(response);
+        Assert.NotEmpty(response);
+        Assert.Equal(value, response.Single(x => x.Key == key).InfoValue);
+    }
+
+    // The section must reach Redis as a script argument, never spliced into the script body.
+    // Interpolating it lets a caller-supplied string run arbitrary commands: the payload below
+    // closes the INFO call and chains a SET, which the canary check would then find.
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Info_Section_Should_Not_Allow_Lua_Injection_Async(bool categorized)
+    {
+        const string canary = "lua_injection_canary";
+        const string payload = "Server') and redis.call('SET','" + canary + "','pwned') --";
+
+        if (categorized)
+            await Sut.GetDefaultDatabase().GetInfoCategorizedAsync(payload);
+        else
+            await Sut.GetDefaultDatabase().GetInfoAsync(payload);
+
+        // Lua runs server-side, so an injected write lands on the unprefixed key: check the raw database.
+        var rawDatabase = db.Multiplexer.GetDatabase(db.Database);
+
+        Assert.False(await rawDatabase.KeyExistsAsync(canary), "the section parameter was interpolated into the Lua script");
     }
 
     [Fact]

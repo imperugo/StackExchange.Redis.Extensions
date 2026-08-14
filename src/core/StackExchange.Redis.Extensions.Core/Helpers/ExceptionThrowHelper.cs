@@ -1,7 +1,10 @@
+// Copyright (c) Ugo Lattanzi.  All Rights Reserved.  Licensed under the MIT license.  See License.txt in the project root for license information.
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace StackExchange.Redis.Extensions.Core.Helpers;
+
 internal static class ExceptionThrowHelper
 {
     public static void ThrowIfExistsNullElement<T>(ReadOnlySpan<T> argument, string paramName)

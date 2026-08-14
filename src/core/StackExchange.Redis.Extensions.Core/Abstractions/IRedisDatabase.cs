@@ -408,10 +408,22 @@ public partial interface IRedisDatabase
     public Task<Dictionary<string, string>> GetInfoAsync();
 
     /// <summary>
+    ///     Gets the information about redis.
+    ///     More info see http://redis.io/commands/INFO
+    /// </summary>
+    public Task<Dictionary<string, string>> GetInfoAsync(string section);
+
+    /// <summary>
     ///     Gets the information about redis with category.
     ///     More info see http://redis.io/commands/INFO
     /// </summary>
     public Task<InfoDetail[]> GetInfoCategorizedAsync();
+
+    /// <summary>
+    ///     Gets the information about redis with category.
+    ///     More info see http://redis.io/commands/INFO
+    /// </summary>
+    public Task<InfoDetail[]> GetInfoCategorizedAsync(string section);
 
     /// <summary>
     ///     Updates the expiry time of a redis cache object
