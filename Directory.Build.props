@@ -3,7 +3,7 @@
     <!-- General information -->
     <PropertyGroup>
         <Authors>Ugo Lattanzi</Authors>
-        <VersionPrefix>13.0.1</VersionPrefix>
+        <VersionPrefix>13.1.0</VersionPrefix>
         <!--
         <VersionSuffix>pre</VersionSuffix>
         -->
@@ -50,6 +50,9 @@ Features:
 Serializer packages (pick one): System.Text.Json, Newtonsoft, MemoryPack, MsgPack, Protobuf, ServiceStack, Utf8Json.
         </Description>
         <PackageReleaseNotes>
+v13.1.0:
+- Added RedisConfiguration.SslHost to set the target host used when validating the SSL certificate (enables SSL mode when set)
+
 v13.0.1:
 - Performance: connection pool selection no longer allocates multiple ServerCounters snapshots per operation (LeastLoaded) and uses a true lock-free round-robin instead of a cryptographic RNG (RoundRobin)
 - Performance: RedisDatabase instances are cached per database number instead of being allocated on every Db0..Db16 access

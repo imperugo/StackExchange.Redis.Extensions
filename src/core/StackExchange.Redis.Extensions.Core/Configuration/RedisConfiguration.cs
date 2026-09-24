@@ -26,6 +26,7 @@ public class RedisConfiguration
     private string? password;
     private bool allowAdmin;
     private bool ssl;
+    private string? sslHost;
     private int connectTimeout = 5000;
     private int syncTimeout = 5000;
     private bool abortOnConnectFail;
@@ -272,6 +273,20 @@ public class RedisConfiguration
     }
 
     /// <summary>
+    /// The target-host to use when validating SSL certificate; setting a value here enables SSL mode.
+    /// </summary>
+    public string? SslHost
+    {
+        get => sslHost;
+
+        set
+        {
+            sslHost = value;
+            ResetConfigurationOptions();
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the time in milliseconds that should be allowed for connection (defaults to 5 seconds unless SyncTimeout is higher).
     /// </summary>
     public int ConnectTimeout
@@ -485,6 +500,7 @@ public class RedisConfiguration
                     newOptions = new()
                     {
                         Ssl = Ssl,
+                        SslHost = SslHost,
                         AllowAdmin = AllowAdmin,
                         Password = Password,
                         ConnectTimeout = ConnectTimeout,
